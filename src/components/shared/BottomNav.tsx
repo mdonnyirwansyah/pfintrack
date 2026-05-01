@@ -1,0 +1,91 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BookOpen,
+  CreditCard,
+  BarChart2,
+  LayoutDashboard,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const NAV_TABS = [
+  {
+    label: "Transactions",
+    href: "/transactions",
+    icon: BookOpen,
+    prefix: "/transactions",
+  },
+  {
+    label: "Wallet",
+    href: "/wallet",
+    icon: CreditCard,
+    prefix: "/wallet",
+  },
+  {
+    label: "Report",
+    href: "/report",
+    icon: BarChart2,
+    prefix: "/report",
+  },
+  {
+    label: "Loan",
+    href: "/loan",
+    icon: LayoutDashboard,
+    prefix: "/loan",
+  },
+] as const;
+
+export function BottomNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40 glass-nav border-t"
+      style={{
+        height: "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom))",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        borderColor: "var(--border-default)",
+      }}
+    >
+      <div className="flex items-center justify-around h-[var(--bottom-nav-height)]">
+        {NAV_TABS.map(({ label, href, icon: Icon, prefix }) => {
+          const isActive = pathname.startsWith(prefix);
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex flex-col items-center justify-center gap-0.5 transition-opacity active:opacity-70",
+                "min-w-[44px] min-h-[44px] px-3"
+              )}
+              aria-label={label}
+            >
+              <Icon
+                className="w-5 h-5"
+                style={{
+                  color: isActive
+                    ? "var(--nav-active)"
+                    : "var(--nav-inactive)",
+                  strokeWidth: isActive ? 2.5 : 1.5,
+                }}
+              />
+              <span
+                className="text-[10px] font-medium leading-none"
+                style={{
+                  color: isActive
+                    ? "var(--nav-active)"
+                    : "var(--nav-inactive)",
+                }}
+              >
+                {label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
