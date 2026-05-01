@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { AppProviders } from "@/components/shared/AppProviders";
-import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNav } from "@/components/shared/BottomNav";
 
 const inter = Inter({
@@ -67,7 +66,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AppProviders>
-            <AppHeader title="pfintrack" />
             <main
               style={{
                 paddingTop: "var(--header-height)",
