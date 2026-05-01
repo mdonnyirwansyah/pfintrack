@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(node:*)",
+      "Bash(tsc:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout -b:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_TOOL_FILE_PATH\"; if echo \"$FILE\" | grep -qE 'lib/storage/.*\\.ts$'; then echo '⚠️  Storage layer changed — run /check-migration-ready before committing.'; fi; if echo \"$FILE\" | grep -qE 'app/.*\\.(tsx|ts)$'; then echo '💡 Route file changed — verify against tech-spec route map (§2.2).'; fi"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PROMPT=\"$CLAUDE_USER_PROMPT\"; if echo \"$PROMPT\" | grep -qiE '(deploy|production|release|ship)'; then echo '🚀 PRE-DEPLOY CHECKLIST: 1) /audit-spec  2) /check-migration-ready  3) typecheck+lint  4) lighthouse mobile  5) all 18 routes work  6) localStorage 7-key inventory intact'; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -d \"app\" ] && git diff --quiet 2>/dev/null; then :; else echo '📋 Reminder: run /audit-spec before commit if you changed module code.'; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
