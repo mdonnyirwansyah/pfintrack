@@ -638,19 +638,19 @@ Selisih    = outstanding = total_give − total_get
 
 ---
 
-## 8. Asumsi yang Perlu Dikonfirmasi Lebih Lanjut
+## 8. Asumsi — ✅ RESOLVED (2026-05-01)
 
-| # | Asumsi | Konfirmasi Dibutuhkan |
-|---|--------|------------------------|
-| 1 | Outstanding negatif (user berhutang ke counterparty) ditampilkan di Summary "Give" | UI yang ada belum menampilkan kasus negatif — perlu konfirmasi penanganan tampilan |
-| 2 | Edit Counterparty (ikon pensil ✏️) = rename nama counterparty | Belum ada gambar UI mode edit — perlu konfirmasi |
-| 3 | Delete Counterparty (ikon 🗑️) menghapus seluruh entries beserta rollback wallet | Perlu konfirmasi flow konfirmasi & efek terhadap data |
-| 4 | Edit single entry via tap baris di Loan Detail | Belum ada gambar UI Edit Entry — diasumsikan mirip Add |
-| 5 | Subtitle "Without explanation" di Loan List = note dari entry **terakhir** counterparty | Bisa juga: subtitle counterparty yang disimpan terpisah. Perlu konfirmasi sumber data |
-| 6 | Format tanggal di Loan Detail menggunakan English (`Sun, 19 Apr 2026`) sementara form Add menggunakan Indonesia (`Jum, 01 Mei 2026`) | Inkonsistensi — perlu disepakati standar |
-| 7 | Tidak ada validasi minimum balance wallet untuk Give (saldo boleh minus) | Konsisten dengan Module Transactions |
-| 8 | Counterparty yang sudah paid off tetap muncul di Loan List (tidak disembunyikan) | Apakah perlu toggle "Hide paid off"? |
-| 9 | Entry tipe Get di list detail ditampilkan dengan prefix `+` dan warna hijau, Give tanpa prefix dan warna hitam/abu | Konsisten dengan UI yang terlihat |
+| # | Asumsi | Keputusan |
+|---|--------|-----------|
+| 1 | Outstanding negatif di Summary | ✅ **Di kolom Give, nilai absolut** |
+| 2 | Edit Counterparty (ikon ✏️) | ✅ Rename nama counterparty |
+| 3 | Delete Counterparty (ikon 🗑️) | ✅ Soft-delete semua entries + rollback wallet. Confirmation dialog wajib |
+| 4 | Edit single entry via tap | ✅ **Reuse form Add Give/Get**, name locked + Delete |
+| 5 | Subtitle "Without explanation" | ✅ Note dari entry **terakhir** counterparty |
+| 6 | Format tanggal | ✅ **English semua** — `Sun, 19 Apr 2026` |
+| 7 | Saldo minus untuk Give | ✅ **Boleh minus**, konsisten dengan Transactions |
+| 8 | Paid off di list | ✅ **Tetap muncul + toggle hide/show** |
+| 9 | Format tampilan Get/Give | ✅ Get: `+ {amount}` hijau, Give: `{amount}` hitam/abu |
 
 ---
 

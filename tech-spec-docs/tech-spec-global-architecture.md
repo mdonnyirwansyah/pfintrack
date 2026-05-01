@@ -233,16 +233,14 @@ Semua nilai uang ditampilkan dengan **locale Indonesia (`id-ID`)**:
 
 **Tampilan di UI:**
 
-Berdasarkan UI yang ada, terjadi inkonsistensi format antar screen. **Standar yang ditetapkan:**
+> ✅ **RESOLVED (2026-05-01):** Standar tunggal telah ditetapkan — **English semua**, baik display maupun input.
 
 | Konteks | Format | Contoh |
 |---------|--------|--------|
 | Header Transactions list (current day) | English singkat | `Fri, 01 May 2026` |
 | Header Loan Detail (entry list) | English singkat | `Sun, 19 Apr 2026` |
 | Header section Report (Monthly, Custom) | English singkat | `01 May 2026 - 31 May 2026` |
-| Form input (Date Picker pre-filled) | Bahasa Indonesia singkat | `Jum, 01 Mei 2026` |
-
-> **Rekomendasi finalisasi:** Sebaiknya disepakati **satu standar** untuk konsistensi UX. Saat ini campuran English (untuk display read-only) dan Indonesia (untuk input form). Tim developer perlu memutuskan apakah mengikuti pola yang ada atau menyatukan semua ke salah satu format.
+| Form input (Date Picker pre-filled) | English singkat | `Fri, 01 May 2026` |
 
 ### 4.3 Palet Warna
 
@@ -490,49 +488,49 @@ Berlaku di seluruh modul.
 
 ---
 
-## 10. Asumsi yang Belum Dikonfirmasi (Konsolidasi)
+## 10. Asumsi — Status Resolusi (Konsolidasi)
 
-Daftar konsolidasi seluruh asumsi yang masih perlu validasi dari semua module spec. Ini adalah backlog untuk diskusi tim sebelum atau saat development.
+> ✅ **Seluruh 20 asumsi telah RESOLVED pada 2026-05-01.**
 
-### 10.1 Visual & UX
+### 10.1 Visual & UX — ✅ RESOLVED
 
-| # | Asumsi | Modul Terkait |
-|---|--------|--------------|
-| 1 | Format tanggal di UI menggunakan campuran English (display) & Indonesia (form) — perlu disepakati standar tunggal | Semua |
-| 2 | Counterparty Loan yang sudah Paid off tetap muncul di list (tidak ada toggle "hide paid off") | Loan |
-| 3 | Donut chart Report membatasi 8 kategori, sisanya jadi "Lainnya" | Report |
+| # | Asumsi | Keputusan | Modul Terkait |
+|---|--------|-----------|---------------|
+| 1 | Format tanggal di UI | ✅ **English semua** — `Fri, 01 May 2026` untuk display maupun input form | Semua |
+| 2 | Counterparty Paid off di list | ✅ **Tetap muncul + toggle hide/show** — sorted after outstanding | Loan |
+| 3 | Donut chart kategori | ✅ **Limit 8 kategori + "Lainnya"** | Report |
 
-### 10.2 Logika Bisnis
+### 10.2 Logika Bisnis — ✅ RESOLVED
 
-| # | Asumsi | Modul Terkait |
-|---|--------|--------------|
-| 4 | Saat amount Expense > balance wallet, sistem hanya menampilkan warning, tidak block (saldo boleh minus) | Transactions |
-| 5 | Outstanding Loan negatif (user yang berhutang) ditampilkan di Summary "Give" sebagai nilai absolut | Loan |
-| 6 | Periode Realtime Report = bulan berjalan penuh (1 - akhir bulan), bukan sampai hari ini saja | Report |
-| 7 | Range maksimum custom report 10 tahun (untuk performa) | Report |
-| 8 | Saat balance wallet berubah karena edit/delete transaksi lampau, **tidak** dicatat di `wallet_balance_history` | Wallet, Transactions |
+| # | Asumsi | Keputusan | Modul Terkait |
+|---|--------|-----------|---------------|
+| 4 | Expense > balance wallet | ✅ **Boleh minus + warning** (soft, tidak block) | Transactions |
+| 5 | Outstanding Loan negatif | ✅ **Ditampilkan di kolom Give sebagai nilai absolut** | Loan |
+| 6 | Periode Realtime Report | ✅ **Bulan penuh** (1 - akhir bulan) | Report |
+| 7 | Range max custom report | ✅ **10 tahun** | Report |
+| 8 | Edit/delete txn → wallet_balance_history | ✅ **TIDAK dicatat** — audit trail sudah ada di transactions | Wallet, Transactions |
 
-### 10.3 UI yang Belum Ada Gambarnya
+### 10.3 UI yang Belum Ada Gambarnya — ✅ RESOLVED
 
-| # | Item | Modul Terkait |
-|---|------|---------------|
-| 9 | Edit/Detail Transaction screen | Transactions |
-| 10 | Edit/Detail Wallet screen | Wallet |
-| 11 | Edit single Loan Entry screen | Loan |
-| 12 | Tab History Transactions (search) | Transactions |
-| 13 | Edit Custom Report screen (dengan tombol Delete) | Report |
-| 14 | Drill-down detail kategori dari donut chart | Report |
-| 15 | Konfirmasi Mark as Paid, Delete Counterparty, Delete Wallet, Delete Transaction | Loan, Wallet, Transactions |
-| 16 | Empty state ilustrasi untuk semua modul | Semua |
+| # | Item | Keputusan | Modul Terkait |
+|---|------|-----------|---------------|
+| 9 | Edit/Detail Transaction | ✅ **Reuse form Add**, pre-filled + Save & Delete | Transactions |
+| 10 | Edit/Detail Wallet | ✅ **Reuse form Add**, pre-filled + wallet_type selector + Save & Delete | Wallet |
+| 11 | Edit single Loan Entry | ✅ **Reuse form Add Give/Get**, name locked + Delete | Loan |
+| 12 | Tab History Transactions | ✅ **Full-page search**, real-time filter case-insensitive | Transactions |
+| 13 | Edit Custom Report | ✅ **Reuse form Add** + tombol Delete merah di bawah form | Report |
+| 14 | Drill-down kategori donut chart | ✅ **Implementasi** — tap legend → list transaksi per kategori | Report |
+| 15 | Confirmation Dialog | ✅ **Wajib semua** aksi destruktif, komponen reusable | Semua |
+| 16 | Empty state | ✅ **Icon package** (mis. lucide-react), bukan emoji/custom illustration | Semua |
 
-### 10.4 Fitur Belum Didefinisikan
+### 10.4 Fitur Belum Didefinisikan — ✅ RESOLVED (Skip Fase 1)
 
-| # | Item | Modul Terkait |
-|---|------|---------------|
-| 17 | Restore wallet/transaksi/loan dari soft-delete | Semua |
-| 18 | Backup/restore data manual oleh user (export JSON?) | Global |
-| 19 | Multi-currency support | Global |
-| 20 | Drag-to-reorder wallet | Wallet |
+| # | Item | Keputusan | Modul Terkait |
+|---|------|-----------|---------------|
+| 17 | Restore dari soft-delete | ⏭️ **Skip** — Fase 2 | Semua |
+| 18 | Backup/restore data (export JSON) | ⏭️ **Skip** — Fase 2 | Global |
+| 19 | Multi-currency support | ⏭️ **Skip** — IDR only, field `currency` sebagai placeholder | Global |
+| 20 | Drag-to-reorder wallet | ⏭️ **Skip** — field `sort_order` sudah ada, UI nanti | Wallet |
 
 ---
 

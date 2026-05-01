@@ -523,15 +523,15 @@ Hasil:
 
 ---
 
-## 8. Asumsi yang Perlu Dikonfirmasi Lebih Lanjut
+## 8. Asumsi — ✅ RESOLVED (2026-05-01)
 
-| # | Asumsi | Konfirmasi Dibutuhkan |
-|---|--------|------------------------|
-| 1 | Screen Wallet Detail/Edit (`/wallet/[id]`) ada dengan struktur form serupa Add Wallet + tombol Save Changes & Delete | UI belum diberikan |
-| 2 | Field `wallet_type` belum dipilih user di Add Wallet (default `other`) — mungkin ada UI pemilihan tipe yang belum terlihat | UI lengkap belum ada |
-| 3 | Saat user edit balance dari nilai X ke X (sama), tidak dicatat di history | Logika masuk akal, perlu konfirmasi |
-| 4 | Restore wallet dari soft-delete belum didefinisikan (apakah memicu pencatatan history atau tidak) | Belum ada UI restore |
-| 5 | Saat balance wallet berubah karena edit/delete transaksi lampau (dari Module Transactions), apakah perlu rekam ke history? | **Asumsi saat ini: TIDAK** — karena perubahan tersebut sudah ter-audit di transactions. Perlu konfirmasi. |
+| # | Asumsi | Keputusan |
+|---|--------|-----------|
+| 1 | Screen Wallet Detail/Edit (`/wallet/[id]`) | ✅ **Reuse form Add Wallet**, pre-filled + wallet_type selector + Save Changes & Delete |
+| 2 | Field `wallet_type` di Add Wallet | ✅ Default `other`, selector ditambahkan di Edit Wallet |
+| 3 | Edit balance dari X ke X (sama) | ✅ **Tidak dicatat** di history (delta = 0) |
+| 4 | Restore wallet dari soft-delete | ⏭️ **Skip Fase 1** — tidak ada UI restore |
+| 5 | Edit/delete transaksi → wallet_balance_history | ✅ **TIDAK dicatat** — audit trail sudah ada di transactions |
 
 ---
 

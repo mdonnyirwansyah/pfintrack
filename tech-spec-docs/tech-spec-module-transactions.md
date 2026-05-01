@@ -588,19 +588,17 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 
 ---
 
-## 8. Asumsi yang Perlu Dikonfirmasi Lebih Lanjut
+## 8. Asumsi — ✅ RESOLVED (2026-05-01)
 
-Beberapa asumsi yang dibuat berdasarkan pembacaan UI saat ini, **perlu dikonfirmasi atau dilengkapi dengan UI tambahan**:
-
-| # | Asumsi | Konfirmasi Dibutuhkan |
-|---|--------|------------------------|
-| 1 | Tap pada item transaksi di list → navigasi ke screen Edit | UI screen Edit Transaction belum diberikan |
-| 2 | Edit transaction membutuhkan recalculation balance wallet | Sesuai best practice — perlu konfirmasi flow |
-| 3 | Hapus transaksi via tombol di screen Edit, dengan confirmation dialog | UI dialog konfirmasi belum diberikan |
-| 4 | Saat amount expense > balance wallet, sistem hanya menampilkan warning (tidak block) | Perlu konfirmasi: apakah saldo boleh minus, atau harus block? |
-| 5 | Format tanggal di UI (English vs Indonesia) tidak konsisten antara list dan form | Perlu disepakati standar tunggal |
-| 6 | Limit jumlah chip suggestion (asumsi 8) | Belum terlihat di UI |
-| 7 | Fungsi ikon ✏️ dan 📄 di header bottom sheet "Select Wallet" | Asumsi: ✏️ = manage wallet, 📄 = riwayat wallet — perlu konfirmasi |
+| # | Asumsi | Keputusan |
+|---|--------|-----------|
+| 1 | Tap item transaksi → Edit screen | ✅ **Reuse form Add**, pre-filled + Save & Delete |
+| 2 | Edit transaction → recalculate wallet balance | ✅ Rollback efek lama, apply efek baru |
+| 3 | Hapus transaksi via tombol di Edit screen | ✅ Confirmation dialog wajib (komponen reusable) |
+| 4 | Expense > balance wallet | ✅ **Boleh minus + warning** (soft, tidak block) |
+| 5 | Format tanggal | ✅ **English semua** — `Fri, 01 May 2026` untuk display & input |
+| 6 | Limit chip suggestion | ✅ **8 chip** per field |
+| 7 | Ikon ✏️ dan 📄 di bottom sheet wallet | ✅ ✏️ = manage wallet, 📄 = riwayat wallet |
 
 ---
 

@@ -608,19 +608,19 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 
 ---
 
-## 9. Asumsi yang Perlu Dikonfirmasi Lebih Lanjut
+## 9. Asumsi — ✅ RESOLVED (2026-05-01)
 
-| # | Asumsi | Konfirmasi Dibutuhkan |
-|---|--------|------------------------|
-| 1 | Tab Monthly menggunakan **infinite scroll** untuk load bulan-bulan lama | UI tidak menunjukkan loader bawah — perlu konfirmasi UX |
-| 2 | Donut chart membatasi maksimal 8 kategori, sisanya digabung jadi "Lainnya" | Belum terlihat di UI — perlu konfirmasi |
-| 3 | Tap baris kategori di legend → drill-down ke list transaksi kategori | Belum ada gambar UI |
-| 4 | Edit Custom Report memiliki tombol Delete | Tidak terlihat di UI saat ini — diasumsikan ada |
-| 5 | Header Realtime tidak memiliki ikon Settings ⚙️ — yang ada di header utama Report | Konfirmasi: apakah ⚙️ shortcut ke `/settings` atau ke pengaturan report? |
-| 6 | Custom Report nama bisa duplikat antar user (per `anon_id` saja) | Konsisten dengan pola modul lain |
-| 7 | "Balance Correction" terkait perubahan **initial balance wallet** — bukan koreksi manual user | Asumsi sudah dikonfirmasi user. Implementasi membutuhkan key baru `wallet_balance_history` di Module Wallet |
-| 8 | Periode "Realtime" adalah bulan berjalan (1 - akhir bulan) | Konfirmasi: apakah berakhir di hari ini saja, atau benar sampai akhir bulan? Saat ini diasumsikan: rentang bulan penuh, namun data hanya sampai hari ini secara natural |
-| 9 | Range maksimum custom report 10 tahun | Asumsi performa — perlu konfirmasi |
+| # | Asumsi | Keputusan |
+|---|--------|-----------|
+| 1 | Monthly infinite scroll | ✅ Load 6 bulan pertama, tambah 6 saat scroll |
+| 2 | Donut chart max kategori | ✅ **Limit 8 + "Lainnya"** |
+| 3 | Tap kategori di legend | ✅ **Implementasi drill-down** — list transaksi per kategori |
+| 4 | Edit Custom Report + tombol Delete | ✅ Tombol Delete merah di bawah form, confirmation dialog |
+| 5 | Ikon ⚙️ di header Report | ✅ Shortcut ke Settings (out of scope Fase 1, ikon tetap ada tapi disabled/hidden) |
+| 6 | Custom Report nama unik per anon_id | ✅ Case-insensitive unique |
+| 7 | Balance Correction dari edit balance wallet | ✅ Dari `wallet_balance_history`, key sudah didefinisikan di Module Wallet v4.0 |
+| 8 | Periode Realtime | ✅ **Bulan penuh** (1 - akhir bulan). Data natural hanya sampai hari ini |
+| 9 | Range max custom report | ✅ **10 tahun** |
 
 ---
 
