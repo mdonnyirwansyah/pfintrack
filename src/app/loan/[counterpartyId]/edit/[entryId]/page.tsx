@@ -91,7 +91,6 @@ export default function EditLoanEntryPage({
       <AppHeader
         title={typeLabel}
         showBack
-        style={{ backgroundColor: "var(--color-brand)" } as React.CSSProperties}
       />
 
       <LoanEntryForm

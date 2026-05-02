@@ -328,7 +328,7 @@ export default function LoanDetailPage({
                 onClick={handleRenameSubmit}
                 className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold"
                 style={{
-                  background: "var(--color-brand)",
+                  background: "var(--color-primary)",
                   color: "var(--text-on-primary)",
                   minHeight: "var(--tap-target-min)",
                 }}
