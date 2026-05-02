@@ -1,17 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { TransferForm, type TransferFormValues } from "../../_components/TransferForm";
 import { useTransactionStore } from "@/lib/stores/useTransactionStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
+import { todayISO } from "@/lib/format/date";
 
-export default function AddTransferPage() {
+function AddTransferContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { createTransaction, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Baca ?date= dari URL, fallback ke hari ini
+  const dateParam = searchParams.get("date");
+  const initialDate = dateParam ?? todayISO();
 
   useEffect(() => {
     loadTransactions();
@@ -32,7 +38,7 @@ export default function AddTransferPage() {
         transaction_date: values.transaction_date,
         transaction_time: values.transaction_time,
       });
-      router.push("/transactions");
+      router.push(`/transactions?date=${dateParam ?? todayISO()}`);
     } catch (err) {
       console.error("Failed to create transfer:", err);
     } finally {
@@ -45,9 +51,18 @@ export default function AddTransferPage() {
       <AppHeader title="Add Transfer" showBack />
       <TransferForm
         wallets={wallets}
+        initialValues={{ transaction_date: initialDate }}
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
       />
     </>
+  );
+}
+
+export default function AddTransferPage() {
+  return (
+    <Suspense>
+      <AddTransferContent />
+    </Suspense>
   );
 }

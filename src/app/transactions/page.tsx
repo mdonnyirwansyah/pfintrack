@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Download,
   History,
@@ -23,12 +23,22 @@ import { transactionsRepo } from "@/lib/storage/transactions";
 import { getOrCreateAnonId } from "@/lib/storage/anon-id";
 import { FileText } from "lucide-react";
 
-export default function TransactionsPage() {
+function TransactionsContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { transactions, isLoading, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
-  const [activeDate, setActiveDate] = useState(todayISO());
+
+  // Init activeDate dari ?date= query param, fallback ke hari ini
+  const dateParam = searchParams.get("date");
+  const [activeDate, setActiveDate] = useState(dateParam ?? todayISO());
   const [isExporting, setIsExporting] = useState(false);
+
+  // Update state + sync URL sekaligus, hindari useEffect agar tidak ada timing issue
+  const handleDateChange = (date: string) => {
+    setActiveDate(date);
+    router.replace(`/transactions?date=${date}`, { scroll: false });
+  };
 
   useEffect(() => {
     loadTransactions();
@@ -41,7 +51,6 @@ export default function TransactionsPage() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Lazy load xlsx
       const XLSX = await import("xlsx");
       const allTxns = transactionsRepo.getAll();
       const anonId = getOrCreateAnonId();
@@ -82,19 +91,19 @@ export default function TransactionsPage() {
       label: "Expense",
       icon: <ShoppingCart className="w-5 h-5 text-white" />,
       color: "var(--color-negative)",
-      onClick: () => router.push("/transactions/add/expense"),
+      onClick: () => router.push(`/transactions/add/expense?date=${activeDate}`),
     },
     {
       label: "Income",
       icon: <TrendingUp className="w-5 h-5 text-white" />,
       color: "var(--color-accent-warm)",
-      onClick: () => router.push("/transactions/add/income"),
+      onClick: () => router.push(`/transactions/add/income?date=${activeDate}`),
     },
     {
       label: "Transfer",
       icon: <ArrowRightLeft className="w-5 h-5 text-white" />,
       color: "var(--text-secondary)",
-      onClick: () => router.push("/transactions/add/transfer"),
+      onClick: () => router.push(`/transactions/add/transfer?date=${activeDate}`),
     },
   ];
 
@@ -135,7 +144,7 @@ export default function TransactionsPage() {
 
       <div className="pt-2">
         {/* Date navigator */}
-        <DateNavigator activeDate={activeDate} onDateChange={setActiveDate} />
+        <DateNavigator activeDate={activeDate} onDateChange={handleDateChange} />
 
         {/* Summary bar */}
         <SummaryBar
@@ -187,5 +196,13 @@ export default function TransactionsPage() {
 
       <FABExpandable actions={fabActions} />
     </>
+  );
+}
+
+export default function TransactionsPage() {
+  return (
+    <Suspense>
+      <TransactionsContent />
+    </Suspense>
   );
 }

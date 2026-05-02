@@ -9,7 +9,16 @@ interface SummaryBarProps {
 }
 
 export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
-  const isNegativeBalance = balance < 0;
+  // Income: "+" hanya jika > 0
+  const incomePrefix = income > 0 ? "+ " : "";
+  // Balance: "+" hanya jika > 0, tanpa tanda jika 0 atau negatif
+  const balancePrefix = balance > 0 ? "+ " : "";
+  const balanceColor =
+    balance > 0
+      ? "var(--color-positive)"
+      : balance < 0
+      ? "var(--color-negative)"
+      : "var(--text-secondary)";
 
   return (
     <div
@@ -31,10 +40,10 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           Income
         </span>
         <span
-          className="text-[14px] font-semibold"
+          className="text-[14px] font-semibold tabular-nums"
           style={{ color: "var(--color-positive)" }}
         >
-          {formatIDR(income)}
+          {incomePrefix}{formatIDR(income)}
         </span>
       </div>
 
@@ -50,7 +59,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           Expenses
         </span>
         <span
-          className="text-[14px] font-semibold"
+          className="text-[14px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
         >
           {formatIDR(expenses)}
@@ -69,15 +78,10 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           Balance
         </span>
         <span
-          className="text-[14px] font-semibold"
-          style={{
-            color: isNegativeBalance
-              ? "var(--color-negative)"
-              : "var(--color-positive)",
-          }}
+          className="text-[14px] font-semibold tabular-nums"
+          style={{ color: balanceColor }}
         >
-          {isNegativeBalance ? "- " : "+ "}
-          {formatIDR(Math.abs(balance))}
+          {balancePrefix}{formatIDR(Math.abs(balance))}
         </span>
       </div>
     </div>

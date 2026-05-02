@@ -51,7 +51,7 @@ export function IncomeExpenseForm({
   const defaults: IncomeExpenseFormValues = {
     transaction_date: todayISO(),
     transaction_time: currentTimeHHMM(),
-    wallet_id: wallets[0]?.id ?? "",
+    wallet_id: "",
     amount: "",
     title: "",
     category: "",
