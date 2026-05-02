@@ -116,13 +116,13 @@ export function DonutChart({
           }}
         >
           <p
-            className="text-[11px] font-medium truncate"
+            className="text-[10px] font-medium truncate"
             style={{ color: "var(--text-tertiary)", marginBottom: 2 }}
           >
             {centerLabel.label}
           </p>
           <p
-            className="text-[14px] font-bold tabular-nums leading-tight"
+            className="text-[13px] font-bold tabular-nums leading-tight"
             style={{ color: centerLabel.color === "var(--text-secondary)" ? "var(--text-primary)" : centerLabel.color }}
           >
             {formatIDR(centerLabel.amount)}
@@ -162,7 +162,7 @@ export function DonutChart({
 
               {/* Category name */}
               <span
-                className="flex-1 text-[14px] text-left font-medium truncate"
+                className="flex-1 text-[13px] text-left font-medium truncate"
                 style={{
                   color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
                   fontWeight: isActive ? 600 : 400,
@@ -173,7 +173,7 @@ export function DonutChart({
 
               {/* Percentage */}
               <span
-                className="text-[12px] font-semibold tabular-nums"
+                className="text-[11px] font-semibold tabular-nums"
                 style={{ color: isActive ? entry.color : "var(--text-tertiary)" }}
               >
                 {entry.percentage.toFixed(1)}%
@@ -181,7 +181,7 @@ export function DonutChart({
 
               {/* Amount */}
               <span
-                className="text-[14px] font-semibold tabular-nums ml-1"
+                className="text-[13px] font-semibold tabular-nums ml-1"
                 style={{ color: isActive ? entry.color : "var(--text-primary)" }}
               >
                 {formatIDR(entry.total)}

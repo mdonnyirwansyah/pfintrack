@@ -54,7 +54,7 @@ export default function SettingsPage() {
 
         {/* ── Appearance ── */}
         <p
-          className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2"
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("appearance")}
@@ -91,7 +91,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <span
-                      className="text-[15px]"
+                      className="text-[14px]"
                       style={{
                         color: isActive
                           ? "var(--color-brand)"
@@ -127,7 +127,7 @@ export default function SettingsPage() {
 
         {/* ── Language ── */}
         <p
-          className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("language")}
@@ -164,7 +164,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <span
-                      className="text-[15px]"
+                      className="text-[14px]"
                       style={{
                         color: isActive
                           ? "var(--color-brand)"
@@ -201,7 +201,7 @@ export default function SettingsPage() {
 
         {/* ── Display ── */}
         <p
-          className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("display")}
@@ -221,10 +221,10 @@ export default function SettingsPage() {
                 <Hash className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
               <div className="text-left">
-                <p className="text-[15px]" style={{ color: "var(--text-primary)" }}>
+                <p className="text-[14px]" style={{ color: "var(--text-primary)" }}>
                   {t("showDecimals")}
                 </p>
-                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
                   {t("showDecimalsDesc")}
                 </p>
               </div>
@@ -250,7 +250,7 @@ export default function SettingsPage() {
 
         {/* ── About ── */}
         <p
-          className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("about")}
@@ -265,11 +265,11 @@ export default function SettingsPage() {
               >
                 <Info className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
-              <span className="text-[15px]" style={{ color: "var(--text-primary)" }}>
+              <span className="text-[14px]" style={{ color: "var(--text-primary)" }}>
                 pfintrack
               </span>
             </div>
-            <span className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
+            <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
               v0.1.0
             </span>
           </div>

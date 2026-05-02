@@ -78,7 +78,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
     <div className="space-y-3">
       {/* Header + toggle */}
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+        <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
           {t("daily.title")}
         </h2>
         <div
@@ -111,7 +111,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
       </div>
 
       {summaries.length === 0 ? (
-        <p className="text-[12px] text-center py-4" style={{ color: "var(--text-tertiary)" }}>
+        <p className="text-[11px] text-center py-4" style={{ color: "var(--text-tertiary)" }}>
           {t("daily.noData")}
         </p>
       ) : view === "list" ? (
@@ -123,17 +123,17 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
                 <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
               )}
               <div className="flex items-center justify-between px-4 py-2.5">
-                <span className="text-[12px] font-medium" style={{ color: "var(--text-primary)" }}>
+                <span className="text-[11px] font-medium" style={{ color: "var(--text-primary)" }}>
                   {formatDisplayDate(day.date)}
                 </span>
                 <div className="flex items-center gap-3">
                   {day.income > 0 && (
-                    <span className="text-[11px] font-semibold tabular-nums" style={{ color: "var(--color-positive)" }}>
+                    <span className="text-[10px] font-semibold tabular-nums" style={{ color: "var(--color-positive)" }}>
                       +{formatIDR(day.income)}
                     </span>
                   )}
                   {day.expenses > 0 && (
-                    <span className="text-[11px] font-semibold tabular-nums" style={{ color: "var(--color-negative)" }}>
+                    <span className="text-[10px] font-semibold tabular-nums" style={{ color: "var(--color-negative)" }}>
                       -{formatIDR(day.expenses)}
                     </span>
                   )}
@@ -148,7 +148,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
           className="glass rounded-[16px] p-3"
         >
           {/* Month label */}
-          <p className="text-center text-[12px] font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+          <p className="text-center text-[11px] font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
             {format(monthDate, "MMMM yyyy")}
           </p>
 
@@ -182,7 +182,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
                   }}
                 >
                   <span
-                    className="text-[11px] font-medium leading-none"
+                    className="text-[10px] font-medium leading-none"
                     style={{ color: "var(--text-primary)" }}
                   >
                     {format(day, "d")}

@@ -31,7 +31,7 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
         aria-label={`Drill down to ${formatDateRange(start, end)}`}
       >
         <span
-          className="text-[14px] font-semibold flex-1 text-center"
+          className="text-[13px] font-semibold flex-1 text-center"
           style={{ color: "var(--text-primary)" }}
         >
           {formatDateRange(start, end)}

@@ -80,7 +80,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
         <button
           type="button"
           onClick={handleToggle}
-          className="flex items-center gap-1 text-[15px] font-semibold transition-opacity active:opacity-70"
+          className="flex items-center gap-1 text-[14px] font-semibold transition-opacity active:opacity-70"
           style={{
             color: "var(--text-primary)",
             minHeight: "var(--tap-target-min)",
@@ -142,7 +142,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                 </button>
 
                 <span
-                  className="text-[14px] font-semibold"
+                  className="text-[13px] font-semibold"
                   style={{ color: "var(--text-primary)" }}
                 >
                   {format(viewDate, "MMMM yyyy")}
@@ -167,7 +167,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                 {WEEKDAYS.map((d) => (
                   <div
                     key={d}
-                    className="text-center text-[11px] font-medium py-1"
+                    className="text-center text-[10px] font-medium py-1"
                     style={{ color: "var(--text-tertiary)" }}
                   >
                     {d}
@@ -187,7 +187,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                       key={day.toISOString()}
                       type="button"
                       onClick={() => handleSelectDay(day)}
-                      className="flex items-center justify-center rounded-full text-[13px] font-medium transition-all active:scale-90"
+                      className="flex items-center justify-center rounded-full text-[12px] font-medium transition-all active:scale-90"
                       style={{
                         height: 36,
                         background: isSelected
@@ -217,7 +217,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                 <button
                   type="button"
                   onClick={() => handleSelectDay(new Date())}
-                  className="w-full text-[13px] font-medium py-1.5 rounded-[8px] transition-opacity active:opacity-70"
+                  className="w-full text-[12px] font-medium py-1.5 rounded-[8px] transition-opacity active:opacity-70"
                   style={{
                     color: "var(--color-primary)",
                     background: "var(--bg-secondary)",

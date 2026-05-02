@@ -17,13 +17,13 @@ function SummaryRow({ label, value, color }: SummaryRowProps) {
   return (
     <div className="flex items-center justify-between py-1">
       <span
-        className="text-[11px]"
+        className="text-[10px]"
         style={{ color: "var(--text-secondary)" }}
       >
         {label}
       </span>
       <span
-        className="text-[14px] font-semibold tabular-nums"
+        className="text-[13px] font-semibold tabular-nums"
         style={{ color: color ?? "var(--text-primary)" }}
       >
         {value}

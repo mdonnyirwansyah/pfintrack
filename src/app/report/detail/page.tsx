@@ -87,7 +87,7 @@ function ReportDetailContent() {
         {nameParam && (
           <div className="text-center">
             <span
-              className="text-[13px]"
+              className="text-[12px]"
               style={{ color: "var(--text-secondary)" }}
             >
               {formatDateRange(start, end)}
@@ -115,10 +115,10 @@ function ReportDetailContent() {
         {breakdown.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+              <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
                 {selectedCategory ? t("categoryTransactions", { category: selectedCategory }) : t("allTransactions")}
               </h2>
-              <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+              <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
                 {tc("items", { count: drillTransactions.length })}
               </span>
             </div>
@@ -139,12 +139,12 @@ function ReportDetailContent() {
                     <div className="flex items-center justify-between px-4 py-3">
                       <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                         <span
-                          className="text-[14px] font-medium truncate"
+                          className="text-[13px] font-medium truncate"
                           style={{ color: "var(--text-primary)" }}
                         >
                           {t.title ?? t.category ?? "Expense"}
                         </span>
-                        <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                        <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
                           {t.category && (
                             <span style={{ color: "var(--text-tertiary)" }}>{t.category} · </span>
                           )}
@@ -152,7 +152,7 @@ function ReportDetailContent() {
                         </span>
                       </div>
                       <span
-                        className="text-[14px] font-semibold tabular-nums ml-3 flex-shrink-0"
+                        className="text-[13px] font-semibold tabular-nums ml-3 flex-shrink-0"
                         style={{ color: "var(--color-negative)" }}
                       >
                         -{formatIDR(t.amount)}

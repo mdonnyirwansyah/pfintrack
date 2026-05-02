@@ -94,7 +94,7 @@ export default function TransactionHistoryPage() {
             placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 bg-transparent text-[15px] outline-none"
+            className="flex-1 bg-transparent text-[14px] outline-none"
             style={{ color: "var(--text-primary)" }}
             autoFocus
           />
@@ -135,7 +135,7 @@ export default function TransactionHistoryPage() {
               {/* Date header */}
               <div className="flex items-center gap-3 mb-2">
                 <span
-                  className="text-[11px] font-semibold"
+                  className="text-[10px] font-semibold"
                   style={{ color: "var(--text-secondary)" }}
                 >
                   {formatDisplayDate(date)}

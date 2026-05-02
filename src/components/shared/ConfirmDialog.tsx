@@ -40,14 +40,14 @@ export function ConfirmDialog({
       >
         <AlertDialogHeader>
           <AlertDialogTitle
-            className="text-[17px] font-semibold"
+            className="text-[16px] font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
             {title}
           </AlertDialogTitle>
           {description && (
             <AlertDialogDescription
-              className="text-[15px]"
+              className="text-[14px]"
               style={{ color: "var(--text-secondary)" }}
             >
               {description}

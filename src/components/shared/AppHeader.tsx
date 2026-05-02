@@ -72,14 +72,14 @@ export function AppHeader({
       {/* Center: title + subtitle */}
       <div className="flex-1 flex flex-col items-center justify-center text-center">
         <h1
-          className="text-[17px] font-semibold leading-tight truncate max-w-[200px]"
+          className="text-[16px] font-semibold leading-tight truncate max-w-[200px]"
           style={{ color: "var(--text-primary)" }}
         >
           {title}
         </h1>
         {subtitle && (
           <span
-            className="text-[12px] leading-tight mt-0.5"
+            className="text-[11px] leading-tight mt-0.5"
             style={{ color: "var(--text-secondary)" }}
           >
             {subtitle}

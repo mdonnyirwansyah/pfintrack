@@ -140,7 +140,7 @@ export function LoanEntryForm({
         {/* Date */}
         <div className="space-y-1">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("form.date")}
@@ -161,12 +161,12 @@ export function LoanEntryForm({
               type="date"
               value={values.transaction_date}
               onChange={(e) => set("transaction_date", e.target.value)}
-              className="flex-1 bg-transparent outline-none text-[15px] py-3"
+              className="flex-1 bg-transparent outline-none text-[14px] py-3"
               style={{ color: "var(--text-primary)" }}
             />
           </div>
           {errors.transaction_date && (
-            <p className="text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_date}
             </p>
           )}
@@ -175,7 +175,7 @@ export function LoanEntryForm({
         {/* Time */}
         <div className="space-y-1">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("form.time")}
@@ -196,12 +196,12 @@ export function LoanEntryForm({
               type="time"
               value={values.transaction_time}
               onChange={(e) => set("transaction_time", e.target.value)}
-              className="flex-1 bg-transparent outline-none text-[15px] py-3"
+              className="flex-1 bg-transparent outline-none text-[14px] py-3"
               style={{ color: "var(--text-primary)" }}
             />
           </div>
           {errors.transaction_time && (
-            <p className="text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_time}
             </p>
           )}
@@ -210,7 +210,7 @@ export function LoanEntryForm({
         {/* Amount */}
         <div className="space-y-1">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("form.amount")}
@@ -229,7 +229,7 @@ export function LoanEntryForm({
               placeholder={t("form.amount")}
               value={values.amount}
               onChange={(e) => set("amount", e.target.value)}
-              className="flex-1 bg-transparent outline-none text-[15px] py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="flex-1 bg-transparent outline-none text-[14px] py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               style={{ color: "var(--text-primary)" }}
               min="0"
               step="any"
@@ -240,7 +240,7 @@ export function LoanEntryForm({
             />
           </div>
           {errors.amount && (
-            <p className="text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.amount}
             </p>
           )}
@@ -249,7 +249,7 @@ export function LoanEntryForm({
         {/* Name */}
         <div className="space-y-1">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("form.name")}
@@ -270,12 +270,12 @@ export function LoanEntryForm({
               onChange={(e) => set("name", e.target.value)}
               disabled={isNameLocked}
               maxLength={50}
-              className="flex-1 bg-transparent outline-none text-[15px] py-3 disabled:cursor-not-allowed"
+              className="flex-1 bg-transparent outline-none text-[14px] py-3 disabled:cursor-not-allowed"
               style={{ color: "var(--text-primary)" }}
             />
           </div>
           {errors.name && (
-            <p className="text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.name}
             </p>
           )}
@@ -284,7 +284,7 @@ export function LoanEntryForm({
         {/* Wallet selector (optional) */}
         <div className="space-y-1">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("form.walletOptional")}
@@ -300,7 +300,7 @@ export function LoanEntryForm({
             }}
           >
             <span
-              className="text-[15px]"
+              className="text-[14px]"
               style={{
                 color: selectedWallet
                   ? "var(--text-primary)"
@@ -326,7 +326,7 @@ export function LoanEntryForm({
                       set("wallet_id", null);
                     }
                   }}
-                  className="text-[12px] px-2 py-0.5 rounded-full cursor-pointer"
+                  className="text-[11px] px-2 py-0.5 rounded-full cursor-pointer"
                   style={{
                     color: "var(--text-tertiary)",
                     background: "var(--bg-secondary)",
@@ -346,7 +346,7 @@ export function LoanEntryForm({
         {/* Note */}
         <div className="space-y-1">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("form.noteOptional")}
@@ -364,17 +364,17 @@ export function LoanEntryForm({
               onChange={(e) => set("note", e.target.value)}
               maxLength={255}
               rows={3}
-              className="w-full bg-transparent outline-none text-[15px] resize-none"
+              className="w-full bg-transparent outline-none text-[14px] resize-none"
               style={{ color: "var(--text-primary)" }}
             />
           </div>
           {errors.note && (
-            <p className="text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.note}
             </p>
           )}
           <p
-            className="text-[11px] text-right"
+            className="text-[10px] text-right"
             style={{ color: "var(--text-tertiary)" }}
           >
             {values.note.length}/255
@@ -394,7 +394,7 @@ export function LoanEntryForm({
             }}
           >
             <Trash2 className="w-4 h-4" />
-            <span className="text-[15px] font-medium">{t("deleteEntryConfirm.confirm")} Entry</span>
+            <span className="text-[14px] font-medium">{t("deleteEntryConfirm.confirm")} Entry</span>
           </button>
         )}
 
@@ -403,7 +403,7 @@ export function LoanEntryForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center py-3.5 rounded-[14px] font-semibold text-[15px] transition-all active:scale-[0.98] disabled:opacity-60"
+            className="w-full flex items-center justify-center py-3.5 rounded-[14px] font-semibold text-[14px] transition-all active:scale-[0.98] disabled:opacity-60"
             style={{
               background: "var(--color-brand)",
               color: "var(--text-on-primary)",

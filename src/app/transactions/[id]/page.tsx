@@ -96,7 +96,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     <button
       type="button"
       onClick={() => setIsDeleteDialogOpen(true)}
-      className="w-full py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity flex items-center justify-center gap-2"
+      className="w-full py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity flex items-center justify-center gap-2"
       style={{
         background: "var(--color-negative-soft)",
         color: "var(--color-negative)",

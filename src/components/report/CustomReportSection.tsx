@@ -40,13 +40,13 @@ export function CustomReportSection({
           onClick={handleDrillDown}
         >
           <span
-            className="text-[15px] font-bold"
+            className="text-[14px] font-bold"
             style={{ color: "var(--text-primary)" }}
           >
             {report.name}
           </span>
           <span
-            className="text-[13px] mt-0.5"
+            className="text-[12px] mt-0.5"
             style={{ color: "var(--text-secondary)" }}
           >
             {formatDateRange(report.start_date, report.end_date)}

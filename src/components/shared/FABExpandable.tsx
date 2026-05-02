@@ -48,7 +48,7 @@ export function FABExpandable({ actions, className }: FABExpandableProps) {
               style={{ animationDelay: `${i * 40}ms` }}
             >
               <span
-                className="glass text-[13px] font-medium px-3 py-1.5 rounded-full"
+                className="glass text-[12px] font-medium px-3 py-1.5 rounded-full"
                 style={{ color: "var(--text-primary)" }}
               >
                 {action.label}

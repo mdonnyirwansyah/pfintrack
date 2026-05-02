@@ -279,7 +279,7 @@ export default function LoanDetailPage({
             style={{ maxWidth: "340px" }}
           >
             <h2
-              className="text-[17px] font-semibold mb-4"
+              className="text-[16px] font-semibold mb-4"
               style={{ color: "var(--text-primary)" }}
             >
               {t("rename.title")}
@@ -296,7 +296,7 @@ export default function LoanDetailPage({
                 placeholder={t("rename.namePlaceholder")}
                 maxLength={50}
                 autoFocus
-                className="w-full rounded-[12px] px-4 py-3 text-[15px] outline-none"
+                className="w-full rounded-[12px] px-4 py-3 text-[14px] outline-none"
                 style={{
                   background: "var(--bg-secondary)",
                   color: "var(--text-primary)",
@@ -310,7 +310,7 @@ export default function LoanDetailPage({
               />
               {editNameError && (
                 <p
-                  className="text-[12px]"
+                  className="text-[11px]"
                   style={{ color: "var(--color-negative)" }}
                 >
                   {editNameError}
@@ -321,7 +321,7 @@ export default function LoanDetailPage({
             <div className="flex gap-3">
               <button
                 onClick={() => setIsEditNameOpen(false)}
-                className="flex-1 py-3 rounded-[12px] text-[15px] font-medium"
+                className="flex-1 py-3 rounded-[12px] text-[14px] font-medium"
                 style={{
                   background: "var(--bg-secondary)",
                   color: "var(--text-secondary)",
@@ -332,7 +332,7 @@ export default function LoanDetailPage({
               </button>
               <button
                 onClick={handleRenameSubmit}
-                className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold"
+                className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold"
                 style={{
                   background: "var(--color-primary)",
                   color: "var(--text-on-primary)",

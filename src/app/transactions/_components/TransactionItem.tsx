@@ -73,7 +73,7 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
               style={{ color: "var(--text-primary)" }}
             />
           ) : (
-            <span className="text-[13px] font-bold" style={{ color: amountColor }}>
+            <span className="text-[12px] font-bold" style={{ color: amountColor }}>
               {isIncome ? "+" : "-"}
             </span>
           )}
@@ -83,7 +83,7 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <span
-              className="text-[11px] font-semibold truncate"
+              className="text-[10px] font-semibold truncate"
               style={{ color: "var(--text-primary)" }}
             >
               {isTransfer
@@ -91,7 +91,7 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
                 : (transaction.title ?? transaction.category ?? "-")}
             </span>
             <span
-              className="text-[11px] font-semibold flex-shrink-0 tabular-nums"
+              className="text-[10px] font-semibold flex-shrink-0 tabular-nums"
               style={{ color: amountColor }}
             >
               {amountPrefix}
@@ -117,7 +117,7 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
           {!isTransfer && wallet && (
             <div className="mt-0.5">
               <span
-                className="text-[11px] px-2 py-0.5 rounded-full"
+                className="text-[10px] px-2 py-0.5 rounded-full"
                 style={{
                   background: "var(--color-brand-soft)",
                   color: "var(--color-brand)",

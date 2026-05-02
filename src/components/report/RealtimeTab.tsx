@@ -76,7 +76,7 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
     <div className="space-y-4">
       {/* Period label */}
       <div className="text-center">
-        <span className="text-[13px] font-medium" style={{ color: "var(--text-secondary)" }}>
+        <span className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>
           {formatDateRange(start, end)}
         </span>
       </div>
@@ -101,10 +101,10 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
           {/* Transaction list */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+              <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
                 {listTitle}
               </h2>
-              <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+              <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
                 {tc("items", { count: filteredTransactions.length })}
               </span>
             </div>
@@ -125,18 +125,18 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
                     <div className="flex items-center justify-between px-4 py-3">
                       <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                         <span
-                          className="text-[14px] font-medium truncate"
+                          className="text-[13px] font-medium truncate"
                           style={{ color: "var(--text-primary)" }}
                         >
                           {t.title ?? t.category ?? "Expense"}
                         </span>
-                        <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                        <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
                           {t.category && <span style={{ color: "var(--text-tertiary)" }}>{t.category} · </span>}
                           {formatDisplayDate(t.transaction_date)}
                         </span>
                       </div>
                       <span
-                        className="text-[14px] font-semibold tabular-nums ml-3 flex-shrink-0"
+                        className="text-[13px] font-semibold tabular-nums ml-3 flex-shrink-0"
                         style={{ color: "var(--color-negative)" }}
                       >
                         -{formatIDR(t.amount)}

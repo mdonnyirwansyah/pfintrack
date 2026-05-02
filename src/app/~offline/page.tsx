@@ -9,12 +9,12 @@ export default function OfflinePage() {
           style={{ color: "var(--text-tertiary)" }}
         />
         <h2
-          className="text-[17px] font-bold mb-2"
+          className="text-[16px] font-bold mb-2"
           style={{ color: "var(--text-primary)" }}
         >
           You are offline
         </h2>
-        <p className="text-[15px]" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>
           Please check your internet connection and try again.
         </p>
       </div>

@@ -15,7 +15,7 @@ export function TitleSuggestionChips({ suggestions, onSelect }: TitleChipsProps)
           key={i}
           type="button"
           onClick={() => onSelect(s.title, s.category)}
-          className="px-3 py-1.5 min-h-[44px] rounded-full text-[12px] font-medium active:opacity-70 transition-opacity"
+          className="px-3 py-1.5 min-h-[44px] rounded-full text-[11px] font-medium active:opacity-70 transition-opacity"
           style={{
             background: "var(--color-brand-soft)",
             color: "var(--color-brand)",
@@ -44,7 +44,7 @@ export function CategorySuggestionChips({ suggestions, onSelect }: CategoryChips
           key={i}
           type="button"
           onClick={() => onSelect(cat)}
-          className="px-3 py-1.5 min-h-[44px] rounded-full text-[12px] font-medium active:opacity-70 transition-opacity"
+          className="px-3 py-1.5 min-h-[44px] rounded-full text-[11px] font-medium active:opacity-70 transition-opacity"
           style={{
             background: "var(--color-brand-soft)",
             color: "var(--color-brand)",

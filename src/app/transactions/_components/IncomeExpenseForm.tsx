@@ -118,7 +118,7 @@ export function IncomeExpenseForm({
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-[12px] text-[15px] outline-none transition-colors";
+    "w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors";
   const inputStyle = (hasError?: string) => ({
     background: "var(--bg-secondary)",
     color: "var(--text-primary)",
@@ -131,7 +131,7 @@ export function IncomeExpenseForm({
       {/* Date + Time row */}
       <div className="flex gap-3">
         <div className="flex-1">
-          <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Date
           </label>
           <div className="relative">
@@ -148,14 +148,14 @@ export function IncomeExpenseForm({
             />
           </div>
           {errors.transaction_date && (
-            <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_date}
             </p>
           )}
         </div>
 
         <div className="flex-1">
-          <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Time
           </label>
           <div className="relative">
@@ -172,7 +172,7 @@ export function IncomeExpenseForm({
             />
           </div>
           {errors.transaction_time && (
-            <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_time}
             </p>
           )}
@@ -181,7 +181,7 @@ export function IncomeExpenseForm({
 
       {/* Wallet selector */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Wallet
         </label>
         <button
@@ -199,12 +199,12 @@ export function IncomeExpenseForm({
           <WalletIcon className="w-4 h-4" style={{ color: "var(--text-tertiary)" }} />
         </button>
         {selectedWallet && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
             Balance: {formatIDR(selectedWallet.balance)}
           </p>
         )}
         {errors.wallet_id && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.wallet_id}
           </p>
         )}
@@ -212,7 +212,7 @@ export function IncomeExpenseForm({
 
       {/* Amount */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Amount
         </label>
         <div className="relative">
@@ -233,13 +233,13 @@ export function IncomeExpenseForm({
         {insufficientBalance && !errors.amount && (
           <div className="flex items-center gap-1.5 mt-1">
             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--color-accent-warm)" }} />
-            <p className="text-[12px]" style={{ color: "var(--color-accent-warm)" }}>
+            <p className="text-[11px]" style={{ color: "var(--color-accent-warm)" }}>
               Insufficient wallet balance
             </p>
           </div>
         )}
         {errors.amount && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.amount}
           </p>
         )}
@@ -247,7 +247,7 @@ export function IncomeExpenseForm({
 
       {/* Title */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Title
         </label>
         <input
@@ -267,7 +267,7 @@ export function IncomeExpenseForm({
           }}
         />
         {errors.title && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.title}
           </p>
         )}
@@ -275,7 +275,7 @@ export function IncomeExpenseForm({
 
       {/* Category */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Category
         </label>
         <input
@@ -295,7 +295,7 @@ export function IncomeExpenseForm({
           }}
         />
         {errors.category && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.category}
           </p>
         )}
@@ -303,7 +303,7 @@ export function IncomeExpenseForm({
 
       {/* Description */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Description (optional)
         </label>
         <textarea
@@ -312,7 +312,7 @@ export function IncomeExpenseForm({
           onChange={(e) => set("description", e.target.value)}
           maxLength={255}
           rows={3}
-          className="w-full px-4 py-3 rounded-[12px] text-[15px] outline-none transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors resize-none"
           style={{
             background: "var(--bg-secondary)",
             color: "var(--text-primary)",
@@ -320,7 +320,7 @@ export function IncomeExpenseForm({
           }}
         />
         {errors.description && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.description}
           </p>
         )}
@@ -334,7 +334,7 @@ export function IncomeExpenseForm({
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity"
+          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity"
           style={{
             background: "var(--bg-secondary)",
             color: "var(--text-secondary)",
@@ -346,7 +346,7 @@ export function IncomeExpenseForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
+          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
           style={{
             background: "var(--color-brand)",
             color: "var(--text-on-primary)",

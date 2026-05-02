@@ -29,13 +29,13 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
       {/* Income */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
-          className="text-[11px] font-medium mb-1"
+          className="text-[10px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("income")}
         </span>
         <span
-          className="text-[14px] font-semibold tabular-nums"
+          className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-positive)" }}
         >
           {incomePrefix}{formatIDR(income)}
@@ -48,13 +48,13 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
       {/* Expenses */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
-          className="text-[11px] font-medium mb-1"
+          className="text-[10px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("expenses")}
         </span>
         <span
-          className="text-[14px] font-semibold tabular-nums"
+          className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
         >
           {formatIDR(expenses)}
@@ -67,13 +67,13 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
       {/* Balance */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
-          className="text-[11px] font-medium mb-1"
+          className="text-[10px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("balance")}
         </span>
         <span
-          className="text-[14px] font-semibold tabular-nums"
+          className="text-[13px] font-semibold tabular-nums"
           style={{ color: balanceColor }}
         >
           {balancePrefix}{formatIDR(Math.abs(balance))}

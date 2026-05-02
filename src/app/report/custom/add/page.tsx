@@ -111,7 +111,7 @@ export default function AddCustomReportPage() {
         {/* Report Name */}
         <div className="space-y-1.5">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
             htmlFor="report-name"
           >
@@ -127,7 +127,7 @@ export default function AddCustomReportPage() {
               if (errors.name) setErrors((p) => ({ ...p, name: undefined }));
             }}
             placeholder={t("reportNamePlaceholder")}
-            className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border"
+            className="w-full rounded-[12px] px-4 text-[14px] outline-none transition-all border"
             style={{
               minHeight: "var(--tap-target-min)",
               background: "var(--bg-secondary)",
@@ -141,7 +141,7 @@ export default function AddCustomReportPage() {
           />
           {errors.name && (
             <p
-              className="text-[12px]"
+              className="text-[11px]"
               style={{ color: "var(--color-negative)" }}
             >
               {errors.name}
@@ -152,7 +152,7 @@ export default function AddCustomReportPage() {
         {/* Start Date */}
         <div className="space-y-1.5">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
             htmlFor="start-date"
           >
@@ -167,7 +167,7 @@ export default function AddCustomReportPage() {
               if (errors.start_date)
                 setErrors((p) => ({ ...p, start_date: undefined }));
             }}
-            className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border appearance-none"
+            className="w-full rounded-[12px] px-4 text-[14px] outline-none transition-all border appearance-none"
             style={{
               minHeight: "var(--tap-target-min)",
               background: "var(--bg-secondary)",
@@ -179,7 +179,7 @@ export default function AddCustomReportPage() {
           />
           {startDate && (
             <p
-              className="text-[12px]"
+              className="text-[11px]"
               style={{ color: "var(--text-tertiary)" }}
             >
               {formatDisplayDate(startDate)}
@@ -187,7 +187,7 @@ export default function AddCustomReportPage() {
           )}
           {errors.start_date && (
             <p
-              className="text-[12px]"
+              className="text-[11px]"
               style={{ color: "var(--color-negative)" }}
             >
               {errors.start_date}
@@ -198,7 +198,7 @@ export default function AddCustomReportPage() {
         {/* End Date */}
         <div className="space-y-1.5">
           <label
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
             htmlFor="end-date"
           >
@@ -213,7 +213,7 @@ export default function AddCustomReportPage() {
               if (errors.end_date)
                 setErrors((p) => ({ ...p, end_date: undefined }));
             }}
-            className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border appearance-none"
+            className="w-full rounded-[12px] px-4 text-[14px] outline-none transition-all border appearance-none"
             style={{
               minHeight: "var(--tap-target-min)",
               background: "var(--bg-secondary)",
@@ -225,7 +225,7 @@ export default function AddCustomReportPage() {
           />
           {endDate && (
             <p
-              className="text-[12px]"
+              className="text-[11px]"
               style={{ color: "var(--text-tertiary)" }}
             >
               {formatDisplayDate(endDate)}
@@ -233,7 +233,7 @@ export default function AddCustomReportPage() {
           )}
           {errors.end_date && (
             <p
-              className="text-[12px]"
+              className="text-[11px]"
               style={{ color: "var(--color-negative)" }}
             >
               {errors.end_date}
@@ -246,7 +246,7 @@ export default function AddCustomReportPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-[12px] px-8 text-[15px] font-semibold transition-opacity disabled:opacity-60"
+            className="rounded-[12px] px-8 text-[14px] font-semibold transition-opacity disabled:opacity-60"
             style={{
               minHeight: "var(--tap-target-min)",
               backgroundColor: "var(--color-brand)",

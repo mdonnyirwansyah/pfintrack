@@ -115,7 +115,7 @@ export function TransferForm({
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-[12px] text-[15px] outline-none transition-colors";
+    "w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors";
   const inputStyle = (hasError?: string) => ({
     background: "var(--bg-secondary)",
     color: "var(--text-primary)",
@@ -128,7 +128,7 @@ export function TransferForm({
       {/* Date + Time row */}
       <div className="flex gap-3">
         <div className="flex-1">
-          <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Date
           </label>
           <div className="relative">
@@ -145,14 +145,14 @@ export function TransferForm({
             />
           </div>
           {errors.transaction_date && (
-            <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_date}
             </p>
           )}
         </div>
 
         <div className="flex-1">
-          <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Time
           </label>
           <div className="relative">
@@ -169,7 +169,7 @@ export function TransferForm({
             />
           </div>
           {errors.transaction_time && (
-            <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_time}
             </p>
           )}
@@ -178,7 +178,7 @@ export function TransferForm({
 
       {/* Source Wallet */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           From Wallet
         </label>
         <button
@@ -194,13 +194,13 @@ export function TransferForm({
             {sourceWallet ? sourceWallet.name : "Select source wallet"}
           </span>
           {sourceWallet && (
-            <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
               {formatIDR(sourceWallet.balance)}
             </span>
           )}
         </button>
         {errors.source_wallet_id && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.source_wallet_id}
           </p>
         )}
@@ -208,7 +208,7 @@ export function TransferForm({
 
       {/* Destination Wallet */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           To Wallet
         </label>
         <button
@@ -224,13 +224,13 @@ export function TransferForm({
             {destWallet ? destWallet.name : "Select destination wallet"}
           </span>
           {destWallet && (
-            <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
               {formatIDR(destWallet.balance)}
             </span>
           )}
         </button>
         {errors.destination_wallet_id && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.destination_wallet_id}
           </p>
         )}
@@ -238,7 +238,7 @@ export function TransferForm({
 
       {/* Amount */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Amount
         </label>
         <div className="relative">
@@ -257,7 +257,7 @@ export function TransferForm({
           />
         </div>
         {errors.amount && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.amount}
           </p>
         )}
@@ -265,7 +265,7 @@ export function TransferForm({
 
       {/* Description */}
       <div>
-        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Description (optional)
         </label>
         <textarea
@@ -274,7 +274,7 @@ export function TransferForm({
           onChange={(e) => set("description", e.target.value)}
           maxLength={255}
           rows={3}
-          className="w-full px-4 py-3 rounded-[12px] text-[15px] outline-none transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors resize-none"
           style={{
             background: "var(--bg-secondary)",
             color: "var(--text-primary)",
@@ -282,7 +282,7 @@ export function TransferForm({
           }}
         />
         {errors.description && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.description}
           </p>
         )}
@@ -296,7 +296,7 @@ export function TransferForm({
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity"
+          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity"
           style={{
             background: "var(--bg-secondary)",
             color: "var(--text-secondary)",
@@ -308,7 +308,7 @@ export function TransferForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
+          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
           style={{
             background: "var(--color-brand)",
             color: "var(--text-on-primary)",

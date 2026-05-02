@@ -38,7 +38,7 @@ export function WalletPicker({
           style={{ borderColor: "var(--border-default)" }}
         >
           <DrawerTitle
-            className="text-[17px] font-semibold text-left"
+            className="text-[16px] font-semibold text-left"
             style={{ color: "var(--text-primary)" }}
           >
             {t("title")}
@@ -47,7 +47,7 @@ export function WalletPicker({
 
         <div className="p-4 pb-8" style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}>
           {activeWallets.length === 0 ? (
-            <p className="text-center text-[15px] py-8" style={{ color: "var(--text-tertiary)" }}>
+            <p className="text-center text-[14px] py-8" style={{ color: "var(--text-tertiary)" }}>
               {t("noWallets")}
             </p>
           ) : (
@@ -71,7 +71,7 @@ export function WalletPicker({
                     }}
                   >
                     <span
-                      className="text-[13px] font-medium text-center leading-tight"
+                      className="text-[12px] font-medium text-center leading-tight"
                       style={{
                         color: isSelected
                           ? "var(--color-brand)"

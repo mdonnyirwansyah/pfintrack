@@ -141,7 +141,7 @@ export function WalletForm({
       <div className="flex flex-col gap-1">
         <label
           htmlFor="wallet-name"
-          className="text-[13px] font-medium"
+          className="text-[12px] font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("form.name")}
@@ -156,7 +156,7 @@ export function WalletForm({
           maxLength={50}
           autoComplete="off"
           className={cn(
-            "w-full px-4 rounded-[12px] text-[15px] outline-none transition-colors",
+            "w-full px-4 rounded-[12px] text-[14px] outline-none transition-colors",
             "border",
             errors.name
               ? "border-[var(--color-negative)]"
@@ -173,7 +173,7 @@ export function WalletForm({
         {errors.name && (
           <p
             id="wallet-name-error"
-            className="text-[12px]"
+            className="text-[11px]"
             style={{ color: "var(--color-negative)" }}
             role="alert"
           >
@@ -186,7 +186,7 @@ export function WalletForm({
       <div className="flex flex-col gap-1">
         <label
           htmlFor="wallet-type"
-          className="text-[13px] font-medium"
+          className="text-[12px] font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("form.type")}
@@ -196,7 +196,7 @@ export function WalletForm({
           value={walletType}
           onChange={(e) => setWalletType(e.target.value as WalletType)}
           className={cn(
-            "w-full px-4 rounded-[12px] text-[15px] outline-none transition-colors appearance-none",
+            "w-full px-4 rounded-[12px] text-[14px] outline-none transition-colors appearance-none",
             "border border-[var(--border-default)] focus:border-[var(--color-brand)]"
           )}
           style={{
@@ -217,7 +217,7 @@ export function WalletForm({
       <div className="flex flex-col gap-1">
         <label
           htmlFor="wallet-balance"
-          className="text-[13px] font-medium"
+          className="text-[12px] font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
           {isAddMode ? t("form.initialBalance") : t("form.balance")}
@@ -233,7 +233,7 @@ export function WalletForm({
             onBlur={handleBalanceBlur}
             placeholder={t("form.balancePlaceholder")}
             className={cn(
-              "w-full px-4 pr-12 rounded-[12px] text-[15px] outline-none transition-colors",
+              "w-full px-4 pr-12 rounded-[12px] text-[14px] outline-none transition-colors",
               "border",
               errors.balance
                 ? "border-[var(--color-negative)]"
@@ -258,7 +258,7 @@ export function WalletForm({
         {errors.balance && (
           <p
             id="wallet-balance-error"
-            className="text-[12px]"
+            className="text-[11px]"
             style={{ color: "var(--color-negative)" }}
             role="alert"
           >
@@ -272,7 +272,7 @@ export function WalletForm({
         type="submit"
         disabled={isSubmitting}
         className={cn(
-          "w-full rounded-[12px] text-[15px] font-semibold transition-all active:scale-[0.98]",
+          "w-full rounded-[12px] text-[14px] font-semibold transition-all active:scale-[0.98]",
           "flex items-center justify-center gap-2",
           isSubmitting && "opacity-70 cursor-not-allowed"
         )}

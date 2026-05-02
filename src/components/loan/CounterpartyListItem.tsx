@@ -55,7 +55,7 @@ export function CounterpartyListItem({
       {/* Name + subtitle */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-[11px] font-semibold truncate"
+          className="text-[10px] font-semibold truncate"
           style={{ color: "var(--text-primary)" }}
         >
           {counterparty.name}
@@ -79,14 +79,14 @@ export function CounterpartyListItem({
           </span>
         ) : outstanding > 0 ? (
           <span
-            className="text-[11px] font-semibold tabular-nums"
+            className="text-[10px] font-semibold tabular-nums"
             style={{ color: "var(--color-positive)" }}
           >
             {formatIDR(outstanding)}
           </span>
         ) : (
           <span
-            className="text-[11px] font-semibold tabular-nums"
+            className="text-[10px] font-semibold tabular-nums"
             style={{ color: "var(--color-negative)" }}
           >
             {formatIDR(Math.abs(outstanding))}

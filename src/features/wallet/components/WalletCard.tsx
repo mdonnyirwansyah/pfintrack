@@ -47,7 +47,7 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
       {/* Name + type */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-[11px] font-semibold truncate"
+          className="text-[10px] font-semibold truncate"
           style={{ color: "var(--text-primary)" }}
         >
           {wallet.name}
@@ -60,7 +60,7 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
       {/* Balance + chevron */}
       <div className="flex-shrink-0 flex items-center gap-2">
         <span
-          className="text-[11px] font-semibold tabular-nums"
+          className="text-[10px] font-semibold tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
           {formatIDR(wallet.balance)}

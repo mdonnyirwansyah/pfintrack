@@ -232,7 +232,7 @@ function TransactionsContent() {
             <div className="relative">
               <button
                 onClick={() => setIsSortOpen((v) => !v)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all active:scale-[0.96]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
                 style={{
                   background: sortKey !== "datetime_desc" ? "var(--color-brand)" : "var(--bg-secondary)",
                   color: sortKey !== "datetime_desc" ? "var(--text-on-primary)" : "var(--text-secondary)",
@@ -266,7 +266,7 @@ function TransactionsContent() {
                           setSortKey(opt.key);
                           setIsSortOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2.5 text-[13px] font-medium transition-colors"
+                        className="w-full text-left px-4 py-2.5 text-[12px] font-medium transition-colors"
                         style={{
                           color: sortKey === opt.key ? "var(--color-brand)" : "var(--text-primary)",
                           background: sortKey === opt.key ? "var(--color-brand-soft)" : "transparent",

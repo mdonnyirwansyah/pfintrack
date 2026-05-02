@@ -70,14 +70,14 @@ export default function EditWalletPage({
         <AppHeader title={t("editTitle")} showBack />
         <div className="px-4 py-8 flex flex-col items-center justify-center gap-2">
           <p
-            className="text-[15px] font-semibold"
+            className="text-[14px] font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
             {t("notFound")}
           </p>
           <button
             onClick={() => router.push("/wallet")}
-            className="text-[15px] font-medium mt-2"
+            className="text-[14px] font-medium mt-2"
             style={{ color: "var(--color-brand)" }}
           >
             {t("backToList")}
@@ -112,13 +112,13 @@ export default function EditWalletPage({
           style={{}}
         >
           <span
-            className="text-[13px] font-medium"
+            className="text-[12px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("currentBalance")}
           </span>
           <span
-            className="text-[17px] font-semibold tabular-nums"
+            className="text-[16px] font-semibold tabular-nums"
             style={{ color: "var(--text-primary)" }}
           >
             {formatIDR(wallet.balance)}
@@ -140,7 +140,7 @@ export default function EditWalletPage({
               type="button"
               onClick={() => setIsDeleteDialogOpen(true)}
               className={cn(
-                "w-full rounded-[12px] text-[15px] font-semibold transition-all active:scale-[0.98]",
+                "w-full rounded-[12px] text-[14px] font-semibold transition-all active:scale-[0.98]",
                 "flex items-center justify-center gap-2 border"
               )}
               style={{

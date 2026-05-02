@@ -36,7 +36,7 @@ export default function WalletPage() {
           style={{}}
         >
           <span
-            className="text-[11px] font-medium"
+            className="text-[10px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
             {t("totalBalance")}
@@ -45,7 +45,7 @@ export default function WalletPage() {
             <Skeleton className="h-5 w-28 rounded-lg" />
           ) : (
             <span
-              className="text-[14px] font-semibold tabular-nums"
+              className="text-[13px] font-semibold tabular-nums"
               style={{ color: "var(--text-primary)" }}
             >
               {formatIDR(totalBalance)}

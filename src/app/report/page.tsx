@@ -68,7 +68,7 @@ export default function ReportPage() {
             <button
               key={id}
               className={cn(
-                "flex-1 rounded-full text-[13px] font-semibold transition-all",
+                "flex-1 rounded-full text-[12px] font-semibold transition-all",
                 "flex items-center justify-center"
               )}
               style={{
