@@ -27,13 +27,13 @@ export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
       {/* Date + note */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-[14px] font-medium truncate"
+          className="text-[11px] font-medium truncate"
           style={{ color: "var(--text-primary)" }}
         >
           {formatDisplayDate(entry.transaction_date)}
         </p>
         <p
-          className="text-[13px] truncate mt-0.5"
+          className="text-[9px] truncate mt-0.5"
           style={{ color: "var(--text-secondary)" }}
         >
           {subtitle}
@@ -43,7 +43,7 @@ export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
       {/* Amount */}
       <div className="flex items-center gap-1 shrink-0">
         <span
-          className="text-[15px] font-semibold"
+          className="text-[11px] font-semibold tabular-nums"
           style={{
             color: isGet ? "var(--color-positive)" : "var(--text-primary)",
           }}

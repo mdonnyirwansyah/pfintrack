@@ -102,6 +102,13 @@
     "noHistoryDesc": "Add your first transaction using the + button.",
     "notFound": "Transaction not found",
     "notFoundDesc": "This transaction may have been deleted.",
+    "sort": {
+      "label": "Sort",
+      "datetime_desc": "Newest",
+      "datetime_asc": "Oldest",
+      "amount_desc": "Highest",
+      "amount_asc": "Lowest"
+    },
     "summary": {
       "income": "Income",
       "expenses": "Expenses",

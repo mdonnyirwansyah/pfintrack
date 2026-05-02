@@ -28,7 +28,7 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
     ? "var(--color-positive)"
     : isExpense
     ? "var(--color-negative)"
-    : "var(--text-secondary)";
+    : "var(--text-primary)";
 
   const amountPrefix = isIncome ? "+ " : isExpense ? "- " : "";
 
@@ -47,12 +47,13 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
             : isExpense
             ? "var(--color-negative-soft)"
             : "var(--bg-secondary)",
+          border: isTransfer ? "1px solid var(--border-default)" : "none",
         }}
       >
         {isTransfer ? (
           <ArrowRightLeft
-            className="w-5 h-5"
-            style={{ color: "var(--text-secondary)" }}
+            className="w-4 h-4"
+            style={{ color: "var(--text-primary)" }}
           />
         ) : (
           <span className="text-[13px] font-bold" style={{ color: amountColor }}>
@@ -65,7 +66,7 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <span
-            className="text-[15px] font-semibold truncate"
+            className="text-[11px] font-semibold truncate"
             style={{ color: "var(--text-primary)" }}
           >
             {isTransfer
@@ -73,7 +74,7 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
               : (transaction.title ?? transaction.category ?? "-")}
           </span>
           <span
-            className="text-[15px] font-semibold flex-shrink-0"
+            className="text-[11px] font-semibold flex-shrink-0 tabular-nums"
             style={{ color: amountColor }}
           >
             {amountPrefix}
@@ -82,7 +83,7 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
         </div>
         <div className="flex items-center justify-between gap-2 mt-0.5">
           <span
-            className="text-[13px] truncate"
+            className="text-[9px] truncate"
             style={{ color: "var(--text-secondary)" }}
           >
             {isTransfer
@@ -90,7 +91,7 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
               : transaction.category ?? ""}
           </span>
           <span
-            className="text-[12px] flex-shrink-0"
+            className="text-[8px] flex-shrink-0"
             style={{ color: "var(--text-tertiary)" }}
           >
             {transaction.transaction_time}

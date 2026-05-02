@@ -102,6 +102,13 @@
     "noHistoryDesc": "Tambah transaksi pertama Anda menggunakan tombol +.",
     "notFound": "Transaksi tidak ditemukan",
     "notFoundDesc": "Transaksi ini mungkin telah dihapus.",
+    "sort": {
+      "label": "Urutkan",
+      "datetime_desc": "Terbaru",
+      "datetime_asc": "Terlama",
+      "amount_desc": "Tertinggi",
+      "amount_asc": "Terendah"
+    },
     "summary": {
       "income": "Pemasukan",
       "expenses": "Pengeluaran",

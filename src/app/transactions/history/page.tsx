@@ -135,7 +135,7 @@ export default function TransactionHistoryPage() {
               {/* Date header */}
               <div className="flex items-center gap-3 mb-2">
                 <span
-                  className="text-[13px] font-semibold"
+                  className="text-[11px] font-semibold"
                   style={{ color: "var(--text-secondary)" }}
                 >
                   {formatDisplayDate(date)}
@@ -145,7 +145,7 @@ export default function TransactionHistoryPage() {
                   style={{ background: "var(--divider)" }}
                 />
                 <span
-                  className="text-[12px]"
+                  className="text-[9px]"
                   style={{ color: "var(--text-tertiary)" }}
                 >
                   {tc("items", { count: txns.length })}

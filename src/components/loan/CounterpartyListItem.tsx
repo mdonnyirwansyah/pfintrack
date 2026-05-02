@@ -55,13 +55,13 @@ export function CounterpartyListItem({
       {/* Name + subtitle */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-[15px] font-semibold truncate"
+          className="text-[11px] font-semibold truncate"
           style={{ color: "var(--text-primary)" }}
         >
           {counterparty.name}
         </p>
         <p
-          className="text-[13px] truncate mt-0.5"
+          className="text-[9px] truncate mt-0.5"
           style={{ color: "var(--text-secondary)" }}
         >
           {subtitle}
@@ -72,21 +72,21 @@ export function CounterpartyListItem({
       <div className="flex items-center gap-1 shrink-0">
         {isPaidOff ? (
           <span
-            className="text-[13px] font-medium"
+            className="text-[9px] font-medium"
             style={{ color: "var(--color-positive)" }}
           >
             {t("paidOff")}
           </span>
         ) : outstanding > 0 ? (
           <span
-            className="text-[15px] font-semibold"
+            className="text-[11px] font-semibold tabular-nums"
             style={{ color: "var(--color-positive)" }}
           >
             {formatIDR(outstanding)}
           </span>
         ) : (
           <span
-            className="text-[15px] font-semibold"
+            className="text-[11px] font-semibold tabular-nums"
             style={{ color: "var(--color-negative)" }}
           >
             {formatIDR(Math.abs(outstanding))}
