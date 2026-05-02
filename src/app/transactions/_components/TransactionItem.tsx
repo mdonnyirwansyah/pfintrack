@@ -108,7 +108,7 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
                 : transaction.category ?? ""}
             </span>
             <span
-              className="text-[8px] flex-shrink-0"
+              className="text-[9px] flex-shrink-0"
               style={{ color: "var(--text-tertiary)" }}
             >
               {transaction.transaction_time}

@@ -58,7 +58,7 @@ export function BottomNav() {
                 }}
               />
               <span
-                className="text-[10px] font-medium leading-none"
+                className="text-[9px] font-medium leading-none"
                 style={{
                   color: isActive
                     ? "var(--nav-active)"

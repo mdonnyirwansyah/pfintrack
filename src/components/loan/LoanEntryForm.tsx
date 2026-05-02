@@ -403,7 +403,7 @@ export function LoanEntryForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center py-3.5 rounded-[14px] font-semibold text-[16px] transition-all active:scale-[0.98] disabled:opacity-60"
+            className="w-full flex items-center justify-center py-3.5 rounded-[14px] font-semibold text-[15px] transition-all active:scale-[0.98] disabled:opacity-60"
             style={{
               background: "var(--color-brand)",
               color: "var(--text-on-primary)",

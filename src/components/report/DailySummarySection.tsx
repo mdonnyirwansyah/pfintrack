@@ -157,7 +157,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
             {WEEKDAYS.map((d) => (
               <div
                 key={d}
-                className="text-center text-[10px] font-medium py-0.5"
+                className="text-center text-[9px] font-medium py-0.5"
                 style={{ color: "var(--text-tertiary)" }}
               >
                 {d}
@@ -220,11 +220,11 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
           <div className="flex items-center justify-center gap-4 mt-3 pt-2" style={{ borderTop: "1px solid var(--divider)" }}>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-2 rounded-full" style={{ backgroundColor: "var(--color-positive)" }} />
-              <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>{t("summary.income")}</span>
+              <span className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>{t("summary.income")}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-2 rounded-full" style={{ backgroundColor: "var(--color-negative)" }} />
-              <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>{t("summary.expenses")}</span>
+              <span className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>{t("summary.expenses")}</span>
             </div>
           </div>
         </div>

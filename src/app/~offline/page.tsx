@@ -9,7 +9,7 @@ export default function OfflinePage() {
           style={{ color: "var(--text-tertiary)" }}
         />
         <h2
-          className="text-[22px] font-bold mb-2"
+          className="text-[17px] font-bold mb-2"
           style={{ color: "var(--text-primary)" }}
         >
           You are offline
