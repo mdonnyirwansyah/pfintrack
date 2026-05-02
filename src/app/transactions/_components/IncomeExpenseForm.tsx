@@ -129,9 +129,9 @@ export function IncomeExpenseForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
       {/* Date & Time Row */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="flex gap-2">
         {/* Date */}
-        <div>
+        <div className="flex-[3] min-w-0">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Date
           </label>
@@ -139,7 +139,7 @@ export function IncomeExpenseForm({
             type="date"
             value={form.transaction_date}
             onChange={(e) => set("transaction_date", e.target.value)}
-            className={`${inputClass} !px-2.5 sm:!px-4`}
+            className={`${inputClass} !px-2 !text-[13px] sm:!px-4 sm:!text-[14px] min-w-0`}
             style={inputStyle(errors.transaction_date)}
           />
           {errors.transaction_date && (
@@ -150,7 +150,7 @@ export function IncomeExpenseForm({
         </div>
 
         {/* Time */}
-        <div>
+        <div className="flex-[2] min-w-0">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Time
           </label>
@@ -158,7 +158,7 @@ export function IncomeExpenseForm({
             type="time"
             value={form.transaction_time}
             onChange={(e) => set("transaction_time", e.target.value)}
-            className={`${inputClass} !px-2.5 sm:!px-4`}
+            className={`${inputClass} !px-2 !text-[13px] sm:!px-4 sm:!text-[14px] min-w-0`}
             style={inputStyle(errors.transaction_time)}
           />
           {errors.transaction_time && (
