@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Calculator, CalendarDays, Clock } from "lucide-react";
+import { Calculator } from "lucide-react";
 import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
@@ -125,25 +125,19 @@ export function TransferForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
-      {/* Date + Time row — stacks vertically on narrow screens, side-by-side on ≥430px */}
-      <div className="flex flex-col gap-3 min-[430px]:flex-row">
+      {/* Date + Time row */}
+      <div className="flex gap-2">
         <div className="flex-1">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Date
           </label>
-          <div className="relative">
-            <input
-              type="date"
-              value={form.transaction_date}
-              onChange={(e) => set("transaction_date", e.target.value)}
-              className={inputClass}
-              style={inputStyle(errors.transaction_date)}
-            />
-            <CalendarDays
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-              style={{ color: "var(--text-tertiary)" }}
-            />
-          </div>
+          <input
+            type="date"
+            value={form.transaction_date}
+            onChange={(e) => set("transaction_date", e.target.value)}
+            className="w-full px-3 py-3 rounded-[12px] text-[14px] outline-none transition-colors"
+            style={inputStyle(errors.transaction_date)}
+          />
           {errors.transaction_date && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_date}
@@ -155,19 +149,13 @@ export function TransferForm({
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Time
           </label>
-          <div className="relative">
-            <input
-              type="time"
-              value={form.transaction_time}
-              onChange={(e) => set("transaction_time", e.target.value)}
-              className={inputClass}
-              style={inputStyle(errors.transaction_time)}
-            />
-            <Clock
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-              style={{ color: "var(--text-tertiary)" }}
-            />
-          </div>
+          <input
+            type="time"
+            value={form.transaction_time}
+            onChange={(e) => set("transaction_time", e.target.value)}
+            className="w-full px-3 py-3 rounded-[12px] text-[14px] outline-none transition-colors"
+            style={inputStyle(errors.transaction_time)}
+          />
           {errors.transaction_time && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
               {errors.transaction_time}
