@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { format, addDays, subDays, parseISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Download,
@@ -23,6 +24,7 @@ import { transactionsRepo } from "@/lib/storage/transactions";
 import { getOrCreateAnonId } from "@/lib/storage/anon-id";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSwipe } from "@/hooks/useSwipe";
 
 function TransactionsContent() {
   const router = useRouter();
@@ -63,6 +65,11 @@ function TransactionsContent() {
     }
     if (sortKey === "amount_desc") return b.amount - a.amount;
     return a.amount - b.amount; // amount_asc
+  });
+
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: () => handleDateChange(format(addDays(parseISO(activeDate), 1), "yyyy-MM-dd")),
+    onSwipeRight: () => handleDateChange(format(subDays(parseISO(activeDate), 1), "yyyy-MM-dd")),
   });
 
   const SORT_OPTIONS = [
@@ -166,7 +173,7 @@ function TransactionsContent() {
         }
       />
 
-      <div className="pt-2">
+      <div className="pt-2" {...swipeHandlers}>
         {/* Date navigator */}
         <DateNavigator activeDate={activeDate} onDateChange={handleDateChange} />
 
