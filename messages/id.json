@@ -247,6 +247,10 @@
       "noExpenses": "Tidak ada pengeluaran bulan ini",
       "noExpensesDesc": "Transaksi yang ditandai sebagai pengeluaran akan muncul di sini."
     },
+    "daily": {
+      "title": "Ringkasan Harian",
+      "noData": "Tidak ada transaksi masuk atau keluar pada periode ini."
+    },
     "monthly": {
       "noTransactions": "Belum ada transaksi",
       "noTransactionsDesc": "Tambah transaksi pertama Anda untuk melihat laporan bulanan."

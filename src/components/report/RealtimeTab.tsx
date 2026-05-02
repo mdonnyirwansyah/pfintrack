@@ -10,6 +10,7 @@ import {
   getTransactionsForCategory,
 } from "@/lib/report/calculations";
 import { DonutChart } from "./DonutChart";
+import { DailySummarySection } from "./DailySummarySection";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -93,6 +94,9 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
             onCategorySelect={handleCategorySelect}
             selectedCategory={selectedCategory}
           />
+
+          {/* Daily summary (list/calendar toggle) */}
+          <DailySummarySection transactions={transactions} start={start} end={end} />
 
           {/* Transaction list */}
           <div className="space-y-2">

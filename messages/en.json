@@ -247,6 +247,10 @@
       "noExpenses": "No expenses this month",
       "noExpensesDesc": "Transactions you mark as expense will appear here."
     },
+    "daily": {
+      "title": "Daily Summary",
+      "noData": "No income or expense transactions this period."
+    },
     "monthly": {
       "noTransactions": "No transactions yet",
       "noTransactionsDesc": "Add your first transaction to see monthly reports."
