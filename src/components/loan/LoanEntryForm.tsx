@@ -310,20 +310,27 @@ export function LoanEntryForm({
             </span>
             <div className="flex items-center gap-2">
               {selectedWallet && (
-                <button
-                  type="button"
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
                     set("wallet_id", null);
                   }}
-                  className="text-[12px] px-2 py-0.5 rounded-full"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.stopPropagation();
+                      set("wallet_id", null);
+                    }
+                  }}
+                  className="text-[12px] px-2 py-0.5 rounded-full cursor-pointer"
                   style={{
                     color: "var(--text-tertiary)",
                     background: "var(--bg-secondary)",
                   }}
                 >
                   Clear
-                </button>
+                </span>
               )}
               <ChevronDown
                 className="w-4 h-4"

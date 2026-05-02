@@ -48,8 +48,8 @@ export default function LoanPage() {
       const outstanding = totalGive - totalGet;
       const isPaidOff = cp.manual_paid_off || outstanding === 0;
       if (!isPaidOff) {
-        if (outstanding > 0) get += outstanding;
-        else give += Math.abs(outstanding);
+        if (outstanding > 0) give += outstanding;
+        else get += Math.abs(outstanding);
       }
     }
     return { summaryGet: get, summaryGive: give };

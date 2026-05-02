@@ -9,6 +9,7 @@ import { useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
+import { useMounted } from "@/hooks/useMounted";
 import { Users } from "lucide-react";
 
 // [14] Edit Loan Entry
@@ -19,6 +20,7 @@ export default function EditLoanEntryPage({
 }) {
   const { counterpartyId, entryId } = use(params);
   const router = useRouter();
+  const mounted = useMounted();
 
   const { wallets, loadWallets } = useWalletStore();
   const { updateEntry, deleteEntry } = useLoanEntryStore();
@@ -29,7 +31,26 @@ export default function EditLoanEntryPage({
     loadWallets();
   }, [loadWallets]);
 
+  // Render title yang konsisten saat SSR (sebelum mount, localStorage belum tersedia)
+  if (!mounted) {
+    return (
+      <>
+        <AppHeader title="Edit Entry" showBack />
+        <div className="px-4 py-8 space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-12 rounded-[12px] animate-pulse"
+              style={{ background: "var(--bg-card)" }}
+            />
+          ))}
+        </div>
+      </>
+    );
+  }
+
   // Load entry and counterparty directly from storage (source of truth)
+  // Hanya dijalankan setelah mounted (client-side) untuk menghindari hydration mismatch
   const entry = loanEntriesRepo.getById(entryId);
   const counterparty = loanCounterpartiesRepo.getById(counterpartyId);
 

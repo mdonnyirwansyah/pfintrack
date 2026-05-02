@@ -9,13 +9,22 @@ interface LoanDetailSummaryBarProps {
 }
 
 /**
- * 3-column summary bar shown in the Loan Detail page.
+ * 3-column summary bar untuk halaman detail Loan per counterparty.
+ * - Give: uang yang Anda keluarkan — tampil tanpa tanda
+ * - Get:  uang yang akan kembali ke Anda — tampil dengan "+" jika > 0
+ * - Balance: outstanding (Give − Get), tanpa tanda jika 0
  */
 export function LoanDetailSummaryBar({
   totalGet,
   totalGive,
   outstanding,
 }: LoanDetailSummaryBarProps) {
+  const getPrefix = totalGet > 0 ? "+ " : "";
+  // outstanding < 0 berarti Get > Give (kelebihan bayar) → tampilkan "+ Rp X"
+  // outstanding > 0 berarti masih ada piutang → tanpa tanda
+  const balancePrefix = outstanding < 0 ? "+ " : "";
+  const balanceDisplay = Math.abs(outstanding);
+
   return (
     <div
       className="flex rounded-[16px] overflow-hidden mb-4"
@@ -34,10 +43,10 @@ export function LoanDetailSummaryBar({
           Get
         </span>
         <span
-          className="text-[13px] font-semibold"
+          className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-accent-warm)" }}
         >
-          + {formatIDR(totalGet)}
+          {getPrefix}{formatIDR(totalGet)}
         </span>
       </div>
 
@@ -56,7 +65,7 @@ export function LoanDetailSummaryBar({
           Give
         </span>
         <span
-          className="text-[13px] font-semibold"
+          className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
         >
           {formatIDR(totalGive)}
@@ -69,7 +78,7 @@ export function LoanDetailSummaryBar({
         style={{ background: "var(--divider)" }}
       />
 
-      {/* Outstanding / Selisih column */}
+      {/* Balance column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
@@ -78,10 +87,10 @@ export function LoanDetailSummaryBar({
           Balance
         </span>
         <span
-          className="text-[13px] font-semibold"
+          className="text-[13px] font-semibold tabular-nums"
           style={{ color: "#E91E8C" }}
         >
-          {formatIDR(outstanding)}
+          {balancePrefix}{formatIDR(balanceDisplay)}
         </span>
       </div>
     </div>

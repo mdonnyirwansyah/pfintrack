@@ -69,13 +69,16 @@ export default function LoanDetailPage({
   const isPaidOff =
     counterparty?.manual_paid_off || outstanding === 0;
 
-  // Sort entries: DESC by date+time
+  // Sort entries: DESC by date+time, fallback ke created_at jika sama (resolusi menit)
   const sortedEntries = useMemo(
     () =>
       [...entries].sort((a, b) => {
         const da = `${a.transaction_date}T${a.transaction_time}`;
         const db = `${b.transaction_date}T${b.transaction_time}`;
-        return db.localeCompare(da);
+        const byDatetime = db.localeCompare(da);
+        if (byDatetime !== 0) return byDatetime;
+        // Tiebreaker: created_at (ISO dengan detik) — DESC
+        return b.created_at.localeCompare(a.created_at);
       }),
     [entries]
   );
