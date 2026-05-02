@@ -125,43 +125,42 @@ export function TransferForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
-      {/* Date + Time row — Date gets more space (3:2 ratio) */}
-      <div className="flex gap-3">
-        <div className="flex-[3]">
-          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Date
-          </label>
-          <input
-            type="date"
-            value={form.transaction_date}
-            onChange={(e) => set("transaction_date", e.target.value)}
-            className="w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors"
-            style={inputStyle(errors.transaction_date)}
-          />
-          {errors.transaction_date && (
-            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
-              {errors.transaction_date}
-            </p>
-          )}
-        </div>
+      {/* Date */}
+      <div>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          Date
+        </label>
+        <input
+          type="date"
+          value={form.transaction_date}
+          onChange={(e) => set("transaction_date", e.target.value)}
+          className={inputClass}
+          style={inputStyle(errors.transaction_date)}
+        />
+        {errors.transaction_date && (
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
+            {errors.transaction_date}
+          </p>
+        )}
+      </div>
 
-        <div className="flex-[2]">
-          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Time
-          </label>
-          <input
-            type="time"
-            value={form.transaction_time}
-            onChange={(e) => set("transaction_time", e.target.value)}
-            className="w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors"
-            style={inputStyle(errors.transaction_time)}
-          />
-          {errors.transaction_time && (
-            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
-              {errors.transaction_time}
-            </p>
-          )}
-        </div>
+      {/* Time */}
+      <div>
+        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          Time
+        </label>
+        <input
+          type="time"
+          value={form.transaction_time}
+          onChange={(e) => set("transaction_time", e.target.value)}
+          className={inputClass}
+          style={inputStyle(errors.transaction_time)}
+        />
+        {errors.transaction_time && (
+          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
+            {errors.transaction_time}
+          </p>
+        )}
       </div>
 
       {/* Source Wallet */}
