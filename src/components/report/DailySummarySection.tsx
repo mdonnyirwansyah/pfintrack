@@ -40,6 +40,19 @@ function buildDailySummaries(transactions: Transaction[], start: string, end: st
   return Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
 }
 
+/** Abbreviate large numbers: 1200000 → "1.2M", 50000 → "50K", 500 → "500" */
+function abbr(n: number): string {
+  if (n >= 1_000_000) {
+    const v = n / 1_000_000;
+    return (Number.isInteger(v) ? v.toFixed(0) : v.toFixed(1)) + "M";
+  }
+  if (n >= 1_000) {
+    const v = n / 1_000;
+    return (Number.isInteger(v) ? v.toFixed(0) : v.toFixed(1)) + "K";
+  }
+  return Math.round(n).toString();
+}
+
 interface DailySummarySectionProps {
   transactions: Transaction[];
   start: string; // YYYY-MM-DD
@@ -68,11 +81,6 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
   const calStart = startOfWeek(startOfMonth(monthDate));
   const calEnd = endOfWeek(endOfMonth(monthDate));
   const calDays = eachDayOfInterval({ start: calStart, end: calEnd });
-
-  const maxAmount = useMemo(
-    () => Math.max(...summaries.map((s) => Math.max(s.income, s.expenses)), 1),
-    [summaries]
-  );
 
   return (
     <div className="space-y-3">
@@ -144,9 +152,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
         </div>
       ) : (
         /* ── Calendar View ── */
-        <div
-          className="glass rounded-[16px] p-3"
-        >
+        <div className="glass rounded-[16px] p-3">
           {/* Month label */}
           <p className="text-center text-[11px] font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
             {format(monthDate, "MMMM yyyy")}
@@ -166,7 +172,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
           </div>
 
           {/* Day cells */}
-          <div className="grid grid-cols-7 gap-y-1">
+          <div className="grid grid-cols-7 gap-x-0.5 gap-y-1">
             {calDays.map((day) => {
               const dateStr = format(day, "yyyy-MM-dd");
               const inMonth = isSameMonth(day, monthDate);
@@ -175,57 +181,43 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
               return (
                 <div
                   key={dateStr}
-                  className="flex flex-col items-center py-1 rounded-[6px]"
+                  className="flex flex-col p-1 rounded-[4px]"
                   style={{
-                    opacity: inMonth ? 1 : 0.3,
+                    minHeight: 44,
+                    opacity: inMonth ? 1 : 0.2,
                     background: summary ? "var(--bg-secondary)" : "transparent",
                   }}
                 >
+                  {/* Date number — top left */}
                   <span
-                    className="text-[10px] font-medium leading-none"
+                    className="text-[9px] font-semibold leading-none mb-0.5"
                     style={{ color: "var(--text-primary)" }}
                   >
                     {format(day, "d")}
                   </span>
-                  {summary && (
-                    <div className="flex flex-col items-center gap-0.5 mt-0.5">
-                      {summary.income > 0 && (
-                        <div
-                          className="rounded-full"
-                          style={{
-                            width: Math.max(4, Math.round(8 * summary.income / maxAmount)),
-                            height: 3,
-                            backgroundColor: "var(--color-positive)",
-                          }}
-                        />
-                      )}
-                      {summary.expenses > 0 && (
-                        <div
-                          className="rounded-full"
-                          style={{
-                            width: Math.max(4, Math.round(8 * summary.expenses / maxAmount)),
-                            height: 3,
-                            backgroundColor: "var(--color-negative)",
-                          }}
-                        />
-                      )}
-                    </div>
+
+                  {/* Income */}
+                  {summary && summary.income > 0 && (
+                    <span
+                      className="text-[9px] font-medium leading-tight tabular-nums"
+                      style={{ color: "var(--color-positive)" }}
+                    >
+                      +{abbr(summary.income)}
+                    </span>
+                  )}
+
+                  {/* Expense */}
+                  {summary && summary.expenses > 0 && (
+                    <span
+                      className="text-[9px] font-medium leading-tight tabular-nums"
+                      style={{ color: "var(--color-negative)" }}
+                    >
+                      -{abbr(summary.expenses)}
+                    </span>
                   )}
                 </div>
               );
             })}
-          </div>
-
-          {/* Legend */}
-          <div className="flex items-center justify-center gap-4 mt-3 pt-2" style={{ borderTop: "1px solid var(--divider)" }}>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-2 rounded-full" style={{ backgroundColor: "var(--color-positive)" }} />
-              <span className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>{t("summary.income")}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-2 rounded-full" style={{ backgroundColor: "var(--color-negative)" }} />
-              <span className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>{t("summary.expenses")}</span>
-            </div>
           </div>
         </div>
       )}
