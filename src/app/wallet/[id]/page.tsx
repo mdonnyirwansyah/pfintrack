@@ -14,6 +14,7 @@ import type { Wallet } from "@/lib/types/wallet";
 import type { WalletFormValues } from "@/features/wallet/components/WalletForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 // [9] Edit Wallet
 export default function EditWalletPage({
@@ -31,6 +32,7 @@ export default function EditWalletPage({
 
   const { handleUpdate, handleDelete, isNameTaken, loadWallets } = useWalletActions();
   const loadWalletsFromStore = useWalletStore((s) => s.loadWallets);
+  const t = useTranslations("wallet");
 
   useEffect(() => {
     loadWallets();
@@ -65,20 +67,20 @@ export default function EditWalletPage({
   if (notFound) {
     return (
       <>
-        <AppHeader title="Edit Wallet" showBack />
+        <AppHeader title={t("editTitle")} showBack />
         <div className="px-4 py-8 flex flex-col items-center justify-center gap-2">
           <p
             className="text-[15px] font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
-            Wallet not found
+            {t("notFound")}
           </p>
           <button
             onClick={() => router.push("/wallet")}
             className="text-[15px] font-medium mt-2"
             style={{ color: "var(--color-brand)" }}
           >
-            Back to wallet list
+            {t("backToList")}
           </button>
         </div>
       </>
@@ -88,7 +90,7 @@ export default function EditWalletPage({
   if (!wallet) {
     return (
       <>
-        <AppHeader title="Edit Wallet" showBack />
+        <AppHeader title={t("editTitle")} showBack />
         <div className="px-4 py-4 space-y-4">
           <Skeleton className="h-[52px] w-full rounded-[12px]" />
           <Skeleton className="h-[52px] w-full rounded-[12px]" />
@@ -101,7 +103,7 @@ export default function EditWalletPage({
 
   return (
     <>
-      <AppHeader title="Edit Wallet" showBack />
+      <AppHeader title={t("editTitle")} showBack />
 
       <div className="px-4 py-4">
         {/* Current balance info */}
@@ -113,7 +115,7 @@ export default function EditWalletPage({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Current Balance
+            {t("currentBalance")}
           </span>
           <span
             className="text-[17px] font-semibold tabular-nums"
@@ -149,7 +151,7 @@ export default function EditWalletPage({
               }}
             >
               <Trash2 className="w-4 h-4" />
-              Delete Wallet
+              {`${t("deleteConfirm.confirm")} ${t("title")}`}
             </button>
           }
         />
@@ -158,15 +160,14 @@ export default function EditWalletPage({
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Delete Wallet?"
+        title={t("deleteConfirm.title")}
         description={
           <>
-            Wallet <strong>{wallet.name}</strong> will be deleted. This action
-            cannot be undone.
+            Wallet <strong>{wallet.name}</strong> will be deleted. This action cannot be undone.
           </>
         }
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        confirmLabel={t("deleteConfirm.confirm")}
+        cancelLabel={t("deleteConfirm.cancel")}
         variant="destructive"
         onConfirm={handleConfirmDelete}
       />

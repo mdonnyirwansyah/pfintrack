@@ -11,12 +11,14 @@ import { CounterpartyListItem } from "@/components/loan/CounterpartyListItem";
 import { useLoanCounterpartyStore } from "@/lib/stores/useLoanStore";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import type { LoanEntry } from "@/lib/types/loan";
+import { useTranslations } from "next-intl";
 
 // [10] Counterparty List
 export default function LoanPage() {
   const router = useRouter();
   const { counterparties, isLoading, loadCounterparties } =
     useLoanCounterpartyStore();
+  const t = useTranslations("loan");
 
   useEffect(() => {
     loadCounterparties();
@@ -89,13 +91,13 @@ export default function LoanPage() {
 
   const fabActions = [
     {
-      label: "Give",
+      label: t("fab.give"),
       icon: <TrendingDown className="w-5 h-5 text-white" />,
       color: "var(--color-negative)",
       onClick: () => router.push("/loan/add/give"),
     },
     {
-      label: "Get",
+      label: t("fab.get"),
       icon: <TrendingUp className="w-5 h-5 text-white" />,
       color: "var(--color-accent-warm)",
       onClick: () => router.push("/loan/add/get"),
@@ -105,7 +107,7 @@ export default function LoanPage() {
   return (
     <>
       <AppHeader
-        title="Loan"
+        title={t("title")}
       />
 
       <div className="px-4 pt-4 pb-4">
@@ -126,8 +128,8 @@ export default function LoanPage() {
         ) : sorted.length === 0 ? (
           <EmptyState
             icon={Users}
-            title="No counterparties yet"
-            description="Tap + to record a Give or Get loan"
+            title={t("noCounterparties")}
+            description={t("noCounterpartiesDesc")}
           />
         ) : (
           <div className="space-y-3">

@@ -1,6 +1,7 @@
 "use client";
 
 import { formatIDR } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 interface LoanDetailSummaryBarProps {
   totalGet: number;
@@ -21,6 +22,7 @@ export function LoanDetailSummaryBar({
   totalGive,
   outstanding,
 }: LoanDetailSummaryBarProps) {
+  const t = useTranslations("loan.summary");
   const getPrefix = totalGet > 0 ? "+ " : "";
   const balancePrefix = outstanding < 0 ? "+ " : "";
   const balanceColor =
@@ -41,7 +43,7 @@ export function LoanDetailSummaryBar({
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Get
+          {t("get")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
@@ -63,7 +65,7 @@ export function LoanDetailSummaryBar({
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Give
+          {t("give")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
@@ -85,7 +87,7 @@ export function LoanDetailSummaryBar({
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Balance
+          {t("balance")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"

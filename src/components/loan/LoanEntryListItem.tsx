@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import type { LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
 import { formatDisplayDate } from "@/lib/format/date";
+import { useTranslations } from "next-intl";
 
 interface LoanEntryListItemProps {
   entry: LoanEntry;
@@ -12,7 +13,8 @@ interface LoanEntryListItemProps {
 
 export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
   const isGet = entry.type === "get";
-  const subtitle = entry.note || "Without explanation";
+  const t = useTranslations("loan");
+  const subtitle = entry.note || t("withoutExplanation");
 
   return (
     <button

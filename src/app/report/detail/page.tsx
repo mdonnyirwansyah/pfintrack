@@ -14,6 +14,7 @@ import { transactionsRepo } from "@/lib/storage/transactions";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
 import type { Transaction } from "@/lib/types/transaction";
+import { useTranslations } from "next-intl";
 
 function ReportDetailContent() {
   const searchParams = useSearchParams();
@@ -21,6 +22,8 @@ function ReportDetailContent() {
   const end = searchParams.get("end") ?? "";
   const nameParam = searchParams.get("name");
   const categoryParam = searchParams.get("category");
+  const t = useTranslations("report");
+  const tc = useTranslations("common");
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
@@ -95,8 +98,8 @@ function ReportDetailContent() {
         {breakdown.length === 0 ? (
           <EmptyState
             icon={PackageOpen}
-            title="No expenses in this period"
-            description="There are no expense transactions for the selected date range."
+            title={t("detail.noExpenses")}
+            description={t("detail.noExpensesDesc")}
           />
         ) : (
           <DonutChart
@@ -113,18 +116,18 @@ function ReportDetailContent() {
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
               <h2 className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-                {selectedCategory ? `${selectedCategory} — Transactions` : "All Transactions"}
+                {selectedCategory ? t("categoryTransactions", { category: selectedCategory }) : t("allTransactions")}
               </h2>
               <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-                {drillTransactions.length} item{drillTransactions.length !== 1 ? "s" : ""}
+                {tc("items", { count: drillTransactions.length })}
               </span>
             </div>
 
             {drillTransactions.length === 0 ? (
               <EmptyState
                 icon={PackageOpen}
-                title="No transactions"
-                description={`No expense transactions found for "${selectedCategory}".`}
+                title={t("detail.noTransactions")}
+                description={t("detail.noTransactionsDesc", { category: selectedCategory ?? "" })}
               />
             ) : (
               <div className="glass rounded-[16px] overflow-hidden">

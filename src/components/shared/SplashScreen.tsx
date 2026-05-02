@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function SplashScreen() {
   const router = useRouter();
   const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
+  const t = useTranslations("splash");
 
   useEffect(() => {
     const toHold = setTimeout(() => setPhase("hold"), 400);
@@ -98,7 +100,7 @@ export function SplashScreen() {
             marginTop: 6,
           }}
         >
-          Personal Finance Manager
+          {t("tagline")}
         </p>
       </div>
 

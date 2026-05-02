@@ -1,6 +1,7 @@
 "use client";
 
 import { formatIDR } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 interface SummaryBarProps {
   income: number;
@@ -9,6 +10,7 @@ interface SummaryBarProps {
 }
 
 export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
+  const t = useTranslations("transactions.summary");
   // Income: "+" hanya jika > 0
   const incomePrefix = income > 0 ? "+ " : "";
   // Balance: "+" hanya jika > 0, tanpa tanda jika 0 atau negatif
@@ -30,7 +32,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           className="text-[11px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Income
+          {t("income")}
         </span>
         <span
           className="text-[14px] font-semibold tabular-nums"
@@ -49,7 +51,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           className="text-[11px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Expenses
+          {t("expenses")}
         </span>
         <span
           className="text-[14px] font-semibold tabular-nums"
@@ -68,7 +70,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           className="text-[11px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Balance
+          {t("balance")}
         </span>
         <span
           className="text-[14px] font-semibold tabular-nums"

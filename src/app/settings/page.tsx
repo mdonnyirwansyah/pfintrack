@@ -1,40 +1,51 @@
 "use client";
 
+import { useTransition } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Globe, ChevronRight, Info } from "lucide-react";
+import { Sun, Moon, Monitor, Globe, Info } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useMounted } from "@/hooks/useMounted";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
+import { setLocale } from "@/actions/setLocale";
 
 type ThemeOption = "light" | "dark" | "system";
-
-const THEME_OPTIONS: { value: ThemeOption; label: string; icon: React.ElementType }[] = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Monitor },
-];
-
-// Language options — stored as stub for future i18n implementation
-const LANGUAGE_OPTIONS = [
-  { value: "en", label: "English" },
-  { value: "id", label: "Indonesia" },
-];
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
+  const t = useTranslations("settings");
+  const locale = useLocale();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  // Language state — stubbed until i18n is implemented
-  const currentLang = "en";
+  const THEME_OPTIONS: { value: ThemeOption; label: string; icon: React.ElementType }[] = [
+    { value: "light", label: t("theme.light"), icon: Sun },
+    { value: "dark", label: t("theme.dark"), icon: Moon },
+    { value: "system", label: t("theme.system"), icon: Monitor },
+  ];
+
+  const LANGUAGE_OPTIONS = [
+    { value: "en" as const, label: t("lang.en") },
+    { value: "id" as const, label: t("lang.id") },
+  ];
+
+  const handleLocaleChange = (newLocale: "en" | "id") => {
+    if (newLocale === locale || isPending) return;
+    startTransition(async () => {
+      await setLocale(newLocale);
+      router.refresh();
+    });
+  };
 
   const rowClass =
     "flex items-center justify-between px-4 py-3.5 transition-opacity active:opacity-70";
   const sectionClass = "glass rounded-[16px] overflow-hidden mb-4";
-  const sectionStyle = {};
   const dividerStyle = { height: 1, background: "var(--divider)", marginInline: 16 };
 
   return (
     <>
-      <AppHeader title="Settings" />
+      <AppHeader title={t("title")} />
 
       <div className="px-4 py-4 space-y-2">
 
@@ -43,10 +54,10 @@ export default function SettingsPage() {
           className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2"
           style={{ color: "var(--text-tertiary)" }}
         >
-          Appearance
+          {t("appearance")}
         </p>
 
-        <div className={sectionClass} style={sectionStyle}>
+        <div className={sectionClass}>
           {/* Theme selector */}
           {THEME_OPTIONS.map(({ value, label, icon: Icon }, idx) => {
             const isActive = mounted ? theme === value : value === "system";
@@ -116,16 +127,21 @@ export default function SettingsPage() {
           className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
-          Language
+          {t("language")}
         </p>
 
-        <div className={sectionClass} style={sectionStyle}>
+        <div className={sectionClass}>
           {LANGUAGE_OPTIONS.map(({ value, label }, idx) => {
-            const isActive = currentLang === value;
+            const isActive = locale === value;
             return (
               <div key={value}>
                 {idx > 0 && <div style={dividerStyle} />}
-                <div className={rowClass}>
+                <button
+                  className={rowClass + " w-full"}
+                  onClick={() => handleLocaleChange(value)}
+                  aria-pressed={isActive}
+                  disabled={isPending}
+                >
                   <div className="flex items-center gap-3">
                     <div
                       className="flex items-center justify-center w-8 h-8 rounded-[10px]"
@@ -173,19 +189,8 @@ export default function SettingsPage() {
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                     )}
-                    {!isActive && (
-                      <span
-                        className="text-[11px] px-2 py-0.5 rounded-full font-medium"
-                        style={{
-                          background: "var(--color-accent-soft)",
-                          color: "var(--color-accent)",
-                        }}
-                      >
-                        Soon
-                      </span>
-                    )}
                   </div>
-                </div>
+                </button>
               </div>
             );
           })}
@@ -196,10 +201,10 @@ export default function SettingsPage() {
           className="text-[12px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
-          About
+          {t("about")}
         </p>
 
-        <div className={sectionClass} style={sectionStyle}>
+        <div className={sectionClass}>
           <div className={rowClass}>
             <div className="flex items-center gap-3">
               <div

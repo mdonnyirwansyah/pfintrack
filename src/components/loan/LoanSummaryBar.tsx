@@ -1,6 +1,7 @@
 "use client";
 
 import { formatIDR } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 interface LoanSummaryBarProps {
   totalGet: number;
@@ -16,6 +17,7 @@ interface LoanSummaryBarProps {
  * - Balance: dinamis berdasarkan nilai
  */
 export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
+  const t = useTranslations("loan.summary");
   const balance = totalGive - totalGet;
 
   const getPrefix = totalGet > 0 ? "+ " : "";
@@ -38,7 +40,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Get
+          {t("get")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
@@ -60,7 +62,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Give
+          {t("give")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
@@ -82,7 +84,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
-          Balance
+          {t("balance")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"

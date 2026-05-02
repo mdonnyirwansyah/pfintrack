@@ -22,12 +22,14 @@ import { walletsRepo } from "@/lib/storage/wallets";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { getOrCreateAnonId } from "@/lib/storage/anon-id";
 import { FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function TransactionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { transactions, isLoading, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
+  const t = useTranslations("transactions");
 
   // Init activeDate dari ?date= query param, fallback ke hari ini
   const dateParam = searchParams.get("date");
@@ -88,19 +90,19 @@ function TransactionsContent() {
 
   const fabActions = [
     {
-      label: "Expense",
+      label: t("fab.expense"),
       icon: <ShoppingCart className="w-5 h-5 text-white" />,
       color: "var(--color-negative)",
       onClick: () => router.push(`/transactions/add/expense?date=${activeDate}`),
     },
     {
-      label: "Income",
+      label: t("fab.income"),
       icon: <TrendingUp className="w-5 h-5 text-white" />,
       color: "var(--color-accent-warm)",
       onClick: () => router.push(`/transactions/add/income?date=${activeDate}`),
     },
     {
-      label: "Transfer",
+      label: t("fab.transfer"),
       icon: <ArrowRightLeft className="w-5 h-5 text-white" />,
       color: "var(--text-secondary)",
       onClick: () => router.push(`/transactions/add/transfer?date=${activeDate}`),
@@ -110,7 +112,7 @@ function TransactionsContent() {
   return (
     <>
       <AppHeader
-        title="Transactions"
+        title={t("title")}
         actions={
           <div className="flex items-center gap-1">
             <button
@@ -167,8 +169,8 @@ function TransactionsContent() {
         ) : dailyTransactions.length === 0 ? (
           <EmptyState
             icon={FileText}
-            title="There is no data"
-            description="No transactions on this day. Tap + to add one."
+            title={t("noData")}
+            description={t("noDataDesc")}
           />
         ) : (
           <div

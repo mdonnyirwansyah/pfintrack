@@ -10,6 +10,7 @@ import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { formatDisplayDate } from "@/lib/format/date";
 import type { Transaction } from "@/lib/types/transaction";
 import { FileSearch } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Group transactions by date
 function groupByDate(transactions: Transaction[]): Map<string, Transaction[]> {
@@ -26,6 +27,8 @@ export default function TransactionHistoryPage() {
   const { transactions, isLoading, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const t = useTranslations("transactions");
+  const tc = useTranslations("common");
 
   useEffect(() => {
     loadTransactions();
@@ -74,7 +77,7 @@ export default function TransactionHistoryPage() {
 
   return (
     <>
-      <AppHeader title="History" showBack />
+      <AppHeader title={t("history")} showBack />
 
       <div className="px-4 pt-3 pb-4">
         {/* Search bar */}
@@ -88,7 +91,7 @@ export default function TransactionHistoryPage() {
           <Search className="w-4 h-4 flex-shrink-0" style={{ color: "var(--text-tertiary)" }} />
           <input
             type="text"
-            placeholder="Search transactions..."
+            placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 bg-transparent text-[15px] outline-none"
@@ -122,16 +125,8 @@ export default function TransactionHistoryPage() {
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={FileSearch}
-          title={
-            searchQuery
-              ? "No results found"
-              : "No transactions yet"
-          }
-          description={
-            searchQuery
-              ? "No transactions match your search."
-              : "Add your first transaction using the + button."
-          }
+          title={searchQuery ? t("noResults") : t("noHistory")}
+          description={searchQuery ? t("noResultsDesc") : t("noHistoryDesc")}
         />
       ) : (
         <div className="px-4 space-y-4">
@@ -153,7 +148,7 @@ export default function TransactionHistoryPage() {
                   className="text-[12px]"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  {txns.length} item{txns.length !== 1 ? "s" : ""}
+                  {tc("items", { count: txns.length })}
                 </span>
               </div>
 

@@ -11,6 +11,7 @@ import { calcPeriodSummary } from "@/lib/report/calculations";
 import { CustomReportSection } from "./CustomReportSection";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { FAB } from "@/components/shared/FAB";
+import { useTranslations } from "next-intl";
 
 interface CustomTabProps {
   customReports: CustomReport[];
@@ -26,6 +27,7 @@ export function CustomTab({
   balanceHistory,
 }: CustomTabProps) {
   const router = useRouter();
+  const t = useTranslations("report");
 
   // Sort by created_at DESC
   const sorted = useMemo(
@@ -41,8 +43,8 @@ export function CustomTab({
       {sorted.length === 0 ? (
         <EmptyState
           icon={BarChart2}
-          title="No custom reports yet"
-          description="Tap + to create a report for any date range."
+          title={t("custom.noReports")}
+          description={t("custom.noReportsDesc")}
         />
       ) : (
         sorted.map((report) => {

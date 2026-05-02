@@ -3,6 +3,7 @@
 import { ChevronRight } from "lucide-react";
 import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 interface CounterpartyListItemProps {
   counterparty: LoanCounterparty;
@@ -27,6 +28,7 @@ export function CounterpartyListItem({
   onClick,
 }: CounterpartyListItemProps) {
   const { outstanding } = computeAggregates(entries);
+  const t = useTranslations("loan");
 
   const isPaidOff =
     counterparty.manual_paid_off || outstanding === 0;
@@ -40,7 +42,7 @@ export function CounterpartyListItem({
   const subtitle =
     sortedEntries.length > 0
       ? sortedEntries[0].note || "Without explanation"
-      : "Without explanation";
+      : t("withoutExplanation");
 
   return (
     <button
@@ -73,7 +75,7 @@ export function CounterpartyListItem({
             className="text-[13px] font-medium"
             style={{ color: "var(--color-positive)" }}
           >
-            Paid off
+            {t("paidOff")}
           </span>
         ) : outstanding > 0 ? (
           <span

@@ -13,17 +13,19 @@ import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 type Tab = "realtime" | "monthly" | "custom";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "realtime", label: "Realtime" },
-  { id: "monthly", label: "Monthly" },
-  { id: "custom", label: "Custom" },
-];
-
 export default function ReportPage() {
+  const t = useTranslations("report");
   const [activeTab, setActiveTab] = useState<Tab>("realtime");
+
+  const TABS: { id: Tab; label: string }[] = [
+    { id: "realtime", label: t("tabs.realtime") },
+    { id: "monthly", label: t("tabs.monthly") },
+    { id: "custom", label: t("tabs.custom") },
+  ];
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loanEntries, setLoanEntries] = useState<LoanEntry[]>([]);
   const [balanceHistory, setBalanceHistory] = useState<WalletBalanceHistory[]>(
@@ -51,7 +53,7 @@ export default function ReportPage() {
 
   return (
     <>
-      <AppHeader title="Report" />
+      <AppHeader title={t("title")} />
 
       <div className="px-4 py-4 space-y-4">
         {/* Tab switcher */}

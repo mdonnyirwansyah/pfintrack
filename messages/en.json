@@ -1,0 +1,266 @@
+{
+  "nav": {
+    "transactions": "Transactions",
+    "wallet": "Wallet",
+    "loan": "Loan",
+    "report": "Report",
+    "settings": "Settings"
+  },
+  "common": {
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "back": "Back",
+    "close": "Close",
+    "confirm": "Confirm",
+    "search": "Search",
+    "clear": "Clear",
+    "soon": "Soon",
+    "noData": "No data",
+    "items": "{count, plural, one {# item} other {# items}}"
+  },
+  "splash": {
+    "tagline": "Personal Finance Manager"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "about": "About",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "lang": {
+      "en": "English",
+      "id": "Indonesia"
+    }
+  },
+  "wallet": {
+    "title": "Wallet",
+    "addTitle": "Add Wallet",
+    "editTitle": "Edit Wallet",
+    "totalBalance": "Total Balance",
+    "currentBalance": "Current Balance",
+    "noWallets": "No wallets yet",
+    "noWalletsDesc": "Add your first wallet using the + button.",
+    "notFound": "Wallet not found",
+    "backToList": "Back to wallet list",
+    "form": {
+      "name": "Wallet Name",
+      "namePlaceholder": "Enter the name",
+      "type": "Wallet Type",
+      "balance": "Balance",
+      "initialBalance": "Initial Balance",
+      "balancePlaceholder": "Enter the balance"
+    },
+    "types": {
+      "bank": "Bank",
+      "bank_digital": "Bank Digital",
+      "e_wallet": "E-Wallet",
+      "investment": "Investment",
+      "savings": "Savings",
+      "digital_asset": "Digital Asset",
+      "other": "Other"
+    },
+    "validation": {
+      "nameRequired": "Wallet name is required",
+      "nameTooShort": "Name must be at least 2 characters",
+      "nameTooLong": "Name must be 50 characters or less",
+      "nameTaken": "Wallet name is already taken",
+      "balanceRequired": "Balance is required",
+      "balanceInvalid": "Balance must be a positive number",
+      "balanceExceeds": "Balance exceeds maximum limit"
+    },
+    "deleteConfirm": {
+      "title": "Delete Wallet?",
+      "description": "Wallet {name} will be deleted. This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "history": "History",
+    "addIncome": "Add Income",
+    "addExpense": "Add Expense",
+    "addTransfer": "Add Transfer",
+    "editIncome": "Edit Income",
+    "editExpense": "Edit Expense",
+    "editTransfer": "Edit Transfer",
+    "noData": "There is no data",
+    "noDataDesc": "No transactions on this day. Tap + to add one.",
+    "searchPlaceholder": "Search transactions...",
+    "noResults": "No results found",
+    "noResultsDesc": "No transactions match your search.",
+    "noHistory": "No transactions yet",
+    "noHistoryDesc": "Add your first transaction using the + button.",
+    "summary": {
+      "income": "Income",
+      "expenses": "Expenses",
+      "balance": "Balance"
+    },
+    "fab": {
+      "expense": "Expense",
+      "income": "Income",
+      "transfer": "Transfer"
+    },
+    "form": {
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "title": "Title",
+      "titlePlaceholder": "Enter title (optional)",
+      "category": "Category",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description (optional)",
+      "date": "Date",
+      "time": "Time",
+      "wallet": "Wallet",
+      "sourceWallet": "Source Wallet",
+      "destWallet": "Destination Wallet",
+      "selectWallet": "Select Wallet",
+      "insufficientBalance": "Insufficient wallet balance"
+    },
+    "deleteConfirm": {
+      "title": "Delete Transaction?",
+      "description": "This transaction will be deleted and the wallet balance will be adjusted.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "loan": {
+    "title": "Loan",
+    "addGive": "Add Give",
+    "addGet": "Add Get",
+    "editEntry": "Edit Entry",
+    "noCounterparties": "No counterparties yet",
+    "noCounterpartiesDesc": "Tap + to record a Give or Get loan",
+    "noEntries": "No entries yet",
+    "noEntriesDesc": "Tap + to record a Give or Get loan",
+    "paidOff": "Paid off",
+    "markPaidOff": "Mark as Paid Off",
+    "unmarkPaidOff": "Unmark Paid Off",
+    "withoutExplanation": "Without explanation",
+    "summary": {
+      "get": "Get",
+      "give": "Give",
+      "balance": "Balance"
+    },
+    "fab": {
+      "give": "Give",
+      "get": "Get"
+    },
+    "form": {
+      "date": "Date",
+      "time": "Time",
+      "amount": "Amount",
+      "name": "Name",
+      "namePlaceholder": "Enter the name",
+      "walletOptional": "Wallet (optional)",
+      "selectWalletOptional": "Select Wallet (optional)",
+      "noteOptional": "Note (optional)",
+      "notePlaceholder": "Note (optional)",
+      "clearWallet": "Clear",
+      "saveGive": "Save Give",
+      "saveGet": "Save Get"
+    },
+    "rename": {
+      "title": "Rename",
+      "namePlaceholder": "Enter new name"
+    },
+    "deleteEntryConfirm": {
+      "title": "Delete this entry?",
+      "description": "This will roll back any wallet balance changes caused by this entry.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "deleteCounterpartyConfirm": {
+      "title": "Delete Counterparty?",
+      "description": "All loan entries for {name} will also be deleted.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "dateRequired": "Date is required",
+      "timeRequired": "Time is required",
+      "amountRequired": "Amount is required",
+      "amountInvalid": "Amount must be greater than 0",
+      "amountExceeds": "Amount exceeds maximum limit",
+      "nameRequired": "Name is required",
+      "nameTooShort": "Name must be at least 2 characters",
+      "nameTooLong": "Name must be 50 characters or less",
+      "noteTooLong": "Note must be 255 characters or less",
+      "renameRequired": "Name is required",
+      "renameTaken": "Name is already taken"
+    }
+  },
+  "report": {
+    "title": "Report",
+    "tabs": {
+      "realtime": "Realtime",
+      "monthly": "Monthly",
+      "custom": "Custom"
+    },
+    "realtime": {
+      "noExpenses": "No expenses this month",
+      "noExpensesDesc": "Transactions you mark as expense will appear here."
+    },
+    "monthly": {
+      "noTransactions": "No transactions yet",
+      "noTransactionsDesc": "Add your first transaction to see monthly reports."
+    },
+    "custom": {
+      "noReports": "No custom reports yet",
+      "noReportsDesc": "Tap + to create a report for any date range."
+    },
+    "detail": {
+      "noExpenses": "No expenses in this period",
+      "noExpensesDesc": "There are no expense transactions for the selected date range.",
+      "noTransactions": "No transactions",
+      "noTransactionsDesc": "No expense transactions found for \"{category}\"."
+    },
+    "allTransactions": "All Transactions",
+    "categoryTransactions": "{category} — Transactions",
+    "addReport": "Add Report",
+    "editReport": "Edit Report",
+    "reportName": "Report Name",
+    "reportNamePlaceholder": "Enter the report name",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "deleteReportConfirm": {
+      "title": "Delete Report?",
+      "description": "Report \"{name}\" will be deleted.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "summary": {
+      "expenses": "Expenses",
+      "income": "Income",
+      "balance": "Balance",
+      "loan": "Loan",
+      "balanceCorrection": "Balance Correction"
+    },
+    "chart": {
+      "total": "Total"
+    },
+    "validation": {
+      "nameRequired": "Report name is required",
+      "nameTooShort": "Name must be at least 2 characters",
+      "nameTooLong": "Name must be at most 50 characters",
+      "nameTaken": "Report name is already used",
+      "startRequired": "Start date is required",
+      "endRequired": "End date is required",
+      "endBeforeStart": "End date must be after start date",
+      "rangeExceeds": "Range must not exceed 10 years"
+    }
+  },
+  "walletPicker": {
+    "title": "Select Wallet",
+    "noWallets": "No wallets available"
+  }
+}

@@ -13,12 +13,15 @@ import { DonutChart } from "./DonutChart";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { useTranslations } from "next-intl";
 
 interface RealtimeTabProps {
   transactions: Transaction[];
 }
 
 export function RealtimeTab({ transactions }: RealtimeTabProps) {
+  const t = useTranslations("report");
+  const tc = useTranslations("common");
   const start = currentMonthStart();
   const end = currentMonthEnd();
 
@@ -64,7 +67,9 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
     setSelectedCategory((prev) => (prev === category ? null : category));
   };
 
-  const listTitle = selectedCategory ? `${selectedCategory} — Transactions` : "All Transactions";
+  const listTitle = selectedCategory
+    ? t("categoryTransactions", { category: selectedCategory })
+    : t("allTransactions");
 
   return (
     <div className="space-y-4">
@@ -78,8 +83,8 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
       {breakdown.length === 0 ? (
         <EmptyState
           icon={PackageOpen}
-          title="No expenses this month"
-          description="Transactions you mark as expense will appear here."
+          title={t("realtime.noExpenses")}
+          description={t("realtime.noExpensesDesc")}
         />
       ) : (
         <>
@@ -96,15 +101,15 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
                 {listTitle}
               </h2>
               <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-                {filteredTransactions.length} item{filteredTransactions.length !== 1 ? "s" : ""}
+                {tc("items", { count: filteredTransactions.length })}
               </span>
             </div>
 
             {filteredTransactions.length === 0 ? (
               <EmptyState
                 icon={PackageOpen}
-                title="No transactions"
-                description={`No expense transactions found for "${selectedCategory}".`}
+                title={t("detail.noTransactions")}
+                description={t("detail.noTransactionsDesc", { category: selectedCategory ?? "" })}
               />
             ) : (
               <div className="glass rounded-[16px] overflow-hidden">

@@ -12,6 +12,7 @@ import {
 import { MonthlySection } from "./MonthlySection";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 
 const INITIAL_MONTHS = 6;
 const LOAD_MORE_MONTHS = 6;
@@ -27,6 +28,7 @@ export function MonthlyTab({
   loanEntries,
   balanceHistory,
 }: MonthlyTabProps) {
+  const t = useTranslations("report");
   const allMonths = useMemo(
     () => generateMonthList(transactions),
     [transactions]
@@ -71,8 +73,8 @@ export function MonthlyTab({
     return (
       <EmptyState
         icon={PackageOpen}
-        title="No transactions yet"
-        description="Add your first transaction to see monthly reports."
+        title={t("monthly.noTransactions")}
+        description={t("monthly.noTransactionsDesc")}
       />
     );
   }

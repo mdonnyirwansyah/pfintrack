@@ -5,6 +5,7 @@ import { Calculator } from "lucide-react";
 import type { WalletType } from "@/lib/types/wallet";
 import { formatIDR, parseIDR } from "@/lib/format/number";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export interface WalletFormValues {
   name: string;
@@ -27,49 +28,7 @@ interface WalletFormProps {
   deleteSlot?: React.ReactNode;
 }
 
-const WALLET_TYPE_OPTIONS: { value: WalletType; label: string }[] = [
-  { value: "bank", label: "Bank" },
-  { value: "bank_digital", label: "Bank Digital" },
-  { value: "e_wallet", label: "E-Wallet" },
-  { value: "investment", label: "Investment" },
-  { value: "savings", label: "Savings" },
-  { value: "digital_asset", label: "Digital Asset" },
-  { value: "other", label: "Other" },
-];
-
 const MAX_BALANCE = 999_999_999_999.99;
-
-function validateForm(
-  values: WalletFormValues,
-  isNameTaken: (name: string) => boolean
-): WalletFormErrors {
-  const errors: WalletFormErrors = {};
-
-  const trimmedName = values.name.trim();
-  if (!trimmedName) {
-    errors.name = "Wallet name is required";
-  } else if (trimmedName.length < 2) {
-    errors.name = "Name must be at least 2 characters";
-  } else if (trimmedName.length > 50) {
-    errors.name = "Name must be 50 characters or less";
-  } else if (isNameTaken(trimmedName)) {
-    errors.name = "Wallet name is already taken";
-  }
-
-  const balanceStr = values.balance.trim();
-  if (!balanceStr) {
-    errors.balance = "Balance is required";
-  } else {
-    const parsed = parseIDR(balanceStr);
-    if (isNaN(parsed) || parsed < 0) {
-      errors.balance = "Balance must be a positive number";
-    } else if (parsed > MAX_BALANCE) {
-      errors.balance = "Balance exceeds maximum limit";
-    }
-  }
-
-  return errors;
-}
 
 export function WalletForm({
   initialValues,
@@ -88,6 +47,50 @@ export function WalletForm({
   );
   const [errors, setErrors] = useState<WalletFormErrors>({});
   const nameRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("wallet");
+  const tc = useTranslations("common");
+
+  const WALLET_TYPE_OPTIONS: { value: WalletType; label: string }[] = [
+    { value: "bank", label: t("types.bank") },
+    { value: "bank_digital", label: t("types.bank_digital") },
+    { value: "e_wallet", label: t("types.e_wallet") },
+    { value: "investment", label: t("types.investment") },
+    { value: "savings", label: t("types.savings") },
+    { value: "digital_asset", label: t("types.digital_asset") },
+    { value: "other", label: t("types.other") },
+  ];
+
+  function validateForm(
+    values: WalletFormValues,
+    isNameTakenFn: (name: string) => boolean
+  ): WalletFormErrors {
+    const errs: WalletFormErrors = {};
+
+    const trimmedName = values.name.trim();
+    if (!trimmedName) {
+      errs.name = t("validation.nameRequired");
+    } else if (trimmedName.length < 2) {
+      errs.name = t("validation.nameTooShort");
+    } else if (trimmedName.length > 50) {
+      errs.name = t("validation.nameTooLong");
+    } else if (isNameTakenFn(trimmedName)) {
+      errs.name = t("validation.nameTaken");
+    }
+
+    const balanceStr = values.balance.trim();
+    if (!balanceStr) {
+      errs.balance = t("validation.balanceRequired");
+    } else {
+      const parsed = parseIDR(balanceStr);
+      if (isNaN(parsed) || parsed < 0) {
+        errs.balance = t("validation.balanceInvalid");
+      } else if (parsed > MAX_BALANCE) {
+        errs.balance = t("validation.balanceExceeds");
+      }
+    }
+
+    return errs;
+  }
 
   // Auto-focus name field on mount (add mode)
   useEffect(() => {
@@ -103,7 +106,7 @@ export function WalletForm({
       balance,
       wallet_type: walletType,
     };
-    const validationErrors = validateForm(values, isNameTaken);
+    const validationErrors = validateForm(values, isNameTaken as (name: string) => boolean);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -141,7 +144,7 @@ export function WalletForm({
           className="text-[13px] font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
-          Wallet Name
+          {t("form.name")}
         </label>
         <input
           id="wallet-name"
@@ -149,7 +152,7 @@ export function WalletForm({
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Enter the name"
+          placeholder={t("form.namePlaceholder")}
           maxLength={50}
           autoComplete="off"
           className={cn(
@@ -186,7 +189,7 @@ export function WalletForm({
           className="text-[13px] font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
-          Wallet Type
+          {t("form.type")}
         </label>
         <select
           id="wallet-type"
@@ -217,7 +220,7 @@ export function WalletForm({
           className="text-[13px] font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
-          {isAddMode ? "Initial Balance" : "Balance"}
+          {isAddMode ? t("form.initialBalance") : t("form.balance")}
         </label>
         <div className="relative">
           <input
@@ -228,7 +231,7 @@ export function WalletForm({
             onChange={(e) => setBalance(e.target.value)}
             onFocus={handleBalanceFocus}
             onBlur={handleBalanceBlur}
-            placeholder="Enter the balance"
+            placeholder={t("form.balancePlaceholder")}
             className={cn(
               "w-full px-4 pr-12 rounded-[12px] text-[15px] outline-none transition-colors",
               "border",
@@ -285,12 +288,12 @@ export function WalletForm({
               className="inline-block w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
               aria-hidden="true"
             />
-            Saving...
+            {tc("saving")}
           </>
         ) : isAddMode ? (
-          "Save"
+          tc("save")
         ) : (
-          "Save Changes"
+          tc("saveChanges")
         )}
       </button>
 

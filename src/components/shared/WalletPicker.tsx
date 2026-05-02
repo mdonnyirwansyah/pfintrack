@@ -7,6 +7,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import type { Wallet } from "@/lib/types/wallet";
+import { useTranslations } from "next-intl";
 
 interface WalletPickerProps {
   open: boolean;
@@ -24,6 +25,7 @@ export function WalletPicker({
   onSelect,
 }: WalletPickerProps) {
   const activeWallets = wallets.filter((w) => w.is_active);
+  const t = useTranslations("walletPicker");
 
   return (
     <Drawer open={open} onClose={onClose}>
@@ -39,14 +41,14 @@ export function WalletPicker({
             className="text-[17px] font-semibold text-left"
             style={{ color: "var(--text-primary)" }}
           >
-            Select Wallet
+            {t("title")}
           </DrawerTitle>
         </DrawerHeader>
 
         <div className="p-4 pb-8" style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}>
           {activeWallets.length === 0 ? (
             <p className="text-center text-[15px] py-8" style={{ color: "var(--text-tertiary)" }}>
-              No wallets available
+              {t("noWallets")}
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-3">

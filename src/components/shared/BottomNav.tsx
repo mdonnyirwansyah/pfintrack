@@ -10,42 +10,19 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
-const NAV_TABS = [
-  {
-    label: "Transactions",
-    href: "/transactions",
-    icon: BookOpen,
-    prefix: "/transactions",
-  },
-  {
-    label: "Wallet",
-    href: "/wallet",
-    icon: CreditCard,
-    prefix: "/wallet",
-  },
-  {
-    label: "Loan",
-    href: "/loan",
-    icon: LayoutDashboard,
-    prefix: "/loan",
-  },
-  {
-    label: "Report",
-    href: "/report",
-    icon: BarChart2,
-    prefix: "/report",
-  },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-    prefix: "/settings",
-  },
-] as const;
+const NAV_TAB_DEFS = [
+  { key: "transactions" as const, href: "/transactions", icon: BookOpen, prefix: "/transactions" },
+  { key: "wallet" as const, href: "/wallet", icon: CreditCard, prefix: "/wallet" },
+  { key: "loan" as const, href: "/loan", icon: LayoutDashboard, prefix: "/loan" },
+  { key: "report" as const, href: "/report", icon: BarChart2, prefix: "/report" },
+  { key: "settings" as const, href: "/settings", icon: Settings, prefix: "/settings" },
+];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   return (
     <nav
@@ -57,8 +34,9 @@ export function BottomNav() {
       }}
     >
       <div className="flex items-center justify-around h-[var(--bottom-nav-height)]">
-        {NAV_TABS.map(({ label, href, icon: Icon, prefix }) => {
+        {NAV_TAB_DEFS.map(({ key, href, icon: Icon, prefix }) => {
           const isActive = pathname.startsWith(prefix);
+          const label = t(key);
 
           return (
             <Link

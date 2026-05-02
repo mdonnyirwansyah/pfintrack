@@ -1,0 +1,266 @@
+{
+  "nav": {
+    "transactions": "Transaksi",
+    "wallet": "Dompet",
+    "loan": "Pinjaman",
+    "report": "Laporan",
+    "settings": "Pengaturan"
+  },
+  "common": {
+    "save": "Simpan",
+    "saveChanges": "Simpan Perubahan",
+    "saving": "Menyimpan...",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "add": "Tambah",
+    "back": "Kembali",
+    "close": "Tutup",
+    "confirm": "Konfirmasi",
+    "search": "Cari",
+    "clear": "Hapus",
+    "soon": "Segera",
+    "noData": "Tidak ada data",
+    "items": "{count} item"
+  },
+  "splash": {
+    "tagline": "Manajer Keuangan Pribadi"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "appearance": "Tampilan",
+    "language": "Bahasa",
+    "about": "Tentang",
+    "theme": {
+      "light": "Terang",
+      "dark": "Gelap",
+      "system": "Sistem"
+    },
+    "lang": {
+      "en": "English",
+      "id": "Indonesia"
+    }
+  },
+  "wallet": {
+    "title": "Dompet",
+    "addTitle": "Tambah Dompet",
+    "editTitle": "Edit Dompet",
+    "totalBalance": "Total Saldo",
+    "currentBalance": "Saldo Saat Ini",
+    "noWallets": "Belum ada dompet",
+    "noWalletsDesc": "Tambah dompet pertama Anda menggunakan tombol +.",
+    "notFound": "Dompet tidak ditemukan",
+    "backToList": "Kembali ke daftar dompet",
+    "form": {
+      "name": "Nama Dompet",
+      "namePlaceholder": "Masukkan nama",
+      "type": "Jenis Dompet",
+      "balance": "Saldo",
+      "initialBalance": "Saldo Awal",
+      "balancePlaceholder": "Masukkan saldo"
+    },
+    "types": {
+      "bank": "Bank",
+      "bank_digital": "Bank Digital",
+      "e_wallet": "E-Wallet",
+      "investment": "Investasi",
+      "savings": "Tabungan",
+      "digital_asset": "Aset Digital",
+      "other": "Lainnya"
+    },
+    "validation": {
+      "nameRequired": "Nama dompet tidak boleh kosong",
+      "nameTooShort": "Nama minimal 2 karakter",
+      "nameTooLong": "Nama maksimal 50 karakter",
+      "nameTaken": "Nama dompet sudah digunakan",
+      "balanceRequired": "Saldo tidak boleh kosong",
+      "balanceInvalid": "Saldo harus berupa angka positif",
+      "balanceExceeds": "Saldo melebihi batas maksimum"
+    },
+    "deleteConfirm": {
+      "title": "Hapus Dompet?",
+      "description": "Dompet {name} akan dihapus. Tindakan ini tidak dapat dibatalkan.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    }
+  },
+  "transactions": {
+    "title": "Transaksi",
+    "history": "Riwayat",
+    "addIncome": "Tambah Pemasukan",
+    "addExpense": "Tambah Pengeluaran",
+    "addTransfer": "Tambah Transfer",
+    "editIncome": "Edit Pemasukan",
+    "editExpense": "Edit Pengeluaran",
+    "editTransfer": "Edit Transfer",
+    "noData": "Tidak ada data",
+    "noDataDesc": "Belum ada transaksi hari ini. Ketuk + untuk menambah.",
+    "searchPlaceholder": "Cari transaksi...",
+    "noResults": "Tidak ditemukan",
+    "noResultsDesc": "Tidak ada transaksi yang sesuai pencarian.",
+    "noHistory": "Belum ada transaksi",
+    "noHistoryDesc": "Tambah transaksi pertama Anda menggunakan tombol +.",
+    "summary": {
+      "income": "Pemasukan",
+      "expenses": "Pengeluaran",
+      "balance": "Saldo"
+    },
+    "fab": {
+      "expense": "Pengeluaran",
+      "income": "Pemasukan",
+      "transfer": "Transfer"
+    },
+    "form": {
+      "amount": "Nominal",
+      "amountPlaceholder": "Masukkan nominal",
+      "title": "Judul",
+      "titlePlaceholder": "Masukkan judul (opsional)",
+      "category": "Kategori",
+      "description": "Deskripsi",
+      "descriptionPlaceholder": "Masukkan deskripsi (opsional)",
+      "date": "Tanggal",
+      "time": "Waktu",
+      "wallet": "Dompet",
+      "sourceWallet": "Dompet Asal",
+      "destWallet": "Dompet Tujuan",
+      "selectWallet": "Pilih Dompet",
+      "insufficientBalance": "Saldo dompet tidak mencukupi"
+    },
+    "deleteConfirm": {
+      "title": "Hapus Transaksi?",
+      "description": "Transaksi ini akan dihapus dan saldo dompet akan disesuaikan.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    }
+  },
+  "loan": {
+    "title": "Pinjaman",
+    "addGive": "Tambah Pinjam Keluar",
+    "addGet": "Tambah Pinjam Masuk",
+    "editEntry": "Edit Entri",
+    "noCounterparties": "Belum ada rekanan",
+    "noCounterpartiesDesc": "Ketuk + untuk mencatat pinjam keluar atau masuk",
+    "noEntries": "Belum ada entri",
+    "noEntriesDesc": "Ketuk + untuk mencatat pinjam keluar atau masuk",
+    "paidOff": "Lunas",
+    "markPaidOff": "Tandai Lunas",
+    "unmarkPaidOff": "Batal Tandai Lunas",
+    "withoutExplanation": "Tanpa keterangan",
+    "summary": {
+      "get": "Masuk",
+      "give": "Keluar",
+      "balance": "Saldo"
+    },
+    "fab": {
+      "give": "Keluar",
+      "get": "Masuk"
+    },
+    "form": {
+      "date": "Tanggal",
+      "time": "Waktu",
+      "amount": "Nominal",
+      "name": "Nama",
+      "namePlaceholder": "Masukkan nama",
+      "walletOptional": "Dompet (opsional)",
+      "selectWalletOptional": "Pilih Dompet (opsional)",
+      "noteOptional": "Catatan (opsional)",
+      "notePlaceholder": "Catatan (opsional)",
+      "clearWallet": "Hapus",
+      "saveGive": "Simpan Keluar",
+      "saveGet": "Simpan Masuk"
+    },
+    "rename": {
+      "title": "Ubah Nama",
+      "namePlaceholder": "Masukkan nama baru"
+    },
+    "deleteEntryConfirm": {
+      "title": "Hapus entri ini?",
+      "description": "Ini akan membatalkan perubahan saldo dompet yang disebabkan oleh entri ini.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "deleteCounterpartyConfirm": {
+      "title": "Hapus Rekanan?",
+      "description": "Semua entri pinjaman untuk {name} juga akan dihapus.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "validation": {
+      "dateRequired": "Tanggal harus dipilih",
+      "timeRequired": "Waktu harus dipilih",
+      "amountRequired": "Nominal tidak boleh kosong",
+      "amountInvalid": "Nominal harus lebih dari 0",
+      "amountExceeds": "Nominal melebihi batas maksimum",
+      "nameRequired": "Nama tidak boleh kosong",
+      "nameTooShort": "Nama minimal 2 karakter",
+      "nameTooLong": "Nama maksimal 50 karakter",
+      "noteTooLong": "Catatan maksimal 255 karakter",
+      "renameRequired": "Nama tidak boleh kosong",
+      "renameTaken": "Nama sudah dipakai"
+    }
+  },
+  "report": {
+    "title": "Laporan",
+    "tabs": {
+      "realtime": "Realtime",
+      "monthly": "Bulanan",
+      "custom": "Kustom"
+    },
+    "realtime": {
+      "noExpenses": "Tidak ada pengeluaran bulan ini",
+      "noExpensesDesc": "Transaksi yang ditandai sebagai pengeluaran akan muncul di sini."
+    },
+    "monthly": {
+      "noTransactions": "Belum ada transaksi",
+      "noTransactionsDesc": "Tambah transaksi pertama Anda untuk melihat laporan bulanan."
+    },
+    "custom": {
+      "noReports": "Belum ada laporan kustom",
+      "noReportsDesc": "Ketuk + untuk membuat laporan untuk rentang tanggal apa pun."
+    },
+    "detail": {
+      "noExpenses": "Tidak ada pengeluaran pada periode ini",
+      "noExpensesDesc": "Tidak ada transaksi pengeluaran untuk rentang tanggal yang dipilih.",
+      "noTransactions": "Tidak ada transaksi",
+      "noTransactionsDesc": "Tidak ada transaksi pengeluaran untuk \"{category}\"."
+    },
+    "allTransactions": "Semua Transaksi",
+    "categoryTransactions": "{category} — Transaksi",
+    "addReport": "Tambah Laporan",
+    "editReport": "Edit Laporan",
+    "reportName": "Nama Laporan",
+    "reportNamePlaceholder": "Masukkan nama laporan",
+    "startDate": "Tanggal Mulai",
+    "endDate": "Tanggal Selesai",
+    "deleteReportConfirm": {
+      "title": "Hapus Laporan?",
+      "description": "Laporan \"{name}\" akan dihapus.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "summary": {
+      "expenses": "Pengeluaran",
+      "income": "Pemasukan",
+      "balance": "Saldo",
+      "loan": "Pinjaman",
+      "balanceCorrection": "Koreksi Saldo"
+    },
+    "chart": {
+      "total": "Total"
+    },
+    "validation": {
+      "nameRequired": "Nama laporan tidak boleh kosong",
+      "nameTooShort": "Nama minimal 2 karakter",
+      "nameTooLong": "Nama maksimal 50 karakter",
+      "nameTaken": "Nama laporan sudah digunakan",
+      "startRequired": "Tanggal mulai tidak boleh kosong",
+      "endRequired": "Tanggal selesai tidak boleh kosong",
+      "endBeforeStart": "Tanggal selesai harus setelah tanggal mulai",
+      "rangeExceeds": "Rentang tidak boleh melebihi 10 tahun"
+    }
+  },
+  "walletPicker": {
+    "title": "Pilih Dompet",
+    "noWallets": "Tidak ada dompet tersedia"
+  }
+}

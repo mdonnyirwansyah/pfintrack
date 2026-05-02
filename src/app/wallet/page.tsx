@@ -10,11 +10,13 @@ import { WalletCard } from "@/features/wallet/components/WalletCard";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { formatIDR } from "@/lib/format/number";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 
 // [7] Wallet List
 export default function WalletPage() {
   const router = useRouter();
   const { wallets, isLoading, loadWallets } = useWalletStore();
+  const t = useTranslations("wallet");
 
   useEffect(() => {
     loadWallets();
@@ -25,7 +27,7 @@ export default function WalletPage() {
 
   return (
     <>
-      <AppHeader title="Wallet" />
+      <AppHeader title={t("title")} />
 
       <div className="px-4 py-4">
         {/* Total Balance row */}
@@ -37,7 +39,7 @@ export default function WalletPage() {
             className="text-[15px] font-semibold"
             style={{ color: "var(--text-secondary)" }}
           >
-            Total Balance
+            {t("totalBalance")}
           </span>
           {isLoading ? (
             <Skeleton className="h-7 w-32 rounded-lg" />
@@ -64,8 +66,8 @@ export default function WalletPage() {
         {!isLoading && sortedWallets.length === 0 && (
           <EmptyState
             icon={CreditCard}
-            title="No wallets yet"
-            description="Add your first wallet using the + button."
+            title={t("noWallets")}
+            description={t("noWalletsDesc")}
           />
         )}
 

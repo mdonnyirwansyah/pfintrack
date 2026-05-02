@@ -7,6 +7,7 @@ import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
+import { useTranslations } from "next-intl";
 
 export interface LoanEntryFormValues {
   transaction_date: string;
@@ -67,6 +68,8 @@ export function LoanEntryForm({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const selectedWallet = wallets.find((w) => w.id === values.wallet_id) ?? null;
+  const t = useTranslations("loan");
+  const tc = useTranslations("common");
 
   function set<K extends keyof LoanEntryFormValues>(
     key: K,
@@ -86,32 +89,32 @@ export function LoanEntryForm({
     );
 
     if (!values.transaction_date) {
-      errs.transaction_date = "Date is required";
+      errs.transaction_date = t("validation.dateRequired");
     }
     if (!values.transaction_time) {
-      errs.transaction_time = "Time is required";
+      errs.transaction_time = t("validation.timeRequired");
     }
     if (!values.amount.trim()) {
-      errs.amount = "Amount is required";
+      errs.amount = t("validation.amountRequired");
     } else if (isNaN(amountNum) || amountNum <= 0) {
-      errs.amount = "Amount must be greater than 0";
+      errs.amount = t("validation.amountInvalid");
     } else if (amountNum > MAX_AMOUNT) {
-      errs.amount = "Amount exceeds maximum limit";
+      errs.amount = t("validation.amountExceeds");
     }
 
     if (!isNameLocked) {
       const trimmedName = values.name.trim();
       if (!trimmedName) {
-        errs.name = "Name is required";
+        errs.name = t("validation.nameRequired");
       } else if (trimmedName.length < 2) {
-        errs.name = "Name must be at least 2 characters";
+        errs.name = t("validation.nameTooShort");
       } else if (trimmedName.length > 50) {
-        errs.name = "Name must be 50 characters or less";
+        errs.name = t("validation.nameTooLong");
       }
     }
 
     if (values.note.length > 255) {
-      errs.note = "Note must be 255 characters or less";
+      errs.note = t("validation.noteTooLong");
     }
 
     return errs;
@@ -140,7 +143,7 @@ export function LoanEntryForm({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Date
+            {t("form.date")}
           </label>
           <div
             className="relative flex items-center rounded-[12px] px-4"
@@ -175,7 +178,7 @@ export function LoanEntryForm({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Time
+            {t("form.time")}
           </label>
           <div
             className="relative flex items-center rounded-[12px] px-4"
@@ -210,7 +213,7 @@ export function LoanEntryForm({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Amount
+            {t("form.amount")}
           </label>
           <div
             className="relative flex items-center rounded-[12px] px-4"
@@ -223,7 +226,7 @@ export function LoanEntryForm({
             <input
               type="number"
               inputMode="decimal"
-              placeholder="Amount"
+              placeholder={t("form.amount")}
               value={values.amount}
               onChange={(e) => set("amount", e.target.value)}
               className="flex-1 bg-transparent outline-none text-[15px] py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -249,7 +252,7 @@ export function LoanEntryForm({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Name
+            {t("form.name")}
           </label>
           <div
             className="relative flex items-center rounded-[12px] px-4"
@@ -262,7 +265,7 @@ export function LoanEntryForm({
           >
             <input
               type="text"
-              placeholder="Enter the name"
+              placeholder={t("form.namePlaceholder")}
               value={values.name}
               onChange={(e) => set("name", e.target.value)}
               disabled={isNameLocked}
@@ -284,7 +287,7 @@ export function LoanEntryForm({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Wallet (optional)
+            {t("form.walletOptional")}
           </label>
           <button
             type="button"
@@ -306,7 +309,7 @@ export function LoanEntryForm({
             >
               {selectedWallet
                 ? selectedWallet.name
-                : "Select Wallet (optional)"}
+                : t("form.selectWalletOptional")}
             </span>
             <div className="flex items-center gap-2">
               {selectedWallet && (
@@ -329,7 +332,7 @@ export function LoanEntryForm({
                     background: "var(--bg-secondary)",
                   }}
                 >
-                  Clear
+                  {t("form.clearWallet")}
                 </span>
               )}
               <ChevronDown
@@ -346,7 +349,7 @@ export function LoanEntryForm({
             className="text-[13px] font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            Note (optional)
+            {t("form.noteOptional")}
           </label>
           <div
             className="relative rounded-[12px] px-4 py-3"
@@ -356,7 +359,7 @@ export function LoanEntryForm({
             }}
           >
             <textarea
-              placeholder="Note (optional)"
+              placeholder={t("form.notePlaceholder")}
               value={values.note}
               onChange={(e) => set("note", e.target.value)}
               maxLength={255}
@@ -391,7 +394,7 @@ export function LoanEntryForm({
             }}
           >
             <Trash2 className="w-4 h-4" />
-            <span className="text-[15px] font-medium">Delete Entry</span>
+            <span className="text-[15px] font-medium">{t("deleteEntryConfirm.confirm")} Entry</span>
           </button>
         )}
 
@@ -412,10 +415,10 @@ export function LoanEntryForm({
                 <span
                   className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
                 />
-                Saving...
+                {tc("saving")}
               </span>
             ) : (
-              `Save ${type === "give" ? "Give" : "Get"}`
+              type === "give" ? t("form.saveGive") : t("form.saveGet")
             )}
           </button>
         </div>
@@ -438,10 +441,10 @@ export function LoanEntryForm({
         <ConfirmDialog
           open={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
-          title="Delete this entry?"
-          description="This will roll back any wallet balance changes caused by this entry."
-          confirmLabel="Delete"
-          cancelLabel="Cancel"
+          title={t("deleteEntryConfirm.title")}
+          description={t("deleteEntryConfirm.description")}
+          confirmLabel={t("deleteEntryConfirm.confirm")}
+          cancelLabel={t("deleteEntryConfirm.cancel")}
           variant="destructive"
           onConfirm={() => {
             setIsDeleteDialogOpen(false);
