@@ -9,18 +9,23 @@ interface LoanSummaryBarProps {
 
 /**
  * Summary bar untuk halaman utama Loan.
- * - Give: uang yang Anda keluarkan — tampil tanpa tanda
- * - Get:  uang yang akan kembali ke Anda — tampil dengan "+" jika > 0
- * - Balance: net (Give − Get), tanpa tanda jika 0
+ * Konsep warna sama dengan SummaryBar di transactions:
+ * - Label  : var(--text-secondary)
+ * - Get    : var(--color-positive)
+ * - Give   : var(--color-negative)
+ * - Balance: dinamis berdasarkan nilai
  */
 export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
   const balance = totalGive - totalGet;
 
   const getPrefix = totalGet > 0 ? "+ " : "";
-  // balance < 0 berarti Get > Give (kelebihan bayar) → tampilkan "+ Rp X"
-  // balance > 0 berarti masih ada piutang → tanpa tanda
   const balancePrefix = balance < 0 ? "+ " : "";
-  const balanceDisplay = Math.abs(balance);
+  const balanceColor =
+    balance > 0
+      ? "var(--color-positive)"
+      : balance < 0
+      ? "var(--color-negative)"
+      : "var(--text-secondary)";
 
   return (
     <div
@@ -35,13 +40,13 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
-          style={{ color: "var(--color-accent-warm)" }}
+          style={{ color: "var(--text-secondary)" }}
         >
           Get
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
-          style={{ color: "var(--color-accent-warm)" }}
+          style={{ color: "var(--color-positive)" }}
         >
           {getPrefix}{formatIDR(totalGet)}
         </span>
@@ -57,7 +62,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
-          style={{ color: "var(--color-negative)" }}
+          style={{ color: "var(--text-secondary)" }}
         >
           Give
         </span>
@@ -79,15 +84,15 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
-          style={{ color: "#E91E8C" }}
+          style={{ color: "var(--text-secondary)" }}
         >
           Balance
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
-          style={{ color: "#E91E8C" }}
+          style={{ color: balanceColor }}
         >
-          {balancePrefix}{formatIDR(balanceDisplay)}
+          {balancePrefix}{formatIDR(Math.abs(balance))}
         </span>
       </div>
     </div>
