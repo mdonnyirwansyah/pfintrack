@@ -19,7 +19,6 @@ export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
       onClick={onClick}
       className="w-full glass flex items-center gap-3 px-4 py-3 rounded-[16px] text-left transition-all active:scale-[0.98]"
       style={{
-        boxShadow: "var(--shadow-sm)",
         minHeight: "var(--tap-target-min)",
       }}
     >

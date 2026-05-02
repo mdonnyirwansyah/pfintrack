@@ -53,7 +53,7 @@ export function BottomNav() {
       style={{
         height: "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom))",
         paddingBottom: "env(safe-area-inset-bottom)",
-        borderColor: "var(--border-default)",
+        borderColor: "var(--border-nav)",
       }}
     >
       <div className="flex items-center justify-around h-[var(--bottom-nav-height)]">

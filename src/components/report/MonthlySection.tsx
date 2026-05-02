@@ -22,7 +22,6 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
   return (
     <div
       className="glass rounded-[16px] p-4"
-      style={{ boxShadow: "var(--shadow-sm)" }}
     >
       {/* Header row */}
       <button

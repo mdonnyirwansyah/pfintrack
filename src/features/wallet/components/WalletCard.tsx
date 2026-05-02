@@ -34,7 +34,7 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
     <button
       onClick={onPress}
       className="w-full glass rounded-[16px] px-4 py-3 text-left transition-all active:scale-[0.98] flex items-center gap-3"
-      style={{ boxShadow: "var(--shadow-sm)", minHeight: "var(--tap-target-min)" }}
+      style={{ minHeight: "var(--tap-target-min)" }}
     >
       {/* Icon */}
       <div

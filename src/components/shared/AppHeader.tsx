@@ -47,7 +47,7 @@ export function AppHeader({
       style={{
         height: "var(--header-height)",
         paddingTop: "env(safe-area-inset-top)",
-        borderColor: "var(--border-default)",
+        borderColor: "var(--border-nav)",
         ...style,
       }}
     >

@@ -29,9 +29,7 @@ export default function SettingsPage() {
   const rowClass =
     "flex items-center justify-between px-4 py-3.5 transition-opacity active:opacity-70";
   const sectionClass = "glass rounded-[16px] overflow-hidden mb-4";
-  const sectionStyle = {
-    boxShadow: "var(--shadow-sm)",
-  };
+  const sectionStyle = {};
   const dividerStyle = { height: 1, background: "var(--divider)", marginInline: 16 };
 
   return (

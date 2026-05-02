@@ -107,7 +107,7 @@ export default function EditWalletPage({
         {/* Current balance info */}
         <div
           className="glass rounded-[16px] px-4 py-3 mb-4 flex items-center justify-between"
-          style={{ boxShadow: "var(--shadow-sm)" }}
+          style={{}}
         >
           <span
             className="text-[13px] font-medium"

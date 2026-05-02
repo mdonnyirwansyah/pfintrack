@@ -31,7 +31,7 @@ export default function WalletPage() {
         {/* Total Balance row */}
         <div
           className="glass rounded-[16px] px-4 py-4 mb-4 flex items-center justify-between"
-          style={{ boxShadow: "var(--shadow-md)" }}
+          style={{}}
         >
           <span
             className="text-[15px] font-semibold"

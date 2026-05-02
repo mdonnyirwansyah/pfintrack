@@ -23,7 +23,6 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
   return (
     <div
       className="mx-4 mb-3 glass rounded-[16px] flex overflow-hidden"
-      style={{ boxShadow: "var(--shadow-sm)" }}
     >
       {/* Income */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">

@@ -160,7 +160,6 @@ export default function TransactionHistoryPage() {
               {/* Transactions for this date */}
               <div
                 className="glass rounded-[16px] overflow-hidden"
-                style={{ boxShadow: "var(--shadow-sm)" }}
               >
                 {txns.map((tx, idx) => (
                   <div key={tx.id}>

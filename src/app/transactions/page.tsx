@@ -173,7 +173,6 @@ function TransactionsContent() {
         ) : (
           <div
             className="mx-4 glass rounded-[16px] overflow-hidden"
-            style={{ boxShadow: "var(--shadow-sm)" }}
           >
             {dailyTransactions.map((tx, idx) => (
               <div key={tx.id}>

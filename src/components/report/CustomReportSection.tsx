@@ -32,7 +32,6 @@ export function CustomReportSection({
   return (
     <div
       className="glass rounded-[16px] p-4"
-      style={{ boxShadow: "var(--shadow-sm)" }}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-1">

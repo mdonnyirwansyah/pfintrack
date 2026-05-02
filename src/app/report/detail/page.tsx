@@ -38,25 +38,36 @@ function ReportDetailContent() {
     categoryParam ?? null
   );
 
-  // Transactions to show in the drill-down list
+  // All expense transactions for the period, sorted by date DESC
+  const allExpenses = useMemo(
+    () =>
+      transactions
+        .filter(
+          (t) =>
+            t.is_active &&
+            t.type === "expense" &&
+            t.transaction_date >= start &&
+            t.transaction_date <= end
+        )
+        .sort(
+          (a, b) =>
+            b.transaction_date.localeCompare(a.transaction_date) ||
+            b.transaction_time.localeCompare(a.transaction_time)
+        ),
+    [transactions, start, end]
+  );
+
+  // Filtered by selected category, or all expenses when none selected
   const drillTransactions = useMemo(() => {
-    if (!selectedCategory) return [];
+    if (!selectedCategory) return allExpenses;
 
     if (selectedCategory === "Lainnya") {
-      // Lainnya = all categories not in top 8
       const top8 = breakdown.slice(0, 8).map((b) => b.category);
-      return transactions.filter(
-        (t) =>
-          t.is_active &&
-          t.type === "expense" &&
-          t.transaction_date >= start &&
-          t.transaction_date <= end &&
-          !top8.includes(t.category ?? "Other")
-      );
+      return allExpenses.filter((t) => !top8.includes(t.category ?? "Other"));
     }
 
     return getTransactionsForCategory(transactions, start, end, selectedCategory);
-  }, [transactions, start, end, selectedCategory, breakdown]);
+  }, [transactions, start, end, selectedCategory, breakdown, allExpenses]);
 
   const headerTitle = nameParam
     ? nameParam
@@ -97,59 +108,58 @@ function ReportDetailContent() {
           />
         )}
 
-        {/* Drill-down transaction list */}
-        {selectedCategory && drillTransactions.length > 0 && (
-          <div className="space-y-3 mt-4">
-            <h2
-              className="text-[15px] font-semibold"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {selectedCategory} — Transactions
-            </h2>
-            <div className="space-y-2">
-              {drillTransactions
-                .sort(
-                  (a, b) =>
-                    b.transaction_date.localeCompare(a.transaction_date) ||
-                    b.transaction_time.localeCompare(a.transaction_time)
-                )
-                .map((t) => (
-                  <div
-                    key={t.id}
-                    className="glass rounded-[12px] p-3 flex items-center justify-between"
-                  >
-                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+        {/* Transaction list */}
+        {breakdown.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                {selectedCategory ? `${selectedCategory} — Transactions` : "All Transactions"}
+              </h2>
+              <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+                {drillTransactions.length} item{drillTransactions.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+
+            {drillTransactions.length === 0 ? (
+              <EmptyState
+                icon={PackageOpen}
+                title="No transactions"
+                description={`No expense transactions found for "${selectedCategory}".`}
+              />
+            ) : (
+              <div className="glass rounded-[16px] overflow-hidden">
+                {drillTransactions.map((t, idx) => (
+                  <div key={t.id}>
+                    {idx > 0 && (
+                      <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
+                    )}
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                        <span
+                          className="text-[14px] font-medium truncate"
+                          style={{ color: "var(--text-primary)" }}
+                        >
+                          {t.title ?? t.category ?? "Expense"}
+                        </span>
+                        <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                          {t.category && (
+                            <span style={{ color: "var(--text-tertiary)" }}>{t.category} · </span>
+                          )}
+                          {formatDisplayDate(t.transaction_date)}
+                        </span>
+                      </div>
                       <span
-                        className="text-[14px] font-medium truncate"
-                        style={{ color: "var(--text-primary)" }}
+                        className="text-[14px] font-semibold tabular-nums ml-3 flex-shrink-0"
+                        style={{ color: "var(--color-negative)" }}
                       >
-                        {t.title ?? t.category ?? "Expense"}
-                      </span>
-                      <span
-                        className="text-[12px]"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        {formatDisplayDate(t.transaction_date)}
+                        -{formatIDR(t.amount)}
                       </span>
                     </div>
-                    <span
-                      className="text-[14px] font-semibold tabular-nums ml-3 flex-shrink-0"
-                      style={{ color: "var(--color-negative)" }}
-                    >
-                      - {formatIDR(t.amount)}
-                    </span>
                   </div>
                 ))}
-            </div>
+              </div>
+            )}
           </div>
-        )}
-
-        {selectedCategory && drillTransactions.length === 0 && (
-          <EmptyState
-            icon={PackageOpen}
-            title="No transactions"
-            description={`No expense transactions found for "${selectedCategory}".`}
-          />
         )}
       </div>
     </>

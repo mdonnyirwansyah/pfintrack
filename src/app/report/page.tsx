@@ -59,6 +59,7 @@ export default function ReportPage() {
           className="flex items-center rounded-full p-1 gap-1"
           style={{
             background: "var(--bg-secondary)",
+            boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), inset 0 0.5px 1px rgba(0,0,0,0.04)",
           }}
         >
           {TABS.map(({ id, label }) => (
@@ -76,6 +77,10 @@ export default function ReportPage() {
                   activeTab === id
                     ? "var(--text-on-primary)"
                     : "var(--color-brand)",
+                boxShadow:
+                  activeTab === id
+                    ? "0 2px 8px rgba(91,141,239,0.35), 0 1px 3px rgba(0,0,0,0.12)"
+                    : "none",
               }}
               onClick={() => handleTabChange(id)}
             >
