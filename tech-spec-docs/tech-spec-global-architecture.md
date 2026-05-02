@@ -108,21 +108,22 @@
 |----------|-------------|
 | Posisi | Fixed bottom |
 | Tinggi | `60px` + safe area inset bottom |
-| Jumlah tab | **4 tab** (sebelumnya 5 — Settings dihapus dari scope) |
-| Background | Putih dengan border-top tipis |
+| Jumlah tab | **5 tab** |
+| Background | `glass-nav` glassmorphism dengan border-top tipis |
 
-**Daftar tab:**
+**Daftar tab (urut kiri ke kanan):**
 
 | Urutan | Label | Ikon | Route | Default tab? |
 |--------|-------|------|-------|-------------|
-| 1 | Transactions | Buku terbuka 📖 | `/transactions` | ✅ Ya |
-| 2 | Wallet | Kartu kredit 💳 | `/wallet` | |
-| 3 | Report | Bar chart 📊 | `/report` | |
-| 4 | Loan | Layout/dashboard | `/loan` | |
+| 1 | Transactions | BookOpen | `/transactions` | ✅ Ya |
+| 2 | Wallet | CreditCard | `/wallet` | |
+| 3 | Loan | LayoutDashboard | `/loan` | |
+| 4 | Report | BarChart2 | `/report` | |
+| 5 | Settings | Settings (gear) | `/settings` | ← paling kanan |
 
 **Aturan visual tab aktif:**
-- Tab aktif: ikon dan label berwarna biru `#2196F3`, ikon dalam bentuk filled
-- Tab non-aktif: ikon dan label berwarna abu `#9E9E9E`, ikon dalam bentuk outline
+- Tab aktif: ikon dan label berwarna `var(--nav-active)`, `strokeWidth: 2.5`
+- Tab non-aktif: ikon dan label berwarna `var(--nav-inactive)`, `strokeWidth: 1.5`
 - Penentuan tab aktif berdasarkan **prefix path**: tab Transactions aktif jika path dimulai dengan `/transactions`, Wallet jika `/wallet`, dst.
 
 ### 3.3 Floating Action Button (FAB)
@@ -244,40 +245,67 @@ Semua nilai uang ditampilkan dengan **locale Indonesia (`id-ID`)**:
 
 ### 4.3 Palet Warna
 
-| Warna | Kode | Penggunaan |
-|-------|------|-----------|
-| Biru utama | `#2196F3` | Header form, FAB primer, tab aktif, tombol Save, accent buttons |
-| Biru muda | `#A6D5F2` | Header beberapa list (Transactions, Loan) |
-| Hijau (positive) | `#4CAF50` (atau senada) | Income, Get loan, Balance positif, Paid off, "+ angka" |
-| Merah (negative) | `#F44336` (atau senada) | Expense, Give loan, Balance negatif, "- angka", tombol Delete |
-| Oranye | `#FF9800` (atau senada) | FAB sub-action Income, FAB sub-action Get di Loan, accent Get summary |
-| Pink | senada | Outstanding/Selisih di Loan Detail |
-| Abu primer | `#212121` | Teks utama |
-| Abu sekunder | `#757575` | Teks subtitle, label form |
-| Abu divider | `#E0E0E0` | Garis pemisah antar item |
-| Putih | `#FFFFFF` | Background konten utama |
+> Semua warna **wajib** diakses via CSS custom property — **jangan hardcode hex** di komponen TSX.
+
+**Token canonical (gunakan nama ini di kode):**
+
+| Token CSS | Light | Dark | Penggunaan |
+|-----------|-------|------|-----------|
+| `--color-brand` | `#5B8DEF` | `#7BA4F7` | FAB, tombol Save/primary, tab aktif, chip, link |
+| `--color-brand-soft` | `rgba(91,141,239,0.12)` | `rgba(123,164,247,0.15)` | Background pill/chip soft, icon badge |
+| `--color-positive` | `#34C759` | `#30D158` | Income, Get loan, Balance positif |
+| `--color-negative` | `#FF6B6B` | `#FF6B6B` | Expense, Give loan, Balance negatif, tombol Delete |
+| `--color-accent` | `#FF9F43` | `#FFB340` | FAB Income/Get, warning, badge |
+| `--color-accent-soft` | `rgba(255,159,67,0.12)` | `rgba(255,179,64,0.15)` | Background accent soft |
+| `--text-primary` | `#1C1C1E` | `#F2F2F7` | Teks utama |
+| `--text-secondary` | `#8E8E93` | `#8E8E93` | Teks label, subtitle |
+| `--text-tertiary` | `#AEAEB2` | `#636366` | Teks meta, caption, tab inactive |
+| `--text-on-primary` | `#FFFFFF` | `#FFFFFF` | Teks di atas background berwarna |
+| `--bg-primary` | `#F8F9FB` | `#0F0F14` | Background halaman |
+| `--bg-secondary` | `#F0F1F5` | `#1A1A24` | Background input, section |
+| `--bg-card` | `rgba(255,255,255,0.72)` | `rgba(30,30,42,0.72)` | Card glass |
+| `--border-default` | `rgba(0,0,0,0.06)` | `rgba(255,255,255,0.08)` | Border card, input |
+| `--divider` | `rgba(0,0,0,0.08)` | `rgba(255,255,255,0.06)` | Garis pemisah list |
+| `--shadow-sm/md/lg` | — | — | Box shadow bertingkat |
+
+**Alias (valid tapi deprecated — gunakan canonical di atas):**
+- `--color-accent-warm` → alias ke `--color-accent`
+- `--color-accent-warm-soft` → alias ke `--color-accent-soft`
 
 ### 4.4 Tipografi
 
-| Elemen | Style |
-|--------|-------|
-| Header title | Bold, 18–20px, putih |
-| Section header | Bold, 16–18px |
-| Item title (list) | Semi-bold, 16px |
-| Item subtitle (list) | Reguler, 14px, abu |
-| Body | Reguler, 14–16px |
-| Number (saldo, nominal) | Semi-bold, 16–24px tergantung konteks |
-| Caption | Reguler, 12px, abu |
+Font: **Inter** (via `next/font/google`). Skala mengikuti iOS SF Pro.
+
+| Elemen | Tailwind class | Keterangan |
+|--------|---------------|-----------|
+| Page title / large amount | `text-[22px] font-bold` | Heading utama halaman |
+| Section title / header | `text-[17px] font-semibold` | Sub-heading, judul section |
+| List item title | `text-[15px] font-semibold` | Nama wallet, judul transaksi |
+| List item subtitle/meta | `text-[13px]` `color: --text-secondary` | Tipe, tanggal, keterangan singkat |
+| Amount (body row) | `text-[15px] font-semibold tabular-nums` | Nominal di list |
+| Amount (card/summary) | `text-[17px] font-semibold tabular-nums` | Balance di card info |
+| Summary bar value | `text-[14px] font-semibold tabular-nums` | Income/Expense/Balance bar |
+| Summary bar label | `text-[11px] font-medium uppercase` | Label di atas value summary bar |
+| Form input | `text-[15px]` | Isi field input/select |
+| Form label | `text-[13px] font-medium` `color: --text-secondary` | Label di atas input |
+| Error message | `text-[12px]` `color: --color-negative` | Pesan validasi |
+| Caption / meta | `text-[12px]` `color: --text-tertiary` | Waktu, hint, keterangan tambahan |
+| Section header caps | `text-[12px] font-semibold uppercase tracking-wider` | Header section Settings dll |
+| Nav tab label | `text-[10px] font-medium` | Label Bottom Navigation |
+
+**Aturan angka:** Semua nominal uang **wajib** pakai `tabular-nums` agar digit sejajar.
 
 ### 4.5 Spacing & Layout
 
 | Aspek | Nilai |
 |-------|-------|
-| Padding container | 16px horizontal |
-| Spacing antar field form | 12–16px vertikal |
-| Tap target minimum | 44x44px (sesuai standar mobile) |
-| Border radius card/input | 8px |
-| Border radius FAB | 50% (lingkaran penuh) |
+| Padding container | `16px` horizontal (`px-4`) |
+| Spacing antar field form | `16px` (`gap-4`) |
+| Tap target minimum | `44×44px` (`var(--tap-target-min)`) |
+| Border radius card | `16px` (`rounded-[16px]`) |
+| Border radius input/button | `12px` (`rounded-[12px]`) |
+| Border radius FAB | `9999px` (lingkaran penuh) |
+| Border radius pill/chip | `9999px` (`rounded-full`) |
 | Border radius button | 8px |
 | Drop shadow card | `0 2px 8px rgba(0,0,0,0.08)` |
 
@@ -534,7 +562,52 @@ Berlaku di seluruh modul.
 
 ---
 
-## 11. Daftar Dokumen Spesifikasi
+---
+
+## 11. Module Settings (`/settings`)
+
+Route tunggal, tab ke-4 di Bottom Navigation (di sebelah kiri Report).
+
+### 11.1 Screens
+
+**Screen: Settings (`/settings`)**
+
+| Section | Komponen | Deskripsi |
+|---------|----------|-----------|
+| **Appearance** | Theme selector | 3 opsi: **Light** · **Dark** · **System** (mengikuti OS). Opsi aktif ditandai checkmark + warna primary. Menggunakan `next-themes` `setTheme()`. |
+| **Language** | Language selector | 2 opsi: **English** (aktif) · **Indonesia** (badge "Soon" — belum diimplementasi). Lihat §11.2 untuk rencana i18n. |
+| **About** | Info row | Nama app + versi (mis. `v0.1.0`). |
+
+### 11.2 Rencana i18n (Fase 1.5 — belum diimplementasi)
+
+Language switch Indonesia/English direncanakan dengan pendekatan berikut:
+
+| Aspek | Rencana |
+|-------|---------|
+| **Storage** | Preference disimpan di `localStorage['app_settings']` (key baru, bukan bagian 7 key utama) |
+| **State** | Zustand store `useAppSettingsStore` — field `language: "en" \| "id"` |
+| **Text strings** | Dictionary di `src/lib/i18n/en.ts` dan `src/lib/i18n/id.ts`, diakses via hook `useT()` |
+| **Scope terjemahan** | Label UI, placeholder, pesan error validasi, empty state, header titles, dialog text |
+| **TIDAK diterjemahkan** | Format tanggal (tetap English per §4.2), format angka (tetap id-ID Intl), nama field record di storage |
+| **Default** | English (`"en"`) |
+
+### 11.3 Konsistensi Text — Aturan Fase 1
+
+Sampai i18n diimplementasi, **semua UI text menggunakan English**:
+
+| Kategori | Contoh benar | Contoh salah |
+|----------|-------------|-------------|
+| Validation errors | `"Date is required"` | `"Tanggal harus dipilih"` |
+| Empty states | `"No wallets yet"` | `"Belum ada wallet"` |
+| Confirm dialogs | `"Delete Wallet?"` / `"Cancel"` / `"Delete"` | `"Hapus Wallet?"` / `"Batal"` / `"Hapus"` |
+| Warning messages | `"Insufficient wallet balance"` | `"Saldo wallet tidak mencukupi"` |
+| Fallback labels | `"Without explanation"` | `"Tanpa keterangan"` |
+| Amount field | `"Amount is required"` | `"Nominal tidak boleh kosong"` |
+| Name field | `"Name is required"` | `"Nama tidak boleh kosong"` |
+
+---
+
+## 12. Daftar Dokumen Spesifikasi
 
 Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
 
@@ -555,4 +628,4 @@ Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
 
 ---
 
-*— End of Technical Specification: Global Architecture (v1.0 Final) —*
+*— End of Technical Specification: Global Architecture (v1.1) —*

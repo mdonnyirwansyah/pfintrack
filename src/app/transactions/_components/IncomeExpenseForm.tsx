@@ -83,17 +83,17 @@ export function IncomeExpenseForm({
     const e: FormErrors = {};
     const amount = parseFloat(form.amount) || 0;
 
-    if (!form.transaction_date) e.transaction_date = "Tanggal harus dipilih";
-    if (!form.transaction_time) e.transaction_time = "Waktu harus dipilih";
-    if (!form.wallet_id) e.wallet_id = "Pilih wallet terlebih dahulu";
-    if (!form.amount) e.amount = "Nominal tidak boleh kosong";
-    else if (amount <= 0) e.amount = "Nominal harus lebih dari 0";
-    else if (amount > 999_999_999_999.99) e.amount = "Nominal melebihi batas maksimum";
-    if (!form.title.trim()) e.title = "Title tidak boleh kosong";
-    else if (form.title.trim().length > 100) e.title = "Title maksimal 100 karakter";
-    if (!form.category.trim()) e.category = "Category tidak boleh kosong";
-    else if (form.category.trim().length > 50) e.category = "Category maksimal 50 karakter";
-    if (form.description.trim().length > 255) e.description = "Description maksimal 255 karakter";
+    if (!form.transaction_date) e.transaction_date = "Date is required";
+    if (!form.transaction_time) e.transaction_time = "Time is required";
+    if (!form.wallet_id) e.wallet_id = "Please select a wallet";
+    if (!form.amount) e.amount = "Amount is required";
+    else if (amount <= 0) e.amount = "Amount must be greater than 0";
+    else if (amount > 999_999_999_999.99) e.amount = "Amount exceeds maximum limit";
+    if (!form.title.trim()) e.title = "Title is required";
+    else if (form.title.trim().length > 100) e.title = "Title must be 100 characters or less";
+    if (!form.category.trim()) e.category = "Category is required";
+    else if (form.category.trim().length > 50) e.category = "Category must be 50 characters or less";
+    if (form.description.trim().length > 255) e.description = "Description must be 255 characters or less";
 
     return e;
   };

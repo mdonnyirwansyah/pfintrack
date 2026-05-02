@@ -31,10 +31,10 @@ const WALLET_TYPE_OPTIONS: { value: WalletType; label: string }[] = [
   { value: "bank", label: "Bank" },
   { value: "bank_digital", label: "Bank Digital" },
   { value: "e_wallet", label: "E-Wallet" },
-  { value: "investment", label: "Investasi" },
-  { value: "savings", label: "Tabungan Khusus" },
-  { value: "digital_asset", label: "Aset Digital" },
-  { value: "other", label: "Lainnya" },
+  { value: "investment", label: "Investment" },
+  { value: "savings", label: "Savings" },
+  { value: "digital_asset", label: "Digital Asset" },
+  { value: "other", label: "Other" },
 ];
 
 const MAX_BALANCE = 999_999_999_999.99;
@@ -47,24 +47,24 @@ function validateForm(
 
   const trimmedName = values.name.trim();
   if (!trimmedName) {
-    errors.name = "Nama wallet tidak boleh kosong";
+    errors.name = "Wallet name is required";
   } else if (trimmedName.length < 2) {
-    errors.name = "Nama minimal 2 karakter";
+    errors.name = "Name must be at least 2 characters";
   } else if (trimmedName.length > 50) {
-    errors.name = "Nama maksimal 50 karakter";
+    errors.name = "Name must be 50 characters or less";
   } else if (isNameTaken(trimmedName)) {
-    errors.name = "Nama wallet sudah digunakan";
+    errors.name = "Wallet name is already taken";
   }
 
   const balanceStr = values.balance.trim();
   if (!balanceStr) {
-    errors.balance = "Saldo tidak boleh kosong";
+    errors.balance = "Balance is required";
   } else {
     const parsed = parseIDR(balanceStr);
     if (isNaN(parsed) || parsed < 0) {
-      errors.balance = "Saldo harus berupa angka positif";
+      errors.balance = "Balance must be a positive number";
     } else if (parsed > MAX_BALANCE) {
-      errors.balance = "Saldo melebihi batas maksimum";
+      errors.balance = "Balance exceeds maximum limit";
     }
   }
 
@@ -153,7 +153,7 @@ export function WalletForm({
           maxLength={50}
           autoComplete="off"
           className={cn(
-            "w-full px-4 rounded-[12px] text-[16px] outline-none transition-colors",
+            "w-full px-4 rounded-[12px] text-[15px] outline-none transition-colors",
             "border",
             errors.name
               ? "border-[var(--color-negative)]"
@@ -162,7 +162,7 @@ export function WalletForm({
           style={{
             minHeight: "var(--tap-target-min)",
             color: "var(--text-primary)",
-            backgroundColor: "var(--bg-card)",
+            backgroundColor: "var(--bg-secondary)",
           }}
           aria-describedby={errors.name ? "wallet-name-error" : undefined}
           aria-invalid={errors.name ? true : undefined}
@@ -193,13 +193,13 @@ export function WalletForm({
           value={walletType}
           onChange={(e) => setWalletType(e.target.value as WalletType)}
           className={cn(
-            "w-full px-4 rounded-[12px] text-[16px] outline-none transition-colors appearance-none",
+            "w-full px-4 rounded-[12px] text-[15px] outline-none transition-colors appearance-none",
             "border border-[var(--border-default)] focus:border-[var(--color-brand)]"
           )}
           style={{
             minHeight: "var(--tap-target-min)",
             color: "var(--text-primary)",
-            backgroundColor: "var(--bg-card)",
+            backgroundColor: "var(--bg-secondary)",
           }}
         >
           {WALLET_TYPE_OPTIONS.map((opt) => (
@@ -230,7 +230,7 @@ export function WalletForm({
             onBlur={handleBalanceBlur}
             placeholder="Enter the balance"
             className={cn(
-              "w-full px-4 pr-12 rounded-[12px] text-[16px] outline-none transition-colors",
+              "w-full px-4 pr-12 rounded-[12px] text-[15px] outline-none transition-colors",
               "border",
               errors.balance
                 ? "border-[var(--color-negative)]"
@@ -239,7 +239,7 @@ export function WalletForm({
             style={{
               minHeight: "var(--tap-target-min)",
               color: "var(--text-primary)",
-              backgroundColor: "var(--bg-card)",
+              backgroundColor: "var(--bg-secondary)",
             }}
             aria-describedby={errors.balance ? "wallet-balance-error" : undefined}
             aria-invalid={errors.balance ? true : undefined}
@@ -269,7 +269,7 @@ export function WalletForm({
         type="submit"
         disabled={isSubmitting}
         className={cn(
-          "w-full rounded-[12px] text-[16px] font-semibold transition-all active:scale-[0.98]",
+          "w-full rounded-[12px] text-[15px] font-semibold transition-all active:scale-[0.98]",
           "flex items-center justify-center gap-2",
           isSubmitting && "opacity-70 cursor-not-allowed"
         )}

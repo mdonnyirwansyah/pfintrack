@@ -14,12 +14,12 @@ const WALLET_TYPE_ICONS: Record<WalletType, React.ElementType> = {
 
 const WALLET_TYPE_LABELS: Record<WalletType, string> = {
   bank: "Bank",
-  bank_digital: "Bank Digital",
+  bank_digital: "Digital Bank",
   e_wallet: "E-Wallet",
-  investment: "Investasi",
-  savings: "Tabungan Khusus",
-  digital_asset: "Aset Digital",
-  other: "Lainnya",
+  investment: "Investment",
+  savings: "Savings",
+  digital_asset: "Digital Asset",
+  other: "Other",
 };
 
 interface WalletCardProps {
@@ -47,7 +47,7 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
       {/* Name + type */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-[16px] font-semibold truncate"
+          className="text-[15px] font-semibold truncate"
           style={{ color: "var(--text-primary)" }}
         >
           {wallet.name}
@@ -60,7 +60,7 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
       {/* Balance + chevron */}
       <div className="flex-shrink-0 flex items-center gap-2">
         <span
-          className="text-[16px] font-semibold tabular-nums"
+          className="text-[15px] font-semibold tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
           {formatIDR(wallet.balance)}

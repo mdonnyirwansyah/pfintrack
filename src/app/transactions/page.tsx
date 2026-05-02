@@ -172,12 +172,8 @@ function TransactionsContent() {
           />
         ) : (
           <div
-            className="mx-4 rounded-[16px] overflow-hidden"
-            style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-default)",
-              boxShadow: "var(--shadow-sm)",
-            }}
+            className="mx-4 glass rounded-[16px] overflow-hidden"
+            style={{ boxShadow: "var(--shadow-sm)" }}
           >
             {dailyTransactions.map((tx, idx) => (
               <div key={tx.id}>

@@ -133,7 +133,7 @@ function ReportDetailContent() {
                       </span>
                     </div>
                     <span
-                      className="text-[14px] font-semibold ml-3 flex-shrink-0"
+                      className="text-[14px] font-semibold tabular-nums ml-3 flex-shrink-0"
                       style={{ color: "var(--color-negative)" }}
                     >
                       - {formatIDR(t.amount)}

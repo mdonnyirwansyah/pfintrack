@@ -17,10 +17,8 @@ export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-[16px] text-left transition-all active:scale-[0.98]"
+      className="w-full glass flex items-center gap-3 px-4 py-3 rounded-[16px] text-left transition-all active:scale-[0.98]"
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-default)",
         boxShadow: "var(--shadow-sm)",
         minHeight: "var(--tap-target-min)",
       }}

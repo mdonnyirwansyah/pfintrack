@@ -119,7 +119,7 @@ export default function LoanPage() {
               <div
                 key={i}
                 className="h-16 rounded-[16px] animate-pulse"
-                style={{ background: "var(--bg-card)" }}
+                style={{ background: "var(--bg-secondary)" }}
               />
             ))}
           </div>

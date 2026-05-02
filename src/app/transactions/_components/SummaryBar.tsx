@@ -22,17 +22,11 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
 
   return (
     <div
-      className="mx-4 mb-3 rounded-[16px] grid grid-cols-3 gap-px overflow-hidden"
-      style={{
-        background: "var(--divider)",
-        boxShadow: "var(--shadow-sm)",
-      }}
+      className="mx-4 mb-3 glass rounded-[16px] flex overflow-hidden"
+      style={{ boxShadow: "var(--shadow-sm)" }}
     >
       {/* Income */}
-      <div
-        className="flex flex-col items-center py-3 px-2"
-        style={{ background: "var(--bg-card)" }}
-      >
+      <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
           className="text-[11px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
@@ -47,11 +41,11 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         </span>
       </div>
 
+      {/* Divider */}
+      <div className="w-px self-stretch my-2" style={{ background: "var(--divider)" }} />
+
       {/* Expenses */}
-      <div
-        className="flex flex-col items-center py-3 px-2"
-        style={{ background: "var(--bg-card)" }}
-      >
+      <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
           className="text-[11px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}
@@ -66,11 +60,11 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         </span>
       </div>
 
+      {/* Divider */}
+      <div className="w-px self-stretch my-2" style={{ background: "var(--divider)" }} />
+
       {/* Balance */}
-      <div
-        className="flex flex-col items-center py-3 px-2"
-        style={{ background: "var(--bg-card)" }}
-      >
+      <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
           className="text-[11px] font-medium mb-1"
           style={{ color: "var(--text-secondary)" }}

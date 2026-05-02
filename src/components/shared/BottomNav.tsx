@@ -7,6 +7,7 @@ import {
   CreditCard,
   BarChart2,
   LayoutDashboard,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,16 +25,22 @@ const NAV_TABS = [
     prefix: "/wallet",
   },
   {
+    label: "Loan",
+    href: "/loan",
+    icon: LayoutDashboard,
+    prefix: "/loan",
+  },
+  {
     label: "Report",
     href: "/report",
     icon: BarChart2,
     prefix: "/report",
   },
   {
-    label: "Loan",
-    href: "/loan",
-    icon: LayoutDashboard,
-    prefix: "/loan",
+    label: "Settings",
+    href: "/settings",
+    icon: Settings,
+    prefix: "/settings",
   },
 ] as const;
 
@@ -58,8 +65,8 @@ export function BottomNav() {
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 transition-opacity active:opacity-70",
-                "min-w-[44px] min-h-[44px] px-3"
+                "flex flex-1 flex-col items-center justify-center gap-0.5 transition-opacity active:opacity-70",
+                "min-h-[44px]"
               )}
               aria-label={label}
             >

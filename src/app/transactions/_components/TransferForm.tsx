@@ -77,22 +77,22 @@ export function TransferForm({
     const e: FormErrors = {};
     const amount = parseFloat(form.amount) || 0;
 
-    if (!form.transaction_date) e.transaction_date = "Tanggal harus dipilih";
-    if (!form.transaction_time) e.transaction_time = "Waktu harus dipilih";
-    if (!form.source_wallet_id) e.source_wallet_id = "Pilih wallet sumber";
-    if (!form.destination_wallet_id) e.destination_wallet_id = "Pilih wallet tujuan";
+    if (!form.transaction_date) e.transaction_date = "Date is required";
+    if (!form.transaction_time) e.transaction_time = "Time is required";
+    if (!form.source_wallet_id) e.source_wallet_id = "Select source wallet";
+    if (!form.destination_wallet_id) e.destination_wallet_id = "Select destination wallet";
     if (
       form.source_wallet_id &&
       form.destination_wallet_id &&
       form.source_wallet_id === form.destination_wallet_id
     ) {
-      e.destination_wallet_id = "Wallet sumber dan tujuan tidak boleh sama";
+      e.destination_wallet_id = "Source and destination wallet must be different";
     }
-    if (!form.amount) e.amount = "Nominal tidak boleh kosong";
-    else if (amount <= 0) e.amount = "Nominal harus lebih dari 0";
-    else if (amount > 999_999_999_999.99) e.amount = "Nominal melebihi batas maksimum";
+    if (!form.amount) e.amount = "Amount is required";
+    else if (amount <= 0) e.amount = "Amount must be greater than 0";
+    else if (amount > 999_999_999_999.99) e.amount = "Amount exceeds maximum limit";
     if (form.description.trim().length > 255)
-      e.description = "Description maksimal 255 karakter";
+      e.description = "Description must be 255 characters or less";
 
     return e;
   };

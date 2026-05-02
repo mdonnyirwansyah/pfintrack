@@ -105,19 +105,19 @@ export default function LoanDetailPage({
   function handleRenameSubmit() {
     const trimmed = editNameValue.trim();
     if (!trimmed) {
-      setEditNameError("Nama tidak boleh kosong");
+      setEditNameError("Name is required");
       return;
     }
     if (trimmed.length < 2) {
-      setEditNameError("Nama minimal 2 karakter");
+      setEditNameError("Name must be at least 2 characters");
       return;
     }
     if (trimmed.length > 50) {
-      setEditNameError("Nama maksimal 50 karakter");
+      setEditNameError("Name must be 50 characters or less");
       return;
     }
     if (isNameTaken(trimmed, counterpartyId)) {
-      setEditNameError("Nama sudah dipakai counterparty lain");
+      setEditNameError("Name is already taken");
       return;
     }
     renameCounterparty(counterpartyId, trimmed);

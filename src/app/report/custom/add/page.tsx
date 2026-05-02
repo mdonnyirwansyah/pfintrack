@@ -127,7 +127,7 @@ export default function AddCustomReportPage() {
             className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border"
             style={{
               minHeight: "var(--tap-target-min)",
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               color: "var(--text-primary)",
               borderColor: errors.name
                 ? "var(--color-negative)"
@@ -167,7 +167,7 @@ export default function AddCustomReportPage() {
             className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border appearance-none"
             style={{
               minHeight: "var(--tap-target-min)",
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               color: "var(--text-primary)",
               borderColor: errors.start_date
                 ? "var(--color-negative)"
@@ -213,7 +213,7 @@ export default function AddCustomReportPage() {
             className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border appearance-none"
             style={{
               minHeight: "var(--tap-target-min)",
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               color: "var(--text-primary)",
               borderColor: errors.end_date
                 ? "var(--color-negative)"

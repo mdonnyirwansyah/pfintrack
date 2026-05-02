@@ -122,16 +122,21 @@
   --bg-card: rgba(255, 255, 255, 0.72);
   --bg-elevated: rgba(255, 255, 255, 0.85);
 
+  /* Primary brand */
   --color-brand: #5B8DEF;
   --color-brand-soft: rgba(91, 141, 239, 0.12);
   --color-brand-hover: #4A7DE0;
 
+  /* Semantic */
   --color-positive: #34C759;
   --color-positive-soft: rgba(52, 199, 89, 0.12);
   --color-negative: #FF6B6B;
   --color-negative-soft: rgba(255, 107, 107, 0.12);
-  --color-accent-warm: #FF9F43;
-  --color-accent-warm-soft: rgba(255, 159, 67, 0.12);
+  --color-accent: #FF9F43;
+  --color-accent-soft: rgba(255, 159, 67, 0.12);
+  /* Aliases (backward compat) */
+  --color-accent-warm: var(--color-accent);
+  --color-accent-warm-soft: var(--color-accent-soft);
 
   --text-primary: #1C1C1E;
   --text-secondary: #8E8E93;
@@ -195,16 +200,21 @@
   --bg-card: rgba(30, 30, 42, 0.72);
   --bg-elevated: rgba(40, 40, 56, 0.85);
 
+  /* Primary brand */
   --color-brand: #7BA4F7;
   --color-brand-soft: rgba(123, 164, 247, 0.15);
   --color-brand-hover: #6B94E7;
 
+  /* Semantic */
   --color-positive: #30D158;
   --color-positive-soft: rgba(48, 209, 88, 0.15);
   --color-negative: #FF6B6B;
   --color-negative-soft: rgba(255, 107, 107, 0.15);
-  --color-accent-warm: #FFB340;
-  --color-accent-warm-soft: rgba(255, 179, 64, 0.15);
+  --color-accent: #FFB340;
+  --color-accent-soft: rgba(255, 179, 64, 0.15);
+  /* Aliases (backward compat) */
+  --color-accent-warm: var(--color-accent);
+  --color-accent-warm-soft: var(--color-accent-soft);
 
   --text-primary: #F2F2F7;
   --text-secondary: #8E8E93;

@@ -68,17 +68,17 @@ export default function EditWalletPage({
         <AppHeader title="Edit Wallet" showBack />
         <div className="px-4 py-8 flex flex-col items-center justify-center gap-2">
           <p
-            className="text-[16px] font-semibold"
+            className="text-[15px] font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
-            Wallet tidak ditemukan
+            Wallet not found
           </p>
           <button
             onClick={() => router.push("/wallet")}
             className="text-[15px] font-medium mt-2"
             style={{ color: "var(--color-brand)" }}
           >
-            Kembali ke daftar wallet
+            Back to wallet list
           </button>
         </div>
       </>
@@ -116,7 +116,7 @@ export default function EditWalletPage({
             Current Balance
           </span>
           <span
-            className="text-[18px] font-bold tabular-nums"
+            className="text-[17px] font-semibold tabular-nums"
             style={{ color: "var(--text-primary)" }}
           >
             {formatIDR(wallet.balance)}
@@ -138,7 +138,7 @@ export default function EditWalletPage({
               type="button"
               onClick={() => setIsDeleteDialogOpen(true)}
               className={cn(
-                "w-full rounded-[12px] text-[16px] font-semibold transition-all active:scale-[0.98]",
+                "w-full rounded-[12px] text-[15px] font-semibold transition-all active:scale-[0.98]",
                 "flex items-center justify-center gap-2 border"
               )}
               style={{
@@ -158,15 +158,15 @@ export default function EditWalletPage({
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Hapus Wallet?"
+        title="Delete Wallet?"
         description={
           <>
-            Wallet <strong>{wallet.name}</strong> akan dihapus. Data tidak bisa
-            dipulihkan.
+            Wallet <strong>{wallet.name}</strong> will be deleted. This action
+            cannot be undone.
           </>
         }
-        confirmLabel="Hapus"
-        cancelLabel="Batal"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
         variant="destructive"
         onConfirm={handleConfirmDelete}
       />

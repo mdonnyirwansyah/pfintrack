@@ -64,8 +64,8 @@ export default function WalletPage() {
         {!isLoading && sortedWallets.length === 0 && (
           <EmptyState
             icon={CreditCard}
-            title="Belum ada wallet"
-            description="Tambah wallet pertama Anda"
+            title="No wallets yet"
+            description="Add your first wallet using the + button."
           />
         )}
 

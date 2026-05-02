@@ -29,12 +29,8 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
 
   return (
     <div
-      className="flex rounded-[16px] overflow-hidden mb-4"
-      style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-default)",
-        boxShadow: "var(--shadow-sm)",
-      }}
+      className="glass flex rounded-[16px] overflow-hidden mb-4"
+      style={{ boxShadow: "var(--shadow-sm)" }}
     >
       {/* Get column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">

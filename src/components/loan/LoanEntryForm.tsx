@@ -86,32 +86,32 @@ export function LoanEntryForm({
     );
 
     if (!values.transaction_date) {
-      errs.transaction_date = "Tanggal harus dipilih";
+      errs.transaction_date = "Date is required";
     }
     if (!values.transaction_time) {
-      errs.transaction_time = "Waktu harus dipilih";
+      errs.transaction_time = "Time is required";
     }
     if (!values.amount.trim()) {
-      errs.amount = "Nominal tidak boleh kosong";
+      errs.amount = "Amount is required";
     } else if (isNaN(amountNum) || amountNum <= 0) {
-      errs.amount = "Nominal harus lebih dari 0";
+      errs.amount = "Amount must be greater than 0";
     } else if (amountNum > MAX_AMOUNT) {
-      errs.amount = "Nominal melebihi batas maksimum";
+      errs.amount = "Amount exceeds maximum limit";
     }
 
     if (!isNameLocked) {
       const trimmedName = values.name.trim();
       if (!trimmedName) {
-        errs.name = "Nama tidak boleh kosong";
+        errs.name = "Name is required";
       } else if (trimmedName.length < 2) {
-        errs.name = "Nama minimal 2 karakter";
+        errs.name = "Name must be at least 2 characters";
       } else if (trimmedName.length > 50) {
-        errs.name = "Nama maksimal 50 karakter";
+        errs.name = "Name must be 50 characters or less";
       }
     }
 
     if (values.note.length > 255) {
-      errs.note = "Note maksimal 255 karakter";
+      errs.note = "Note must be 255 characters or less";
     }
 
     return errs;
@@ -145,7 +145,7 @@ export function LoanEntryForm({
           <div
             className="relative flex items-center rounded-[12px] px-4"
             style={{
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               border: `1px solid ${errors.transaction_date ? "var(--color-negative)" : "var(--border-default)"}`,
               minHeight: "var(--tap-target-min)",
             }}
@@ -180,7 +180,7 @@ export function LoanEntryForm({
           <div
             className="relative flex items-center rounded-[12px] px-4"
             style={{
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               border: `1px solid ${errors.transaction_time ? "var(--color-negative)" : "var(--border-default)"}`,
               minHeight: "var(--tap-target-min)",
             }}
@@ -215,7 +215,7 @@ export function LoanEntryForm({
           <div
             className="relative flex items-center rounded-[12px] px-4"
             style={{
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               border: `1px solid ${errors.amount ? "var(--color-negative)" : "var(--border-default)"}`,
               minHeight: "var(--tap-target-min)",
             }}
@@ -254,7 +254,7 @@ export function LoanEntryForm({
           <div
             className="relative flex items-center rounded-[12px] px-4"
             style={{
-              background: isNameLocked ? "var(--bg-secondary)" : "var(--bg-card)",
+              background: "var(--bg-secondary)",
               border: `1px solid ${errors.name ? "var(--color-negative)" : "var(--border-default)"}`,
               minHeight: "var(--tap-target-min)",
               opacity: isNameLocked ? 0.7 : 1,
@@ -291,7 +291,7 @@ export function LoanEntryForm({
             onClick={() => setIsWalletPickerOpen(true)}
             className="w-full flex items-center justify-between rounded-[12px] px-4 transition-all active:scale-[0.98]"
             style={{
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               border: "1px solid var(--border-default)",
               minHeight: "var(--tap-target-min)",
             }}
@@ -351,7 +351,7 @@ export function LoanEntryForm({
           <div
             className="relative rounded-[12px] px-4 py-3"
             style={{
-              background: "var(--bg-card)",
+              background: "var(--bg-secondary)",
               border: `1px solid ${errors.note ? "var(--color-negative)" : "var(--border-default)"}`,
             }}
           >

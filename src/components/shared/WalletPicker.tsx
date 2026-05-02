@@ -64,7 +64,7 @@ export function WalletPicker({
                       minHeight: "var(--tap-target-min)",
                       background: isSelected
                         ? "var(--color-brand-soft)"
-                        : "var(--bg-card)",
+                        : "var(--bg-secondary)",
                       border: `1px solid ${isSelected ? "var(--color-brand)" : "var(--border-default)"}`,
                     }}
                   >

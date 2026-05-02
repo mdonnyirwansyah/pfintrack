@@ -41,7 +41,7 @@ export default function EditLoanEntryPage({
             <div
               key={i}
               className="h-12 rounded-[12px] animate-pulse"
-              style={{ background: "var(--bg-card)" }}
+              style={{ background: "var(--bg-secondary)" }}
             />
           ))}
         </div>
