@@ -1,49 +1,77 @@
+"use client";
+
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type { CustomReport } from "@/lib/types/report";
+import {
+  customReportsRepo,
+  type CreateCustomReportInput,
+  type UpdateCustomReportInput,
+} from "@/lib/storage/custom-reports";
 
 interface ReportState {
   customReports: CustomReport[];
+  isLoading: boolean;
 }
 
 interface ReportActions {
-  setCustomReports: (reports: CustomReport[]) => void;
-  addCustomReport: (report: CustomReport) => void;
-  updateCustomReport: (id: string, updates: Partial<CustomReport>) => void;
+  /** Load all active custom reports from localStorage */
+  loadCustomReports: () => void;
+
+  /** Create a new custom report and refresh state */
+  createCustomReport: (input: CreateCustomReportInput) => CustomReport;
+
+  /** Update an existing custom report and refresh state */
+  updateCustomReport: (
+    id: string,
+    patch: UpdateCustomReportInput
+  ) => CustomReport;
+
+  /** Soft-delete a custom report and refresh state */
   softDeleteCustomReport: (id: string) => void;
+
+  /** Check if a name is taken (case-insensitive). Pass excludeId when editing. */
+  isNameTaken: (name: string, excludeId?: string) => boolean;
 }
 
 type ReportStore = ReportState & ReportActions;
 
-export const useReportStore = create<ReportStore>()(
-  persist(
-    (set) => ({
-      customReports: [],
+export const useReportStore = create<ReportStore>()((set, get) => ({
+  customReports: [],
+  isLoading: true,
 
-      setCustomReports: (customReports) => set({ customReports }),
+  loadCustomReports() {
+    set({ isLoading: true });
+    const customReports = customReportsRepo.getAll();
+    set({ customReports, isLoading: false });
+  },
 
-      addCustomReport: (report) =>
-        set((state) => ({
-          customReports: [...state.customReports, report],
-        })),
+  createCustomReport(input) {
+    const report = customReportsRepo.create(input);
+    const customReports = customReportsRepo.getAll();
+    set({ customReports });
+    return report;
+  },
 
-      updateCustomReport: (id, updates) =>
-        set((state) => ({
-          customReports: state.customReports.map((r) =>
-            r.id === id ? { ...r, ...updates } : r
-          ),
-        })),
+  updateCustomReport(id, patch) {
+    const updated = customReportsRepo.update(id, patch);
+    const customReports = customReportsRepo.getAll();
+    set({ customReports });
+    return updated;
+  },
 
-      softDeleteCustomReport: (id) =>
-        set((state) => ({
-          customReports: state.customReports.map((r) =>
-            r.id === id ? { ...r, is_active: false } : r
-          ),
-        })),
-    }),
-    {
-      name: "custom_reports",
-      version: 1,
-    }
-  )
-);
+  softDeleteCustomReport(id) {
+    customReportsRepo.softDelete(id);
+    const customReports = customReportsRepo.getAll();
+    set({ customReports });
+  },
+
+  isNameTaken(name, excludeId) {
+    const normalized = name.trim().toLowerCase();
+    return get().customReports.some(
+      (r) =>
+        r.is_active &&
+        r.name.trim().toLowerCase() === normalized &&
+        r.id !== excludeId
+    );
+  },
+}));
