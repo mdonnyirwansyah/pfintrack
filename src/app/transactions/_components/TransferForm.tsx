@@ -125,8 +125,8 @@ export function TransferForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
-      {/* Date + Time row */}
-      <div className="flex gap-3">
+      {/* Date + Time row — stacks vertically on narrow screens, side-by-side on ≥430px */}
+      <div className="flex flex-col gap-3 min-[430px]:flex-row">
         <div className="flex-1">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Date
