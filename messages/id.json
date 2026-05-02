@@ -30,6 +30,7 @@
     "title": "Pengaturan",
     "appearance": "Tampilan",
     "language": "Bahasa",
+    "display": "Tampilkan",
     "about": "Tentang",
     "theme": {
       "light": "Terang",
@@ -39,7 +40,9 @@
     "lang": {
       "en": "English",
       "id": "Indonesia"
-    }
+    },
+    "showDecimals": "Tampilkan Desimal",
+    "showDecimalsDesc": "Tampilkan sen pada semua nilai mata uang"
   },
   "wallet": {
     "title": "Dompet",

@@ -1,22 +1,38 @@
-const idFormatter = new Intl.NumberFormat("id-ID", {
+const idFormatterWithDecimals = new Intl.NumberFormat("id-ID", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
+const idFormatterNoDecimals = new Intl.NumberFormat("id-ID", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+// Module-level toggle — updated by DecimalFormatSync after store hydration
+let _showDecimals = false;
+
+export function setFormatDecimals(v: boolean) {
+  _showDecimals = v;
+}
+
+function getFormatter() {
+  return _showDecimals ? idFormatterWithDecimals : idFormatterNoDecimals;
+}
+
 /**
  * Format a number as IDR currency string.
- * Example: 823110.46 → "823.110,46"
+ * Example: 823110.46 → "823.110" (no decimals) or "823.110,46" (with decimals)
  */
 export function formatIDR(amount: number): string {
-  return idFormatter.format(amount);
+  return getFormatter().format(amount);
 }
 
 /**
  * Format with explicit + prefix for positive values.
- * Example: 5000 → "+ 5.000,00", -17000 → "- 17.000,00"
+ * Example: 5000 → "+ 5.000", -17000 → "- 17.000"
  */
 export function formatIDRSigned(amount: number): string {
-  const formatted = idFormatter.format(Math.abs(amount));
+  const formatted = getFormatter().format(Math.abs(amount));
   if (amount > 0) return `+ ${formatted}`;
   if (amount < 0) return `- ${formatted}`;
   return formatted;

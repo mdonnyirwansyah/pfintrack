@@ -30,6 +30,7 @@
     "title": "Settings",
     "appearance": "Appearance",
     "language": "Language",
+    "display": "Display",
     "about": "About",
     "theme": {
       "light": "Light",
@@ -39,7 +40,9 @@
     "lang": {
       "en": "English",
       "id": "Indonesia"
-    }
+    },
+    "showDecimals": "Show Decimals",
+    "showDecimalsDesc": "Display cents in all currency values"
   },
   "wallet": {
     "title": "Wallet",

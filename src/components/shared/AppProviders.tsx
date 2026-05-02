@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { getOrCreateAnonId } from "@/lib/bootstrap/anon-id";
 import { useAppStore } from "@/lib/stores/useAppStore";
+import { setFormatDecimals } from "@/lib/format/number";
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   const setAnonId = useAppStore((s) => s.setAnonId);
   const setHydrated = useAppStore((s) => s.setHydrated);
+  const showDecimals = useAppStore((s) => s.showDecimals);
 
   useEffect(() => {
     // Bootstrap: ensure anon_id exists in localStorage
@@ -19,6 +21,11 @@ export function AppProviders({ children }: AppProvidersProps) {
     setAnonId(id);
     setHydrated(true);
   }, [setAnonId, setHydrated]);
+
+  // Sync decimal preference to the format module
+  useEffect(() => {
+    setFormatDecimals(showDecimals);
+  }, [showDecimals]);
 
   return (
     <>
