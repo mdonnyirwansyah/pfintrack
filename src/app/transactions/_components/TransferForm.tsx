@@ -136,13 +136,8 @@ export function TransferForm({
             type="date"
             value={form.transaction_date}
             onChange={(e) => set("transaction_date", e.target.value)}
-            className="w-full py-2.5 pl-2.5 pr-0 rounded-[12px] text-[12px] outline-none transition-colors block"
-            style={{
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              border: `1px solid ${errors.transaction_date ? "var(--color-negative)" : "var(--border-default)"}`,
-              minHeight: "var(--tap-target-min)",
-            }}
+            className={inputClass}
+            style={inputStyle(errors.transaction_date)}
           />
           {errors.transaction_date && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
@@ -160,13 +155,8 @@ export function TransferForm({
             type="time"
             value={form.transaction_time}
             onChange={(e) => set("transaction_time", e.target.value)}
-            className="w-full py-2.5 pl-2 pr-0 rounded-[12px] text-[12px] outline-none transition-colors block"
-            style={{
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              border: `1px solid ${errors.transaction_time ? "var(--color-negative)" : "var(--border-default)"}`,
-              minHeight: "var(--tap-target-min)",
-            }}
+            className={inputClass}
+            style={inputStyle(errors.transaction_time)}
           />
           {errors.transaction_time && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
