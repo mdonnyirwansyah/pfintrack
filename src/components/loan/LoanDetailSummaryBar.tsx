@@ -40,13 +40,13 @@ export function LoanDetailSummaryBar({
       {/* Get column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
-          className="text-[10px] font-medium uppercase tracking-wide mb-1"
+          className="text-[11px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("get")}
         </span>
         <span
-          className="text-[13px] font-semibold tabular-nums"
+          className="text-[14px] font-semibold tabular-nums"
           style={{ color: "var(--color-positive)" }}
         >
           {getPrefix}{formatIDR(totalGet)}
@@ -62,13 +62,13 @@ export function LoanDetailSummaryBar({
       {/* Give column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
-          className="text-[10px] font-medium uppercase tracking-wide mb-1"
+          className="text-[11px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("give")}
         </span>
         <span
-          className="text-[13px] font-semibold tabular-nums"
+          className="text-[14px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
         >
           {formatIDR(totalGive)}
@@ -84,13 +84,13 @@ export function LoanDetailSummaryBar({
       {/* Balance column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
-          className="text-[10px] font-medium uppercase tracking-wide mb-1"
+          className="text-[11px] font-medium uppercase tracking-wide mb-1"
           style={{ color: "var(--text-secondary)" }}
         >
           {t("balance")}
         </span>
         <span
-          className="text-[13px] font-semibold tabular-nums"
+          className="text-[14px] font-semibold tabular-nums"
           style={{ color: balanceColor }}
         >
           {balancePrefix}{formatIDR(Math.abs(outstanding))}
