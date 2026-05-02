@@ -1,11 +1,216 @@
-// [5] Edit Transaction
-export default function EditTransactionPage({ params }: { params: Promise<{ id: string }> }) {
-  void params;
+"use client";
+
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { IncomeExpenseForm, type IncomeExpenseFormValues } from "../_components/IncomeExpenseForm";
+import { TransferForm, type TransferFormValues } from "../_components/TransferForm";
+import { useTransactionStore, getTitleSuggestions, getCategorySuggestions } from "@/lib/stores/useTransactionStore";
+import { useWalletStore } from "@/lib/stores/useWalletStore";
+import { transactionsRepo } from "@/lib/storage/transactions";
+import type { Transaction } from "@/lib/types/transaction";
+import { FileText } from "lucide-react";
+
+interface EditTransactionPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function EditTransactionPage({ params }: EditTransactionPageProps) {
+  const { id } = use(params);
+  const router = useRouter();
+  const { updateTransaction, softDeleteTransaction, loadTransactions } = useTransactionStore();
+  const { wallets, loadWallets } = useWalletStore();
+
+  const [transaction, setTransaction] = useState<Transaction | null | undefined>(undefined);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    loadTransactions();
+    loadWallets();
+    const tx = transactionsRepo.getById(id);
+    setTransaction(tx);
+  }, [id, loadTransactions, loadWallets]);
+
+  const allTxns = transactionsRepo.getAll();
+  const titleSuggestions =
+    transaction?.type === "income" || transaction?.type === "expense"
+      ? getTitleSuggestions(allTxns, transaction.type)
+      : [];
+  const categorySuggestions =
+    transaction?.type === "income" || transaction?.type === "expense"
+      ? getCategorySuggestions(allTxns, transaction.type)
+      : [];
+
+  // Loading
+  if (transaction === undefined) {
+    return (
+      <>
+        <AppHeader title="Edit Transaction" showBack />
+        <div className="px-4 py-4 space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-14 rounded-[12px] animate-pulse"
+              style={{ background: "var(--bg-secondary)" }}
+            />
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  // Not found or deleted
+  if (transaction === null || !transaction.is_active) {
+    return (
+      <>
+        <AppHeader title="Edit Transaction" showBack />
+        <EmptyState
+          icon={FileText}
+          title="Transaction not found"
+          description="This transaction may have been deleted."
+        />
+      </>
+    );
+  }
+
+  const typeLabel =
+    transaction.type === "income"
+      ? "Edit Income"
+      : transaction.type === "expense"
+      ? "Edit Expense"
+      : "Edit Transfer";
+
+  const handleDeleteConfirm = () => {
+    softDeleteTransaction(transaction.id);
+    router.replace("/transactions");
+  };
+
+  const deleteButton = (
+    <button
+      type="button"
+      onClick={() => setIsDeleteDialogOpen(true)}
+      className="w-full py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity flex items-center justify-center gap-2"
+      style={{
+        background: "var(--color-negative-soft)",
+        color: "var(--color-negative)",
+        minHeight: "var(--tap-target-min)",
+      }}
+    >
+      <Trash2 className="w-4 h-4" />
+      Delete Transaction
+    </button>
+  );
+
+  if (transaction.type === "transfer") {
+    const handleTransferSubmit = async (values: TransferFormValues) => {
+      setIsSubmitting(true);
+      try {
+        updateTransaction(transaction.id, {
+          type: "transfer",
+          wallet_id: values.source_wallet_id,
+          destination_wallet_id: values.destination_wallet_id,
+          amount: parseFloat(values.amount),
+          title: null,
+          category: null,
+          description: values.description || null,
+          transaction_date: values.transaction_date,
+          transaction_time: values.transaction_time,
+        });
+        router.replace("/transactions");
+      } catch (err) {
+        console.error("Failed to update transfer:", err);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    return (
+      <>
+        <AppHeader title={typeLabel} showBack />
+        <TransferForm
+          wallets={wallets}
+          initialValues={{
+            transaction_date: transaction.transaction_date,
+            transaction_time: transaction.transaction_time,
+            source_wallet_id: transaction.wallet_id,
+            destination_wallet_id: transaction.destination_wallet_id ?? "",
+            amount: String(transaction.amount),
+            description: transaction.description ?? "",
+          }}
+          isSubmitting={isSubmitting}
+          onSubmit={handleTransferSubmit}
+          footerActions={deleteButton}
+        />
+        <ConfirmDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          title="Delete Transaction"
+          description="Are you sure you want to delete this transaction? Wallet balance will be rolled back."
+          confirmLabel="Delete"
+          variant="destructive"
+          onConfirm={handleDeleteConfirm}
+        />
+      </>
+    );
+  }
+
+  // Income or Expense
+  const handleIncomeExpenseSubmit = async (values: IncomeExpenseFormValues) => {
+    setIsSubmitting(true);
+    try {
+      updateTransaction(transaction.id, {
+        type: transaction.type,
+        wallet_id: values.wallet_id,
+        destination_wallet_id: null,
+        amount: parseFloat(values.amount),
+        title: values.title || null,
+        category: values.category || null,
+        description: values.description || null,
+        transaction_date: values.transaction_date,
+        transaction_time: values.transaction_time,
+      });
+      router.replace("/transactions");
+    } catch (err) {
+      console.error("Failed to update transaction:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="px-4 py-4">
-      <p className="text-[15px]" style={{ color: "var(--text-secondary)" }}>
-        Edit Transaction — coming soon
-      </p>
-    </div>
+    <>
+      <AppHeader title={typeLabel} showBack />
+      <IncomeExpenseForm
+        type={transaction.type as "income" | "expense"}
+        wallets={wallets}
+        initialValues={{
+          transaction_date: transaction.transaction_date,
+          transaction_time: transaction.transaction_time,
+          wallet_id: transaction.wallet_id,
+          amount: String(transaction.amount),
+          title: transaction.title ?? "",
+          category: transaction.category ?? "",
+          description: transaction.description ?? "",
+        }}
+        titleSuggestions={titleSuggestions}
+        categorySuggestions={categorySuggestions}
+        isSubmitting={isSubmitting}
+        onSubmit={handleIncomeExpenseSubmit}
+        footerActions={deleteButton}
+      />
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Delete Transaction"
+        description="Are you sure you want to delete this transaction? Wallet balance will be rolled back."
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={handleDeleteConfirm}
+      />
+    </>
   );
 }

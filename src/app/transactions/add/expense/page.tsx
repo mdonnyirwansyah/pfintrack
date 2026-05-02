@@ -1,10 +1,60 @@
-// [3] Add Expense
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { IncomeExpenseForm, type IncomeExpenseFormValues } from "../../_components/IncomeExpenseForm";
+import { useTransactionStore, getTitleSuggestions, getCategorySuggestions } from "@/lib/stores/useTransactionStore";
+import { useWalletStore } from "@/lib/stores/useWalletStore";
+import { transactionsRepo } from "@/lib/storage/transactions";
+
 export default function AddExpensePage() {
+  const router = useRouter();
+  const { createTransaction, loadTransactions } = useTransactionStore();
+  const { wallets, loadWallets } = useWalletStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    loadTransactions();
+    loadWallets();
+  }, [loadTransactions, loadWallets]);
+
+  const allTxns = transactionsRepo.getAll();
+  const titleSuggestions = getTitleSuggestions(allTxns, "expense");
+  const categorySuggestions = getCategorySuggestions(allTxns, "expense");
+
+  const handleSubmit = async (values: IncomeExpenseFormValues) => {
+    setIsSubmitting(true);
+    try {
+      createTransaction({
+        type: "expense",
+        wallet_id: values.wallet_id,
+        amount: parseFloat(values.amount),
+        title: values.title || null,
+        category: values.category || null,
+        description: values.description || null,
+        transaction_date: values.transaction_date,
+        transaction_time: values.transaction_time,
+      });
+      router.push("/transactions");
+    } catch (err) {
+      console.error("Failed to create expense:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="px-4 py-4">
-      <p className="text-[15px]" style={{ color: "var(--text-secondary)" }}>
-        Add Expense form — coming soon
-      </p>
-    </div>
+    <>
+      <AppHeader title="Add Expense" showBack />
+      <IncomeExpenseForm
+        type="expense"
+        wallets={wallets}
+        titleSuggestions={titleSuggestions}
+        categorySuggestions={categorySuggestions}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+      />
+    </>
   );
 }

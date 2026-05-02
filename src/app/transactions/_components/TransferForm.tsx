@@ -1,0 +1,343 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Calculator, CalendarDays, Clock } from "lucide-react";
+import type { Wallet } from "@/lib/types/wallet";
+import { WalletPicker } from "@/components/shared/WalletPicker";
+import { todayISO, currentTimeHHMM } from "@/lib/format/date";
+import { formatIDR } from "@/lib/format/number";
+
+export interface TransferFormValues {
+  transaction_date: string;
+  transaction_time: string;
+  source_wallet_id: string;
+  destination_wallet_id: string;
+  amount: string;
+  description: string;
+}
+
+interface TransferFormProps {
+  wallets: Wallet[];
+  initialValues?: Partial<TransferFormValues>;
+  isSubmitting: boolean;
+  submitLabel?: string;
+  onSubmit: (values: TransferFormValues) => void;
+  footerActions?: React.ReactNode;
+}
+
+type FormErrors = Partial<Record<keyof TransferFormValues, string>>;
+
+export function TransferForm({
+  wallets,
+  initialValues,
+  isSubmitting,
+  submitLabel = "Save",
+  onSubmit,
+  footerActions,
+}: TransferFormProps) {
+  const router = useRouter();
+
+  const defaults: TransferFormValues = {
+    transaction_date: todayISO(),
+    transaction_time: currentTimeHHMM(),
+    source_wallet_id: "",
+    destination_wallet_id: "",
+    amount: "",
+    description: "",
+    ...initialValues,
+  };
+
+  const [form, setForm] = useState<TransferFormValues>(defaults);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [activeWalletPicker, setActiveWalletPicker] = useState<
+    "source" | "destination" | null
+  >(null);
+
+  const sourceWallet = wallets.find((w) => w.id === form.source_wallet_id) ?? null;
+  const destWallet = wallets.find((w) => w.id === form.destination_wallet_id) ?? null;
+
+  // Filter wallets to exclude the other selection
+  const sourceWallets = wallets.filter(
+    (w) => w.is_active && w.id !== form.destination_wallet_id
+  );
+  const destWallets = wallets.filter(
+    (w) => w.is_active && w.id !== form.source_wallet_id
+  );
+
+  const set = useCallback(
+    (field: keyof TransferFormValues, value: string) => {
+      setForm((prev) => ({ ...prev, [field]: value }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    },
+    []
+  );
+
+  const validate = (): FormErrors => {
+    const e: FormErrors = {};
+    const amount = parseFloat(form.amount) || 0;
+
+    if (!form.transaction_date) e.transaction_date = "Tanggal harus dipilih";
+    if (!form.transaction_time) e.transaction_time = "Waktu harus dipilih";
+    if (!form.source_wallet_id) e.source_wallet_id = "Pilih wallet sumber";
+    if (!form.destination_wallet_id) e.destination_wallet_id = "Pilih wallet tujuan";
+    if (
+      form.source_wallet_id &&
+      form.destination_wallet_id &&
+      form.source_wallet_id === form.destination_wallet_id
+    ) {
+      e.destination_wallet_id = "Wallet sumber dan tujuan tidak boleh sama";
+    }
+    if (!form.amount) e.amount = "Nominal tidak boleh kosong";
+    else if (amount <= 0) e.amount = "Nominal harus lebih dari 0";
+    else if (amount > 999_999_999_999.99) e.amount = "Nominal melebihi batas maksimum";
+    if (form.description.trim().length > 255)
+      e.description = "Description maksimal 255 karakter";
+
+    return e;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
+    onSubmit({
+      ...form,
+      description: form.description.trim(),
+    });
+  };
+
+  const inputClass =
+    "w-full px-4 py-3 rounded-[12px] text-[15px] outline-none transition-colors";
+  const inputStyle = (hasError?: string) => ({
+    background: "var(--bg-secondary)",
+    color: "var(--text-primary)",
+    border: `1px solid ${hasError ? "var(--color-negative)" : "var(--border-default)"}`,
+    minHeight: "var(--tap-target-min)",
+  });
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
+      {/* Date + Time row */}
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            Date
+          </label>
+          <div className="relative">
+            <input
+              type="date"
+              value={form.transaction_date}
+              onChange={(e) => set("transaction_date", e.target.value)}
+              className={inputClass}
+              style={inputStyle(errors.transaction_date)}
+            />
+            <CalendarDays
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+              style={{ color: "var(--text-tertiary)" }}
+            />
+          </div>
+          {errors.transaction_date && (
+            <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+              {errors.transaction_date}
+            </p>
+          )}
+        </div>
+
+        <div className="flex-1">
+          <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            Time
+          </label>
+          <div className="relative">
+            <input
+              type="time"
+              value={form.transaction_time}
+              onChange={(e) => set("transaction_time", e.target.value)}
+              className={inputClass}
+              style={inputStyle(errors.transaction_time)}
+            />
+            <Clock
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+              style={{ color: "var(--text-tertiary)" }}
+            />
+          </div>
+          {errors.transaction_time && (
+            <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+              {errors.transaction_time}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Source Wallet */}
+      <div>
+        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          From Wallet
+        </label>
+        <button
+          type="button"
+          onClick={() => setActiveWalletPicker("source")}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-[12px] active:opacity-70 transition-opacity"
+          style={{
+            ...inputStyle(errors.source_wallet_id),
+            minHeight: "var(--tap-target-min)",
+          }}
+        >
+          <span style={{ color: sourceWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+            {sourceWallet ? sourceWallet.name : "Select source wallet"}
+          </span>
+          {sourceWallet && (
+            <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+              {formatIDR(sourceWallet.balance)}
+            </span>
+          )}
+        </button>
+        {errors.source_wallet_id && (
+          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            {errors.source_wallet_id}
+          </p>
+        )}
+      </div>
+
+      {/* Destination Wallet */}
+      <div>
+        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          To Wallet
+        </label>
+        <button
+          type="button"
+          onClick={() => setActiveWalletPicker("destination")}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-[12px] active:opacity-70 transition-opacity"
+          style={{
+            ...inputStyle(errors.destination_wallet_id),
+            minHeight: "var(--tap-target-min)",
+          }}
+        >
+          <span style={{ color: destWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+            {destWallet ? destWallet.name : "Select destination wallet"}
+          </span>
+          {destWallet && (
+            <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+              {formatIDR(destWallet.balance)}
+            </span>
+          )}
+        </button>
+        {errors.destination_wallet_id && (
+          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            {errors.destination_wallet_id}
+          </p>
+        )}
+      </div>
+
+      {/* Amount */}
+      <div>
+        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          Amount
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            inputMode="decimal"
+            placeholder="Enter the amount"
+            value={form.amount}
+            onChange={(e) => set("amount", e.target.value)}
+            className={inputClass + " pr-12"}
+            style={inputStyle(errors.amount)}
+          />
+          <Calculator
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
+            style={{ color: "var(--text-tertiary)" }}
+          />
+        </div>
+        {errors.amount && (
+          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            {errors.amount}
+          </p>
+        )}
+      </div>
+
+      {/* Description */}
+      <div>
+        <label className="block text-[13px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          Description (optional)
+        </label>
+        <textarea
+          placeholder="Description (optional)"
+          value={form.description}
+          onChange={(e) => set("description", e.target.value)}
+          maxLength={255}
+          rows={3}
+          className="w-full px-4 py-3 rounded-[12px] text-[15px] outline-none transition-colors resize-none"
+          style={{
+            background: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            border: `1px solid ${errors.description ? "var(--color-negative)" : "var(--border-default)"}`,
+          }}
+        />
+        {errors.description && (
+          <p className="mt-1 text-[12px]" style={{ color: "var(--color-negative)" }}>
+            {errors.description}
+          </p>
+        )}
+      </div>
+
+      {/* Footer actions */}
+      {footerActions}
+
+      {/* Submit */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity"
+          style={{
+            background: "var(--bg-secondary)",
+            color: "var(--text-secondary)",
+            minHeight: "var(--tap-target-min)",
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex-1 py-3 rounded-[12px] text-[15px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
+          style={{
+            background: "var(--color-brand)",
+            color: "var(--text-on-primary)",
+            minHeight: "var(--tap-target-min)",
+          }}
+        >
+          {isSubmitting ? "Saving..." : submitLabel}
+        </button>
+      </div>
+
+      {/* Source wallet picker */}
+      <WalletPicker
+        open={activeWalletPicker === "source"}
+        onClose={() => setActiveWalletPicker(null)}
+        wallets={sourceWallets}
+        selectedWalletId={form.source_wallet_id}
+        onSelect={(wallet) => {
+          set("source_wallet_id", wallet.id);
+          setActiveWalletPicker(null);
+        }}
+      />
+
+      {/* Destination wallet picker */}
+      <WalletPicker
+        open={activeWalletPicker === "destination"}
+        onClose={() => setActiveWalletPicker(null)}
+        wallets={destWallets}
+        selectedWalletId={form.destination_wallet_id}
+        onSelect={(wallet) => {
+          set("destination_wallet_id", wallet.id);
+          setActiveWalletPicker(null);
+        }}
+      />
+    </form>
+  );
+}
