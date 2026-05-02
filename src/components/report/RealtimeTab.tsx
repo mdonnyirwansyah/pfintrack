@@ -11,6 +11,8 @@ import {
 } from "@/lib/report/calculations";
 import { DonutChart } from "./DonutChart";
 import { DailySummarySection } from "./DailySummarySection";
+import { SortPill, applySortKey } from "@/components/shared/SortPill";
+import type { SortKey } from "@/components/shared/SortPill";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -27,6 +29,7 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
   const end = currentMonthEnd();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
 
   const breakdown = useMemo(
     () => calcCategoryBreakdown(transactions, start, end),
@@ -52,17 +55,19 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
     [transactions, start, end]
   );
 
-  // Filtered by selected category
+  // Filtered by selected category, then sorted
   const filteredTransactions = useMemo(() => {
-    if (!selectedCategory) return allExpenses;
-
-    if (selectedCategory === "Lainnya") {
+    let base: typeof allExpenses;
+    if (!selectedCategory) {
+      base = allExpenses;
+    } else if (selectedCategory === "Lainnya") {
       const top8 = breakdown.slice(0, 8).map((b) => b.category);
-      return allExpenses.filter((t) => !top8.includes(t.category ?? "Other"));
+      base = allExpenses.filter((t) => !top8.includes(t.category ?? "Other"));
+    } else {
+      base = getTransactionsForCategory(transactions, start, end, selectedCategory);
     }
-
-    return getTransactionsForCategory(transactions, start, end, selectedCategory);
-  }, [selectedCategory, allExpenses, breakdown, transactions, start, end]);
+    return applySortKey(base, sortKey);
+  }, [selectedCategory, allExpenses, breakdown, transactions, start, end, sortKey]);
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory((prev) => (prev === category ? null : category));
@@ -104,9 +109,12 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
               <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
                 {listTitle}
               </h2>
-              <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                {tc("items", { count: filteredTransactions.length })}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                  {tc("items", { count: filteredTransactions.length })}
+                </span>
+                <SortPill value={sortKey} onChange={setSortKey} />
+              </div>
             </div>
 
             {filteredTransactions.length === 0 ? (

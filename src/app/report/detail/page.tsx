@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { PackageOpen } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { DonutChart } from "@/components/report/DonutChart";
+import { SortPill, applySortKey } from "@/components/shared/SortPill";
+import type { SortKey } from "@/components/shared/SortPill";
 import { EmptyState } from "@/components/shared/EmptyState";
 import {
   calcCategoryBreakdown,
@@ -40,6 +42,7 @@ function ReportDetailContent() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     categoryParam ?? null
   );
+  const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
 
   // All expense transactions for the period, sorted by date DESC
   const allExpenses = useMemo(
@@ -60,17 +63,19 @@ function ReportDetailContent() {
     [transactions, start, end]
   );
 
-  // Filtered by selected category, or all expenses when none selected
+  // Filtered by selected category, then sorted
   const drillTransactions = useMemo(() => {
-    if (!selectedCategory) return allExpenses;
-
-    if (selectedCategory === "Lainnya") {
+    let base: typeof allExpenses;
+    if (!selectedCategory) {
+      base = allExpenses;
+    } else if (selectedCategory === "Lainnya") {
       const top8 = breakdown.slice(0, 8).map((b) => b.category);
-      return allExpenses.filter((t) => !top8.includes(t.category ?? "Other"));
+      base = allExpenses.filter((t) => !top8.includes(t.category ?? "Other"));
+    } else {
+      base = getTransactionsForCategory(transactions, start, end, selectedCategory);
     }
-
-    return getTransactionsForCategory(transactions, start, end, selectedCategory);
-  }, [transactions, start, end, selectedCategory, breakdown, allExpenses]);
+    return applySortKey(base, sortKey);
+  }, [transactions, start, end, selectedCategory, breakdown, allExpenses, sortKey]);
 
   const headerTitle = nameParam
     ? nameParam
@@ -118,9 +123,12 @@ function ReportDetailContent() {
               <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
                 {selectedCategory ? t("categoryTransactions", { category: selectedCategory }) : t("allTransactions")}
               </h2>
-              <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                {tc("items", { count: drillTransactions.length })}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                  {tc("items", { count: drillTransactions.length })}
+                </span>
+                <SortPill value={sortKey} onChange={setSortKey} />
+              </div>
             </div>
 
             {drillTransactions.length === 0 ? (
