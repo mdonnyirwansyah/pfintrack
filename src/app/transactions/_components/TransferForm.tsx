@@ -126,9 +126,9 @@ export function TransferForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
       {/* Date & Time Row */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 w-full">
         {/* Date */}
-        <div className="flex-[3] min-w-0">
+        <div className="flex-[3] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Date
           </label>
@@ -136,8 +136,13 @@ export function TransferForm({
             type="date"
             value={form.transaction_date}
             onChange={(e) => set("transaction_date", e.target.value)}
-            className={`${inputClass} !px-2 !text-[13px] sm:!px-4 sm:!text-[14px] min-w-0`}
-            style={inputStyle(errors.transaction_date)}
+            className="w-full py-2.5 pl-2.5 pr-0 rounded-[12px] text-[12px] outline-none transition-colors block"
+            style={{
+              background: "var(--bg-secondary)",
+              color: "var(--text-primary)",
+              border: `1px solid ${errors.transaction_date ? "var(--color-negative)" : "var(--border-default)"}`,
+              minHeight: "var(--tap-target-min)",
+            }}
           />
           {errors.transaction_date && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
@@ -147,7 +152,7 @@ export function TransferForm({
         </div>
 
         {/* Time */}
-        <div className="flex-[2] min-w-0">
+        <div className="flex-[2] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             Time
           </label>
@@ -155,8 +160,13 @@ export function TransferForm({
             type="time"
             value={form.transaction_time}
             onChange={(e) => set("transaction_time", e.target.value)}
-            className={`${inputClass} !px-2 !text-[13px] sm:!px-4 sm:!text-[14px] min-w-0`}
-            style={inputStyle(errors.transaction_time)}
+            className="w-full py-2.5 pl-2 pr-0 rounded-[12px] text-[12px] outline-none transition-colors block"
+            style={{
+              background: "var(--bg-secondary)",
+              color: "var(--text-primary)",
+              border: `1px solid ${errors.transaction_time ? "var(--color-negative)" : "var(--border-default)"}`,
+              minHeight: "var(--tap-target-min)",
+            }}
           />
           {errors.transaction_time && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
