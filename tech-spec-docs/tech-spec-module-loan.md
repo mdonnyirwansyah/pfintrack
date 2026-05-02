@@ -45,7 +45,7 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Bar atas dengan background biru muda. Teks "Loan" rata tengah. |
-| **Summary Bar** | Dinamis | **Dua kolom**: **Get** (hijau, total outstanding yang harus user terima) · **Give** (merah, total outstanding yang harus user lunasi). Hanya menghitung counterparty dengan status `outstanding`. |
+| **Summary Bar** | Dinamis | **Tiga kolom**: **Get** (hijau, `+ {total}` prefix jika > 0) · **Give** (merah) · **Balance** (dinamis: hijau jika > 0 / merah jika < 0 / abu jika 0, `+ ` prefix jika negatif karena Balance = Give − Get). Hanya menghitung counterparty dengan status `outstanding`. |
 | **Counterparty List** | Dinamis | Daftar orang yang pernah loan dengan user, urut berdasarkan `updated_at` DESC. Setiap baris: nama + subtitle (note dari entry terakhir, atau "Without explanation") + outstanding/Paid off + chevron `›`. |
 | **Outstanding Display** | Dinamis | Logika tampilan: jika `outstanding > 0` → nominal hijau (orang berhutang ke user). Jika `outstanding < 0` → nominal merah, ditampilkan sebagai nilai absolut (user berhutang ke orang). Jika status `paid off` → teks "Paid off" hijau muda. |
 | **FAB Expandable** | Interaktif | Tombol biru `+` di pojok kanan bawah. Tap → mengembang menjadi 2 sub-action: **Give** (merah, ikon `»` ke bawah) · **Get** (oranye, ikon `«` ke atas). |
@@ -63,7 +63,7 @@
 | **Header Action: Mark as Paid** | Interaktif | Ikon person dengan checkmark (👤✓) di kanan header. Tap → membuka konfirmasi untuk menandai counterparty sebagai paid off **secara manual**. Hanya tampil jika status saat ini `outstanding`. |
 | **Header Action: Edit** | Interaktif | Ikon pensil (✏️). Tap → masuk mode edit nama counterparty (rename). |
 | **Header Action: Delete** | Interaktif | Ikon tempat sampah (🗑️). Tap → membuka konfirmasi untuk **menghapus seluruh counterparty beserta semua entry**-nya (soft delete). |
-| **Summary Bar (3 Kolom)** | Dinamis | Tiga total agregat untuk counterparty ini: <br>• **Get** (oranye, ikon `«`): `+ {total_get}` — akumulasi seluruh entry tipe Get <br>• **Give** (merah, ikon `»`): `{total_give}` — akumulasi seluruh entry tipe Give <br>• **Selisih/Outstanding** (pink, ikon ⚖️): `{outstanding}` = `total_give − total_get`. |
+| **Summary Bar (3 Kolom)** | Dinamis | Tiga total agregat untuk counterparty ini: <br>• **Get** (hijau): `+ {total_get}` jika > 0 — akumulasi seluruh entry tipe Get <br>• **Give** (merah): `{total_give}` — akumulasi seluruh entry tipe Give <br>• **Balance** (dinamis: hijau jika > 0, merah jika < 0, abu jika 0): `outstanding = total_give − total_get`. Prefix `+ ` ditampilkan jika outstanding negatif (user untung). |
 | **Entry History List** | Dinamis | Daftar seluruh entry untuk counterparty ini, urut DESC by `transaction_date` lalu `transaction_time`. Setiap baris menampilkan: tanggal (format "Day, DD Mon YYYY"), subtitle (note atau "Without explanation"), nominal di kanan + chevron `›`. |
 | **Entry Nominal Display** | Dinamis | Format tampilan tergantung tipe: <br>• Tipe **Get**: `+ {amount}` warna hijau (mis. `+ 5.000,00`) <br>• Tipe **Give**: `{amount}` warna hitam/abu (mis. `5.000,00`) |
 | **Entry Tap** | Interaktif | Tap baris entry → navigasi ke screen Edit Entry untuk mengubah/menghapus entry tersebut. |
@@ -141,7 +141,7 @@ User tap baris counterparty di Loan List (mis. "Alma")
               ↓
    Render:
      - Header: nama + status ("Not paid off" / "Paid off")
-     - Summary 3 kolom: Get / Give / Selisih
+     - Summary 3 kolom: Get / Give / Balance
      - List entries (urut DESC by date+time)
               ↓
    Render warna nominal per entry:

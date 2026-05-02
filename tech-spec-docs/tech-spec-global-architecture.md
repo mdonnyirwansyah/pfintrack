@@ -96,7 +96,7 @@
 |----------|-------------|
 | Posisi | Fixed top |
 | Tinggi | `56px` + safe area inset top |
-| Background | Bervariasi per modul: <br>• Biru muda `#A6D5F2` (Transactions list, Loan list, Loan detail) <br>• Biru solid `#2196F3` (Wallet list, Report, semua form Add/Edit) |
+| Background | Glassmorphism `glass-nav` (default). Warna dapat dioverride per halaman via `style` prop pada komponen `<AppHeader>`. Contoh override: biru muda untuk list screens, warna solid untuk form screens. |
 | Warna teks | Putih |
 | Tombol back | Ikon `‹` di kiri, hanya muncul di screen non-root (Add, Edit, Detail). Memicu `router.back()`. |
 | Judul | Rata tengah. Bold. Bisa dengan subtitle (mis. di Loan Detail menampilkan "Not paid off"). |

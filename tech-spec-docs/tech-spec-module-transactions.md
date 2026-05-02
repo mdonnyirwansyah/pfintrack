@@ -44,13 +44,13 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Bar atas dengan background biru muda. Berisi date navigator dan dua tombol aksi di kanan. |
-| **Date Navigator** | Interaktif | Tampilan tanggal aktif dalam format "Fri, 01 May 2026" di tengah. Tombol `‹` di kiri untuk hari sebelumnya, `›` di kanan untuk hari berikutnya. Tap pada teks tanggal → membuka **date picker** untuk memilih tanggal/bulan/tahun spesifik. |
+| **Date Navigator** | Interaktif | Tampilan tanggal aktif dalam format "Fri, 01 May 2026" di tengah. Tombol `‹` di kiri untuk hari sebelumnya, `›` di kanan untuk hari berikutnya. Tap pada teks tanggal → membuka **custom calendar popup** (bukan native date picker): navigasi bulan `‹ MMMM YYYY ›`, grid hari 7×n, highlight hari ini dengan outline, tombol "Today" sebagai shortcut. Tanggal aktif disinkronkan ke URL via query param `?date=YYYY-MM-DD` agar state terjaga saat navigasi ke form Add dan kembali. |
 | **Header Action: Export** | Interaktif | Ikon download di header. Tap → trigger export seluruh data transaksi ke file **Excel (.xlsx)** dan diunduh oleh browser. |
 | **Header Action: History** | Interaktif | Ikon dokumen di header. Tap → navigasi ke screen **Transaction History (Search)** yang menampilkan seluruh transaksi (bukan hanya tanggal aktif) dengan kemampuan pencarian. |
 | **Summary Bar** | Dinamis | Tiga kolom ringkasan untuk **tanggal aktif** saja: **Income** (hijau) · **Expenses** (merah) · **Balance** (selisih income − expenses). Tipe transfer **tidak** dihitung di sini. |
 | **Transaction List** | Dinamis | Daftar transaksi pada tanggal aktif, urut dari paling baru ke paling lama. Setiap item menampilkan: kategori, title, nominal, dan wallet terkait. Warna nominal mengikuti tipe (income: hijau, expense: merah, transfer: netral/abu). |
 | **Empty State** | Dinamis | Tampil saat tidak ada transaksi di tanggal aktif. Berupa ilustrasi dokumen + teks *"There is no data"* di tengah konten. |
-| **FAB Expandable** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → mengembang menjadi 3 sub-action vertikal di atasnya: **Transfer** (abu, ikon panah dua arah) · **Income** (oranye, ikon tangan + uang) · **Expense** (merah, ikon keranjang). Tap di luar area FAB → menutup ekspansi. |
+| **FAB Expandable** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → mengembang menjadi 3 sub-action vertikal di atasnya (urut dari bawah ke atas): **Expense** (merah, ikon keranjang) · **Income** (oranye, ikon tren naik) · **Transfer** (abu, ikon panah dua arah). Tap di luar area FAB → menutup ekspansi. Form yang dituju menerima `?date=YYYY-MM-DD` dari tanggal aktif. Setelah save, redirect ke `/transactions?date=YYYY-MM-DD` (bukan `/transactions` tanpa param). |
 | **Bottom Navigation** | Shared · Statis | 5 tab. Tab **Transactions** (kiri, ikon buku) dalam keadaan aktif/biru. *(Komponen shared, lihat Global Architecture.)* |
 
 ---
@@ -59,8 +59,8 @@
 
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
-| **App Header** | Statis | Background biru tua. Tombol back `‹` di kiri (kembali ke Transaction List). Judul "Add Transaction" di tengah. |
-| **Date Picker** | Interaktif | Field tanggal dengan ikon kalender. Default: tanggal hari ini. Tap → membuka native date picker. |
+| **App Header** | Statis | Tombol back `‹` di kiri (kembali ke Transaction List). Judul "Add Income" di tengah. |
+| **Date Picker** | Interaktif | Field tanggal dengan ikon kalender. Default: tanggal dari `?date=` query param, fallback hari ini. |
 | **Time Picker** | Interaktif | Field jam (format `HH:MM`) di sebelah kanan date picker. Default: waktu saat ini. Tap → membuka native time picker. |
 | **Wallet Selector** | Interaktif | Field dropdown menampilkan nama wallet aktif. Default: wallet pertama (atau yang terakhir dipakai). Tap → membuka **Bottom Sheet "Select Wallet"** berisi grid wallet aktif user. |
 | **Amount Field** | Interaktif | Input numerik untuk nominal transaksi. Placeholder *"Enter the amount"*. Ikon kalkulator dekoratif di kanan. Memunculkan keyboard numerik di mobile. Wajib diisi, > 0. |
@@ -82,7 +82,7 @@
 
 ### Screen 3 — Add Transaction (Expense) (`/transactions/add/expense`)
 
-Struktur **identik** dengan Add Transaction (Income), dengan perbedaan:
+Judul header: **"Add Expense"**. Struktur **identik** dengan Add Income, dengan perbedaan:
 
 | Aspek | Income | Expense |
 |-------|--------|---------|
@@ -90,13 +90,13 @@ Struktur **identik** dengan Add Transaction (Income), dengan perbedaan:
 | Sumber suggestion chips | Title & category dari transaksi `income` user | Title & category dari transaksi `expense` user |
 | Efek terhadap balance wallet | **Menambah** balance | **Mengurangi** balance |
 | Warna nominal di list | Hijau | Merah |
-| Validasi tambahan | — | (Opsional) Jika `amount > balance wallet`, tampilkan **warning** "Saldo wallet tidak mencukupi" — tetap bisa disimpan (saldo bisa minus) |
+| Validasi tambahan | — | (Opsional) Jika `amount > balance wallet`, tampilkan **warning** "Insufficient wallet balance" — tetap bisa disimpan (saldo bisa minus) |
 
 ---
 
-### Screen 4 — Add Transaction (Transfer) (`/transactions/add/transfer`)
+### Screen 4 — Add Transfer (`/transactions/add/transfer`)
 
-Struktur mirip Income/Expense, dengan perbedaan:
+Judul header: **"Add Transfer"**. Struktur mirip Add Income/Expense, dengan perbedaan:
 
 | Komponen | Deskripsi Teknis |
 |----------|-----------------|
@@ -133,7 +133,7 @@ Struktur mirip Income/Expense, dengan perbedaan:
 ```
 User tap tab "Transactions" di Bottom Nav
               ↓
-   Set tanggal aktif = hari ini (default)
+   Set tanggal aktif = nilai dari ?date= query param, fallback hari ini
               ↓
    Baca localStorage['transactions']
               ↓
@@ -160,8 +160,9 @@ User tap tombol "›" (Next)
            → re-filter & re-render list
 
 User tap teks tanggal
-        └→ Buka Date Picker (tanggal/bulan/tahun)
-           User pilih tanggal → tanggal aktif = pilihan user
+        └→ Buka custom calendar popup (month navigator + day grid)
+           User pilih hari → tanggal aktif = pilihan user
+           → URL diupdate ke /transactions?date=YYYY-MM-DD
            → re-filter & re-render list
 ```
 
@@ -171,12 +172,12 @@ User tap teks tanggal
 
 ```
 User tap FAB "+" (kondisi tertutup)
-        └→ FAB membuka 3 sub-action: Transfer, Income, Expense
+        └→ FAB membuka 3 sub-action (bawah ke atas): Expense, Income, Transfer
            Background overlay semi-transparan muncul
 
-User tap "Income"     → Navigasi ke /transactions/add/income
-User tap "Expense"    → Navigasi ke /transactions/add/expense
-User tap "Transfer"   → Navigasi ke /transactions/add/transfer
+User tap "Income"     → Navigasi ke /transactions/add/income?date=YYYY-MM-DD
+User tap "Expense"    → Navigasi ke /transactions/add/expense?date=YYYY-MM-DD
+User tap "Transfer"   → Navigasi ke /transactions/add/transfer?date=YYYY-MM-DD
 User tap di area lain → FAB menutup, kembali ke kondisi awal
 ```
 
