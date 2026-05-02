@@ -126,6 +126,13 @@
 - Tab non-aktif: ikon dan label berwarna `var(--nav-inactive)`, `strokeWidth: 1.5`
 - Penentuan tab aktif berdasarkan **prefix path**: tab Transactions aktif jika path dimulai dengan `/transactions`, Wallet jika `/wallet`, dst.
 
+**Lebar tab:**
+Setiap tab menggunakan `flex-1` agar semua 5 tab selalu sama lebar terlepas dari panjang label:
+
+```tsx
+className="flex flex-1 flex-col items-center justify-center gap-0.5 transition-opacity active:opacity-70 min-h-[44px]"
+```
+
 ### 3.3 Floating Action Button (FAB)
 
 Dipakai oleh Wallet, Transactions, Loan (di list maupun detail), dan Report Custom.
@@ -266,7 +273,9 @@ Semua nilai uang ditampilkan dengan **locale Indonesia (`id-ID`)**:
 | `--bg-card` | `rgba(255,255,255,0.72)` | `rgba(30,30,42,0.72)` | Card glass |
 | `--border-default` | `rgba(0,0,0,0.06)` | `rgba(255,255,255,0.08)` | Border card, input |
 | `--divider` | `rgba(0,0,0,0.08)` | `rgba(255,255,255,0.06)` | Garis pemisah list |
-| `--shadow-sm/md/lg` | — | — | Box shadow bertingkat |
+| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.03)` | ×~4 lebih kuat | Box shadow kecil |
+| `--shadow-md` | `0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.03)` | ×~4 lebih kuat | Box shadow medium (default `.glass`) |
+| `--shadow-lg` | `0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.05)` | ×~4 lebih kuat | Box shadow besar |
 
 **Alias (valid tapi deprecated — gunakan canonical di atas):**
 - `--color-accent-warm` → alias ke `--color-accent`
@@ -307,7 +316,28 @@ Font: **Inter** (via `next/font/google`). Skala mengikuti iOS SF Pro.
 | Border radius FAB | `9999px` (lingkaran penuh) |
 | Border radius pill/chip | `9999px` (`rounded-full`) |
 | Border radius button | 8px |
-| Drop shadow card | `0 2px 8px rgba(0,0,0,0.08)` |
+| Drop shadow card | Gunakan `var(--shadow-sm/md/lg)` — lihat §4.3 |
+
+### 4.5a Glassmorphism & Card Pattern
+
+**Glass utility classes (CSS):**
+
+| Class | Spesifikasi | Digunakan Untuk |
+|-------|-------------|-----------------|
+| `.glass` | `background: var(--bg-card)` + `backdrop-filter: blur(20px)` + `border: 1px solid var(--border-glass)` + `box-shadow: var(--shadow-md)` | Semua card & list item — shadow sudah inklusif, tidak perlu ditambah manual |
+| `.glass-strong` | Sama dengan `.glass` namun blur `40px` | Bottom sheet, drawer |
+| `.glass-nav` | Light: `background: rgba(255,255,255,0.72)` + Dark: `background: rgba(20,20,28,0.75)` + `backdrop-filter: blur(20px) saturate(1.8)` + inset box-shadow highlight | App Header & Bottom Navigation |
+
+> **Penting:** `.glass-nav` memiliki override `.dark .glass-nav` terpisah di CSS — pastikan tidak di-override inline.
+
+**Aturan card vs input:**
+
+| Elemen | Background yang Digunakan |
+|--------|--------------------------|
+| Card / list item | Wajib pakai class `.glass` |
+| Form input | `backgroundColor: "var(--bg-secondary)"` (opaque) — **jangan** pakai `.glass` atau `var(--bg-card)` |
+| Loading skeleton | `var(--bg-secondary)` |
+| WalletPicker item (unselected) | `var(--bg-secondary)` |
 
 ### 4.6 Pola Validasi Form
 
@@ -547,7 +577,7 @@ Berlaku di seluruh modul.
 | 11 | Edit single Loan Entry | ✅ **Reuse form Add Give/Get**, name locked + Delete | Loan |
 | 12 | Tab History Transactions | ✅ **Full-page search**, real-time filter case-insensitive | Transactions |
 | 13 | Edit Custom Report | ✅ **Reuse form Add** + tombol Delete merah di bawah form | Report |
-| 14 | Drill-down kategori donut chart | ✅ **Implementasi** — tap legend → list transaksi per kategori | Report |
+| 14 | Drill-down kategori donut chart | ✅ **In-place** — tap legend/segment → list transaksi diperbarui di bawah chart tanpa navigasi; di `/report/detail` kategori bisa dipilih via URL param | Report |
 | 15 | Confirmation Dialog | ✅ **Wajib semua** aksi destruktif, komponen reusable | Semua |
 | 16 | Empty state | ✅ **Icon package** (mis. lucide-react), bukan emoji/custom illustration | Semua |
 

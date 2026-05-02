@@ -46,7 +46,7 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Background biru `#2196F3`. Teks "Report" rata tengah, warna putih. Ikon ⚙️ Settings di kanan → shortcut ke `/settings`. |
-| **Tab Switcher** | Interaktif | Tiga pill button bersebelahan: **Realtime** · **Monthly** · **Custom**. Tab aktif: background biru, teks putih. Tab non-aktif: background putih, teks biru, border biru. |
+| **Tab Switcher** | Interaktif | Tiga pill button bersebelahan: **Realtime** · **Monthly** · **Custom**. Tab aktif: background biru, teks putih, shadow `0 2px 8px rgba(91,141,239,0.35), 0 1px 3px rgba(0,0,0,0.12)`. Tab non-aktif: background transparan, teks redup. Container pill mendapat inset shadow: `inset 0 1px 3px rgba(0,0,0,0.08), inset 0 0.5px 1px rgba(0,0,0,0.04)`. |
 | **Tab Content** | Dinamis | Konten berubah sesuai tab aktif. Lihat sub-screen di bawah. |
 | **Bottom Navigation** | Shared · Statis | 5 tab. Tab **Report** dalam keadaan aktif/biru. *(Komponen shared, lihat Global Architecture.)* |
 
@@ -57,9 +57,18 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **Period Label** | Dinamis | Teks rata tengah menampilkan range periode bulan berjalan, format: `01 May 2026 - 31 May 2026`. Otomatis update tiap bulan. |
-| **Donut Chart (Expense by Category)** | Dinamis | Chart melingkar yang menggambarkan distribusi expense per kategori untuk periode bulan berjalan. Setiap segment punya warna berbeda. Label kategori muncul di luar chart. Hanya menampilkan transaksi tipe `expense` aktif. |
+| **Donut Chart (Expense by Category)** | Dinamis | Chart melingkar distribusi expense per kategori untuk periode bulan berjalan. Setiap segment punya warna berbeda. Hanya menampilkan transaksi tipe `expense` aktif. Lihat §DonutChart Enhancements di bawah. |
 | **Empty State Donut** | Dinamis | Jika tidak ada expense di periode → tampilkan placeholder ilustrasi/teks *"Belum ada pengeluaran bulan ini"*. |
-| **Category Legend List** | Dinamis | Daftar kategori expense di bawah chart. Setiap baris: badge persentase (warna senada dengan segment chart) + nama kategori + total nominal. Urut berdasarkan nominal DESC. |
+| **Category Legend List** | Dinamis | Daftar kategori expense di bawah chart. Setiap baris: color dot + nama kategori + persentase + total nominal. Row aktif mendapat background berwarna tint + outline ring + glowing dot. Urut berdasarkan nominal DESC. |
+| **Transaction List** | Dinamis | Selalu tampil di bawah donut chart (tidak perlu tap ke halaman lain). Default (tidak ada kategori dipilih): "All Transactions" — semua expense bulan berjalan, urut tanggal DESC, setiap baris: judul + "kategori · tanggal" + nominal negatif. Saat kategori dipilih: difilter ke kategori tersebut, header berubah menjadi "CategoryName — Transactions". Jumlah item ditampilkan di samping header. Semua baris dibungkus dalam satu container `.glass` dengan divider antar baris. |
+
+**DonutChart Enhancements:**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **Center label** | Default: "Total" + sum seluruh expense. Saat kategori dipilih: nama kategori + nominalnya, teks berwarna sesuai warna kategori tersebut. |
+| **Segment aktif** | `outerRadius +6`, `innerRadius -2` (segment mengembang). Di belakang segment aktif ditambahkan glow layer: opacity `0.20`, `outerRadius +10`. |
+| **Interaksi kategori** | Tap legend/segment → toggle pilih kategori. Tidak navigasi ke halaman lain — list transaksi diperbarui in-place di bawah chart. |
 
 ---
 
@@ -123,8 +132,9 @@ Struktur form **identik** dengan Add Custom Report, dengan tambahan:
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Tombol back `‹`. Judul = range periode (mis. "01 May 2026 - 31 May 2026") atau nama custom report. |
-| **Donut Chart (Expense by Category)** | Dinamis | Sama persis dengan tab Realtime, tetapi data difilter sesuai periode terpilih. |
-| **Category Legend List** | Dinamis | Sama dengan Realtime. Tap baris kategori → (opsional) drill-down lebih jauh ke list transaksi kategori tersebut. *Belum ada gambar UI — perlu konfirmasi* |
+| **Donut Chart (Expense by Category)** | Dinamis | Sama persis dengan tab Realtime (termasuk DonutChart Enhancements), tetapi data difilter sesuai periode terpilih. |
+| **Category Legend List** | Dinamis | Sama dengan Realtime. Tap kategori → toggle pilih, list transaksi di bawah difilter in-place. |
+| **Transaction List** | Dinamis | Selalu tampil di bawah chart. Default (tidak ada kategori dipilih atau tidak ada param `?category=`): header "All Transactions" + jumlah item + semua expense aktif periode tersebut, urut tanggal DESC. Saat kategori dipilih (via URL param atau tap donut/legend): header "CategoryName — Transactions" + item count + list difilter ke kategori itu. Setiap baris: judul (atau fallback nama kategori) + "kategori · tanggal" subtitle + nominal negatif. Semua baris dalam container `.glass` dengan divider. |
 
 ---
 
@@ -264,10 +274,35 @@ User tap chevron `›` di section Monthly atau Custom
               ↓
    Hitung breakdown expense by category untuk periode terpilih
               ↓
-   Render donut chart + legend list
+   Render donut chart + legend list + transaction list
    (UI sama persis dengan tab Realtime, hanya data berbeda)
               ↓
    Header: tampilkan range periode atau nama custom report
+              ↓
+   Default: "All Transactions" — semua expense aktif periode terpilih
+   User tap legend/segment →
+     URL param ?category= diperbarui (atau state lokal)
+     List difilter ke kategori tersebut in-place
+     Header berubah menjadi "CategoryName — Transactions"
+```
+
+### Flow: Interaksi Kategori di Tab Realtime
+
+```
+User tap segment atau baris legend di tab Realtime
+              ↓
+   Toggle selectedCategory (set atau reset)
+              ↓
+   Center label donut diperbarui: nama kategori + nominal (berwarna)
+   Segment aktif: mengembang (outerRadius+6, innerRadius-2) + glow layer
+   Row legend aktif: tinted background + color outline + glowing dot
+              ↓
+   Transaction list di bawah chart diperbarui in-place:
+     - Kategori dipilih → filter ke kategori tersebut
+       Header: "CategoryName — Transactions"
+     - Tidak ada pilihan → tampilkan semua expense bulan ini
+       Header: "All Transactions"
+   (Tidak ada navigasi ke /report/detail)
 ```
 
 ---
@@ -614,7 +649,7 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 |---|--------|-----------|
 | 1 | Monthly infinite scroll | ✅ Load 6 bulan pertama, tambah 6 saat scroll |
 | 2 | Donut chart max kategori | ✅ **Limit 8 + "Lainnya"** |
-| 3 | Tap kategori di legend | ✅ **Implementasi drill-down** — list transaksi per kategori |
+| 3 | Tap kategori di legend | ✅ **In-place** — list transaksi diperbarui di bawah chart tanpa navigasi ke halaman lain |
 | 4 | Edit Custom Report + tombol Delete | ✅ Tombol Delete merah di bawah form, confirmation dialog |
 | 5 | Ikon ⚙️ di header Report | ✅ Shortcut ke Settings (out of scope Fase 1, ikon tetap ada tapi disabled/hidden) |
 | 6 | Custom Report nama unik per anon_id | ✅ Case-insensitive unique |

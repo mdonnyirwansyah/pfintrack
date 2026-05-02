@@ -238,13 +238,13 @@ Pengguna tap tombol "Delete" di Wallet Detail
 
 | Field | Aturan Validasi | Pesan Error |
 |-------|----------------|-------------|
-| Wallet Name | Wajib diisi | "Nama wallet tidak boleh kosong" |
-| Wallet Name | Minimal 2 karakter | "Nama minimal 2 karakter" |
-| Wallet Name | Maksimal 50 karakter | "Nama maksimal 50 karakter" |
-| Wallet Name | Tidak boleh duplikat (case-insensitive, hanya `is_active=true`) | "Nama wallet sudah digunakan" |
-| Balance | Wajib diisi | "Saldo tidak boleh kosong" |
-| Balance | Harus berupa angka dan bernilai ≥ 0 | "Saldo harus berupa angka positif" |
-| Balance | Nilai maksimum `999.999.999.999,99` | "Saldo melebihi batas maksimum" |
+| Wallet Name | Wajib diisi | "Wallet name is required" |
+| Wallet Name | Minimal 2 karakter | "Name must be at least 2 characters" |
+| Wallet Name | Maksimal 50 karakter | "Name must be 50 characters or less" |
+| Wallet Name | Tidak boleh duplikat (case-insensitive, hanya `is_active=true`) | "Wallet name is already taken" |
+| Balance | Wajib diisi | "Balance is required" |
+| Balance | Harus berupa angka dan bernilai ≥ 0 | "Balance must be a positive number" |
+| Balance | Nilai maksimum `999.999.999.999,99` | "Balance exceeds maximum limit" |
 
 ---
 
@@ -376,10 +376,10 @@ Pengguna tap tombol "Delete" di Wallet Detail
 | `bank` | Bank | BCA, Mandiri, BNI, BRI |
 | `bank_digital` | Bank Digital | Jago, Blu, SeaBank, Allo Bank |
 | `e_wallet` | E-Wallet | Gopay, OVO, Dana, LinkAja |
-| `investment` | Investasi | Ajaib, Bibit, Bareksa |
-| `savings` | Tabungan Khusus | Dana Darurat, Tabungan Goals |
-| `digital_asset` | Aset Digital | Emas Digital, Kripto |
-| `other` | Lainnya | Default |
+| `investment` | Investment | Ajaib, Bibit, Bareksa |
+| `savings` | Savings | Dana Darurat, Tabungan Goals |
+| `digital_asset` | Digital Asset | Emas Digital, Kripto |
+| `other` | Other | Default |
 
 ---
 
