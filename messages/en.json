@@ -159,6 +159,10 @@
       "description": "This transaction will be deleted and the wallet balance will be adjusted.",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "deleteUndo": {
+      "message": "Transaction deleted",
+      "undo": "Undo"
     }
   },
   "loan": {

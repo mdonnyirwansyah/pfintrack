@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -25,11 +25,12 @@ import { getOrCreateAnonId } from "@/lib/storage/anon-id";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSwipe } from "@/hooks/useSwipe";
+import { toast } from "sonner";
 
 function TransactionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { transactions, isLoading, loadTransactions } = useTransactionStore();
+  const { transactions, isLoading, loadTransactions, softDeleteTransaction } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const t = useTranslations("transactions");
 
@@ -39,6 +40,8 @@ function TransactionsContent() {
   const [isExporting, setIsExporting] = useState(false);
   const [sortKey, setSortKey] = useState<"datetime_desc" | "datetime_asc" | "amount_desc" | "amount_asc">("datetime_desc");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [pendingDeletes, setPendingDeletes] = useState<Set<string>>(new Set());
+  const pendingTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // Update state + sync URL sekaligus, hindari useEffect agar tidak ada timing issue
   const handleDateChange = (date: string) => {
@@ -51,7 +54,8 @@ function TransactionsContent() {
     loadWallets();
   }, [loadTransactions, loadWallets]);
 
-  const rawDailyTransactions = selectByDate(transactions, activeDate);
+  const rawDailyTransactions = selectByDate(transactions, activeDate)
+    .filter((tx) => !pendingDeletes.has(tx.id));
   const summary = computeDailySummary(rawDailyTransactions);
 
   const dailyTransactions = [...rawDailyTransactions].sort((a, b) => {
@@ -66,6 +70,44 @@ function TransactionsContent() {
     if (sortKey === "amount_desc") return b.amount - a.amount;
     return a.amount - b.amount; // amount_asc
   });
+
+  const handleConfirmDelete = useCallback((id: string) => {
+    // Hide immediately from UI
+    setPendingDeletes((prev) => new Set([...prev, id]));
+
+    // Show undo toast
+    const toastId = toast(t("deleteUndo.message"), {
+      duration: 5000,
+      action: {
+        label: t("deleteUndo.undo"),
+        onClick: () => {
+          // Cancel deletion — restore item
+          const timer = pendingTimers.current.get(id);
+          if (timer) clearTimeout(timer);
+          pendingTimers.current.delete(id);
+          setPendingDeletes((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        },
+      },
+    });
+
+    // Schedule actual delete after 5s
+    const timer = setTimeout(() => {
+      toast.dismiss(toastId);
+      softDeleteTransaction(id);
+      pendingTimers.current.delete(id);
+      setPendingDeletes((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 5000);
+
+    pendingTimers.current.set(id, timer);
+  }, [t, softDeleteTransaction]);
 
   const swipeHandlers = useSwipe({
     onSwipeLeft: () => handleDateChange(format(addDays(parseISO(activeDate), 1), "yyyy-MM-dd")),
@@ -269,7 +311,7 @@ function TransactionsContent() {
                     style={{ height: "1px", background: "var(--divider)" }}
                   />
                 )}
-                <TransactionItem transaction={tx} wallets={wallets} />
+                <TransactionItem transaction={tx} wallets={wallets} onConfirmDelete={handleConfirmDelete} />
               </div>
             ))}
           </div>

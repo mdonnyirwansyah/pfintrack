@@ -1,18 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Transaction } from "@/lib/types/transaction";
 import type { Wallet } from "@/lib/types/wallet";
 import { formatIDR } from "@/lib/format/number";
 import { ArrowRightLeft } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { useLongPress } from "@/hooks/useLongPress";
+import { useTranslations } from "next-intl";
 
 interface TransactionItemProps {
   transaction: Transaction;
   wallets: Wallet[];
+  onConfirmDelete?: (id: string) => void;
 }
 
-export function TransactionItem({ transaction, wallets }: TransactionItemProps) {
+export function TransactionItem({ transaction, wallets, onConfirmDelete }: TransactionItemProps) {
   const router = useRouter();
+  const t = useTranslations("transactions");
+  const tc = useTranslations("common");
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const wallet = wallets.find((w) => w.id === transaction.wallet_id);
   const destWallet =
@@ -32,85 +41,108 @@ export function TransactionItem({ transaction, wallets }: TransactionItemProps) 
 
   const amountPrefix = isIncome ? "+ " : isExpense ? "- " : "";
 
-  return (
-    <button
-      onClick={() => router.push(`/transactions/${transaction.id}`)}
-      className="w-full flex items-center gap-3 px-4 py-3 active:opacity-70 transition-opacity text-left"
-      style={{ minHeight: "var(--tap-target-min)" }}
-    >
-      {/* Icon */}
-      <div
-        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-        style={{
-          background: isIncome
-            ? "var(--color-positive-soft)"
-            : isExpense
-            ? "var(--color-negative-soft)"
-            : "var(--bg-secondary)",
-          border: isTransfer ? "1px solid var(--border-default)" : "none",
-        }}
-      >
-        {isTransfer ? (
-          <ArrowRightLeft
-            className="w-4 h-4"
-            style={{ color: "var(--text-primary)" }}
-          />
-        ) : (
-          <span className="text-[13px] font-bold" style={{ color: amountColor }}>
-            {isIncome ? "+" : "-"}
-          </span>
-        )}
-      </div>
+  const longPressHandlers = useLongPress({
+    onLongPress: () => {
+      if (onConfirmDelete) setShowDeleteDialog(true);
+    },
+  });
 
-      {/* Details */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className="text-[11px] font-semibold truncate"
-            style={{ color: "var(--text-primary)" }}
-          >
-            {isTransfer
-              ? `${wallet?.name ?? "?"} → ${destWallet?.name ?? "?"}`
-              : (transaction.title ?? transaction.category ?? "-")}
-          </span>
-          <span
-            className="text-[11px] font-semibold flex-shrink-0 tabular-nums"
-            style={{ color: amountColor }}
-          >
-            {amountPrefix}
-            {formatIDR(transaction.amount)}
-          </span>
+  return (
+    <>
+      <button
+        onClick={() => router.push(`/transactions/${transaction.id}`)}
+        className="w-full flex items-center gap-3 px-4 py-3 active:opacity-70 transition-opacity text-left"
+        style={{ minHeight: "var(--tap-target-min)" }}
+        {...longPressHandlers}
+      >
+        {/* Icon */}
+        <div
+          className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+          style={{
+            background: isIncome
+              ? "var(--color-positive-soft)"
+              : isExpense
+              ? "var(--color-negative-soft)"
+              : "var(--bg-secondary)",
+            border: isTransfer ? "1px solid var(--border-default)" : "none",
+          }}
+        >
+          {isTransfer ? (
+            <ArrowRightLeft
+              className="w-4 h-4"
+              style={{ color: "var(--text-primary)" }}
+            />
+          ) : (
+            <span className="text-[13px] font-bold" style={{ color: amountColor }}>
+              {isIncome ? "+" : "-"}
+            </span>
+          )}
         </div>
-        <div className="flex items-center justify-between gap-2 mt-0.5">
-          <span
-            className="text-[9px] truncate"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            {isTransfer
-              ? (transaction.description ?? "Transfer")
-              : transaction.category ?? ""}
-          </span>
-          <span
-            className="text-[8px] flex-shrink-0"
-            style={{ color: "var(--text-tertiary)" }}
-          >
-            {transaction.transaction_time}
-          </span>
-        </div>
-        {!isTransfer && wallet && (
-          <div className="mt-0.5">
+
+        {/* Details */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
             <span
-              className="text-[11px] px-2 py-0.5 rounded-full"
-              style={{
-                background: "var(--color-brand-soft)",
-                color: "var(--color-brand)",
-              }}
+              className="text-[11px] font-semibold truncate"
+              style={{ color: "var(--text-primary)" }}
             >
-              {wallet.name}
+              {isTransfer
+                ? `${wallet?.name ?? "?"} → ${destWallet?.name ?? "?"}`
+                : (transaction.title ?? transaction.category ?? "-")}
+            </span>
+            <span
+              className="text-[11px] font-semibold flex-shrink-0 tabular-nums"
+              style={{ color: amountColor }}
+            >
+              {amountPrefix}
+              {formatIDR(transaction.amount)}
             </span>
           </div>
-        )}
-      </div>
-    </button>
+          <div className="flex items-center justify-between gap-2 mt-0.5">
+            <span
+              className="text-[9px] truncate"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {isTransfer
+                ? (transaction.description ?? "Transfer")
+                : transaction.category ?? ""}
+            </span>
+            <span
+              className="text-[8px] flex-shrink-0"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              {transaction.transaction_time}
+            </span>
+          </div>
+          {!isTransfer && wallet && (
+            <div className="mt-0.5">
+              <span
+                className="text-[11px] px-2 py-0.5 rounded-full"
+                style={{
+                  background: "var(--color-brand-soft)",
+                  color: "var(--color-brand)",
+                }}
+              >
+                {wallet.name}
+              </span>
+            </div>
+          )}
+        </div>
+      </button>
+
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title={t("deleteConfirm.title")}
+        description={t("deleteConfirm.description")}
+        confirmLabel={tc("delete")}
+        cancelLabel={tc("cancel")}
+        variant="destructive"
+        onConfirm={() => {
+          setShowDeleteDialog(false);
+          onConfirmDelete?.(transaction.id);
+        }}
+      />
+    </>
   );
 }

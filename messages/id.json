@@ -159,6 +159,10 @@
       "description": "Transaksi ini akan dihapus dan saldo dompet akan disesuaikan.",
       "confirm": "Hapus",
       "cancel": "Batal"
+    },
+    "deleteUndo": {
+      "message": "Transaksi dihapus",
+      "undo": "Batalkan"
     }
   },
   "loan": {
