@@ -12,6 +12,7 @@ interface AppHeaderProps {
   actions?: React.ReactNode;
   variant?: "default" | "transparent";
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function AppHeader({
@@ -22,6 +23,7 @@ export function AppHeader({
   actions,
   variant = "default",
   className,
+  style,
 }: AppHeaderProps) {
   const router = useRouter();
 
@@ -46,6 +48,7 @@ export function AppHeader({
         height: "var(--header-height)",
         paddingTop: "env(safe-area-inset-top)",
         borderColor: "var(--border-default)",
+        ...style,
       }}
     >
       {/* Left: back button or spacer */}

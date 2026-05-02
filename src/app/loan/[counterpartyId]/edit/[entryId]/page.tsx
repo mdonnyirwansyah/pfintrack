@@ -1,15 +1,108 @@
+"use client";
+
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoanEntryForm, type LoanEntryFormValues } from "@/components/loan/LoanEntryForm";
+import { useLoanEntryStore } from "@/lib/stores/useLoanStore";
+import { useWalletStore } from "@/lib/stores/useWalletStore";
+import { loanEntriesRepo } from "@/lib/storage/loan-entries";
+import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
+import { Users } from "lucide-react";
+
 // [14] Edit Loan Entry
 export default function EditLoanEntryPage({
   params,
 }: {
   params: Promise<{ counterpartyId: string; entryId: string }>;
 }) {
-  void params;
+  const { counterpartyId, entryId } = use(params);
+  const router = useRouter();
+
+  const { wallets, loadWallets } = useWalletStore();
+  const { updateEntry, deleteEntry } = useLoanEntryStore();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    loadWallets();
+  }, [loadWallets]);
+
+  // Load entry and counterparty directly from storage (source of truth)
+  const entry = loanEntriesRepo.getById(entryId);
+  const counterparty = loanCounterpartiesRepo.getById(counterpartyId);
+
+  if (!entry || !entry.is_active || !counterparty) {
+    return (
+      <>
+        <AppHeader title="Edit Entry" showBack />
+        <div className="px-4 py-8">
+          <EmptyState
+            icon={Users}
+            title="Entry not found"
+            description="This entry may have been deleted."
+          />
+        </div>
+      </>
+    );
+  }
+
+  const initialValues: Partial<LoanEntryFormValues> = {
+    transaction_date: entry.transaction_date,
+    transaction_time: entry.transaction_time,
+    amount: String(entry.amount),
+    name: counterparty.name,
+    wallet_id: entry.wallet_id,
+    note: entry.note ?? "",
+  };
+
+  async function handleSubmit(values: LoanEntryFormValues) {
+    setIsSubmitting(true);
+    try {
+      updateEntry(
+        entryId,
+        {
+          type: entry!.type,
+          amount: parseFloat(values.amount),
+          wallet_id: values.wallet_id,
+          note: values.note.trim() || null,
+          transaction_date: values.transaction_date,
+          transaction_time: values.transaction_time,
+        },
+        counterpartyId
+      );
+
+      router.back();
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleDelete() {
+    deleteEntry(entryId, counterpartyId);
+    router.replace(`/loan/${counterpartyId}`);
+  }
+
+  const typeLabel = entry.type === "give" ? "Edit Give" : "Edit Get";
+
   return (
-    <div className="px-4 py-4">
-      <p className="text-[15px]" style={{ color: "var(--text-secondary)" }}>
-        Edit Loan Entry — coming soon
-      </p>
-    </div>
+    <>
+      <AppHeader
+        title={typeLabel}
+        showBack
+        style={{ backgroundColor: "var(--color-brand)" } as React.CSSProperties}
+      />
+
+      <LoanEntryForm
+        type={entry.type}
+        initialValues={initialValues}
+        isNameLocked
+        wallets={wallets}
+        isSubmitting={isSubmitting}
+        onDelete={handleDelete}
+        onSubmit={handleSubmit}
+      />
+    </>
   );
 }
