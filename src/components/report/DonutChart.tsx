@@ -11,7 +11,7 @@ interface DonutChartProps {
 }
 
 // Active segment — slightly expanded with glow shadow
-const renderActiveShape = (props: Record<string, unknown>) => {
+const renderActiveShape = (props: any) => {
   const {
     cx, cy, innerRadius, outerRadius,
     startAngle, endAngle, fill,
