@@ -9,6 +9,7 @@ import { WalletPicker } from "@/components/shared/WalletPicker";
 import { TitleSuggestionChips, CategorySuggestionChips } from "./SuggestionChips";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 export interface IncomeExpenseFormValues {
   transaction_date: string;
@@ -42,11 +43,14 @@ export function IncomeExpenseForm({
   titleSuggestions,
   categorySuggestions,
   isSubmitting,
-  submitLabel = "Save",
+  submitLabel,
   onSubmit,
   footerActions,
 }: IncomeExpenseFormProps) {
   const router = useRouter();
+  const t = useTranslations("transactions");
+  const tc = useTranslations("common");
+  const resolvedSubmitLabel = submitLabel ?? tc("save");
 
   const defaults: IncomeExpenseFormValues = {
     transaction_date: todayISO(),
@@ -83,17 +87,17 @@ export function IncomeExpenseForm({
     const e: FormErrors = {};
     const amount = parseFloat(form.amount) || 0;
 
-    if (!form.transaction_date) e.transaction_date = "Date is required";
-    if (!form.transaction_time) e.transaction_time = "Time is required";
-    if (!form.wallet_id) e.wallet_id = "Please select a wallet";
-    if (!form.amount) e.amount = "Amount is required";
-    else if (amount <= 0) e.amount = "Amount must be greater than 0";
-    else if (amount > 999_999_999_999.99) e.amount = "Amount exceeds maximum limit";
-    if (!form.title.trim()) e.title = "Title is required";
-    else if (form.title.trim().length > 100) e.title = "Title must be 100 characters or less";
-    if (!form.category.trim()) e.category = "Category is required";
-    else if (form.category.trim().length > 50) e.category = "Category must be 50 characters or less";
-    if (form.description.trim().length > 255) e.description = "Description must be 255 characters or less";
+    if (!form.transaction_date) e.transaction_date = t("validation.dateRequired");
+    if (!form.transaction_time) e.transaction_time = t("validation.timeRequired");
+    if (!form.wallet_id) e.wallet_id = t("validation.walletRequired");
+    if (!form.amount) e.amount = t("validation.amountRequired");
+    else if (amount <= 0) e.amount = t("validation.amountInvalid");
+    else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
+    if (!form.title.trim()) e.title = t("validation.titleRequired");
+    else if (form.title.trim().length > 100) e.title = t("validation.titleTooLong");
+    if (!form.category.trim()) e.category = t("validation.categoryRequired");
+    else if (form.category.trim().length > 50) e.category = t("validation.categoryTooLong");
+    if (form.description.trim().length > 255) e.description = t("validation.descriptionTooLong");
 
     return e;
   };
@@ -349,7 +353,7 @@ export function IncomeExpenseForm({
             minHeight: "var(--tap-target-min)",
           }}
         >
-          {isSubmitting ? "Saving..." : submitLabel}
+          {isSubmitting ? tc("saving") : resolvedSubmitLabel}
         </button>
       </div>
 

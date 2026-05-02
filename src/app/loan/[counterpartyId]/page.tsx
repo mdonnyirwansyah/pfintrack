@@ -18,6 +18,7 @@ import { LoanDetailSummaryBar } from "@/components/loan/LoanDetailSummaryBar";
 import { LoanEntryListItem } from "@/components/loan/LoanEntryListItem";
 import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
+import { useTranslations } from "next-intl";
 
 // [13] Loan Detail (entries list per counterparty)
 export default function LoanDetailPage({
@@ -27,6 +28,8 @@ export default function LoanDetailPage({
 }) {
   const { counterpartyId } = use(params);
   const router = useRouter();
+  const t = useTranslations("loan");
+  const tc = useTranslations("common");
 
   const {
     counterparties,
@@ -86,14 +89,14 @@ export default function LoanDetailPage({
   // FAB actions: navigate to add forms with counterpartyId pre-filled
   const fabActions = [
     {
-      label: "Give",
+      label: t("fab.give"),
       icon: <TrendingDown className="w-5 h-5 text-white" />,
       color: "var(--color-negative)",
       onClick: () =>
         router.push(`/loan/add/give?counterpartyId=${counterpartyId}`),
     },
     {
-      label: "Get",
+      label: t("fab.get"),
       icon: <TrendingUp className="w-5 h-5 text-white" />,
       color: "var(--color-accent-warm)",
       onClick: () =>
@@ -105,19 +108,19 @@ export default function LoanDetailPage({
   function handleRenameSubmit() {
     const trimmed = editNameValue.trim();
     if (!trimmed) {
-      setEditNameError("Name is required");
+      setEditNameError(t("validation.renameRequired"));
       return;
     }
     if (trimmed.length < 2) {
-      setEditNameError("Name must be at least 2 characters");
+      setEditNameError(t("validation.nameTooShort"));
       return;
     }
     if (trimmed.length > 50) {
-      setEditNameError("Name must be 50 characters or less");
+      setEditNameError(t("validation.nameTooLong"));
       return;
     }
     if (isNameTaken(trimmed, counterpartyId)) {
-      setEditNameError("Name is already taken");
+      setEditNameError(t("validation.renameTaken"));
       return;
     }
     renameCounterparty(counterpartyId, trimmed);
@@ -135,12 +138,12 @@ export default function LoanDetailPage({
   if (!counterparty) {
     return (
       <>
-        <AppHeader title="Loan" showBack />
+        <AppHeader title={t("title")} showBack />
         <div className="px-4 py-8">
           <EmptyState
             icon={Users}
-            title="Counterparty not found"
-            description="This person may have been deleted."
+            title={t("counterpartyNotFound")}
+            description={t("counterpartyNotFoundDesc")}
           />
         </div>
       </>
@@ -215,8 +218,8 @@ export default function LoanDetailPage({
         {sortedEntries.length === 0 ? (
           <EmptyState
             icon={Users}
-            title="No entries yet"
-            description="Tap + to add a Give or Get entry"
+            title={t("noEntries")}
+            description={t("noEntriesDesc")}
           />
         ) : (
           <div className="space-y-3">
@@ -239,10 +242,10 @@ export default function LoanDetailPage({
       <ConfirmDialog
         open={isMarkAsPaidOpen}
         onOpenChange={setIsMarkAsPaidOpen}
-        title={`Mark ${counterparty.name} as paid off?`}
-        description="This will close all outstanding loan records with this person. You can still add new transactions at any time."
-        confirmLabel="Mark as Paid"
-        cancelLabel="Cancel"
+        title={t("markPaidOffTitle", { name: counterparty.name })}
+        description={t("markPaidOffDesc")}
+        confirmLabel={t("markPaidOff")}
+        cancelLabel={tc("cancel")}
         variant="default"
         onConfirm={() => {
           markAsPaid(counterpartyId);
@@ -254,10 +257,10 @@ export default function LoanDetailPage({
       <ConfirmDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
-        title={`Delete ${counterparty.name}?`}
-        description="This will delete all loan history and roll back any linked wallet balances. This action cannot be undone."
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        title={t("deleteCounterpartyConfirm.title")}
+        description={t("deleteCounterpartyConfirm.description", { name: counterparty.name })}
+        confirmLabel={t("deleteCounterpartyConfirm.confirm")}
+        cancelLabel={t("deleteCounterpartyConfirm.cancel")}
         variant="destructive"
         onConfirm={handleDeleteCounterparty}
       />
@@ -279,7 +282,7 @@ export default function LoanDetailPage({
               className="text-[17px] font-semibold mb-4"
               style={{ color: "var(--text-primary)" }}
             >
-              Rename Counterparty
+              {t("rename.title")}
             </h2>
 
             <div className="space-y-1 mb-4">
@@ -290,7 +293,7 @@ export default function LoanDetailPage({
                   setEditNameValue(e.target.value);
                   setEditNameError("");
                 }}
-                placeholder="Enter name"
+                placeholder={t("rename.namePlaceholder")}
                 maxLength={50}
                 autoFocus
                 className="w-full rounded-[12px] px-4 py-3 text-[15px] outline-none"
@@ -325,7 +328,7 @@ export default function LoanDetailPage({
                   minHeight: "var(--tap-target-min)",
                 }}
               >
-                Cancel
+                {tc("cancel")}
               </button>
               <button
                 onClick={handleRenameSubmit}
@@ -336,7 +339,7 @@ export default function LoanDetailPage({
                   minHeight: "var(--tap-target-min)",
                 }}
               >
-                Save
+                {tc("save")}
               </button>
             </div>
           </div>

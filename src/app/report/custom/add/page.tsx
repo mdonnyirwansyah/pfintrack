@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/shared/AppHeader";
 import { useReportStore } from "@/lib/stores/useReportStore";
 import { formatDisplayDate } from "@/lib/format/date";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface FormErrors {
   name?: string;
@@ -30,6 +31,8 @@ export default function AddCustomReportPage() {
   const { createCustomReport, loadCustomReports, isNameTaken } =
     useReportStore();
 
+  const t = useTranslations("report");
+  const tc = useTranslations("common");
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState(getDefaultStartDate());
   const [endDate, setEndDate] = useState(getDefaultEndDate());
@@ -48,31 +51,31 @@ export default function AddCustomReportPage() {
     const trimmed = name.trim();
 
     if (!trimmed) {
-      errs.name = "Report name is required";
+      errs.name = t("validation.nameRequired");
     } else if (trimmed.length < 2) {
-      errs.name = "Name must be at least 2 characters";
+      errs.name = t("validation.nameTooShort");
     } else if (trimmed.length > 50) {
-      errs.name = "Name must be at most 50 characters";
+      errs.name = t("validation.nameTooLong");
     } else if (isNameTaken(trimmed)) {
-      errs.name = "Report name is already used";
+      errs.name = t("validation.nameTaken");
     }
 
     if (!startDate) {
-      errs.start_date = "Start date is required";
+      errs.start_date = t("validation.startRequired");
     }
     if (!endDate) {
-      errs.end_date = "End date is required";
+      errs.end_date = t("validation.endRequired");
     }
 
     if (startDate && endDate) {
       if (endDate < startDate) {
-        errs.end_date = "End date must be after start date";
+        errs.end_date = t("validation.endBeforeStart");
       } else {
         const diffMs =
           new Date(endDate).getTime() - new Date(startDate).getTime();
         const diffDays = diffMs / (1000 * 60 * 60 * 24);
         if (diffDays > MAX_RANGE_DAYS) {
-          errs.end_date = "Range must not exceed 10 years";
+          errs.end_date = t("validation.rangeExceeds");
         }
       }
     }
@@ -102,7 +105,7 @@ export default function AddCustomReportPage() {
 
   return (
     <>
-      <AppHeader title="Add Report" showBack />
+      <AppHeader title={t("addReport")} showBack />
 
       <form onSubmit={handleSubmit} className="px-4 py-4 space-y-5">
         {/* Report Name */}
@@ -112,7 +115,7 @@ export default function AddCustomReportPage() {
             style={{ color: "var(--text-secondary)" }}
             htmlFor="report-name"
           >
-            Report Name
+            {t("reportName")}
           </label>
           <input
             ref={nameRef}
@@ -123,7 +126,7 @@ export default function AddCustomReportPage() {
               setName(e.target.value);
               if (errors.name) setErrors((p) => ({ ...p, name: undefined }));
             }}
-            placeholder="Enter the report name"
+            placeholder={t("reportNamePlaceholder")}
             className="w-full rounded-[12px] px-4 text-[15px] outline-none transition-all border"
             style={{
               minHeight: "var(--tap-target-min)",
@@ -153,7 +156,7 @@ export default function AddCustomReportPage() {
             style={{ color: "var(--text-secondary)" }}
             htmlFor="start-date"
           >
-            Start Date
+            {t("startDate")}
           </label>
           <input
             id="start-date"
@@ -199,7 +202,7 @@ export default function AddCustomReportPage() {
             style={{ color: "var(--text-secondary)" }}
             htmlFor="end-date"
           >
-            End Date
+            {t("endDate")}
           </label>
           <input
             id="end-date"
@@ -250,7 +253,7 @@ export default function AddCustomReportPage() {
               color: "var(--text-on-primary)",
             }}
           >
-            {isSubmitting ? "Saving..." : "Save"}
+            {isSubmitting ? tc("saving") : tc("save")}
           </button>
         </div>
       </form>

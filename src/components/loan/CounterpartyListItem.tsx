@@ -41,7 +41,7 @@ export function CounterpartyListItem({
   });
   const subtitle =
     sortedEntries.length > 0
-      ? sortedEntries[0].note || "Without explanation"
+      ? sortedEntries[0].note || t("withoutExplanation")
       : t("withoutExplanation");
 
   return (

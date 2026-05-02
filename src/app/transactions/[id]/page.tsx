@@ -13,6 +13,7 @@ import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import type { Transaction } from "@/lib/types/transaction";
 import { FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface EditTransactionPageProps {
   params: Promise<{ id: string }>;
@@ -23,6 +24,8 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   const router = useRouter();
   const { updateTransaction, softDeleteTransaction, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
+  const t = useTranslations("transactions");
+  const tc = useTranslations("common");
 
   const [transaction, setTransaction] = useState<Transaction | null | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +52,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   if (transaction === undefined) {
     return (
       <>
-        <AppHeader title="Edit Transaction" showBack />
+        <AppHeader title={tc("edit")} showBack />
         <div className="px-4 py-4 space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
@@ -67,11 +70,11 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   if (transaction === null || !transaction.is_active) {
     return (
       <>
-        <AppHeader title="Edit Transaction" showBack />
+        <AppHeader title={tc("edit")} showBack />
         <EmptyState
           icon={FileText}
-          title="Transaction not found"
-          description="This transaction may have been deleted."
+          title={t("notFound")}
+          description={t("notFoundDesc")}
         />
       </>
     );
@@ -79,10 +82,10 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
 
   const typeLabel =
     transaction.type === "income"
-      ? "Edit Income"
+      ? t("editIncome")
       : transaction.type === "expense"
-      ? "Edit Expense"
-      : "Edit Transfer";
+      ? t("editExpense")
+      : t("editTransfer");
 
   const handleDeleteConfirm = () => {
     softDeleteTransaction(transaction.id);
@@ -101,7 +104,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
       }}
     >
       <Trash2 className="w-4 h-4" />
-      Delete Transaction
+      {t("deleteConfirm.confirm")} Transaction
     </button>
   );
 
@@ -148,9 +151,9 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
         <ConfirmDialog
           open={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
-          title="Delete Transaction"
-          description="Are you sure you want to delete this transaction? Wallet balance will be rolled back."
-          confirmLabel="Delete"
+          title={t("deleteConfirm.title")}
+          description={t("deleteConfirm.description")}
+          confirmLabel={t("deleteConfirm.confirm")}
           variant="destructive"
           onConfirm={handleDeleteConfirm}
         />
@@ -205,9 +208,9 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Delete Transaction"
-        description="Are you sure you want to delete this transaction? Wallet balance will be rolled back."
-        confirmLabel="Delete"
+        title={t("deleteConfirm.title")}
+        description={t("deleteConfirm.description")}
+        confirmLabel={t("deleteConfirm.confirm")}
         variant="destructive"
         onConfirm={handleDeleteConfirm}
       />

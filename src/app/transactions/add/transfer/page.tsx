@@ -7,6 +7,7 @@ import { TransferForm, type TransferFormValues } from "../../_components/Transfe
 import { useTransactionStore } from "@/lib/stores/useTransactionStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { todayISO } from "@/lib/format/date";
+import { useTranslations } from "next-intl";
 
 function AddTransferContent() {
   const router = useRouter();
@@ -14,6 +15,7 @@ function AddTransferContent() {
   const { createTransaction, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations("transactions");
 
   // Baca ?date= dari URL, fallback ke hari ini
   const dateParam = searchParams.get("date");
@@ -48,7 +50,7 @@ function AddTransferContent() {
 
   return (
     <>
-      <AppHeader title="Add Transfer" showBack />
+      <AppHeader title={t("addTransfer")} showBack />
       <TransferForm
         wallets={wallets}
         initialValues={{ transaction_date: initialDate }}

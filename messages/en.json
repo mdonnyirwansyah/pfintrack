@@ -100,6 +100,8 @@
     "noResultsDesc": "No transactions match your search.",
     "noHistory": "No transactions yet",
     "noHistoryDesc": "Add your first transaction using the + button.",
+    "notFound": "Transaction not found",
+    "notFoundDesc": "This transaction may have been deleted.",
     "summary": {
       "income": "Income",
       "expenses": "Expenses",
@@ -126,6 +128,22 @@
       "selectWallet": "Select Wallet",
       "insufficientBalance": "Insufficient wallet balance"
     },
+    "validation": {
+      "dateRequired": "Date is required",
+      "timeRequired": "Time is required",
+      "walletRequired": "Please select a wallet",
+      "sourceWalletRequired": "Select source wallet",
+      "destWalletRequired": "Select destination wallet",
+      "sameWallet": "Source and destination wallet must be different",
+      "amountRequired": "Amount is required",
+      "amountInvalid": "Amount must be greater than 0",
+      "amountExceeds": "Amount exceeds maximum limit",
+      "titleRequired": "Title is required",
+      "titleTooLong": "Title must be 100 characters or less",
+      "categoryRequired": "Category is required",
+      "categoryTooLong": "Category must be 50 characters or less",
+      "descriptionTooLong": "Description must be 255 characters or less"
+    },
     "deleteConfirm": {
       "title": "Delete Transaction?",
       "description": "This transaction will be deleted and the wallet balance will be adjusted.",
@@ -144,8 +162,16 @@
     "noEntriesDesc": "Tap + to record a Give or Get loan",
     "paidOff": "Paid off",
     "markPaidOff": "Mark as Paid Off",
+    "markPaidOffTitle": "Mark {name} as paid off?",
+    "editGive": "Edit Give",
+    "editGet": "Edit Get",
+    "entryNotFound": "Entry not found",
+    "entryNotFoundDesc": "This entry may have been deleted.",
+    "markPaidOffDesc": "This will close all outstanding loan records with this person. You can still add new transactions at any time.",
     "unmarkPaidOff": "Unmark Paid Off",
     "withoutExplanation": "Without explanation",
+    "counterpartyNotFound": "Counterparty not found",
+    "counterpartyNotFoundDesc": "This person may have been deleted.",
     "summary": {
       "get": "Get",
       "give": "Give",
@@ -201,6 +227,7 @@
   },
   "report": {
     "title": "Report",
+    "notFound": "Report not found.",
     "tabs": {
       "realtime": "Realtime",
       "monthly": "Monthly",

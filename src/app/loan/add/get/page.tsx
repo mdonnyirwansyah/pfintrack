@@ -7,6 +7,7 @@ import { LoanEntryForm, type LoanEntryFormValues } from "@/components/loan/LoanE
 import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
+import { useTranslations } from "next-intl";
 
 // [12] Add Get Entry
 function AddGetContent() {
@@ -19,6 +20,7 @@ function AddGetContent() {
   const { createEntry } = useLoanEntryStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations("loan");
 
   useEffect(() => {
     loadWallets();
@@ -57,7 +59,7 @@ function AddGetContent() {
   return (
     <>
       <AppHeader
-        title="Get"
+        title={t("addGet")}
         showBack
       />
 

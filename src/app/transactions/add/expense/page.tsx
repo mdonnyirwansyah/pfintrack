@@ -8,6 +8,7 @@ import { useTransactionStore, getTitleSuggestions, getCategorySuggestions } from
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { todayISO } from "@/lib/format/date";
+import { useTranslations } from "next-intl";
 
 function AddExpenseContent() {
   const router = useRouter();
@@ -15,6 +16,7 @@ function AddExpenseContent() {
   const { createTransaction, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations("transactions");
 
   // Baca ?date= dari URL, fallback ke hari ini
   const dateParam = searchParams.get("date");
@@ -52,7 +54,7 @@ function AddExpenseContent() {
 
   return (
     <>
-      <AppHeader title="Add Expense" showBack />
+      <AppHeader title={t("addExpense")} showBack />
       <IncomeExpenseForm
         type="expense"
         wallets={wallets}

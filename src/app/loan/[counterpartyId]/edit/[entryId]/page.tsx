@@ -11,6 +11,7 @@ import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { useMounted } from "@/hooks/useMounted";
 import { Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // [14] Edit Loan Entry
 export default function EditLoanEntryPage({
@@ -21,6 +22,7 @@ export default function EditLoanEntryPage({
   const { counterpartyId, entryId } = use(params);
   const router = useRouter();
   const mounted = useMounted();
+  const t = useTranslations("loan");
 
   const { wallets, loadWallets } = useWalletStore();
   const { updateEntry, deleteEntry } = useLoanEntryStore();
@@ -35,7 +37,7 @@ export default function EditLoanEntryPage({
   if (!mounted) {
     return (
       <>
-        <AppHeader title="Edit Entry" showBack />
+        <AppHeader title={t("editEntry")} showBack />
         <div className="px-4 py-8 space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
@@ -57,12 +59,12 @@ export default function EditLoanEntryPage({
   if (!entry || !entry.is_active || !counterparty) {
     return (
       <>
-        <AppHeader title="Edit Entry" showBack />
+        <AppHeader title={t("editEntry")} showBack />
         <div className="px-4 py-8">
           <EmptyState
             icon={Users}
-            title="Entry not found"
-            description="This entry may have been deleted."
+            title={t("entryNotFound")}
+            description={t("entryNotFoundDesc")}
           />
         </div>
       </>
@@ -105,7 +107,7 @@ export default function EditLoanEntryPage({
     router.replace(`/loan/${counterpartyId}`);
   }
 
-  const typeLabel = entry.type === "give" ? "Edit Give" : "Edit Get";
+  const typeLabel = entry.type === "give" ? t("editGive") : t("editGet");
 
   return (
     <>

@@ -7,6 +7,7 @@ import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 export interface TransferFormValues {
   transaction_date: string;
@@ -32,11 +33,14 @@ export function TransferForm({
   wallets,
   initialValues,
   isSubmitting,
-  submitLabel = "Save",
+  submitLabel,
   onSubmit,
   footerActions,
 }: TransferFormProps) {
   const router = useRouter();
+  const t = useTranslations("transactions");
+  const tc = useTranslations("common");
+  const resolvedSubmitLabel = submitLabel ?? tc("save");
 
   const defaults: TransferFormValues = {
     transaction_date: todayISO(),
@@ -77,22 +81,22 @@ export function TransferForm({
     const e: FormErrors = {};
     const amount = parseFloat(form.amount) || 0;
 
-    if (!form.transaction_date) e.transaction_date = "Date is required";
-    if (!form.transaction_time) e.transaction_time = "Time is required";
-    if (!form.source_wallet_id) e.source_wallet_id = "Select source wallet";
-    if (!form.destination_wallet_id) e.destination_wallet_id = "Select destination wallet";
+    if (!form.transaction_date) e.transaction_date = t("validation.dateRequired");
+    if (!form.transaction_time) e.transaction_time = t("validation.timeRequired");
+    if (!form.source_wallet_id) e.source_wallet_id = t("validation.sourceWalletRequired");
+    if (!form.destination_wallet_id) e.destination_wallet_id = t("validation.destWalletRequired");
     if (
       form.source_wallet_id &&
       form.destination_wallet_id &&
       form.source_wallet_id === form.destination_wallet_id
     ) {
-      e.destination_wallet_id = "Source and destination wallet must be different";
+      e.destination_wallet_id = t("validation.sameWallet");
     }
-    if (!form.amount) e.amount = "Amount is required";
-    else if (amount <= 0) e.amount = "Amount must be greater than 0";
-    else if (amount > 999_999_999_999.99) e.amount = "Amount exceeds maximum limit";
+    if (!form.amount) e.amount = t("validation.amountRequired");
+    else if (amount <= 0) e.amount = t("validation.amountInvalid");
+    else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
     if (form.description.trim().length > 255)
-      e.description = "Description must be 255 characters or less";
+      e.description = t("validation.descriptionTooLong");
 
     return e;
   };
@@ -311,7 +315,7 @@ export function TransferForm({
             minHeight: "var(--tap-target-min)",
           }}
         >
-          {isSubmitting ? "Saving..." : submitLabel}
+          {isSubmitting ? tc("saving") : resolvedSubmitLabel}
         </button>
       </div>
 

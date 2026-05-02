@@ -100,6 +100,8 @@
     "noResultsDesc": "Tidak ada transaksi yang sesuai pencarian.",
     "noHistory": "Belum ada transaksi",
     "noHistoryDesc": "Tambah transaksi pertama Anda menggunakan tombol +.",
+    "notFound": "Transaksi tidak ditemukan",
+    "notFoundDesc": "Transaksi ini mungkin telah dihapus.",
     "summary": {
       "income": "Pemasukan",
       "expenses": "Pengeluaran",
@@ -126,6 +128,22 @@
       "selectWallet": "Pilih Dompet",
       "insufficientBalance": "Saldo dompet tidak mencukupi"
     },
+    "validation": {
+      "dateRequired": "Tanggal harus dipilih",
+      "timeRequired": "Waktu harus dipilih",
+      "walletRequired": "Pilih dompet terlebih dahulu",
+      "sourceWalletRequired": "Pilih dompet asal",
+      "destWalletRequired": "Pilih dompet tujuan",
+      "sameWallet": "Dompet asal dan tujuan tidak boleh sama",
+      "amountRequired": "Nominal tidak boleh kosong",
+      "amountInvalid": "Nominal harus lebih dari 0",
+      "amountExceeds": "Nominal melebihi batas maksimum",
+      "titleRequired": "Judul tidak boleh kosong",
+      "titleTooLong": "Judul maksimal 100 karakter",
+      "categoryRequired": "Kategori tidak boleh kosong",
+      "categoryTooLong": "Kategori maksimal 50 karakter",
+      "descriptionTooLong": "Deskripsi maksimal 255 karakter"
+    },
     "deleteConfirm": {
       "title": "Hapus Transaksi?",
       "description": "Transaksi ini akan dihapus dan saldo dompet akan disesuaikan.",
@@ -144,8 +162,16 @@
     "noEntriesDesc": "Ketuk + untuk mencatat pinjam keluar atau masuk",
     "paidOff": "Lunas",
     "markPaidOff": "Tandai Lunas",
+    "markPaidOffTitle": "Tandai {name} sebagai lunas?",
+    "editGive": "Edit Pinjam Keluar",
+    "editGet": "Edit Pinjam Masuk",
+    "entryNotFound": "Entri tidak ditemukan",
+    "entryNotFoundDesc": "Entri ini mungkin telah dihapus.",
+    "markPaidOffDesc": "Ini akan menutup semua catatan pinjaman yang belum diselesaikan dengan orang ini. Anda tetap bisa menambah transaksi baru kapan saja.",
     "unmarkPaidOff": "Batal Tandai Lunas",
     "withoutExplanation": "Tanpa keterangan",
+    "counterpartyNotFound": "Rekanan tidak ditemukan",
+    "counterpartyNotFoundDesc": "Orang ini mungkin telah dihapus.",
     "summary": {
       "get": "Masuk",
       "give": "Keluar",
@@ -201,6 +227,7 @@
   },
   "report": {
     "title": "Laporan",
+    "notFound": "Laporan tidak ditemukan.",
     "tabs": {
       "realtime": "Realtime",
       "monthly": "Bulanan",
