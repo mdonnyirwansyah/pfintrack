@@ -82,6 +82,7 @@ export function DonutChart({
               paddingAngle={2}
               dataKey="total"
               strokeWidth={0}
+              // @ts-expect-error recharts typings missing activeIndex on PieProps in some versions
               activeIndex={activeIndex >= 0 ? activeIndex : undefined}
               activeShape={renderActiveShape}
             >
