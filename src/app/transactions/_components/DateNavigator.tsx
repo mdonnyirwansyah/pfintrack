@@ -118,9 +118,11 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
             <div
               className="absolute top-full mt-2 z-50 rounded-[16px] p-4 shadow-xl"
               style={{
-                background: "var(--bg-card)",
+                background: "var(--bg-secondary)",
+                backdropFilter: "none",
+                WebkitBackdropFilter: "none",
                 border: "1px solid var(--border-default)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.32)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.40)",
                 width: 280,
                 left: "50%",
                 transform: "translateX(-50%)",
