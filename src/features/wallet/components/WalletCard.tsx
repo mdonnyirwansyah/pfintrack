@@ -33,15 +33,15 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
   return (
     <button
       onClick={onPress}
-      className="w-full glass rounded-[16px] px-4 py-3 text-left transition-all active:scale-[0.98] flex items-center gap-3"
-      style={{ minHeight: "var(--tap-target-min)" }}
+      className="w-full glass rounded-[16px] px-4 py-2.5 text-left transition-all active:scale-[0.98] flex items-center gap-2.5"
+      style={{ minHeight: 48 }}
     >
       {/* Icon */}
       <div
-        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
         style={{ backgroundColor: "var(--color-brand-soft)" }}
       >
-        <Icon className="w-5 h-5" style={{ color: "var(--color-brand)" }} strokeWidth={1.5} />
+        <Icon className="w-4 h-4" style={{ color: "var(--color-brand)" }} strokeWidth={1.5} />
       </div>
 
       {/* Name + type */}
@@ -58,14 +58,14 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
       </div>
 
       {/* Balance + chevron */}
-      <div className="flex-shrink-0 flex items-center gap-2">
+      <div className="flex-shrink-0 flex items-center gap-1.5">
         <span
           className="text-[10px] font-semibold tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
           {formatIDR(wallet.balance)}
         </span>
-        <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--text-tertiary)" }} />
+        <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--text-tertiary)" }} />
       </div>
     </button>
   );

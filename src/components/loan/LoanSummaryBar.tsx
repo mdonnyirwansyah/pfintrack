@@ -32,7 +32,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
   return (
     <div
       className="glass flex rounded-[16px] overflow-hidden mb-4"
-      style={{}}
+      style={{ minHeight: 64 }}
     >
       {/* Get column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
@@ -45,6 +45,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
         <span
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-positive)" }}
+          suppressHydrationWarning
         >
           {getPrefix}{formatIDR(totalGet)}
         </span>
@@ -67,6 +68,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
         <span
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
+          suppressHydrationWarning
         >
           {formatIDR(totalGive)}
         </span>
@@ -89,6 +91,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
         <span
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: balanceColor }}
+          suppressHydrationWarning
         >
           {balancePrefix}{formatIDR(Math.abs(balance))}
         </span>

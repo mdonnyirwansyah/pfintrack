@@ -32,8 +32,8 @@ export default function WalletPage() {
       <div className="px-4 py-4">
         {/* Total Balance row */}
         <div
-          className="glass rounded-[16px] px-4 py-4 mb-4 flex items-center justify-between"
-          style={{}}
+          className="glass rounded-[16px] px-4 mb-4 flex items-center justify-between"
+          style={{ minHeight: 64 }}
         >
           <span
             className="text-[10px] font-medium"

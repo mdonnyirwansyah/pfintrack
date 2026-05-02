@@ -51,13 +51,13 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
     <>
       <button
         onClick={() => router.push(`/transactions/${transaction.id}`)}
-        className="w-full flex items-center gap-3 px-4 py-3 active:opacity-70 transition-opacity text-left"
-        style={{ minHeight: "var(--tap-target-min)" }}
+        className="w-full flex items-center gap-2.5 px-4 py-2 active:opacity-70 transition-opacity text-left"
+        style={{ minHeight: 48 }}
         {...longPressHandlers}
       >
         {/* Icon */}
         <div
-          className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+          className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
           style={{
             background: isIncome
               ? "var(--color-positive-soft)"

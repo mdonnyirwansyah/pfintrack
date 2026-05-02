@@ -37,6 +37,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         <span
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-positive)" }}
+          suppressHydrationWarning
         >
           {incomePrefix}{formatIDR(income)}
         </span>
@@ -56,6 +57,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         <span
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
+          suppressHydrationWarning
         >
           {formatIDR(expenses)}
         </span>
@@ -75,6 +77,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         <span
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: balanceColor }}
+          suppressHydrationWarning
         >
           {balancePrefix}{formatIDR(Math.abs(balance))}
         </span>

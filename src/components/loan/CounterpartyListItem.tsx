@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, User } from "lucide-react";
 import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
@@ -47,11 +47,19 @@ export function CounterpartyListItem({
   return (
     <button
       onClick={onClick}
-      className="w-full glass flex items-center gap-3 px-4 py-3 rounded-[16px] text-left transition-all active:scale-[0.98]"
+      className="w-full glass flex items-center gap-2.5 px-4 py-2.5 rounded-[16px] text-left transition-all active:scale-[0.98]"
       style={{
-        minHeight: "var(--tap-target-min)",
+        minHeight: 48,
       }}
     >
+      {/* Icon */}
+      <div
+        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+        style={{ backgroundColor: "var(--color-brand-soft)" }}
+      >
+        <User className="w-4 h-4" style={{ color: "var(--color-brand)" }} strokeWidth={1.5} />
+      </div>
+
       {/* Name + subtitle */}
       <div className="flex-1 min-w-0">
         <p
@@ -93,7 +101,7 @@ export function CounterpartyListItem({
           </span>
         )}
         <ChevronRight
-          className="w-4 h-4"
+          className="w-3.5 h-3.5"
           style={{ color: "var(--text-tertiary)" }}
         />
       </div>
