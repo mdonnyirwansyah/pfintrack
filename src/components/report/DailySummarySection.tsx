@@ -101,7 +101,7 @@ export function DailySummarySection({
 }: DailySummarySectionProps) {
   const t = useTranslations("report");
   const locale = useLocale();
-  const [view, setView] = useState<"list" | "calendar">("list");
+  const [view, setView] = useState<"list" | "calendar">("calendar");
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
 
   const startMonth = startOfMonth(parseISO(start));
