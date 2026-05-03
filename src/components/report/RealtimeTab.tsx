@@ -101,7 +101,12 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
           />
 
           {/* Daily summary (list/calendar toggle) */}
-          <DailySummarySection transactions={transactions} start={start} end={end} />
+          <DailySummarySection
+            transactions={transactions}
+            start={start}
+            end={end}
+            selectedCategory={selectedCategory}
+          />
 
           {/* Transaction list */}
           <div className="space-y-2">

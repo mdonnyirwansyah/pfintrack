@@ -253,7 +253,17 @@
     },
     "daily": {
       "title": "Daily Summary",
-      "noData": "No income or expense transactions this period."
+      "noData": "No income or expense transactions this period.",
+      "filteredBy": "Filtered: {category}",
+      "weekdays": {
+        "sun": "Su",
+        "mon": "Mo",
+        "tue": "Tu",
+        "wed": "We",
+        "thu": "Th",
+        "fri": "Fr",
+        "sat": "Sa"
+      }
     },
     "monthly": {
       "noTransactions": "No transactions yet",
@@ -288,7 +298,9 @@
       "income": "Income",
       "balance": "Balance",
       "loan": "Loan",
-      "balanceCorrection": "Balance Correction"
+      "balanceCorrection": "Balance Correction",
+      "startBalance": "Start Balance",
+      "endBalance": "End Balance"
     },
     "chart": {
       "total": "Total"
@@ -307,5 +319,18 @@
   "walletPicker": {
     "title": "Select Wallet",
     "noWallets": "No wallets available"
+  },
+  "demo": {
+    "banner": {
+      "message": "You are exploring sample data.",
+      "clearButton": "Clear & Start",
+      "closeAriaLabel": "Close banner"
+    },
+    "clearConfirm": {
+      "title": "Delete Sample Data?",
+      "description": "All sample data (wallets, transactions, and loans) will be permanently deleted. This action cannot be undone.",
+      "confirm": "Yes, Delete All",
+      "cancel": "Cancel"
+    }
   }
 }

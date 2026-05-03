@@ -119,7 +119,12 @@ function ReportDetailContent() {
 
         {/* Daily summary */}
         {breakdown.length > 0 && (
-          <DailySummarySection transactions={transactions} start={start} end={end} />
+          <DailySummarySection
+            transactions={transactions}
+            start={start}
+            end={end}
+            selectedCategory={selectedCategory}
+          />
         )}
 
         {/* Transaction list */}

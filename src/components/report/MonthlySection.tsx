@@ -2,8 +2,9 @@
 
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import { PeriodSummaryRows } from "./PeriodSummaryRows";
-import { formatDateRange } from "@/lib/format/date";
+import { formatDateRangeLocale } from "@/lib/format/date";
 import { formatIDR, formatIDRSigned } from "@/lib/format/number";
 import type { MonthlySummary } from "@/lib/report/calculations";
 
@@ -15,6 +16,8 @@ interface MonthlySectionProps {
 
 export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
   const router = useRouter();
+  const t = useTranslations("report.summary");
+  const locale = useLocale();
 
   const handleDrillDown = () => {
     router.push(`/report/detail?start=${start}&end=${end}`);
@@ -34,13 +37,14 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
         className="w-full flex items-center justify-between mb-3 active:opacity-70 transition-opacity"
         style={{ minHeight: "var(--tap-target-min)" }}
         onClick={handleDrillDown}
-        aria-label={`Drill down to ${formatDateRange(start, end)}`}
+        aria-label={`Drill down to ${formatDateRangeLocale(start, end, locale)}`}
       >
         <span
           className="text-[13px] font-semibold flex-1 text-center"
           style={{ color: "var(--text-primary)" }}
+          suppressHydrationWarning
         >
-          {formatDateRange(start, end)}
+          {formatDateRangeLocale(start, end, locale)}
         </span>
         <ChevronRight
           className="w-5 h-5 flex-shrink-0"
@@ -51,7 +55,7 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
       {/* Start Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>
-          Start Balance
+          {t("startBalance")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
@@ -72,7 +76,7 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
       {/* End Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-          End Balance
+          {t("endBalance")}
         </span>
         <span
           className="text-[13px] font-bold tabular-nums"

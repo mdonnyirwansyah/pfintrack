@@ -2,6 +2,7 @@
 
 import type { PeriodSummary } from "@/lib/report/calculations";
 import { formatIDR, formatIDRSigned } from "@/lib/format/number";
+import { useTranslations } from "next-intl";
 
 interface PeriodSummaryRowsProps {
   summary: PeriodSummary;
@@ -16,15 +17,13 @@ interface SummaryRowProps {
 function SummaryRow({ label, value, color }: SummaryRowProps) {
   return (
     <div className="flex items-center justify-between py-1">
-      <span
-        className="text-[10px]"
-        style={{ color: "var(--text-secondary)" }}
-      >
+      <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>
         {label}
       </span>
       <span
         className="text-[13px] font-semibold tabular-nums"
         style={{ color: color ?? "var(--text-primary)" }}
+        suppressHydrationWarning
       >
         {value}
       </span>
@@ -33,6 +32,8 @@ function SummaryRow({ label, value, color }: SummaryRowProps) {
 }
 
 export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
+  const t = useTranslations("report.summary");
+
   const balanceColor =
     summary.balance > 0
       ? "var(--color-positive)"
@@ -56,38 +57,28 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
 
   return (
     <div className="space-y-0.5">
-      <SummaryRow label="Expenses" value={formatIDR(summary.expenses)} />
+      <SummaryRow label={t("expenses")} value={formatIDR(summary.expenses)} />
       <SummaryRow
-        label="Income"
+        label={t("income")}
         value={`+ ${formatIDR(summary.income)}`}
         color="var(--color-positive)"
       />
-      <div
-        className="my-1"
-        style={{
-          height: "1px",
-          background: "var(--divider)",
-        }}
-      />
+      <div className="my-1" style={{ height: "1px", background: "var(--divider)" }} />
       <SummaryRow
-        label="Balance"
-        value={
-          summary.balance === 0
-            ? formatIDR(0)
-            : formatIDRSigned(summary.balance)
-        }
+        label={t("balance")}
+        value={summary.balance === 0 ? formatIDR(0) : formatIDRSigned(summary.balance)}
         color={balanceColor}
       />
       {summary.loan !== null && (
         <SummaryRow
-          label="Loan"
+          label={t("loan")}
           value={formatIDRSigned(summary.loan)}
           color={loanColor}
         />
       )}
       {summary.balanceCorrection !== null && (
         <SummaryRow
-          label="Balance Correction"
+          label={t("balanceCorrection")}
           value={formatIDRSigned(summary.balanceCorrection)}
           color={correctionColor}
         />

@@ -1,4 +1,9 @@
 import { format, parseISO, isValid } from "date-fns";
+import { id as idLocale, enUS } from "date-fns/locale";
+
+function dateFnsLocale(locale: string) {
+  return locale === "id" ? idLocale : enUS;
+}
 
 /**
  * Format a date to display format: "Fri, 01 May 2026"
@@ -25,6 +30,32 @@ export function formatDateRange(from: string | Date, to: string | Date): string 
  */
 export function formatTime(time: string): string {
   return time;
+}
+
+/**
+ * Format a date with locale awareness: "Fri, 01 May 2026" (en) / "Jum, 01 Mei 2026" (id)
+ */
+export function formatDisplayDateLocale(date: string | Date, locale: string): string {
+  const d = typeof date === "string" ? parseISO(date) : date;
+  if (!isValid(d)) return "";
+  return format(d, "EEE, dd MMM yyyy", { locale: dateFnsLocale(locale) });
+}
+
+/**
+ * Format a date range with locale awareness
+ */
+export function formatDateRangeLocale(from: string | Date, to: string | Date, locale: string): string {
+  const fromDate = typeof from === "string" ? parseISO(from) : from;
+  const toDate = typeof to === "string" ? parseISO(to) : to;
+  if (!isValid(fromDate) || !isValid(toDate)) return "";
+  return `${format(fromDate, "dd MMM yyyy", { locale: dateFnsLocale(locale) })} - ${format(toDate, "dd MMM yyyy", { locale: dateFnsLocale(locale) })}`;
+}
+
+/**
+ * Format a month label with locale awareness: "May 2026" (en) / "Mei 2026" (id)
+ */
+export function formatMonthLabelLocale(date: Date, locale: string): string {
+  return format(date, "MMMM yyyy", { locale: dateFnsLocale(locale) });
 }
 
 /**

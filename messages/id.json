@@ -253,7 +253,17 @@
     },
     "daily": {
       "title": "Ringkasan Harian",
-      "noData": "Tidak ada transaksi masuk atau keluar pada periode ini."
+      "noData": "Tidak ada transaksi masuk atau keluar pada periode ini.",
+      "filteredBy": "Difilter: {category}",
+      "weekdays": {
+        "sun": "Mi",
+        "mon": "Sn",
+        "tue": "Sl",
+        "wed": "Rb",
+        "thu": "Km",
+        "fri": "Jm",
+        "sat": "Sb"
+      }
     },
     "monthly": {
       "noTransactions": "Belum ada transaksi",
@@ -288,7 +298,9 @@
       "income": "Pemasukan",
       "balance": "Saldo",
       "loan": "Pinjaman",
-      "balanceCorrection": "Koreksi Saldo"
+      "balanceCorrection": "Koreksi Saldo",
+      "startBalance": "Saldo Awal",
+      "endBalance": "Saldo Akhir"
     },
     "chart": {
       "total": "Total"
@@ -307,5 +319,18 @@
   "walletPicker": {
     "title": "Pilih Dompet",
     "noWallets": "Tidak ada dompet tersedia"
+  },
+  "demo": {
+    "banner": {
+      "message": "Anda sedang mengeksplorasi data sampel.",
+      "clearButton": "Hapus & Mulai",
+      "closeAriaLabel": "Tutup banner"
+    },
+    "clearConfirm": {
+      "title": "Hapus Data Sampel?",
+      "description": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
+      "confirm": "Ya, Hapus Semua",
+      "cancel": "Batal"
+    }
   }
 }
