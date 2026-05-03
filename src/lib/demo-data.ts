@@ -10,6 +10,7 @@ import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import { applyTransactionToWallet } from "@/lib/storage/wallet-balance-ops";
 import { writeKey } from "@/lib/storage/base";
+import { useAppStore } from "@/lib/stores/useAppStore";
 
 /** ISO date N days before today */
 function daysAgo(n: number): string {
@@ -217,5 +218,6 @@ export function clearDemoData(): void {
   writeKey("custom_reports", []);
 
   window.localStorage.removeItem("pfintrack_demo_mode");
+  useAppStore.getState().setIsDemoMode(false);
   window.location.reload();
 }

@@ -321,7 +321,10 @@ function TransactionsContent() {
                   {td("exploreButton")}
                 </button>
                 <button
-                  onClick={() => setDismissedWelcome(true)}
+                  onClick={() => {
+                    setIsDemoMode(false);
+                    setDismissedWelcome(true);
+                  }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-medium active:opacity-70 transition-opacity"
                   style={{
                     background: "var(--bg-secondary)",
