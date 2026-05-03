@@ -2,7 +2,7 @@
 ## Module: Report
 
 **Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.1
+**Versi Dokumen:** 1.2
 **Tanggal:** 2026-05-03
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
@@ -77,10 +77,10 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **Monthly Section** | Dinamis | Per bulan, ditampilkan satu blok dengan format konsisten (lihat di bawah). Section diurutkan dari bulan terbaru ke belakang. |
-| **Section Header** | Statis | Teks rata tengah dengan format range: `01 May 2026 - 31 May 2026`. |
-| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut: <br>• **Expenses** (hitam) <br>• **Income** (hijau, dengan prefix `+`) <br>• **Balance** (hitam jika positif, merah jika negatif, dengan prefix `+` atau `-`) <br>• **Loan** (hijau jika positif, hitam/merah jika negatif) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau jika positif, merah jika negatif) — tampil hanya jika ada perubahan initial balance wallet di bulan tersebut |
-| **Section Chevron** | Interaktif | Ikon `›` di kanan section. Tap pada section → navigasi ke screen detail breakdown per kategori (seperti tampilan Realtime, namun untuk bulan tersebut). |
-| **Auto-load (Infinite Scroll)** | Dinamis | Saat user scroll ke bawah, sistem menambahkan section bulan-bulan sebelumnya yang masih punya data. Berhenti otomatis saat sudah mencapai bulan transaksi paling lama. |
+| **Section Header** | Statis | Teks rata tengah dengan format range: `01 May 2026 - 31 May 2026`. Tap → drill-down ke detail periode. |
+| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (hitam) <br>• **Income** (hijau, prefix `+`) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
+| **Section Chevron** | Interaktif | Ikon `›` di kanan section header. Tap → navigasi ke screen detail breakdown per kategori. |
+| **Auto-load (Infinite Scroll)** | Dinamis | Saat user scroll ke bawah, sistem menambahkan section bulan-bulan sebelumnya yang masih punya data. Berhenti otomatis saat sudah mencapai bulan transaksi paling lama. Load awal: 6 bulan. Load tambahan: 6 bulan per scroll. |
 
 ---
 
@@ -92,7 +92,7 @@
 | **Section Header** | Dinamis | Dua baris rata tengah: <br>• Baris atas: **nama report** (bold) <br>• Baris bawah: range periode `01 Jan 2026 - 31 Dec 2026` |
 | **Section Edit Action** | Interaktif | Ikon ✏️ di sudut kanan atas setiap section. Tap → membuka screen Edit Custom Report (rename, ubah range, atau delete). |
 | **Section Chevron** | Interaktif | Ikon `›` di kanan section. Tap → navigasi ke screen detail breakdown per kategori untuk periode custom tersebut. |
-| **Summary Rows** | Dinamis | Sama seperti tab Monthly: Expenses, Income, Balance, Loan, Balance Correction. |
+| **Summary Rows** | Dinamis | **Identik dengan tab Monthly**: Start Balance · Expenses · Income · Balance · Loan (opsional) · Balance Correction (opsional) · End Balance. |
 | **FAB Button (`+`)** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → navigasi ke screen Add Custom Report. |
 | **Empty State** | Dinamis | Jika user belum punya custom report → tampilkan empty state dengan ajakan membuat report pertama. |
 
@@ -188,18 +188,21 @@ User tap tab "Monthly"
               ↓
    Generate list bulan dari max → min (DESC)
               ↓
-   Untuk setiap bulan dalam viewport, hitung:
-     1. Expenses    = SUM(amount) where type='expense' aktif di bulan itu
-     2. Income      = SUM(amount) where type='income'  aktif di bulan itu
-     3. Balance     = Income − Expenses
-     4. Loan        = SUM(get.amount) − SUM(give.amount)
-                      dari loan_entries aktif di bulan itu
-                      (tampil hanya jika ada entry)
-     5. Balance Correction = SUM(perubahan initial balance wallet)
-                              di bulan itu
-                              (tampil hanya jika ada perubahan)
+   Untuk setiap bulan dalam viewport, hitung calculateMonthlySummary():
+     1. Start Balance = SUM(income sebelum bulan ini)
+                       − SUM(expense sebelum bulan ini)
+                       + SUM(wallet_balance_history.delta sebelum bulan ini)
+     2. Income       = SUM(amount) where type='income' aktif di bulan itu
+     3. Expenses     = SUM(amount) where type='expense' aktif di bulan itu
+     4. Balance      = Income − Expenses
+     5. Loan         = SUM(get.amount) − SUM(give.amount)
+                       dari loan_entries aktif di bulan itu
+                       (null / tidak tampil jika tidak ada entry)
+     6. Balance Correction = SUM(wallet_balance_history.delta) di bulan itu
+                             (null / tidak tampil jika tidak ada)
+     7. End Balance  = Start Balance + Balance + (Balance Correction ?? 0)
               ↓
-   Render section per bulan
+   Render section per bulan (urutan baris: Start Balance → ... → End Balance)
               ↓
    Saat user scroll mendekati bawah → load section bulan berikutnya
    sampai habis (sudah mencapai bulan paling lama)
@@ -214,9 +217,9 @@ User tap tab "Custom"
               ↓
    Baca localStorage['custom_reports']
               ↓
-   Untuk setiap custom report, hitung summary 5 baris
-   (Expenses, Income, Balance, Loan, Balance Correction)
+   Untuk setiap custom report, hitung calculateMonthlySummary()
    menggunakan filter date range dari report tersebut
+   (Start Balance, Income, Expenses, Balance, Loan, Correction, End Balance)
               ↓
    Render list section, urut by created_at DESC
               ↓
@@ -450,8 +453,43 @@ Sort DESC by categoryTotal
 
 **Catatan tampilan:**
 - Maksimum 8 kategori ditampilkan secara individual.
-- Jika kategori > 8, sisanya digabungkan menjadi *"Lainnya"* (asumsi — perlu konfirmasi).
-- Warna segment di-generate konsisten per kategori (mis. hash dari nama kategori untuk warna deterministik).
+- Jika kategori > 8, sisanya digabungkan menjadi *"Lainnya"*.
+- Warna segment deterministik per index urutan (bukan per nama kategori).
+
+---
+
+### 4.7 Start Balance
+
+> **Konsep:** Saldo bersih kumulatif user **sebelum** hari pertama periode. Mencerminkan total uang yang dimiliki pada detik sebelum periode dimulai.
+
+```
+Start Balance(periode) =
+    SUM(income.amount   WHERE transaction_date < periode.start AND is_active=true)
+  − SUM(expense.amount  WHERE transaction_date < periode.start AND is_active=true)
+  + SUM(wallet_balance_history.delta
+        WHERE corrected_at < periode.start AND is_active=true)
+```
+
+**Catatan:**
+- `wallet_balance_history` mencakup: (1) saldo awal wallet saat dibuat (balance > 0), (2) manual balance correction.
+- Transfer tidak ikut dihitung (konsisten dengan aturan Income/Expenses).
+- Start Balance bisa negatif jika total expense historis > total income historis.
+
+---
+
+### 4.8 End Balance
+
+```
+End Balance(periode) = Start Balance + Balance + (Balance Correction ?? 0)
+```
+
+| Hasil | Tampilan |
+|-------|----------|
+| Positif | Warna hijau (`var(--color-positive)`), prefix `+` |
+| Nol | `0` warna netral |
+| Negatif | Warna merah (`var(--color-negative)`), prefix `-` |
+
+**Catatan:** End Balance merepresentasikan total uang yang dimiliki user pada hari terakhir periode.
 
 ---
 
@@ -507,9 +545,9 @@ Sort DESC by categoryTotal
 
 ### Key: `wallet_balance_history` *(terkait Module Wallet)*
 
-> Key ini diperlukan untuk perhitungan **Balance Correction** di Report.
-> Diisi setiap kali user mengedit `balance` wallet (bukan saat wallet pertama dibuat).
-> **Akan didokumentasikan lebih lengkap di revisi Module Wallet** — sini hanya dicantumkan sebagai dependency.
+> Key ini diperlukan untuk perhitungan **Balance Correction** dan **Start Balance** di Report.
+> Ditulis dalam dua kasus: (1) saat wallet **pertama dibuat** dengan balance > 0, (2) saat user **mengedit balance** wallet secara manual.
+> Didokumentasikan lengkap di Module Wallet v4.1.
 
 **Contoh isi data:**
 
@@ -588,13 +626,16 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | `displayedUntil` | String (ISO date) | Bulan ini | Bulan terakhir yang sudah di-render (untuk infinite scroll) |
 | `isLoadingMore` | Boolean | `false` | Loader di bawah saat fetch bulan tambahan |
 
-`MonthlyReportView` shape:
+`MonthlyReportView` shape (`MonthlySummary` interface di `calculations.ts`):
 ```
 {
-  start_date, end_date,
-  expenses, income, balance,
-  loan (optional),
-  balance_correction (optional)
+  startBalance: number,
+  income: number,
+  expenses: number,
+  balance: number,
+  loan: number | null,
+  balanceCorrection: number | null,
+  endBalance: number
 }
 ```
 
@@ -643,7 +684,7 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | **Computed On-The-Fly** | Semua summary (Expenses, Income, Balance, Loan, Balance Correction) dihitung **on-the-fly** saat report dibuka — tidak di-cache di localStorage. Mencegah desync data jika ada edit/delete transaksi di belakang layar. |
 | **Performa Monthly** | Untuk user dengan riwayat panjang, render semua bulan sekaligus bisa lambat. Implementasikan **infinite scroll**: load 6 bulan pertama, lalu load tambahan 6 bulan saat user mendekati bawah list. |
 | **Performa Custom** | Saat user banyak punya custom report dengan range besar, tiap section membutuhkan iterasi seluruh transaksi. Pertimbangkan **memoization** hasil kalkulasi per range agar tidak dihitung ulang setiap re-render. |
-| **Balance Correction Dependency** | Fitur Balance Correction membutuhkan **`wallet_balance_history`** — key baru yang harus ditulis oleh Module Wallet setiap kali user edit balance wallet. **Module Wallet perlu di-update** untuk mendukung ini. Tanpa key ini, baris Balance Correction tidak akan pernah muncul di Report. |
+| **Balance Correction & Start Balance Dependency** | Fitur Balance Correction **dan** Start Balance bergantung pada `wallet_balance_history`. Key ini ditulis oleh Module Wallet dalam dua momen: (1) Add Wallet dengan balance > 0, (2) Edit balance wallet manual. Implementasi sudah ada di `useWalletStore`. |
 | **Transfer Tidak Dihitung** | Konsisten dengan Module Transactions: tipe `transfer` tidak ikut dalam Income, Expenses, atau Balance. Transfer adalah pemindahan dana internal user, bukan arus keluar/masuk. |
 | **Loan vs Income/Expense** | Loan **terpisah** dari Income/Expense. Walaupun Get terlihat seperti income dan Give seperti expense, mereka tidak masuk perhitungan Income/Expense — hanya muncul di baris Loan tersendiri. Ini agar laporan rutin (gaji, belanja) tidak bercampur dengan utang-piutang. |
 | **Empty Section** | Jika sebuah bulan tidak punya transaksi & loan & balance correction sama sekali → bulan itu **tidak perlu di-render** di tab Monthly. |
@@ -671,5 +712,5 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 
 ---
 
-*— End of Technical Specification: Module Report (v1.0) —*
+*— End of Technical Specification: Module Report (v1.2) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Module Loan · Global Architecture · Module Settings*
