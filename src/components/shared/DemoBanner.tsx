@@ -1,17 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, X } from "lucide-react";
-import { useAppStore } from "@/lib/stores/useAppStore";
 import { clearDemoData } from "@/lib/demo-data";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { useTranslations } from "next-intl";
 
 export function DemoBanner() {
   const t = useTranslations("demo");
-  const isDemoMode = useAppStore((s) => s.isDemoMode);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  useEffect(() => {
+    setIsDemoMode(window.localStorage.getItem("pfintrack_demo_mode") === "true");
+  }, []);
 
   if (!isDemoMode || dismissed) return null;
 

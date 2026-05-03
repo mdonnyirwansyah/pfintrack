@@ -26,7 +26,6 @@ import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSwipe } from "@/hooks/useSwipe";
 import { toast } from "sonner";
-import { useAppStore } from "@/lib/stores/useAppStore";
 import { injectDemoData } from "@/lib/demo-data";
 import { Sparkles, PlayCircle } from "lucide-react";
 
@@ -35,7 +34,6 @@ function TransactionsContent() {
   const searchParams = useSearchParams();
   const { transactions, isLoading, loadTransactions, softDeleteTransaction } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
-  const setIsDemoMode = useAppStore((s) => s.setIsDemoMode);
   const [dismissedWelcome, setDismissedWelcome] = useState(false);
   const t = useTranslations("transactions");
   const td = useTranslations("demo.welcome");
@@ -307,7 +305,6 @@ function TransactionsContent() {
                 <button
                   onClick={() => {
                     injectDemoData();
-                    setIsDemoMode(true);
                     window.location.reload();
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-semibold active:opacity-70 transition-opacity"
@@ -322,7 +319,9 @@ function TransactionsContent() {
                 </button>
                 <button
                   onClick={() => {
-                    setIsDemoMode(false);
+                    if (typeof window !== "undefined") {
+                      window.localStorage.removeItem("pfintrack_demo_mode");
+                    }
                     setDismissedWelcome(true);
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-medium active:opacity-70 transition-opacity"
