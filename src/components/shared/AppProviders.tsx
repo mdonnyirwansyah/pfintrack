@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { getOrCreateAnonId } from "@/lib/bootstrap/anon-id";
 import { useAppStore } from "@/lib/stores/useAppStore";
 import { setFormatDecimals } from "@/lib/format/number";
+import { DemoBanner } from "./DemoBanner";
 
 interface AppProvidersProps {
   children: React.ReactNode;

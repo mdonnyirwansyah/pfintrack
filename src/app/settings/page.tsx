@@ -1,14 +1,16 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Globe, Info, Hash } from "lucide-react";
+import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useMounted } from "@/hooks/useMounted";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setLocale } from "@/actions/setLocale";
 import { useAppStore } from "@/lib/stores/useAppStore";
+import { clearDemoData } from "@/lib/demo-data";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 type ThemeOption = "light" | "dark" | "system";
 
@@ -21,6 +23,8 @@ export default function SettingsPage() {
   const [isPending, startTransition] = useTransition();
   const showDecimals = useAppStore((s) => s.showDecimals);
   const setShowDecimals = useAppStore((s) => s.setShowDecimals);
+  const isDemoMode = useAppStore((s) => s.isDemoMode);
+  const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
 
   const THEME_OPTIONS: { value: ThemeOption; label: string; icon: React.ElementType }[] = [
     { value: "light", label: t("theme.light"), icon: Sun },
@@ -248,6 +252,41 @@ export default function SettingsPage() {
           </button>
         </div>
 
+        {/* ── Demo Mode ── */}
+        {isDemoMode && (
+          <>
+            <p
+              className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+              style={{ color: "var(--color-negative)" }}
+            >
+              Data Sampel
+            </p>
+            <div className={sectionClass}>
+              <button
+                className={rowClass + " w-full"}
+                onClick={() => setDemoConfirmOpen(true)}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                    style={{ background: "var(--color-negative-soft)" }}
+                  >
+                    <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[14px] font-medium" style={{ color: "var(--color-negative)" }}>
+                      Hapus Data Sampel
+                    </p>
+                    <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                      Hapus semua data demo dan mulai dari nol
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </>
+        )}
+
         {/* ── About ── */}
         <p
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
@@ -276,6 +315,20 @@ export default function SettingsPage() {
         </div>
 
       </div>
+
+      <ConfirmDialog
+        open={demoConfirmOpen}
+        onOpenChange={setDemoConfirmOpen}
+        title="Hapus Data Sampel?"
+        description="Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan."
+        confirmLabel="Ya, Hapus Semua"
+        cancelLabel="Batal"
+        variant="destructive"
+        onConfirm={() => {
+          setDemoConfirmOpen(false);
+          clearDemoData();
+        }}
+      />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { AppProviders } from "@/components/shared/AppProviders";
 import { BottomNav } from "@/components/shared/BottomNav";
+import { DemoBanner } from "@/components/shared/DemoBanner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -79,6 +80,12 @@ export default async function RootLayout({
                   minHeight: "100dvh",
                 }}
               >
+                <div
+                  className="sticky z-30"
+                  style={{ top: "var(--header-height)" }}
+                >
+                  <DemoBanner />
+                </div>
                 {children}
               </main>
               <BottomNav />

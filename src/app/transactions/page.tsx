@@ -26,12 +26,17 @@ import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSwipe } from "@/hooks/useSwipe";
 import { toast } from "sonner";
+import { useAppStore } from "@/lib/stores/useAppStore";
+import { injectDemoData } from "@/lib/demo-data";
+import { Sparkles, PlayCircle } from "lucide-react";
 
 function TransactionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { transactions, isLoading, loadTransactions, softDeleteTransaction } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
+  const setIsDemoMode = useAppStore((s) => s.setIsDemoMode);
+  const [dismissedWelcome, setDismissedWelcome] = useState(false);
   const t = useTranslations("transactions");
 
   // Init activeDate dari ?date= query param, fallback ke hari ini
@@ -278,6 +283,55 @@ function TransactionsContent() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Welcome card — shown only when app is completely empty for the first time */}
+        {!isLoading && !dismissedWelcome && wallets.length === 0 && transactions.length === 0 && (
+          <div className="px-4 mt-4">
+            <div
+              className="glass rounded-[20px] p-5 flex flex-col gap-4"
+              style={{ border: "1px solid var(--border-glass)" }}
+            >
+              <div className="flex flex-col gap-1.5">
+                <h2 className="text-[16px] font-bold" style={{ color: "var(--text-primary)" }}>
+                  Selamat datang di pfintrack!
+                </h2>
+                <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+                  Mulai catat keuanganmu dari nol, atau jelajahi fitur aplikasi dengan data sampel realistis terlebih dahulu.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <button
+                  onClick={() => {
+                    injectDemoData();
+                    setIsDemoMode(true);
+                    window.location.reload();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-semibold active:opacity-70 transition-opacity"
+                  style={{
+                    background: "var(--color-brand)",
+                    color: "var(--text-on-primary)",
+                    minHeight: "var(--tap-target-min)",
+                  }}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Eksplorasi dengan Data Sampel
+                </button>
+                <button
+                  onClick={() => setDismissedWelcome(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-medium active:opacity-70 transition-opacity"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    color: "var(--text-secondary)",
+                    minHeight: "var(--tap-target-min)",
+                  }}
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  Mulai dari Nol
+                </button>
+              </div>
             </div>
           </div>
         )}
