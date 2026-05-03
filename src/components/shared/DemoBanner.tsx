@@ -18,14 +18,14 @@ export function DemoBanner() {
   return (
     <>
       <div
-        className="flex items-start justify-between px-4 py-2.5 gap-2"
+        className="flex items-center justify-between px-4 py-2.5 gap-2"
         style={{
           background: "var(--color-brand)",
           color: "var(--text-on-primary)",
         }}
       >
-        <div className="flex items-start gap-2 flex-1 min-w-0">
-          <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
           <p className="text-[12px] font-medium leading-snug">
             {t("banner.message")}
           </p>
