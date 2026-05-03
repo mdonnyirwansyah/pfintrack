@@ -105,7 +105,7 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
             >
               {isTransfer
                 ? (transaction.description ?? "Transfer")
-                : transaction.category ?? ""}
+                : (transaction.category ?? "") + (transaction.description ? ` • ${transaction.description}` : "")}
             </span>
             <span
               className="text-[9px] flex-shrink-0"
