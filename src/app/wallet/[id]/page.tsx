@@ -150,7 +150,6 @@ export default function EditWalletPage({
                   toast.error(t("cannotDeleteInUse") || "Wallet sedang digunakan dalam transaksi/pinjaman dan tidak dapat dihapus.", {
                     id: "delete-in-use",
                     duration: 3000,
-                    onClick: () => toast.dismiss("delete-in-use"),
                   });
                 } else {
                   setIsDeleteDialogOpen(true);
