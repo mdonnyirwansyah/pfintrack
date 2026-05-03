@@ -35,7 +35,7 @@ export function ConfirmDialog({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
-        className="glass-strong mx-4 rounded-[20px]"
+        className="glass-strong rounded-[20px] w-[calc(100vw-2rem)]"
         style={{ maxWidth: "340px" }}
       >
         <AlertDialogHeader>
