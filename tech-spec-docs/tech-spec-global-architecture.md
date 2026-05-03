@@ -2,8 +2,8 @@
 ## Global Architecture
 
 **Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.0
-**Tanggal:** 2026-05-01
+**Versi Dokumen:** 1.2
+**Tanggal:** 2026-05-03
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -173,9 +173,10 @@ Digunakan saat user perlu memilih wallet di form (Transactions, Loan).
 
 | Komponen | Spesifikasi |
 |----------|-------------|
-| Date picker | Native HTML date input atau library setara. Format display: bahasa Indonesia *"Jum, 01 Mei 2026"*. |
-| Time picker | Native HTML time input. Format 24-jam (`HH:MM`). |
-| Date navigator (Transactions list) | Tombol `‹` & `›` untuk previous/next day. Tap teks tanggal → buka full date picker (tanggal/bulan/tahun). |
+| Date picker | Native HTML `input[type=date]`. Format display: English *"Fri, 01 May 2026"*. |
+| Time picker | Native HTML `input[type=time]`. Format 24-jam (`HH:MM`). |
+| **Layout di form** | Date dan Time ditampilkan **secara vertikal** (masing-masing full-width), bukan side-by-side, agar tidak tampak mepet di layar ≤390px. |
+| Date navigator (Transactions list) | Tombol `‹` & `›` untuk previous/next day. Tap teks tanggal → buka full date picker. Swipe kanan → hari sebelumnya, swipe kiri → hari berikutnya (lihat §3.9). |
 
 ### 3.6 Confirmation Dialog
 
@@ -207,6 +208,51 @@ Pola tampilan saat suatu list kosong.
 | Tombol submit (Save) | Spinner di dalam tombol, tombol disabled |
 | Pull-to-refresh | Indikator refresh native browser (jika tersedia) |
 
+### 3.9 Swipe Navigation
+
+Digunakan pada Transaction List untuk navigasi tanggal dengan gesture.
+
+| Gesture | Efek |
+|---------|------|
+| Swipe kiri (→ kanan di layar) | Maju ke hari berikutnya |
+| Swipe kanan (← kiri di layar) | Mundur ke hari sebelumnya |
+| Swipe vertikal | Diabaikan (scroll normal) |
+
+**Threshold:** 50px horizontal sebelum gesture dianggap valid. Gerakan vertikal > horizontal → diabaikan agar tidak konflik dengan scroll. Diimplementasi di `src/hooks/useSwipe.ts`.
+
+### 3.10 Demo Mode
+
+Fitur untuk pengguna baru yang ingin menjelajahi aplikasi tanpa harus input data sendiri.
+
+**Komponen:**
+
+| Komponen | File | Deskripsi |
+|----------|------|-----------|
+| `DemoBanner` | `src/components/shared/DemoBanner.tsx` | Banner biru sticky di bawah AppHeader. Hanya muncul saat `isDemoMode = true`. Berisi teks "Anda sedang mengeksplorasi data sampel." + tombol "Hapus & Mulai" + tombol × untuk dismiss sementara. |
+| Welcome Card | `src/app/transactions/page.tsx` | Card yang muncul di Transaction List saat app pertama kali dibuka (wallets & transactions kosong). Menawarkan dua pilihan: "Eksplorasi dengan Data Sampel" atau "Mulai dari Nol". |
+| `injectDemoData()` | `src/lib/demo-data.ts` | Mengisi 3 wallet (BCA, GoPay, Tunai), ±77 transaksi selama 1 bulan penuh, dan 3 loan counterparty dengan data realistis. |
+| `clearDemoData()` | `src/lib/demo-data.ts` | Menghapus seluruh data finansial dari 6 key localStorage + reset flag + `window.location.reload()`. |
+| Settings action | `src/app/settings/page.tsx` | Section "Data Sampel" merah, hanya muncul saat `isDemoMode = true`. Tombol "Hapus Data Sampel" dengan confirm dialog. |
+
+**State:** `isDemoMode: boolean` disimpan di `useAppStore` (Zustand), di-persist ke `app_state` localStorage key.
+
+**Alur:**
+```
+App dibuka pertama kali (wallets=[], transactions=[])
+              ↓
+  Welcome Card muncul di Transaction List
+        ↓                      ↓
+"Eksplorasi Data Sampel"   "Mulai dari Nol"
+        ↓                      ↓
+injectDemoData()           Dismiss card
+setIsDemoMode(true)
+window.location.reload()
+        ↓
+DemoBanner muncul di semua halaman
+```
+
+**Clear demo data:** Bisa via DemoBanner → "Hapus & Mulai" atau Settings → "Hapus Data Sampel".
+
 ---
 
 ## 4. Standar Lintas-Modul
@@ -219,15 +265,32 @@ Semua nilai uang ditampilkan dengan **locale Indonesia (`id-ID`)**:
 |--------|--------|
 | Pemisah ribuan | Titik (`.`) |
 | Pemisah desimal | Koma (`,`) |
-| Jumlah desimal | Selalu 2 digit |
+| Jumlah desimal | **Dikontrol user** — default 0 digit, bisa diaktifkan 2 digit via Settings |
 | Mata uang default | IDR (Rupiah) |
-| Tampilan negatif | Prefix `-` dengan spasi: `- 17.000,00` |
-| Tampilan positif (kontekstual) | Prefix `+` dengan spasi: `+ 5.000,00` (untuk income, get loan, balance correction positif) |
+| Tampilan negatif | Prefix `-`: `-17.000` atau `-17.000,00` |
+| Tampilan positif (kontekstual) | Prefix `+`: `+5.000` atau `+5.000,00` (untuk income, get loan, balance correction positif) |
+
+**Preferensi `showDecimals`:**
+
+User dapat mengaktifkan/menonaktifkan tampilan desimal di Settings → Display → "Show Decimals".
+
+| `showDecimals` | Contoh tampilan |
+|---------------|----------------|
+| `false` (default) | `823.110` |
+| `true` | `823.110,46` |
+
+State ini disimpan di `useAppStore` (Zustand, persist ke `app_state`). Diimplementasi melalui `setFormatDecimals()` di `src/lib/format/number.ts` — sinkronisasi dari store ke formatter module dilakukan via `useEffect` di `AppProviders`.
 
 **Penyimpanan vs Tampilan:**
 - Di `localStorage`: angka **murni** (mis. `823110.46`, format JavaScript Number)
-- Di UI: format locale (mis. `"823.110,46"`)
+- Di UI: format locale via `formatIDR()` (mis. `"823.110"` atau `"823.110,46"`)
 - Konversi dilakukan di lapisan UI menggunakan `Intl.NumberFormat('id-ID')`.
+
+**Input amount di form:**
+Field nominal di semua form (Transactions, Loan, Wallet) menggunakan `type="text" inputMode="decimal"` dengan behavior:
+- **onFocus:** nilai diformat kembali ke angka murni untuk editing (mis. `"1.500.000"` → `"1500000"`)
+- **onBlur:** nilai diformat ke IDR (mis. `"1500000"` → `"1.500.000"`)
+- Parsing saat submit via `parseIDR()` yang menangani format IDR (`"1.500.000,50"` → `1500000.50`)
 
 ### 4.2 Format Tanggal & Waktu
 
@@ -471,7 +534,7 @@ User klik "Buat Akun" (Fase 2)
 | Data | Producer | Consumer | Catatan |
 |------|----------|----------|---------|
 | `wallets` | Wallet (CRUD) | Transactions (untuk pilih wallet, update balance), Loan (untuk pilih wallet, update balance), Report (referensi nama wallet) | Field `balance` di-update oleh siapa saja yang melakukan transaksi/loan |
-| `wallet_balance_history` | Wallet (saat user edit balance manual) | Report (untuk Balance Correction) | Hanya dicatat saat edit manual, bukan akibat transaksi |
+| `wallet_balance_history` | Wallet (saat tambah wallet dengan balance > 0, atau edit balance manual) | Report (untuk Balance Correction) | Dicatat saat: (1) Add Wallet dengan initial balance > 0, (2) Edit Wallet jika balance berubah. Tidak dicatat akibat transaksi/loan. |
 | `transactions` | Transactions (CRUD) | Report (Income, Expenses, Donut chart) | Transfer tidak dihitung di Income/Expenses |
 | `loan_counterparties` | Loan (CRUD) | — | Internal Loan |
 | `loan_entries` | Loan (CRUD) | Report (Loan cash flow) | Cash flow loan = Get − Give per periode |
@@ -483,8 +546,9 @@ Berlaku untuk **semua operasi yang menyentuh `wallet.balance`**:
 
 | Aksi | Efek terhadap `wallet.balance` | Catat ke `wallet_balance_history`? |
 |------|-------------------------------|-------------------------------------|
-| Tambah wallet baru (initial balance) | Set balance awal | ❌ Tidak |
-| Edit balance manual via Edit Wallet | Set balance baru | ✅ Ya |
+| Tambah wallet baru (initial balance > 0) | Set balance awal | ✅ Ya — dicatat sebagai koreksi awal (previous=0, new=balance) |
+| Tambah wallet baru (initial balance = 0) | Set balance awal (0) | ❌ Tidak |
+| Edit balance manual via Edit Wallet | Set balance baru | ✅ Ya (hanya jika balance berubah) |
 | Tambah transaksi income | `+= amount` | ❌ Tidak |
 | Tambah transaksi expense | `-= amount` | ❌ Tidak |
 | Tambah transaksi transfer | Source `-= amount`, Destination `+= amount` | ❌ Tidak |
@@ -494,7 +558,7 @@ Berlaku untuk **semua operasi yang menyentuh `wallet.balance`**:
 | Edit/hapus loan entry | Rollback efek lama, apply efek baru | ❌ Tidak |
 | Soft delete wallet | (tidak ubah balance) | ❌ Tidak |
 
-**Filosofi:** Hanya **edit manual** yang tergolong "koreksi" — perubahan akibat operasi normal sudah punya audit trail-nya sendiri di `transactions` atau `loan_entries`.
+**Filosofi:** "Koreksi" adalah ketika user secara **eksplisit menetapkan nilai balance** — baik saat membuat wallet dengan saldo awal, maupun saat mengedit balance via form. Perubahan akibat transaksi/loan sudah punya audit trail-nya sendiri di `transactions` atau `loan_entries`.
 
 ---
 
@@ -504,13 +568,15 @@ Berlaku untuk **semua operasi yang menyentuh `wallet.balance`**:
 |-----|---------|-----------|---------------|
 | `anon_id` | Global | UUID v4 sebagai penanda anonymous user | Global Architecture |
 | `wallets` | Wallet | Array daftar wallet user | Module Wallet |
-| `wallet_balance_history` | Wallet | Array riwayat perubahan balance manual | Module Wallet |
+| `wallet_balance_history` | Wallet | Array riwayat koreksi balance (add wallet + edit manual) | Module Wallet |
 | `transactions` | Transactions | Array transaksi (income, expense, transfer) | Module Transactions |
 | `loan_counterparties` | Loan | Array daftar orang (counterparty loan) | Module Loan |
 | `loan_entries` | Loan | Array transaksi loan (give, get) | Module Loan |
 | `custom_reports` | Report | Array custom report buatan user | Module Report |
+| `app_state` | Global | State Zustand ter-persist: `anonId`, `showDecimals`, `isDemoMode` | Global Architecture |
+| `pfintrack_demo_mode` | Global | Flag sederhana (`"true"`) untuk demo mode — dipakai bersama `isDemoMode` di `app_state` | Global Architecture |
 
-**Total: 7 key di localStorage.**
+**Total: 7 key data finansial + 2 key state aplikasi = 9 key di localStorage.**
 
 Setiap key (kecuali `anon_id`) berisi array of objects dengan field umum yang konsisten:
 - `id` — UUID v4
@@ -596,7 +662,7 @@ Berlaku di seluruh modul.
 
 ## 11. Module Settings (`/settings`)
 
-Route tunggal, tab ke-4 di Bottom Navigation (di sebelah kiri Report).
+Route tunggal, tab ke-5 di Bottom Navigation (paling kanan).
 
 ### 11.1 Screens
 
@@ -605,35 +671,28 @@ Route tunggal, tab ke-4 di Bottom Navigation (di sebelah kiri Report).
 | Section | Komponen | Deskripsi |
 |---------|----------|-----------|
 | **Appearance** | Theme selector | 3 opsi: **Light** · **Dark** · **System** (mengikuti OS). Opsi aktif ditandai checkmark + warna primary. Menggunakan `next-themes` `setTheme()`. |
-| **Language** | Language selector | 2 opsi: **English** (aktif) · **Indonesia** (badge "Soon" — belum diimplementasi). Lihat §11.2 untuk rencana i18n. |
-| **About** | Info row | Nama app + versi (mis. `v0.1.0`). |
+| **Language** | Language selector | 2 opsi: **English** · **Indonesia**. Implementasi via `next-intl` server action `setLocale()`. Preference disimpan di cookie. |
+| **Display** | Show Decimals toggle | Toggle switch untuk mengaktifkan/menonaktifkan tampilan 2 desimal pada semua angka IDR. Default: off. Preview langsung di bawah label toggle: `100.000` (off) atau `100.000,00` (on). State di-persist via `useAppStore.showDecimals`. |
+| **Data Sampel** *(conditional)* | Delete action | Section merah, **hanya muncul saat `isDemoMode = true`**. Tombol "Hapus Data Sampel" dengan konfirmasi dialog destructive. Menjalankan `clearDemoData()` → hapus semua data + reload. |
+| **About** | Info row | Nama app `pfintrack` + versi `v0.1.0`. |
 
-### 11.2 Rencana i18n (Fase 1.5 — belum diimplementasi)
+### 11.2 i18n — Implementasi (via `next-intl`)
 
-Language switch Indonesia/English direncanakan dengan pendekatan berikut:
+Language switch sudah diimplementasi dengan `next-intl`:
 
-| Aspek | Rencana |
-|-------|---------|
-| **Storage** | Preference disimpan di `localStorage['app_settings']` (key baru, bukan bagian 7 key utama) |
-| **State** | Zustand store `useAppSettingsStore` — field `language: "en" \| "id"` |
-| **Text strings** | Dictionary di `src/lib/i18n/en.ts` dan `src/lib/i18n/id.ts`, diakses via hook `useT()` |
-| **Scope terjemahan** | Label UI, placeholder, pesan error validasi, empty state, header titles, dialog text |
-| **TIDAK diterjemahkan** | Format tanggal (tetap English per §4.2), format angka (tetap id-ID Intl), nama field record di storage |
+| Aspek | Implementasi |
+|-------|-------------|
+| **Storage** | Disimpan di cookie via `setLocale()` server action (`src/actions/setLocale.ts`) |
+| **Provider** | `NextIntlClientProvider` di `src/app/layout.tsx` |
+| **Pesan terjemahan** | `src/i18n/messages/en.json` dan `src/i18n/messages/id.json` |
+| **Akses di komponen** | `useTranslations("namespace")` hook |
+| **Scope terjemahan** | Label UI, placeholder, pesan validasi, empty state, header title, dialog text |
+| **TIDAK diterjemahkan** | Format tanggal (tetap English), format angka (tetap `id-ID` Intl), key field di storage |
 | **Default** | English (`"en"`) |
 
-### 11.3 Konsistensi Text — Aturan Fase 1
+### 11.3 Konsistensi Text
 
-Sampai i18n diimplementasi, **semua UI text menggunakan English**:
-
-| Kategori | Contoh benar | Contoh salah |
-|----------|-------------|-------------|
-| Validation errors | `"Date is required"` | `"Tanggal harus dipilih"` |
-| Empty states | `"No wallets yet"` | `"Belum ada wallet"` |
-| Confirm dialogs | `"Delete Wallet?"` / `"Cancel"` / `"Delete"` | `"Hapus Wallet?"` / `"Batal"` / `"Hapus"` |
-| Warning messages | `"Insufficient wallet balance"` | `"Saldo wallet tidak mencukupi"` |
-| Fallback labels | `"Without explanation"` | `"Tanpa keterangan"` |
-| Amount field | `"Amount is required"` | `"Nominal tidak boleh kosong"` |
-| Name field | `"Name is required"` | `"Nama tidak boleh kosong"` |
+UI text menggunakan bahasa **sesuai locale aktif** via `next-intl`. Pesan dalam file `messages/en.json` dan `messages/id.json` harus konsisten dan lengkap.
 
 ---
 

@@ -2,8 +2,8 @@
 ## Module: Wallet
 
 **Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.0
-**Tanggal:** 2026-05-01
+**Versi Dokumen:** 4.1
+**Tanggal:** 2026-05-03
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -23,6 +23,7 @@
 |-------|---------|----------------|
 | 3.0 | 2026-05-01 | Versi awal: Wallet List & Add Wallet, struktur localStorage, pola migration-ready |
 | **4.0** | **2026-05-01** | **Penambahan key `wallet_balance_history` untuk merekam perubahan balance wallet (mendukung fitur Balance Correction di Module Report). Dokumentasi flow Edit Wallet diperjelas: perbedaan antara perubahan via transaksi (otomatis) vs perubahan manual via edit form (memicu pencatatan history).** |
+| **4.1** | **2026-05-03** | **Update: Add Wallet dengan initial balance > 0 WAJIB dicatat ke `wallet_balance_history` (previous=0, new=balance). Ini memungkinkan Module Report menghitung Balance Correction sejak wallet pertama kali dibuat. Asumsi 10 & 11 direvisi.** |
 
 ---
 
@@ -39,8 +40,8 @@
 | 7 | Data wallet disimpan di `localStorage` dengan key `wallets` sebagai array JSON. |
 | 8 | **Total Balance** adalah hasil penjumlahan field `balance` dari seluruh wallet yang berstatus aktif (`is_active: true`), dihitung di sisi client. |
 | 9 | Dari UI form **Add Wallet** hanya terlihat 2 field input (name + balance). Field `wallet_type` belum tampil di gambar — diasumsikan menggunakan nilai default `other` untuk saat ini, dan akan dibahas lebih lanjut saat gambar lengkap tersedia. |
-| 10 | **(BARU di v4.0)** Setiap kali nilai `balance` wallet berubah karena **edit manual oleh user** (bukan karena transaksi/loan), perubahan tersebut wajib dicatat di key terpisah `wallet_balance_history`. Catatan ini digunakan oleh Module Report untuk menghitung **Balance Correction**. |
-| 11 | **(BARU di v4.0)** Perubahan balance yang **diakibatkan oleh transaksi** (income/expense/transfer dari Module Transactions, atau give/get dari Module Loan) **TIDAK** masuk ke `wallet_balance_history`. Hanya perubahan manual yang dicatat di sana. |
+| 10 | **(DIPERBARUI di v4.1)** `wallet_balance_history` dicatat dalam dua kondisi: **(a)** saat **Add Wallet** dengan `balance > 0` — dicatat sebagai koreksi awal dengan `previous_balance=0, new_balance=balance`; **(b)** saat **Edit Wallet** jika balance berubah dari nilai sebelumnya. Catatan ini digunakan oleh Module Report untuk menghitung **Balance Correction**. |
+| 11 | **(DIPERBARUI di v4.1)** Perubahan balance yang **diakibatkan oleh transaksi** (income/expense/transfer) atau **loan** (give/get) **TIDAK** masuk ke `wallet_balance_history`. Hanya perubahan yang diprakarsai user secara eksplisit via form (Add Wallet & Edit Wallet) yang dicatat. |
 
 ---
 
@@ -157,10 +158,14 @@ Pengguna mengisi "Name" → mengisi "Balance" → Tap "Save"
                    Tambahkan ke array wallets
                    Simpan kembali ke localStorage['wallets']
                               ↓
-                   ⚠️ TIDAK menulis ke wallet_balance_history.
-                      Initial balance saat wallet pertama dibuat
-                      bukan termasuk "koreksi" — hanya perubahan
-                      sesudahnya yang dianggap koreksi.
+                   ✅ Jika balance > 0:
+                      Buat record di wallet_balance_history
+                      - previous_balance: 0
+                      - new_balance: balance input user
+                      - delta: balance
+                      - corrected_at: timestamp saat ini
+                      Ini merekam "koreksi awal" wallet baru
+                      agar Report dapat menghitung Balance Correction.
                               ↓
                    Kembali ke Wallet List (/wallet)
                    Total Balance otomatis ter-update
@@ -210,7 +215,7 @@ Pengguna tap salah satu baris wallet di list
               Total Balance otomatis ter-update
 ```
 
-> **Catatan penting:** Pencatatan ke `wallet_balance_history` **HANYA** terjadi saat user secara manual mengedit field `balance` di screen ini. Perubahan balance akibat operasi normal (transaksi income/expense/transfer, give/get loan) **TIDAK** boleh ditulis ke history ini.
+> **Catatan penting:** Pencatatan ke `wallet_balance_history` terjadi pada dua kondisi: **(1)** Add Wallet dengan balance > 0 (koreksi awal), dan **(2)** Edit Wallet jika nilai balance berubah dari sebelumnya. Perubahan balance akibat transaksi income/expense/transfer atau give/get loan **TIDAK** boleh ditulis ke history ini.
 
 ---
 
@@ -357,15 +362,16 @@ Pengguna tap tombol "Delete" di Wallet Detail
 
 **Aturan Pencatatan:**
 
-✅ **Wajib dicatat:** Saat user mengedit field `balance` secara manual via screen Edit Wallet (`/wallet/[id]`).
+✅ **Wajib dicatat:**
+1. Saat **Add Wallet** dengan `balance > 0` — dicatat sebagai koreksi awal (`previous=0, new=balance`)
+2. Saat **Edit Wallet** jika nilai `balance` berubah dari nilai sebelumnya
 
 ❌ **TIDAK boleh dicatat** ketika balance berubah karena:
-1. Wallet baru dibuat (initial balance dari Add Wallet form)
-2. Transaksi income/expense/transfer dari Module Transactions
-3. Operasi give/get dari Module Loan
-4. Wallet di-soft-delete
+1. Transaksi income/expense/transfer dari Module Transactions
+2. Operasi give/get dari Module Loan
+3. Wallet di-soft-delete
 
-> **Alasan:** Hanya perubahan manual yang merepresentasikan **koreksi** terhadap saldo — perubahan akibat transaksi sudah punya jejaknya sendiri di `transactions` atau `loan_entries`.
+> **Alasan:** Perubahan akibat transaksi sudah punya jejaknya sendiri di `transactions` atau `loan_entries`. Add Wallet & Edit Wallet adalah satu-satunya aksi di mana user secara eksplisit menetapkan nilai balance — sehingga layak disebut "koreksi".
 
 ---
 
@@ -395,10 +401,11 @@ Field `balance` di sebuah wallet dapat berubah karena 4 alasan:
 
 | # | Sumber Perubahan | Modul Pemicu | Catat ke history? |
 |---|-----------------|-------------|-------------------|
-| 1 | **Wallet baru dibuat** (initial balance) | Wallet (Add) | ❌ **Tidak** |
-| 2 | **Transaksi income/expense/transfer** | Transactions | ❌ **Tidak** |
-| 3 | **Operasi loan give/get** (jika user pilih wallet) | Loan | ❌ **Tidak** |
-| 4 | **Edit manual** field balance via Edit Wallet | Wallet (Edit) | ✅ **Ya** |
+| 1 | **Wallet baru dibuat** dengan initial balance > 0 | Wallet (Add) | ✅ **Ya** — koreksi awal (prev=0, new=balance) |
+| 2 | **Wallet baru dibuat** dengan initial balance = 0 | Wallet (Add) | ❌ **Tidak** — tidak ada perubahan bermakna |
+| 3 | **Transaksi income/expense/transfer** | Transactions | ❌ **Tidak** |
+| 4 | **Operasi loan give/get** (jika user pilih wallet) | Loan | ❌ **Tidak** |
+| 5 | **Edit manual** field balance via Edit Wallet | Wallet (Edit) | ✅ **Ya** (hanya jika nilai berubah) |
 
 ---
 
@@ -406,8 +413,8 @@ Field `balance` di sebuah wallet dapat berubah karena 4 alasan:
 
 - Perubahan dari **transaksi** sudah punya jejak audit-nya sendiri di `transactions` (Module Transactions). Mengulang pencatatannya di history akan menghasilkan double-counting.
 - Perubahan dari **loan** sudah tercatat di `loan_entries`. Sama, double-counting akan terjadi.
-- **Initial balance** saat wallet pertama dibuat bukan "koreksi" — itu adalah nilai awal yang valid, bukan kesalahan yang dikoreksi.
-- **Edit manual** = user menyadari saldo tidak sesuai realita (mis. lupa catat transaksi, atau ada perbedaan dengan saldo asli di bank). Ini **murni koreksi** yang tidak ada jejaknya di tempat lain — sehingga harus dicatat agar Module Report bisa menampilkannya sebagai "Balance Correction".
+- **Initial balance > 0** saat wallet dibuat = user menyatakan "wallet ini sudah punya saldo sekian". Ini adalah koreksi awal yang perlu direkam agar Module Report bisa melacak perubahan balance dari awal.
+- **Edit manual** = user menyadari saldo tidak sesuai realita (mis. lupa catat transaksi, ada perbedaan dengan saldo asli di bank). Ini **murni koreksi** yang tidak ada jejaknya di tempat lain.
 
 ---
 

@@ -2,8 +2,8 @@
 ## Module: Transactions
 
 **Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.0
-**Tanggal:** 2026-05-01
+**Versi Dokumen:** 1.2
+**Tanggal:** 2026-05-03
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -48,8 +48,11 @@
 | **Header Action: Export** | Interaktif | Ikon download di header. Tap → trigger export seluruh data transaksi ke file **Excel (.xlsx)** dan diunduh oleh browser. |
 | **Header Action: History** | Interaktif | Ikon dokumen di header. Tap → navigasi ke screen **Transaction History (Search)** yang menampilkan seluruh transaksi (bukan hanya tanggal aktif) dengan kemampuan pencarian. |
 | **Summary Bar** | Dinamis | Tiga kolom ringkasan untuk **tanggal aktif** saja: **Income** (hijau) · **Expenses** (merah) · **Balance** (selisih income − expenses). Tipe transfer **tidak** dihitung di sini. |
-| **Transaction List** | Dinamis | Daftar transaksi pada tanggal aktif, urut dari paling baru ke paling lama. Setiap item menampilkan: kategori, title, nominal, dan wallet terkait. Warna nominal mengikuti tipe (income: hijau, expense: merah, transfer: netral/abu). |
-| **Empty State** | Dinamis | Tampil saat tidak ada transaksi di tanggal aktif. Berupa ilustrasi dokumen + teks *"There is no data"* di tengah konten. |
+| **Sort Control** | Interaktif | Pill button di kanan atas list (hanya muncul jika ada transaksi). Tap → dropdown dengan 4 opsi urutan: **Newest first** (default) · **Oldest first** · **Highest amount** · **Lowest amount**. Pill berwarna biru jika sort bukan default. Komponen reusable `SortPill` (`src/components/shared/SortPill.tsx`). |
+| **Transaction List** | Dinamis | Daftar transaksi pada tanggal aktif, diurutkan sesuai `sortKey` aktif. Setiap item menampilkan: kategori, title, nominal, dan wallet terkait. Warna nominal mengikuti tipe (income: hijau, expense: merah, transfer: netral/abu). **Long-press item → konfirmasi hapus.** |
+| **Long-press Delete + Undo** | Interaktif | Tekan dan tahan (≥500ms) pada item transaksi → muncul dialog konfirmasi. Konfirmasi → item langsung disembunyikan dari list + muncul toast "Transaction deleted" dengan tombol **Undo** selama 5 detik. Tap Undo → item muncul kembali, soft-delete dibatalkan. Jika tidak di-undo → `softDeleteTransaction()` dipanggil setelah 5 detik. |
+| **Empty State** | Dinamis | Tampil saat tidak ada transaksi di tanggal aktif. Berupa ilustrasi dokumen + teks deskriptif di tengah konten. |
+| **Welcome Card** | Dinamis (first-run) | Tampil **menggantikan empty state** saat `wallets.length === 0 && transactions.length === 0` (aplikasi baru dipakai pertama kali). Menawarkan dua pilihan: **"Eksplorasi dengan Data Sampel"** (inject demo data + reload) dan **"Mulai dari Nol"** (dismiss card). Lihat §3.10 Global Architecture untuk detail Demo Mode. |
 | **FAB Expandable** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → mengembang menjadi 3 sub-action vertikal di atasnya (urut dari bawah ke atas): **Expense** (merah, ikon keranjang) · **Income** (oranye, ikon tren naik) · **Transfer** (abu, ikon panah dua arah). Tap di luar area FAB → menutup ekspansi. Form yang dituju menerima `?date=YYYY-MM-DD` dari tanggal aktif. Setelah save, redirect ke `/transactions?date=YYYY-MM-DD` (bukan `/transactions` tanpa param). |
 | **Bottom Navigation** | Shared · Statis | 5 tab. Tab **Transactions** (kiri, ikon buku) dalam keadaan aktif/biru. *(Komponen shared, lihat Global Architecture.)* |
 
@@ -60,10 +63,10 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Tombol back `‹` di kiri (kembali ke Transaction List). Judul "Add Income" di tengah. |
-| **Date Picker** | Interaktif | Field tanggal dengan ikon kalender. Default: tanggal dari `?date=` query param, fallback hari ini. |
-| **Time Picker** | Interaktif | Field jam (format `HH:MM`) di sebelah kanan date picker. Default: waktu saat ini. Tap → membuka native time picker. |
+| **Date Picker** | Interaktif | Field tanggal **full-width** dengan ikon kalender. Default: tanggal dari `?date=` query param, fallback hari ini. Tampil di baris sendiri (bukan berdampingan dengan Time). |
+| **Time Picker** | Interaktif | Field jam (format `HH:MM`) **full-width**, tampil di baris sendiri **di bawah** Date Picker (tersusun vertikal, bukan horizontal). Default: waktu saat ini. Tap → membuka native time picker. |
 | **Wallet Selector** | Interaktif | Field dropdown menampilkan nama wallet aktif. Default: wallet pertama (atau yang terakhir dipakai). Tap → membuka **Bottom Sheet "Select Wallet"** berisi grid wallet aktif user. |
-| **Amount Field** | Interaktif | Input numerik untuk nominal transaksi. Placeholder *"Enter the amount"*. Ikon kalkulator dekoratif di kanan. Memunculkan keyboard numerik di mobile. Wajib diisi, > 0. |
+| **Amount Field** | Interaktif | Input teks (`type="text" inputMode="decimal"`) untuk nominal transaksi. Placeholder *"Enter the amount"*. Ikon kalkulator dekoratif di kanan. **onFocus**: format IDR dihapus → tampilkan angka mentah (mis. `1500000`). **onBlur**: angka di-format IDR (mis. `1.500.000,00`). Wajib diisi, > 0. |
 | **Title Field** | Interaktif | Input teks bebas. Placeholder *"Type here for new title"*. Wajib diisi. |
 | **Title Suggestion Chips** | Dinamis | Sederet chip biru di bawah field title. Berisi **title unik** yang pernah dipakai user pada transaksi tipe `income`. Tap chip → mengisi field title **dan** field category secara bersamaan (paket dari history). |
 | **Category Field** | Interaktif | Input teks bebas. Placeholder *"Type here for new category"*. Wajib diisi. |
@@ -102,6 +105,9 @@ Judul header: **"Add Transfer"**. Struktur mirip Add Income/Expense, dengan perb
 |----------|-----------------|
 | **Source Wallet** | Field dropdown pertama. Wallet asal (uang dikurangi). Wajib diisi. |
 | **Destination Wallet** | Field dropdown kedua. Wallet tujuan (uang ditambah). Wajib diisi. **Tidak boleh sama** dengan Source Wallet. |
+| **Date Picker** | Field tanggal **full-width**, tampil di baris sendiri. Default: tanggal dari `?date=` query param, fallback hari ini. |
+| **Time Picker** | Field jam **full-width**, tampil di baris sendiri **di bawah** Date Picker (vertikal, bukan horizontal). Default: waktu saat ini. |
+| **Amount Field** | Input teks (`type="text" inputMode="decimal"`) dengan **onFocus/onBlur IDR formatting** sama seperti form Income/Expense. |
 | **Title Field** | **Tidak ada.** Transfer tidak memiliki title/category. |
 | **Category Field** | **Tidak ada.** |
 | **Suggestion Chips** | **Tidak ada.** |

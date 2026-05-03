@@ -2,8 +2,8 @@
 ## Module: Loan
 
 **Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.0
-**Tanggal:** 2026-05-01
+**Versi Dokumen:** 1.1
+**Tanggal:** 2026-05-03
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -80,7 +80,7 @@
 | **App Header** | Statis | Background biru solid. Tombol back `‹`. Judul **"Give"** rata tengah. |
 | **Date Picker** | Interaktif | Field tanggal + ikon kalender. Default: hari ini. Tap → native date picker. |
 | **Time Picker** | Interaktif | Field jam (`HH:MM`). Default: waktu sekarang. |
-| **Amount Field** | Interaktif | Input numerik. Placeholder *"Amount"*. Ikon kalkulator dekoratif di kanan. Wajib diisi, > 0. Memunculkan keyboard numerik. |
+| **Amount Field** | Interaktif | Input teks (`type="text" inputMode="decimal"`). Placeholder *"Amount"*. Ikon kalkulator dekoratif di kanan. Wajib diisi, > 0. **onFocus**: format IDR dihapus → tampilkan angka mentah. **onBlur**: angka di-format IDR (mis. `1.500.000,00`). Parsing menggunakan `parseIDR()`. |
 | **Name Field** | Interaktif | Input teks bebas. Placeholder *"Enter the name"*. Wajib diisi. Auto-trim. Pencocokan ke counterparty existing case-insensitive. **Jika navigasi dari Loan Detail → field ini pre-filled & disabled (locked).** |
 | **Wallet Selector** | Opsional | Field dropdown. Placeholder *"Select Wallet (optional)"*. Boleh kosong. Jika dipilih → balance wallet ter-update saat Save. |
 | **Note Field** | Opsional | Input teks bebas. Placeholder *"Note (optional)"*. Maksimum 255 karakter. |

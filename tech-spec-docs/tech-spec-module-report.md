@@ -2,8 +2,8 @@
 ## Module: Report
 
 **Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.0
-**Tanggal:** 2026-05-01
+**Versi Dokumen:** 1.1
+**Tanggal:** 2026-05-03
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -134,7 +134,19 @@ Struktur form **identik** dengan Add Custom Report, dengan tambahan:
 | **App Header** | Statis | Tombol back `‹`. Judul = range periode (mis. "01 May 2026 - 31 May 2026") atau nama custom report. |
 | **Donut Chart (Expense by Category)** | Dinamis | Sama persis dengan tab Realtime (termasuk DonutChart Enhancements), tetapi data difilter sesuai periode terpilih. |
 | **Category Legend List** | Dinamis | Sama dengan Realtime. Tap kategori → toggle pilih, list transaksi di bawah difilter in-place. |
-| **Transaction List** | Dinamis | Selalu tampil di bawah chart. Default (tidak ada kategori dipilih atau tidak ada param `?category=`): header "All Transactions" + jumlah item + semua expense aktif periode tersebut, urut tanggal DESC. Saat kategori dipilih (via URL param atau tap donut/legend): header "CategoryName — Transactions" + item count + list difilter ke kategori itu. Setiap baris: judul (atau fallback nama kategori) + "kategori · tanggal" subtitle + nominal negatif. Semua baris dalam container `.glass` dengan divider. |
+| **Daily Summary Section** | Dinamis | Blok ringkasan per hari, tampil di bawah Donut Chart **jika ada data expense** pada periode tersebut. Lihat DailySummarySection di bawah. |
+| **Sort Control** | Interaktif | Pill button di kanan atas transaction list (hanya muncul jika ada expense). Komponen reusable `SortPill`. Opsi: **Newest first** (default) · **Oldest first** · **Highest amount** · **Lowest amount**. |
+| **Transaction List** | Dinamis | Tampil di bawah Daily Summary. Default (tidak ada kategori dipilih atau tidak ada param `?category=`): header "All Transactions" + jumlah item + semua expense aktif periode tersebut, diurutkan sesuai `sortKey` aktif. Saat kategori dipilih: header "CategoryName — Transactions" + item count + list difilter ke kategori itu. Setiap baris: judul (atau fallback nama kategori) + "kategori · tanggal" subtitle + nominal negatif. Semua baris dalam container `.glass` dengan divider. |
+
+**DailySummarySection:**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **Toggle View** | Dua tombol (List / Calendar) di kanan header section. Default: List. |
+| **Mode List** | Daftar hari yang memiliki transaksi pada periode terpilih. Setiap baris: format hari (mis. "Thu, 01 May") + total expense hari itu (merah). Urut tanggal DESC. |
+| **Mode Calendar** | Kalender grid per bulan. Setiap sel: tanggal + total expense hari itu jika ada (teks kecil merah). Hari tanpa transaksi: hanya tanggal. |
+| **Multi-month Navigation** | Jika periode mencakup lebih dari satu bulan (custom report): header kalender memiliki tombol `‹` (bulan sebelumnya) dan `›` (bulan berikutnya). Tombol `‹` di-disable pada bulan pertama range, `›` di-disable pada bulan terakhir range. |
+| **State `currentMonth`** | Dimulai dari bulan pertama periode (`startOfMonth(start)`). Navigasi prev/next menggunakan `subMonths`/`addMonths` dari `date-fns`. |
 
 ---
 
@@ -274,7 +286,7 @@ User tap chevron `›` di section Monthly atau Custom
               ↓
    Hitung breakdown expense by category untuk periode terpilih
               ↓
-   Render donut chart + legend list + transaction list
+   Render donut chart + legend list + DailySummarySection + transaction list
    (UI sama persis dengan tab Realtime, hanya data berbeda)
               ↓
    Header: tampilkan range periode atau nama custom report
