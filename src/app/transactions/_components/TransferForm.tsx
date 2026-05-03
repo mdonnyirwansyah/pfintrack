@@ -52,6 +52,13 @@ export function TransferForm({
     ...initialValues,
   };
 
+  if (initialValues?.amount) {
+    const parsed = parseIDR(initialValues.amount);
+    if (!isNaN(parsed)) {
+      defaults.amount = formatIDR(parsed);
+    }
+  }
+
   const [form, setForm] = useState<TransferFormValues>(defaults);
   const [errors, setErrors] = useState<FormErrors>({});
   const [activeWalletPicker, setActiveWalletPicker] = useState<

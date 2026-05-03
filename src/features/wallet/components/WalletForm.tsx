@@ -39,9 +39,12 @@ export function WalletForm({
   deleteSlot,
 }: WalletFormProps) {
   const [name, setName] = useState(initialValues?.name ?? "");
-  const [balance, setBalance] = useState(
-    initialValues?.balance !== undefined ? initialValues.balance : ""
-  );
+  const [balance, setBalance] = useState(() => {
+    const init = initialValues?.balance;
+    if (!init) return "";
+    const parsed = parseIDR(init);
+    return !isNaN(parsed) ? formatIDR(parsed) : init;
+  });
   const [walletType, setWalletType] = useState<WalletType>(
     initialValues?.wallet_type ?? "other"
   );

@@ -42,7 +42,7 @@ interface LoanEntryFormProps {
 const MAX_AMOUNT = 999_999_999_999.99;
 
 function getDefaults(initial?: Partial<LoanEntryFormValues>): LoanEntryFormValues {
-  return {
+  const defaults: LoanEntryFormValues = {
     transaction_date: initial?.transaction_date ?? todayISO(),
     transaction_time: initial?.transaction_time ?? currentTimeHHMM(),
     amount: initial?.amount ?? "",
@@ -50,6 +50,15 @@ function getDefaults(initial?: Partial<LoanEntryFormValues>): LoanEntryFormValue
     wallet_id: initial?.wallet_id ?? null,
     note: initial?.note ?? "",
   };
+
+  if (initial?.amount) {
+    const parsed = parseIDR(initial.amount);
+    if (!isNaN(parsed)) {
+      defaults.amount = formatIDR(parsed);
+    }
+  }
+
+  return defaults;
 }
 
 export function LoanEntryForm({

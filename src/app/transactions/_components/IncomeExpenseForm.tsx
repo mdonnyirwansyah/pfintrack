@@ -63,6 +63,13 @@ export function IncomeExpenseForm({
     ...initialValues,
   };
 
+  if (initialValues?.amount) {
+    const parsed = parseIDR(initialValues.amount);
+    if (!isNaN(parsed)) {
+      defaults.amount = formatIDR(parsed);
+    }
+  }
+
   const [form, setForm] = useState<IncomeExpenseFormValues>(defaults);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isWalletOpen, setIsWalletOpen] = useState(false);
