@@ -115,25 +115,7 @@ export function WalletForm({
     onSubmit({ ...values, name: name.trim() });
   };
 
-  const handleBalanceFocus = () => {
-    // Show raw decimal number for easy editing
-    if (balance) {
-      const parsed = parseIDR(balance);
-      if (!isNaN(parsed)) {
-        setBalance(String(parsed));
-      }
-    }
-  };
-
-  const handleBalanceBlur = () => {
-    // Format with locale on blur for readability
-    if (balance) {
-      const parsed = parseIDR(balance);
-      if (!isNaN(parsed) && parsed >= 0) {
-        setBalance(formatIDR(parsed));
-      }
-    }
-  };
+  // No longer needed, real-time formatting handles this
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
@@ -228,9 +210,26 @@ export function WalletForm({
             type="text"
             inputMode="decimal"
             value={balance}
-            onChange={(e) => setBalance(e.target.value)}
-            onFocus={handleBalanceFocus}
-            onBlur={handleBalanceBlur}
+            onChange={(e) => {
+              let val = e.target.value;
+              val = val.replace(/[^0-9,]/g, "");
+              if (!val) {
+                setBalance("");
+                return;
+              }
+              const parts = val.split(",");
+              let integerPart = parts[0];
+              const decimalPart = parts.length > 1 ? "," + parts[1] : "";
+              if (integerPart) {
+                const parsed = parseInt(integerPart, 10);
+                if (!isNaN(parsed)) {
+                  integerPart = parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                } else {
+                  integerPart = "";
+                }
+              }
+              setBalance(integerPart + decimalPart);
+            }}
             placeholder={t("form.balancePlaceholder")}
             className={cn(
               "w-full px-4 pr-12 rounded-[12px] text-[14px] outline-none transition-colors",

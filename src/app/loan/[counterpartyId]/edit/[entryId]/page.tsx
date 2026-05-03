@@ -12,6 +12,7 @@ import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { useMounted } from "@/hooks/useMounted";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { parseIDR } from "@/lib/format/number";
 
 // [14] Edit Loan Entry
 export default function EditLoanEntryPage({
@@ -87,7 +88,7 @@ export default function EditLoanEntryPage({
         entryId,
         {
           type: entry!.type,
-          amount: parseFloat(values.amount),
+          amount: parseIDR(values.amount),
           wallet_id: values.wallet_id,
           note: values.note.trim() || null,
           transaction_date: values.transaction_date,

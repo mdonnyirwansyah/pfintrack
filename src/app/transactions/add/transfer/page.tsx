@@ -8,6 +8,7 @@ import { useTransactionStore } from "@/lib/stores/useTransactionStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { todayISO } from "@/lib/format/date";
 import { useTranslations } from "next-intl";
+import { parseIDR } from "@/lib/format/number";
 
 function AddTransferContent() {
   const router = useRouter();
@@ -33,7 +34,7 @@ function AddTransferContent() {
         type: "transfer",
         wallet_id: values.source_wallet_id,
         destination_wallet_id: values.destination_wallet_id,
-        amount: parseFloat(values.amount),
+        amount: parseIDR(values.amount),
         title: null,
         category: null,
         description: values.description || null,

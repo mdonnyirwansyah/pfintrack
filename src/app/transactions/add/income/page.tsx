@@ -9,6 +9,7 @@ import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { todayISO } from "@/lib/format/date";
 import { useTranslations } from "next-intl";
+import { parseIDR } from "@/lib/format/number";
 
 function AddIncomeContent() {
   const router = useRouter();
@@ -37,7 +38,7 @@ function AddIncomeContent() {
       createTransaction({
         type: "income",
         wallet_id: values.wallet_id,
-        amount: parseFloat(values.amount),
+        amount: parseIDR(values.amount),
         title: values.title || null,
         category: values.category || null,
         description: values.description || null,

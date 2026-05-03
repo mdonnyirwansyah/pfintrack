@@ -227,14 +227,25 @@ export function LoanEntryForm({
               inputMode="decimal"
               placeholder={t("form.amount")}
               value={values.amount}
-              onChange={(e) => set("amount", e.target.value)}
-              onFocus={() => {
-                const parsed = parseIDR(values.amount);
-                if (!isNaN(parsed)) set("amount", String(parsed));
-              }}
-              onBlur={() => {
-                const parsed = parseIDR(values.amount);
-                if (!isNaN(parsed) && parsed > 0) set("amount", formatIDR(parsed));
+              onChange={(e) => {
+                let val = e.target.value;
+                val = val.replace(/[^0-9,]/g, "");
+                if (!val) {
+                  set("amount", "");
+                  return;
+                }
+                const parts = val.split(",");
+                let integerPart = parts[0];
+                const decimalPart = parts.length > 1 ? "," + parts[1] : "";
+                if (integerPart) {
+                  const parsed = parseInt(integerPart, 10);
+                  if (!isNaN(parsed)) {
+                    integerPart = parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                  } else {
+                    integerPart = "";
+                  }
+                }
+                set("amount", integerPart + decimalPart);
               }}
               className="flex-1 bg-transparent outline-none text-[14px] py-3"
               style={{ color: "var(--text-primary)" }}

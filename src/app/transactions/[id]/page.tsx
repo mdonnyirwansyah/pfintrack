@@ -14,6 +14,7 @@ import { transactionsRepo } from "@/lib/storage/transactions";
 import type { Transaction } from "@/lib/types/transaction";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { parseIDR } from "@/lib/format/number";
 
 interface EditTransactionPageProps {
   params: Promise<{ id: string }>;
@@ -116,7 +117,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
           type: "transfer",
           wallet_id: values.source_wallet_id,
           destination_wallet_id: values.destination_wallet_id,
-          amount: parseFloat(values.amount),
+          amount: parseIDR(values.amount),
           title: null,
           category: null,
           description: values.description || null,
@@ -169,7 +170,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
         type: transaction.type,
         wallet_id: values.wallet_id,
         destination_wallet_id: null,
-        amount: parseFloat(values.amount),
+        amount: parseIDR(values.amount),
         title: values.title || null,
         category: values.category || null,
         description: values.description || null,

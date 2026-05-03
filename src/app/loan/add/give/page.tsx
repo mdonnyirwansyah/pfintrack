@@ -8,6 +8,7 @@ import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoa
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { useTranslations } from "next-intl";
+import { parseIDR } from "@/lib/format/number";
 
 // [11] Add Give Entry
 function AddGiveContent() {
@@ -43,7 +44,7 @@ function AddGiveContent() {
       createEntry({
         counterpartyId: counterparty.id,
         type: "give",
-        amount: parseFloat(values.amount),
+        amount: parseIDR(values.amount),
         wallet_id: values.wallet_id,
         note: values.note.trim() || null,
         transaction_date: values.transaction_date,
