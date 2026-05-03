@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Calculator, Wallet as WalletIcon, AlertTriangle } from "lucide-react";
 import type { TransactionType } from "@/lib/types/transaction";
@@ -73,6 +73,13 @@ export function IncomeExpenseForm({
   const [form, setForm] = useState<IncomeExpenseFormValues>(defaults);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isWalletOpen, setIsWalletOpen] = useState(false);
+
+  // Auto-open wallet picker on mount if it's add mode
+  useEffect(() => {
+    if (!initialValues?.wallet_id) {
+      setIsWalletOpen(true);
+    }
+  }, [initialValues?.wallet_id]);
 
   const selectedWallet = wallets.find((w) => w.id === form.wallet_id) ?? null;
   const parsedAmount = parseIDR(form.amount) || 0;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calculator, Calendar, Clock, ChevronDown, Trash2 } from "lucide-react";
 import type { LoanEntryType } from "@/lib/types/loan";
 import type { Wallet } from "@/lib/types/wallet";
@@ -76,6 +76,13 @@ export function LoanEntryForm({
   const [errors, setErrors] = useState<LoanEntryFormErrors>({});
   const [isWalletPickerOpen, setIsWalletPickerOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Auto-open wallet picker on mount if it's add mode
+  useEffect(() => {
+    if (!initialValues?.wallet_id) {
+      setIsWalletPickerOpen(true);
+    }
+  }, [initialValues?.wallet_id]);
 
   const selectedWallet = wallets.find((w) => w.id === values.wallet_id) ?? null;
   const t = useTranslations("loan");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Calculator } from "lucide-react";
 import type { Wallet } from "@/lib/types/wallet";
@@ -64,6 +64,13 @@ export function TransferForm({
   const [activeWalletPicker, setActiveWalletPicker] = useState<
     "source" | "destination" | null
   >(null);
+
+  // Auto-open source wallet picker on mount if it's add mode
+  useEffect(() => {
+    if (!initialValues?.source_wallet_id) {
+      setActiveWalletPicker("source");
+    }
+  }, [initialValues?.source_wallet_id]);
 
   const sourceWallet = wallets.find((w) => w.id === form.source_wallet_id) ?? null;
   const destWallet = wallets.find((w) => w.id === form.destination_wallet_id) ?? null;
