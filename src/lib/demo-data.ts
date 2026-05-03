@@ -44,8 +44,8 @@ export function injectDemoData(): void {
   const txDefs: TxDef[] = [
     // ── Week 1: Apr 1–7 (30–26 hari lalu) ──────────────────────────────
     { type: "income",   walletId: bca.id,   amount: 9_500_000, title: "Gaji Bulan April",        category: "Pendapatan",        daysBack: 32, time: "08:00", description: "Gaji bulanan April 2026" },
-    { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 600_000,   title: "Top Up GoPay",            category: "Transfer",          daysBack: 32, time: "08:15" },
-    { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 500_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack: 32, time: "08:30" },
+    { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 1_200_000, title: "Top Up GoPay",            category: "Transfer",          daysBack: 32, time: "08:15" },
+    { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 700_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack: 32, time: "08:30" },
     { type: "expense",  walletId: bca.id,   amount: 850_000,   title: "Belanja Bulanan",          category: "Makanan & Minuman", daysBack: 32, time: "10:30", description: "Belanja kebutuhan bulanan di supermarket" },
     { type: "expense",  walletId: bca.id,   amount: 420_000,   title: "Tagihan Listrik",          category: "Tagihan",           daysBack: 31, time: "09:00" },
     { type: "expense",  walletId: bca.id,   amount: 265_000,   title: "Internet Rumah",           category: "Tagihan",           daysBack: 31, time: "09:05" },
@@ -79,8 +79,8 @@ export function injectDemoData(): void {
     { type: "expense",  walletId: gopay.id, amount: 88_000,    title: "Makan Malam",              category: "Makanan & Minuman", daysBack: 19, time: "19:00" },
 
     // ── Week 3: Apr 15–21 (18–12 hari lalu) ────────────────────────────
-    { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 500_000,   title: "Top Up GoPay",            category: "Transfer",          daysBack: 18, time: "08:00" },
-    { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 300_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack: 18, time: "08:10" },
+    { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 1_500_000, title: "Top Up GoPay",            category: "Transfer",          daysBack: 18, time: "08:00" },
+    { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 400_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack: 18, time: "08:10" },
     { type: "expense",  walletId: gopay.id, amount: 48_000,    title: "Ojek Online",              category: "Transportasi",      daysBack: 18, time: "08:30" },
     { type: "expense",  walletId: gopay.id, amount: 105_000,   title: "GrabFood",                 category: "Makanan & Minuman", daysBack: 17, time: "12:00" },
     { type: "expense",  walletId: tunai.id, amount: 25_000,    title: "Kopi Pagi",                category: "Makanan & Minuman", daysBack: 17, time: "08:00" },
