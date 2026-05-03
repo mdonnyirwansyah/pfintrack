@@ -85,7 +85,8 @@
       "description": "Wallet {name} will be deleted. This action cannot be undone.",
       "confirm": "Delete",
       "cancel": "Cancel"
-    }
+    },
+    "cannotDeleteInUse": "Wallet is being used in transactions or loans and cannot be deleted."
   },
   "transactions": {
     "title": "Transactions",

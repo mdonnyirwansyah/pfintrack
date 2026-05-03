@@ -15,6 +15,9 @@ import type { WalletFormValues } from "@/features/wallet/components/WalletForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { transactionsRepo } from "@/lib/storage/transactions";
+import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 
 // [9] Edit Wallet
 export default function EditWalletPage({
@@ -29,6 +32,7 @@ export default function EditWalletPage({
   const [notFound, setNotFound] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isInUse, setIsInUse] = useState(false);
 
   const { handleUpdate, handleDelete, isNameTaken, loadWallets } = useWalletActions();
   const loadWalletsFromStore = useWalletStore((s) => s.loadWallets);
@@ -41,6 +45,9 @@ export default function EditWalletPage({
       setNotFound(true);
     } else {
       setWallet(found);
+      const txs = transactionsRepo.getByWalletId(found.id);
+      const loans = loanEntriesRepo.getByWalletId(found.id);
+      setIsInUse(txs.length > 0 || loans.length > 0);
     }
   }, [id, loadWallets]);
 
@@ -138,15 +145,26 @@ export default function EditWalletPage({
           deleteSlot={
             <button
               type="button"
-              onClick={() => setIsDeleteDialogOpen(true)}
+              onClick={() => {
+                if (isInUse) {
+                  toast.error(t("cannotDeleteInUse") || "Wallet sedang digunakan dalam transaksi/pinjaman dan tidak dapat dihapus.", {
+                    id: "delete-in-use",
+                    duration: 3000,
+                    onClick: () => toast.dismiss("delete-in-use"),
+                  });
+                } else {
+                  setIsDeleteDialogOpen(true);
+                }
+              }}
               className={cn(
                 "w-full rounded-[12px] text-[14px] font-semibold transition-all active:scale-[0.98]",
-                "flex items-center justify-center gap-2 border"
+                "flex items-center justify-center gap-2 border",
+                isInUse && "opacity-50 cursor-not-allowed"
               )}
               style={{
                 minHeight: "var(--tap-target-min)",
-                color: "var(--color-negative)",
-                borderColor: "var(--color-negative)",
+                color: isInUse ? "var(--text-secondary)" : "var(--color-negative)",
+                borderColor: isInUse ? "var(--border-default)" : "var(--color-negative)",
                 backgroundColor: "transparent",
               }}
             >

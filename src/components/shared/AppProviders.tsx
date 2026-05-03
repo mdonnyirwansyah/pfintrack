@@ -33,6 +33,8 @@ export function AppProviders({ children }: AppProvidersProps) {
       {children}
       <Toaster
         position="top-center"
+        closeButton
+        duration={3000}
         toastOptions={{
           style: {
             background: "var(--bg-elevated)",

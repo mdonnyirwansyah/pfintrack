@@ -85,7 +85,8 @@
       "description": "Dompet {name} akan dihapus. Tindakan ini tidak dapat dibatalkan.",
       "confirm": "Hapus",
       "cancel": "Batal"
-    }
+    },
+    "cannotDeleteInUse": "Dompet sedang digunakan dalam transaksi/pinjaman dan tidak dapat dihapus."
   },
   "transactions": {
     "title": "Transaksi",
