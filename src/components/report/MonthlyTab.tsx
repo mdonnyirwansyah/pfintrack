@@ -7,7 +7,7 @@ import type { LoanEntry } from "@/lib/types/loan";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import {
   generateMonthList,
-  calcPeriodSummary,
+  calculateMonthlySummary,
 } from "@/lib/report/calculations";
 import { MonthlySection } from "./MonthlySection";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -44,14 +44,12 @@ export function MonthlyTab({
   const loadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;
     setIsLoadingMore(true);
-    // Simulate a tick to show loading state before heavy computation
     setTimeout(() => {
       setDisplayCount((prev) => Math.min(prev + LOAD_MORE_MONTHS, allMonths.length));
       setIsLoadingMore(false);
     }, 50);
   }, [hasMore, isLoadingMore, allMonths.length]);
 
-  // Infinite scroll via IntersectionObserver
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -82,7 +80,7 @@ export function MonthlyTab({
   return (
     <div className="space-y-4">
       {visibleMonths.map(({ start, end }) => {
-        const summary = calcPeriodSummary(
+        const summary = calculateMonthlySummary(
           transactions,
           loanEntries,
           balanceHistory,
@@ -94,7 +92,6 @@ export function MonthlyTab({
         );
       })}
 
-      {/* Sentinel for infinite scroll */}
       <div ref={sentinelRef} className="h-4" />
 
       {isLoadingMore && (

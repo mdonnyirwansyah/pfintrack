@@ -4,12 +4,13 @@ import { ChevronRight, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PeriodSummaryRows } from "./PeriodSummaryRows";
 import { formatDateRange } from "@/lib/format/date";
-import type { PeriodSummary } from "@/lib/report/calculations";
+import { formatIDR, formatIDRSigned } from "@/lib/format/number";
+import type { MonthlySummary } from "@/lib/report/calculations";
 import type { CustomReport } from "@/lib/types/report";
 
 interface CustomReportSectionProps {
   report: CustomReport;
-  summary: PeriodSummary;
+  summary: MonthlySummary;
 }
 
 export function CustomReportSection({
@@ -29,10 +30,15 @@ export function CustomReportSection({
     router.push(`/report/custom/${report.id}/edit`);
   };
 
+  const endBalanceColor =
+    summary.endBalance > 0
+      ? "var(--color-positive)"
+      : summary.endBalance < 0
+        ? "var(--color-negative)"
+        : "var(--text-primary)";
+
   return (
-    <div
-      className="glass rounded-[16px] p-4"
-    >
+    <div className="glass rounded-[16px] p-4">
       {/* Header */}
       <div className="flex items-start justify-between mb-1">
         <button
@@ -80,7 +86,41 @@ export function CustomReportSection({
         />
       </button>
 
+      {/* Start Balance */}
+      <div className="flex items-center justify-between py-1">
+        <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>
+          Start Balance
+        </span>
+        <span
+          className="text-[13px] font-semibold tabular-nums"
+          style={{ color: "var(--text-primary)" }}
+          suppressHydrationWarning
+        >
+          {formatIDR(summary.startBalance)}
+        </span>
+      </div>
+
+      <div className="my-1" style={{ height: "1px", background: "var(--divider)" }} />
+
       <PeriodSummaryRows summary={summary} />
+
+      <div className="my-1" style={{ height: "1px", background: "var(--divider)" }} />
+
+      {/* End Balance */}
+      <div className="flex items-center justify-between py-1">
+        <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+          End Balance
+        </span>
+        <span
+          className="text-[13px] font-bold tabular-nums"
+          style={{ color: endBalanceColor }}
+          suppressHydrationWarning
+        >
+          {summary.endBalance === 0
+            ? formatIDR(0)
+            : formatIDRSigned(summary.endBalance)}
+        </span>
+      </div>
     </div>
   );
 }

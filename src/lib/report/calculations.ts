@@ -37,7 +37,7 @@ const CHART_COLORS = [
 ] as const;
 
 /** Deterministic colour from category string */
-export function categoryColor(category: string, index: number): string {
+export function categoryColor(_category: string, index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
 }
 
@@ -250,6 +250,61 @@ export function generateMonthList(
   }
 
   return months;
+}
+
+/** Detailed metrics for a single month including start/end balance */
+export interface MonthlySummary {
+  startBalance: number;
+  income: number;
+  expenses: number;
+  balance: number;
+  loan: number | null;        // null = no loan entries in period
+  balanceCorrection: number | null; // null = no corrections in period
+  endBalance: number;
+}
+
+/**
+ * Calculate monthly summary for a given month range.
+ *
+ * - startBalance: cumulative (income − expenses + corrections) BEFORE start
+ * - income / expenses: totals within the month
+ * - balance: income − expenses within the month
+ * - loan: cash flow loan (Get − Give) within the month, null if none
+ * - balanceCorrection: manual wallet edits within the month
+ * - endBalance: startBalance + balance + balanceCorrection
+ */
+export function calculateMonthlySummary(
+  transactions: Transaction[],
+  loanEntries: LoanEntry[],
+  balanceHistory: WalletBalanceHistory[],
+  start: string,
+  end: string
+): MonthlySummary {
+  const activeTx = transactions.filter((t) => t.is_active);
+  const activeHist = balanceHistory.filter((h) => h.is_active);
+
+  const prevIncome = activeTx
+    .filter((t) => t.type === "income" && t.transaction_date < start)
+    .reduce((s, t) => s + t.amount, 0);
+
+  const prevExpenses = activeTx
+    .filter((t) => t.type === "expense" && t.transaction_date < start)
+    .reduce((s, t) => s + t.amount, 0);
+
+  const prevCorrections = activeHist
+    .filter((h) => h.corrected_at.slice(0, 10) < start)
+    .reduce((s, h) => s + h.delta, 0);
+
+  const startBalance = prevIncome - prevExpenses + prevCorrections;
+
+  const income = calcIncome(transactions, start, end);
+  const expenses = calcExpenses(transactions, start, end);
+  const balance = income - expenses;
+  const loan = calcLoan(loanEntries, start, end);
+  const balanceCorrection = calcBalanceCorrection(balanceHistory, start, end);
+  const endBalance = startBalance + balance + (balanceCorrection ?? 0);
+
+  return { startBalance, income, expenses, balance, loan, balanceCorrection, endBalance };
 }
 
 /** First day of current month as YYYY-MM-DD */

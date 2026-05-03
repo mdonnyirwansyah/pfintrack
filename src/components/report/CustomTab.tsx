@@ -7,7 +7,7 @@ import type { CustomReport } from "@/lib/types/report";
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
-import { calcPeriodSummary } from "@/lib/report/calculations";
+import { calculateMonthlySummary } from "@/lib/report/calculations";
 import { CustomReportSection } from "./CustomReportSection";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { FAB } from "@/components/shared/FAB";
@@ -48,7 +48,7 @@ export function CustomTab({
         />
       ) : (
         sorted.map((report) => {
-          const summary = calcPeriodSummary(
+          const summary = calculateMonthlySummary(
             transactions,
             loanEntries,
             balanceHistory,
