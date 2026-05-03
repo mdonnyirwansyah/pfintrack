@@ -14,7 +14,7 @@ interface WalletActions {
   /** Load active wallets from localStorage via walletsRepo */
   loadWallets: () => void;
 
-  /** Create a wallet and refresh state. Does NOT write balance history. */
+  /** Create a wallet and refresh state. Writes balance history if initial balance > 0. */
   createWallet: (input: CreateWalletInput) => Wallet;
 
   /**
@@ -45,6 +45,16 @@ export const useWalletStore = create<WalletStore>()((set, get) => ({
 
   createWallet(input) {
     const wallet = walletsRepo.create(input);
+
+    // Record initial balance as a correction entry if balance > 0
+    if (wallet.balance > 0) {
+      walletBalanceHistoryRepo.create({
+        wallet_id: wallet.id,
+        previous_balance: 0,
+        new_balance: wallet.balance,
+      });
+    }
+
     // Reload all to keep sort_order consistent
     const wallets = walletsRepo.getAll();
     set({ wallets });

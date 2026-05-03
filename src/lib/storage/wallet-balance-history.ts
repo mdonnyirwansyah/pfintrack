@@ -1,11 +1,11 @@
 /**
  * Repository for wallet_balance_history.
  *
- * CRITICAL: This key MUST ONLY be written when a user manually edits
- * wallet.balance via the Edit Wallet screen (/wallet/[id]).
+ * CRITICAL: This key is written in two cases only:
+ *  1. Add Wallet — when initial balance > 0 (previous=0, new=balance)
+ *  2. Edit Wallet — when the user manually changes balance via /wallet/[id]
  *
  * It MUST NOT be written by:
- *  - Add Wallet (initial balance)
  *  - Transactions module (income/expense/transfer)
  *  - Loan module (give/get)
  *  - Soft delete of a wallet
