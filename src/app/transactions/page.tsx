@@ -45,7 +45,6 @@ function TransactionsContent() {
   const [sortKey, setSortKey] = useState<"datetime_desc" | "datetime_asc" | "amount_desc" | "amount_asc">("datetime_desc");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [pendingDeletes, setPendingDeletes] = useState<Set<string>>(new Set());
-  const pendingTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // Update state + sync URL sekaligus, hindari useEffect agar tidak ada timing issue
   const handleDateChange = (date: string) => {
@@ -79,16 +78,28 @@ function TransactionsContent() {
     // Hide immediately from UI
     setPendingDeletes((prev) => new Set([...prev, id]));
 
-    // Show undo toast
-    const toastId = toast(t("deleteUndo.message"), {
+    let isUndone = false;
+    let isDeleted = false;
+
+    const finalizeDelete = () => {
+      if (isUndone || isDeleted) return;
+      isDeleted = true;
+      softDeleteTransaction(id);
+      setPendingDeletes((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    };
+
+    toast(t("deleteUndo.message"), {
       duration: 5000,
+      onDismiss: finalizeDelete,
+      onAutoClose: finalizeDelete,
       action: {
         label: t("deleteUndo.undo"),
         onClick: () => {
-          // Cancel deletion — restore item
-          const timer = pendingTimers.current.get(id);
-          if (timer) clearTimeout(timer);
-          pendingTimers.current.delete(id);
+          isUndone = true;
           setPendingDeletes((prev) => {
             const next = new Set(prev);
             next.delete(id);
@@ -97,20 +108,6 @@ function TransactionsContent() {
         },
       },
     });
-
-    // Schedule actual delete after 5s
-    const timer = setTimeout(() => {
-      toast.dismiss(toastId);
-      softDeleteTransaction(id);
-      pendingTimers.current.delete(id);
-      setPendingDeletes((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }, 5000);
-
-    pendingTimers.current.set(id, timer);
   }, [t, softDeleteTransaction]);
 
   const swipeHandlers = useSwipe({
