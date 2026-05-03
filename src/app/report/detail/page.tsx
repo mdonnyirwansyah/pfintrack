@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { PackageOpen } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { DonutChart } from "@/components/report/DonutChart";
+import { DailySummarySection } from "@/components/report/DailySummarySection";
 import { SortPill, applySortKey } from "@/components/shared/SortPill";
 import type { SortKey } from "@/components/shared/SortPill";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -114,6 +115,11 @@ function ReportDetailContent() {
             }
             selectedCategory={selectedCategory}
           />
+        )}
+
+        {/* Daily summary */}
+        {breakdown.length > 0 && (
+          <DailySummarySection transactions={transactions} start={start} end={end} />
         )}
 
         {/* Transaction list */}

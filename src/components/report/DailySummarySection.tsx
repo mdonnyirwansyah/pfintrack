@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { List, CalendarDays } from "lucide-react";
+import { List, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Transaction } from "@/lib/types/transaction";
 import { formatIDR } from "@/lib/format/number";
 import { formatDisplayDate } from "@/lib/format/date";
@@ -14,6 +14,8 @@ import {
   endOfWeek,
   eachDayOfInterval,
   isSameMonth,
+  addMonths,
+  subMonths,
 } from "date-fns";
 import { useTranslations } from "next-intl";
 
@@ -65,6 +67,13 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
   const t = useTranslations("report");
   const [view, setView] = useState<"list" | "calendar">("list");
 
+  const startMonth = startOfMonth(parseISO(start));
+  const endMonth   = startOfMonth(parseISO(end));
+  const [currentMonth, setCurrentMonth] = useState(startMonth);
+
+  const canPrev = currentMonth > startMonth;
+  const canNext = currentMonth < endMonth;
+
   const summaries = useMemo(
     () => buildDailySummaries(transactions, start, end),
     [transactions, start, end]
@@ -76,11 +85,9 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
     return m;
   }, [summaries]);
 
-  // Calendar grid uses the month that contains 'start'
-  const monthDate = parseISO(start);
-  const calStart = startOfWeek(startOfMonth(monthDate));
-  const calEnd = endOfWeek(endOfMonth(monthDate));
-  const calDays = eachDayOfInterval({ start: calStart, end: calEnd });
+  const calStart = startOfWeek(startOfMonth(currentMonth));
+  const calEnd   = endOfWeek(endOfMonth(currentMonth));
+  const calDays  = eachDayOfInterval({ start: calStart, end: calEnd });
 
   return (
     <div className="space-y-3">
@@ -153,10 +160,28 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
       ) : (
         /* ── Calendar View ── */
         <div className="glass rounded-[16px] p-3">
-          {/* Month label */}
-          <p className="text-center text-[11px] font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
-            {format(monthDate, "MMMM yyyy")}
-          </p>
+          {/* Month navigator */}
+          <div className="flex items-center justify-between mb-2">
+            <button
+              onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
+              disabled={!canPrev}
+              className="flex items-center justify-center w-7 h-7 rounded-full transition-opacity active:opacity-60 disabled:opacity-20"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <p className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+              {format(currentMonth, "MMMM yyyy")}
+            </p>
+            <button
+              onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
+              disabled={!canNext}
+              className="flex items-center justify-center w-7 h-7 rounded-full transition-opacity active:opacity-60 disabled:opacity-20"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
 
           {/* Weekday headers */}
           <div className="grid grid-cols-7 mb-1">
@@ -175,7 +200,7 @@ export function DailySummarySection({ transactions, start, end }: DailySummarySe
           <div className="grid grid-cols-7 gap-x-0.5 gap-y-1">
             {calDays.map((day) => {
               const dateStr = format(day, "yyyy-MM-dd");
-              const inMonth = isSameMonth(day, monthDate);
+              const inMonth = isSameMonth(day, currentMonth);
               const summary = summaryMap.get(dateStr);
 
               return (
