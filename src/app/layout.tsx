@@ -58,6 +58,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body
+        suppressHydrationWarning
         className="antialiased"
         style={{
           backgroundColor: "var(--bg-primary)",
