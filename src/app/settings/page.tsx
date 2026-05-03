@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
@@ -23,8 +23,12 @@ export default function SettingsPage() {
   const [isPending, startTransition] = useTransition();
   const showDecimals = useAppStore((s) => s.showDecimals);
   const setShowDecimals = useAppStore((s) => s.setShowDecimals);
-  const isDemoMode = useAppStore((s) => s.isDemoMode);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
+
+  useEffect(() => {
+    setIsDemoMode(window.localStorage.getItem("pfintrack_demo_mode") === "true");
+  }, []);
 
   const THEME_OPTIONS: { value: ThemeOption; label: string; icon: React.ElementType }[] = [
     { value: "light", label: t("theme.light"), icon: Sun },
