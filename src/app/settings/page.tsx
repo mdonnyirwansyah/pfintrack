@@ -224,8 +224,8 @@ export default function SettingsPage() {
                 <p className="text-[14px]" style={{ color: "var(--text-primary)" }}>
                   {t("showDecimals")}
                 </p>
-                <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-                  {t("showDecimalsDesc")}
+                <p className="text-[11px] mt-0.5 font-medium tabular-nums" style={{ color: "var(--color-brand)" }}>
+                  {showDecimals ? "100.000,00" : "100.000"}
                 </p>
               </div>
             </div>
