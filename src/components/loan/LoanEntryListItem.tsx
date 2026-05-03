@@ -45,7 +45,7 @@ export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
         <span
           className="text-[10px] font-semibold tabular-nums"
           style={{
-            color: isGet ? "var(--color-positive)" : "var(--text-primary)",
+            color: isGet ? "var(--color-positive)" : "var(--color-negative)",
           }}
         >
           {isGet ? `+ ${formatIDR(entry.amount)}` : formatIDR(entry.amount)}

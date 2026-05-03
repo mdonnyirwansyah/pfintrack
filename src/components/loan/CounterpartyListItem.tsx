@@ -85,13 +85,6 @@ export function CounterpartyListItem({
           >
             {t("paidOff")}
           </span>
-        ) : outstanding > 0 ? (
-          <span
-            className="text-[10px] font-semibold tabular-nums"
-            style={{ color: "var(--color-positive)" }}
-          >
-            {formatIDR(outstanding)}
-          </span>
         ) : (
           <span
             className="text-[10px] font-semibold tabular-nums"
