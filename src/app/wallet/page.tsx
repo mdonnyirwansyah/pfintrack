@@ -36,8 +36,8 @@ export default function WalletPage() {
           style={{ minHeight: 64 }}
         >
           <span
-            className="text-[10px] font-medium"
-            style={{ color: "var(--text-secondary)" }}
+            className="text-[13px] font-semibold"
+            style={{ color: "var(--text-primary)" }}
           >
             {t("totalBalance")}
           </span>
