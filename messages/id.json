@@ -331,6 +331,12 @@
       "description": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
       "confirm": "Ya, Hapus Semua",
       "cancel": "Batal"
+    },
+    "welcome": {
+      "title": "Selamat datang di pfintrack!",
+      "description": "Mulai catat keuanganmu dari nol, atau jelajahi fitur aplikasi dengan data sampel realistis terlebih dahulu.",
+      "exploreButton": "Eksplorasi dengan Data Sampel",
+      "startFreshButton": "Mulai dari Nol"
     }
   }
 }

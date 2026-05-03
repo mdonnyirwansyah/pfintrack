@@ -331,6 +331,12 @@
       "description": "All sample data (wallets, transactions, and loans) will be permanently deleted. This action cannot be undone.",
       "confirm": "Yes, Delete All",
       "cancel": "Cancel"
+    },
+    "welcome": {
+      "title": "Welcome to pfintrack!",
+      "description": "Start tracking your finances from scratch, or explore the app features with realistic sample data first.",
+      "exploreButton": "Explore with Sample Data",
+      "startFreshButton": "Start from Scratch"
     }
   }
 }

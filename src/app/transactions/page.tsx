@@ -38,6 +38,7 @@ function TransactionsContent() {
   const setIsDemoMode = useAppStore((s) => s.setIsDemoMode);
   const [dismissedWelcome, setDismissedWelcome] = useState(false);
   const t = useTranslations("transactions");
+  const td = useTranslations("demo.welcome");
 
   // Init activeDate dari ?date= query param, fallback ke hari ini
   const dateParam = searchParams.get("date");
@@ -296,10 +297,10 @@ function TransactionsContent() {
             >
               <div className="flex flex-col gap-1.5">
                 <h2 className="text-[16px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Selamat datang di pfintrack!
+                  {td("title")}
                 </h2>
                 <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-                  Mulai catat keuanganmu dari nol, atau jelajahi fitur aplikasi dengan data sampel realistis terlebih dahulu.
+                  {td("description")}
                 </p>
               </div>
               <div className="flex flex-col gap-2.5">
@@ -317,7 +318,7 @@ function TransactionsContent() {
                   }}
                 >
                   <Sparkles className="w-4 h-4" />
-                  Eksplorasi dengan Data Sampel
+                  {td("exploreButton")}
                 </button>
                 <button
                   onClick={() => setDismissedWelcome(true)}
@@ -329,7 +330,7 @@ function TransactionsContent() {
                   }}
                 >
                   <PlayCircle className="w-4 h-4" />
-                  Mulai dari Nol
+                  {td("startFreshButton")}
                 </button>
               </div>
             </div>
