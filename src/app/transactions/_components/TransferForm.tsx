@@ -6,7 +6,7 @@ import { Calculator } from "lucide-react";
 import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
-import { formatIDR } from "@/lib/format/number";
+import { formatIDR, parseIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
 
 export interface TransferFormValues {
@@ -79,7 +79,7 @@ export function TransferForm({
 
   const validate = (): FormErrors => {
     const e: FormErrors = {};
-    const amount = parseFloat(form.amount) || 0;
+    const amount = parseIDR(form.amount) || 0;
 
     if (!form.transaction_date) e.transaction_date = t("validation.dateRequired");
     if (!form.transaction_time) e.transaction_time = t("validation.timeRequired");
@@ -93,7 +93,7 @@ export function TransferForm({
       e.destination_wallet_id = t("validation.sameWallet");
     }
     if (!form.amount) e.amount = t("validation.amountRequired");
-    else if (amount <= 0) e.amount = t("validation.amountInvalid");
+    else if (isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
     else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
     if (form.description.trim().length > 255)
       e.description = t("validation.descriptionTooLong");
@@ -233,11 +233,19 @@ export function TransferForm({
         </label>
         <div className="relative">
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
             placeholder="Enter the amount"
             value={form.amount}
             onChange={(e) => set("amount", e.target.value)}
+            onFocus={() => {
+              const parsed = parseIDR(form.amount);
+              if (!isNaN(parsed)) set("amount", String(parsed));
+            }}
+            onBlur={() => {
+              const parsed = parseIDR(form.amount);
+              if (!isNaN(parsed) && parsed > 0) set("amount", formatIDR(parsed));
+            }}
             className={inputClass + " pr-12"}
             style={inputStyle(errors.amount)}
           />

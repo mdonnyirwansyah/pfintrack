@@ -8,7 +8,7 @@ import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { TitleSuggestionChips, CategorySuggestionChips } from "./SuggestionChips";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
-import { formatIDR } from "@/lib/format/number";
+import { formatIDR, parseIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
 
 export interface IncomeExpenseFormValues {
@@ -68,7 +68,7 @@ export function IncomeExpenseForm({
   const [isWalletOpen, setIsWalletOpen] = useState(false);
 
   const selectedWallet = wallets.find((w) => w.id === form.wallet_id) ?? null;
-  const parsedAmount = parseFloat(form.amount.replace(/,/g, ".")) || 0;
+  const parsedAmount = parseIDR(form.amount) || 0;
   const insufficientBalance =
     type === "expense" &&
     selectedWallet !== null &&
@@ -85,13 +85,13 @@ export function IncomeExpenseForm({
 
   const validate = (): FormErrors => {
     const e: FormErrors = {};
-    const amount = parseFloat(form.amount) || 0;
+    const amount = parseIDR(form.amount) || 0;
 
     if (!form.transaction_date) e.transaction_date = t("validation.dateRequired");
     if (!form.transaction_time) e.transaction_time = t("validation.timeRequired");
     if (!form.wallet_id) e.wallet_id = t("validation.walletRequired");
     if (!form.amount) e.amount = t("validation.amountRequired");
-    else if (amount <= 0) e.amount = t("validation.amountInvalid");
+    else if (isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
     else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
     if (!form.title.trim()) e.title = t("validation.titleRequired");
     else if (form.title.trim().length > 100) e.title = t("validation.titleTooLong");
@@ -207,11 +207,19 @@ export function IncomeExpenseForm({
         </label>
         <div className="relative">
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
             placeholder="Enter the amount"
             value={form.amount}
             onChange={(e) => set("amount", e.target.value)}
+            onFocus={() => {
+              const parsed = parseIDR(form.amount);
+              if (!isNaN(parsed)) set("amount", String(parsed));
+            }}
+            onBlur={() => {
+              const parsed = parseIDR(form.amount);
+              if (!isNaN(parsed) && parsed > 0) set("amount", formatIDR(parsed));
+            }}
             className={inputClass + " pr-12"}
             style={inputStyle(errors.amount)}
           />

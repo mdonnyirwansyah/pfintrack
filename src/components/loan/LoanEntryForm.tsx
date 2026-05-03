@@ -7,6 +7,7 @@ import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
+import { formatIDR, parseIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
 
 export interface LoanEntryFormValues {
@@ -84,9 +85,7 @@ export function LoanEntryForm({
 
   function validate(): LoanEntryFormErrors {
     const errs: LoanEntryFormErrors = {};
-    const amountNum = parseFloat(
-      values.amount.replace(/\./g, "").replace(",", ".")
-    );
+    const amountNum = parseIDR(values.amount);
 
     if (!values.transaction_date) {
       errs.transaction_date = t("validation.dateRequired");
@@ -224,15 +223,21 @@ export function LoanEntryForm({
             }}
           >
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
               placeholder={t("form.amount")}
               value={values.amount}
               onChange={(e) => set("amount", e.target.value)}
-              className="flex-1 bg-transparent outline-none text-[14px] py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onFocus={() => {
+                const parsed = parseIDR(values.amount);
+                if (!isNaN(parsed)) set("amount", String(parsed));
+              }}
+              onBlur={() => {
+                const parsed = parseIDR(values.amount);
+                if (!isNaN(parsed) && parsed > 0) set("amount", formatIDR(parsed));
+              }}
+              className="flex-1 bg-transparent outline-none text-[14px] py-3"
               style={{ color: "var(--text-primary)" }}
-              min="0"
-              step="any"
             />
             <Calculator
               className="w-4 h-4 ml-3 shrink-0"
