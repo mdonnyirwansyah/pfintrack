@@ -16,6 +16,7 @@ import {
   applyLoanEntryToWallet,
   rollbackLoanEntryFromWallet,
 } from "@/lib/storage/wallet-balance-ops";
+import { useWalletStore } from "./useWalletStore";
 
 // ---------------------------------------------------------------------------
 // Counterparty store
@@ -115,6 +116,7 @@ export const useLoanCounterpartyStore = create<CounterpartyStore>()(
 
       const counterparties = loanCounterpartiesRepo.getAll();
       set({ counterparties });
+      useWalletStore.getState().loadWallets();
     },
 
     isNameTaken(name, excludeId) {
@@ -213,6 +215,7 @@ export const useLoanEntryStore = create<EntryStore>()((set) => ({
 
     const entries = loanEntriesRepo.getByCounterpartyId(input.counterpartyId);
     set({ entries });
+    useWalletStore.getState().loadWallets();
     return entry;
   },
 
@@ -234,6 +237,7 @@ export const useLoanEntryStore = create<EntryStore>()((set) => ({
 
     const entries = loanEntriesRepo.getByCounterpartyId(counterpartyId);
     set({ entries });
+    useWalletStore.getState().loadWallets();
     return updated;
   },
 
@@ -252,5 +256,6 @@ export const useLoanEntryStore = create<EntryStore>()((set) => ({
 
     const entries = loanEntriesRepo.getByCounterpartyId(counterpartyId);
     set({ entries });
+    useWalletStore.getState().loadWallets();
   },
 }));

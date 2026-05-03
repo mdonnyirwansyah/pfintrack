@@ -11,6 +11,7 @@ import {
   applyTransactionToWallet,
   rollbackTransactionFromWallet,
 } from "@/lib/storage/wallet-balance-ops";
+import { useWalletStore } from "./useWalletStore";
 
 interface TransactionState {
   transactions: Transaction[];
@@ -67,6 +68,7 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
     // Reload from storage to keep state in sync
     const transactions = transactionsRepo.getAll();
     set({ transactions });
+    useWalletStore.getState().loadWallets();
     return tx;
   },
 
@@ -87,6 +89,7 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
     // 5. Refresh store
     const transactions = transactionsRepo.getAll();
     set({ transactions });
+    useWalletStore.getState().loadWallets();
     return updated;
   },
 
@@ -104,6 +107,7 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
     // 4. Refresh store
     const transactions = transactionsRepo.getAll();
     set({ transactions });
+    useWalletStore.getState().loadWallets();
   },
 
   refreshTransactions() {
