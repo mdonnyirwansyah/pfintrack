@@ -139,8 +139,8 @@
   --color-accent-warm-soft: var(--color-accent-soft);
 
   --text-primary: #1C1C1E;
-  --text-secondary: #8E8E93;
-  --text-tertiary: #AEAEB2;
+  --text-secondary: #5C5C60;
+  --text-tertiary: #75757A;
   --text-on-primary: #FFFFFF;
 
   --border-default: rgba(0, 0, 0, 0.05);
@@ -217,8 +217,8 @@
   --color-accent-warm-soft: var(--color-accent-soft);
 
   --text-primary: #F2F2F7;
-  --text-secondary: #8E8E93;
-  --text-tertiary: #636366;
+  --text-secondary: #A1A1A8;
+  --text-tertiary: #84848A;
   --text-on-primary: #FFFFFF;
 
   --border-default: rgba(255, 255, 255, 0.08);
