@@ -1,9 +1,9 @@
 # Technical Specification Document
 ## Module: Wallet
 
-**Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 4.1
-**Tanggal:** 2026-05-03
+**Aplikasi:** PFinTrack — Personal Finance Tracker
+**Versi Dokumen:** 5.0
+**Tanggal:** 2026-05-04
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -24,6 +24,7 @@
 | 3.0 | 2026-05-01 | Versi awal: Wallet List & Add Wallet, struktur localStorage, pola migration-ready |
 | **4.0** | **2026-05-01** | **Penambahan key `wallet_balance_history` untuk merekam perubahan balance wallet (mendukung fitur Balance Correction di Module Report). Dokumentasi flow Edit Wallet diperjelas: perbedaan antara perubahan via transaksi (otomatis) vs perubahan manual via edit form (memicu pencatatan history).** |
 | **4.1** | **2026-05-03** | **Update: Add Wallet dengan initial balance > 0 WAJIB dicatat ke `wallet_balance_history` (previous=0, new=balance). Ini memungkinkan Module Report menghitung Balance Correction sejak wallet pertama kali dibuat. Asumsi 10 & 11 direvisi.** |
+| **5.0** | **2026-05-04** | **Balance Correction Transaction Pattern: Add Wallet dengan initial balance > 0 kini membuat wallet dengan balance=0 terlebih dahulu, kemudian `applyTransactionToWallet` dari income transaction "Balance Correction" yang menetapkan balance aktual. Edit Wallet dengan balance berubah juga tidak lagi langsung menulis balance — melainkan membuat income/expense transaction "Balance Correction" yang menggeser balance via side-effect. Kedua kondisi tetap menulis ke `wallet_balance_history`. Transaction Balance Correction muncul di Transaction list seperti transaksi reguler dan dapat dihapus (rollback via `rollbackTransactionFromWallet`). Rename app ke PFinTrack.** |
 
 ---
 
@@ -40,8 +41,9 @@
 | 7 | Data wallet disimpan di `localStorage` dengan key `wallets` sebagai array JSON. |
 | 8 | **Total Balance** adalah hasil penjumlahan field `balance` dari seluruh wallet yang berstatus aktif (`is_active: true`), dihitung di sisi client. |
 | 9 | Dari UI form **Add Wallet** hanya terlihat 2 field input (name + balance). Field `wallet_type` belum tampil di gambar — diasumsikan menggunakan nilai default `other` untuk saat ini, dan akan dibahas lebih lanjut saat gambar lengkap tersedia. |
-| 10 | **(DIPERBARUI di v4.1)** `wallet_balance_history` dicatat dalam dua kondisi: **(a)** saat **Add Wallet** dengan `balance > 0` — dicatat sebagai koreksi awal dengan `previous_balance=0, new_balance=balance`; **(b)** saat **Edit Wallet** jika balance berubah dari nilai sebelumnya. Catatan ini digunakan oleh Module Report untuk menghitung **Balance Correction**. |
-| 11 | **(DIPERBARUI di v4.1)** Perubahan balance yang **diakibatkan oleh transaksi** (income/expense/transfer) atau **loan** (give/get) **TIDAK** masuk ke `wallet_balance_history`. Hanya perubahan yang diprakarsai user secara eksplisit via form (Add Wallet & Edit Wallet) yang dicatat. |
+| 10 | **(DIPERBARUI di v5.0)** `wallet_balance_history` dicatat dalam dua kondisi: **(a)** saat **Add Wallet** dengan `balance > 0` — dicatat sebagai koreksi awal dengan `previous_balance=0, new_balance=balance`; **(b)** saat **Edit Wallet** jika balance berubah dari nilai sebelumnya. Catatan ini digunakan oleh Module Report untuk menghitung **Balance Correction**. |
+| 11 | **(DIPERBARUI di v5.0)** Perubahan balance yang **diakibatkan oleh transaksi** (income/expense/transfer) atau **loan** (give/get) **TIDAK** masuk ke `wallet_balance_history`. Hanya perubahan yang diprakarsai user secara eksplisit via form (Add Wallet & Edit Wallet) yang dicatat. Balance Correction transactions (dibuat otomatis oleh Wallet module) termasuk kategori transaksi biasa dan tidak dicatat ke history. |
+| 12 | **(BARU di v5.0)** **Balance Correction Transaction Pattern**: Balance wallet tidak diubah langsung oleh Wallet module. Sebaliknya, Wallet module membuat transaksi income (balance naik) atau expense (balance turun) dengan `title:"Balance Correction"` dan `category:"Balance Correction"`. Side-effect `applyTransactionToWallet` dari transaction modul yang memperbarui `wallet.balance`. Ini menjaga konsistensi audit trail — satu mekanisme tunggal untuk semua perubahan balance. |
 
 ---
 
@@ -150,7 +152,8 @@ Pengguna mengisi "Name" → mengisi "Balance" → Tap "Save"
                            Buat objek wallet baru:
                            - id baru (UUID v4)
                            - anon_id dari localStorage
-                           - name, balance, wallet_type
+                           - name, wallet_type
+                           - balance: 0  ← SELALU 0, tidak menggunakan input user
                            - is_active: true
                            - created_at & updated_at (timestamp saat ini)
                            - sort_order (urutan terakhir + 1)
@@ -158,22 +161,33 @@ Pengguna mengisi "Name" → mengisi "Balance" → Tap "Save"
                    Tambahkan ke array wallets
                    Simpan kembali ke localStorage['wallets']
                               ↓
-                   ✅ Jika balance > 0:
-                      Buat record di wallet_balance_history
-                      - previous_balance: 0
-                      - new_balance: balance input user
-                      - delta: balance
-                      - corrected_at: timestamp saat ini
-                      Ini merekam "koreksi awal" wallet baru
-                      agar Report dapat menghitung Balance Correction.
+                   ✅ Jika balance input user > 0:
+                      1. Buat record di wallet_balance_history:
+                         - previous_balance: 0
+                         - new_balance: balance input user
+                         - delta: balance input user
+                         - corrected_at: timestamp saat ini
+                         Ini merekam "koreksi awal" wallet baru
+                         agar Report dapat menghitung Balance Correction.
+                      2. Buat transaksi "Balance Correction":
+                         - type: "income"
+                         - title: "Balance Correction"
+                         - category: "Balance Correction"
+                         - amount: balance input user
+                         - wallet_id: wallet yang baru dibuat
+                         Simpan ke localStorage['transactions']
+                      3. applyTransactionToWallet() menaikkan wallet.balance
+                         dari 0 ke nilai input user
                               ↓
                    Kembali ke Wallet List (/wallet)
                    Total Balance otomatis ter-update
 ```
 
+> **Catatan penting (v5.0):** Wallet selalu dibuat dengan `balance = 0`. Balance aktual ditetapkan oleh transaksi "Balance Correction" yang dibuat bersamaan. Transaksi ini muncul di Transaction list dan dapat dihapus (rollback via `rollbackTransactionFromWallet`).
+
 ---
 
-### Flow: Edit Wallet Screen — **(BARU di v4.0)**
+### Flow: Edit Wallet Screen — **(BARU di v4.0, DIPERBARUI di v5.0)**
 
 ```
 Pengguna tap salah satu baris wallet di list
@@ -181,7 +195,7 @@ Pengguna tap salah satu baris wallet di list
               Navigasi ke /wallet/[id]
                               ↓
               Form pre-filled dengan data existing
-              Simpan nilai balance lama: previous_balance
+              Simpan nilai balance lama: previous_balance = wallet.balance
                               ↓
               User mengubah field (name, balance, atau wallet_type)
               → Tap "Save Changes"
@@ -189,33 +203,44 @@ Pengguna tap salah satu baris wallet di list
                    [Validasi sisi client]
                               ↓ LOLOS
               ┌─────────────────────────────────────────────┐
-              │ Cek: apakah balance berubah?                │
-              │   (form.balance != wallet.balance)          │
-              ├─────────────────────────────────────────────┤
-              │ ↓ YA, BERUBAH                               │
-              │   Buat record baru di wallet_balance_history│
-              │   - wallet_id                               │
-              │   - previous_balance: nilai lama            │
-              │   - new_balance: nilai baru                 │
-              │   - delta: new − previous                   │
-              │   - corrected_at: timestamp saat ini        │
-              │   - is_active: true                         │
-              │   Simpan ke localStorage['wallet_balance_   │
-              │     history']                               │
-              │                                             │
-              │ ↓ TIDAK BERUBAH                             │
-              │   (skip pencatatan history)                 │
+              │ Update name & wallet_type langsung:         │
+              │   wallet.name = form.name                   │
+              │   wallet.wallet_type = form.wallet_type     │
+              │   wallet.updated_at = now                   │
+              │   (TIDAK update wallet.balance di sini)     │
               └─────────────────────────────────────────────┘
                               ↓
-              Update wallet di localStorage['wallets']:
-              - name, balance, wallet_type
-              - updated_at = now
+              ┌─────────────────────────────────────────────┐
+              │ Cek: apakah balance berubah?                │
+              │   delta = form.balance − previous_balance   │
+              ├─────────────────────────────────────────────┤
+              │ ↓ YA (delta ≠ 0)                            │
+              │   1. Buat record baru di wallet_balance_    │
+              │      history:                               │
+              │      - previous_balance: nilai lama         │
+              │      - new_balance: nilai baru              │
+              │      - delta: new − previous                │
+              │      - corrected_at: timestamp saat ini     │
+              │   2. Buat transaksi "Balance Correction":   │
+              │      - type: delta > 0 ? "income":"expense" │
+              │      - title: "Balance Correction"          │
+              │      - category: "Balance Correction"       │
+              │      - amount: Math.abs(delta)              │
+              │      - wallet_id: wallet.id                 │
+              │   3. applyTransactionToWallet() mengubah    │
+              │      wallet.balance oleh delta              │
+              │                                             │
+              │ ↓ TIDAK BERUBAH (delta = 0)                 │
+              │   (skip history dan transaction)            │
+              └─────────────────────────────────────────────┘
                               ↓
               Kembali ke Wallet List
               Total Balance otomatis ter-update
 ```
 
-> **Catatan penting:** Pencatatan ke `wallet_balance_history` terjadi pada dua kondisi: **(1)** Add Wallet dengan balance > 0 (koreksi awal), dan **(2)** Edit Wallet jika nilai balance berubah dari sebelumnya. Perubahan balance akibat transaksi income/expense/transfer atau give/get loan **TIDAK** boleh ditulis ke history ini.
+> **Catatan penting (v5.0):** Balance wallet **tidak diupdate langsung** oleh Edit Wallet. Hanya `name` dan `wallet_type` yang diubah langsung. Perubahan balance di-delegasikan ke transaksi "Balance Correction" yang dibuat oleh Wallet module. Pencatatan ke `wallet_balance_history` tetap wajib bersamaan dengan pembuatan transaksi.
+>
+> Perubahan balance akibat transaksi income/expense/transfer atau give/get loan **TIDAK** boleh ditulis ke history ini.
 
 ---
 
@@ -397,15 +422,15 @@ Pengguna tap tombol "Delete" di Wallet Detail
 
 ### 4.1 Sumber Perubahan Balance Wallet
 
-Field `balance` di sebuah wallet dapat berubah karena 4 alasan:
+Field `balance` di sebuah wallet dapat berubah karena beberapa alasan:
 
-| # | Sumber Perubahan | Modul Pemicu | Catat ke history? |
-|---|-----------------|-------------|-------------------|
-| 1 | **Wallet baru dibuat** dengan initial balance > 0 | Wallet (Add) | ✅ **Ya** — koreksi awal (prev=0, new=balance) |
-| 2 | **Wallet baru dibuat** dengan initial balance = 0 | Wallet (Add) | ❌ **Tidak** — tidak ada perubahan bermakna |
-| 3 | **Transaksi income/expense/transfer** | Transactions | ❌ **Tidak** |
-| 4 | **Operasi loan give/get** (jika user pilih wallet) | Loan | ❌ **Tidak** |
-| 5 | **Edit manual** field balance via Edit Wallet | Wallet (Edit) | ✅ **Ya** (hanya jika nilai berubah) |
+| # | Sumber Perubahan | Modul Pemicu | Catat ke history? | Cara balance berubah |
+|---|-----------------|-------------|-------------------|----------------------|
+| 1 | **Wallet baru dibuat** dengan initial balance > 0 | Wallet (Add) | ✅ **Ya** — koreksi awal (prev=0, new=balance) | Via transaksi "Balance Correction" income |
+| 2 | **Wallet baru dibuat** dengan initial balance = 0 | Wallet (Add) | ❌ **Tidak** — tidak ada perubahan bermakna | Wallet dibuat dengan balance=0 langsung |
+| 3 | **Transaksi income/expense/transfer** (termasuk "Balance Correction") | Transactions | ❌ **Tidak** | `applyTransactionToWallet()` |
+| 4 | **Operasi loan give/get** (jika user pilih wallet) | Loan | ❌ **Tidak** | Loan module langsung update balance |
+| 5 | **Edit manual** field balance via Edit Wallet (delta ≠ 0) | Wallet (Edit) | ✅ **Ya** (hanya jika nilai berubah) | Via transaksi "Balance Correction" income/expense |
 
 ---
 
@@ -523,8 +548,10 @@ Hasil:
 | **Validasi Duplikat Nama** | Case-insensitive, hanya terhadap wallet yang `is_active: true`. |
 | **Urutan Wallet** | Mengikuti `sort_order`. Wallet baru di posisi paling bawah. Drag-to-reorder belum ada di Fase 1. |
 | **Re-load Setelah Navigasi** | Saat user kembali ke Wallet List dari Add/Edit, baca ulang data dari `localStorage` agar perubahan terbaru langsung tampil. |
-| **Pencatatan Balance History** ⭐ | **WAJIB** dicatat hanya saat user edit balance manual via `/wallet/[id]`. **TIDAK BOLEH** dicatat saat: (a) Add Wallet, (b) transaksi dari Module Transactions, (c) operasi loan dari Module Loan, (d) soft delete wallet. |
-| **Atomicity Edit Wallet** ⭐ | Saat Save di Edit Wallet, dua operasi harus berjalan bersamaan: (1) update record di `wallets`, (2) jika balance berubah, tambah record di `wallet_balance_history`. Secara konseptual atomik — kedua sukses atau kedua di-rollback. |
+| **Balance Correction Transaction Pattern** ⭐ | Wallet module **tidak boleh** menulis `wallet.balance` secara langsung untuk perubahan berbasis koreksi. Harus via transaction "Balance Correction": (1) buat transaksi income/expense, (2) `applyTransactionToWallet()` mengubah balance. Ini menjaga satu jalur tunggal untuk semua perubahan balance. |
+| **Pencatatan Balance History** ⭐ | **WAJIB** dicatat bersamaan dengan pembuatan transaksi "Balance Correction": (a) Add Wallet dengan balance > 0, (b) Edit Wallet jika balance berubah. **TIDAK BOLEH** dicatat saat: transaksi dari Module Transactions, operasi loan dari Module Loan, atau soft delete wallet. |
+| **Atomicity Edit Wallet** ⭐ | Saat Save di Edit Wallet, tiga operasi berjalan bersamaan jika balance berubah: (1) update `name`/`wallet_type` di `wallets`, (2) tambah record ke `wallet_balance_history`, (3) buat transaksi "Balance Correction". Secara konseptual atomik. |
+| **Balance Correction di Transaction List** ⭐ | Transaksi "Balance Correction" (dibuat otomatis oleh Wallet module) muncul normal di Transaction list. User **bisa** menghapusnya — rollback via `rollbackTransactionFromWallet` adalah perilaku yang benar dan diinginkan. |
 | **Konsumsi oleh Module Report** ⭐ | `wallet_balance_history` adalah dependency Module Report (Bagian 4.5 di spec Report). Module Wallet adalah **producer**, Module Report adalah **consumer**. Module Wallet tidak perlu tahu bagaimana data ini dipakai — cukup pastikan format & timing pencatatan benar. |
 | **Migrasi Fase 2** | Field `anon_id` di `wallets` dan `wallet_balance_history` adalah kunci migrasi. Saat user buat akun, **kedua key** harus dikirim ke backend untuk dipindahkan ke `user_id` baru. |
 
@@ -542,5 +569,5 @@ Hasil:
 
 ---
 
-*— End of Technical Specification: Module Wallet (v4.0) —*
+*— End of Technical Specification: Module Wallet (v5.0) —*
 *Dokumen terkait: Module Transactions · Module Loan · Module Report · Global Architecture · Module Settings*

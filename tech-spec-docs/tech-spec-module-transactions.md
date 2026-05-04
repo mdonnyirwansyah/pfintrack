@@ -1,9 +1,9 @@
 # Technical Specification Document
 ## Module: Transactions
 
-**Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.2
-**Tanggal:** 2026-05-03
+**Aplikasi:** PFinTrack — Personal Finance Tracker
+**Versi Dokumen:** 1.3
+**Tanggal:** 2026-05-04
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -44,10 +44,10 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Bar atas dengan background biru muda. Berisi date navigator dan dua tombol aksi di kanan. |
-| **Date Navigator** | Interaktif | Tampilan tanggal aktif dalam format "Fri, 01 May 2026" di tengah. Tombol `‹` di kiri untuk hari sebelumnya, `›` di kanan untuk hari berikutnya. Tap pada teks tanggal → membuka **custom calendar popup** (bukan native date picker): navigasi bulan `‹ MMMM YYYY ›`, grid hari 7×n, highlight hari ini dengan outline, tombol "Today" sebagai shortcut. Tanggal aktif disinkronkan ke URL via query param `?date=YYYY-MM-DD` agar state terjaga saat navigasi ke form Add dan kembali. |
+| **Date Navigator** | Interaktif | Tampilan tanggal aktif dalam format locale-aware (mis. "Fri, 01 May 2026" untuk EN) di tengah. Tombol `‹` di kiri untuk hari sebelumnya, `›` di kanan untuk hari berikutnya. Tap pada teks tanggal → membuka **custom calendar popup** (bukan native date picker): navigasi bulan `‹ MMMM YYYY ›` (locale-aware), grid hari 7×n dengan weekday headers single-letter locale-aware dari `date-fns` (mulai Minggu), highlight hari ini dengan outline, tombol **"Today"** / **"Hari ini"** (sesuai locale via `tc("today")`). Tanggal aktif disinkronkan ke URL via query param `?date=YYYY-MM-DD` agar state terjaga saat navigasi ke form Add dan kembali. |
 | **Header Action: Export** | Interaktif | Ikon download di header. Tap → trigger export seluruh data transaksi ke file **Excel (.xlsx)** dan diunduh oleh browser. |
 | **Header Action: History** | Interaktif | Ikon dokumen di header. Tap → navigasi ke screen **Transaction History (Search)** yang menampilkan seluruh transaksi (bukan hanya tanggal aktif) dengan kemampuan pencarian. |
-| **Summary Bar** | Dinamis | Tiga kolom ringkasan untuk **tanggal aktif** saja: **Income** (hijau) · **Expenses** (merah) · **Balance** (selisih income − expenses). Tipe transfer **tidak** dihitung di sini. |
+| **Summary Bar** | Dinamis | Tiga kolom ringkasan untuk **tanggal aktif** saja: **Income** (hijau) · **Expenses** (merah, dengan prefix `"- "` jika > 0) · **Balance** (selisih income − expenses; prefix `"- "` jika negatif). Tipe transfer **tidak** dihitung di sini. |
 | **Sort Control** | Interaktif | Pill button di kanan atas list (hanya muncul jika ada transaksi). Tap → dropdown dengan 4 opsi urutan: **Newest first** (default) · **Oldest first** · **Highest amount** · **Lowest amount**. Pill berwarna biru jika sort bukan default. Komponen reusable `SortPill` (`src/components/shared/SortPill.tsx`). |
 | **Transaction List** | Dinamis | Daftar transaksi pada tanggal aktif, diurutkan sesuai `sortKey` aktif. Setiap item menampilkan: kategori, title, nominal, dan wallet terkait. Warna nominal mengikuti tipe (income: hijau, expense: merah, transfer: netral/abu). **Long-press item → konfirmasi hapus.** |
 | **Long-press Delete + Undo** | Interaktif | Tekan dan tahan (≥500ms) pada item transaksi → muncul dialog konfirmasi. Konfirmasi → item langsung disembunyikan dari list + muncul toast "Transaction deleted" dengan tombol **Undo** selama 5 detik. Tap Undo → item muncul kembali, soft-delete dibatalkan. Jika tidak di-undo → `softDeleteTransaction()` dipanggil setelah 5 detik. |
@@ -469,6 +469,25 @@ Jika `amount > wallet.balance`, tampilkan **warning** (bukan error) — pengguna
 
 ---
 
+### Kategori Khusus: "Balance Correction"
+
+Transaksi dengan `title: "Balance Correction"` dan `category: "Balance Correction"` adalah **transaksi yang dibuat otomatis oleh Wallet module** (bukan input manual user) dalam dua kondisi:
+
+| Kondisi | Tipe | Amount |
+|---------|------|--------|
+| Add Wallet dengan initial balance > 0 | `income` | `initialBalance` |
+| Edit Wallet dengan delta > 0 (balance naik) | `income` | `Math.abs(delta)` |
+| Edit Wallet dengan delta < 0 (balance turun) | `expense` | `Math.abs(delta)` |
+
+**Sifat transaksi Balance Correction:**
+- Muncul normal di Transaction list, bisa di-tap untuk dilihat/dihapus
+- Tidak bisa di-edit (atau jika di-edit, ubah label form menjadi read-only)
+- Menghapus transaksi ini membalik balance wallet via `rollbackTransactionFromWallet` — perilaku yang diinginkan
+- Terhitung di Income/Expenses summary dan Report (sama seperti transaksi biasa)
+- Suggestion chips **tidak** mengambil "Balance Correction" sebagai sumber (karena auto-generated, bukan user choice)
+
+---
+
 ### Suggestion Chips — Sumber Data
 
 | Konteks | Sumber Data |
@@ -585,7 +604,7 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 | **Suggestion Chips** | Chip dihasilkan dari **history transaksi user pada tipe yang sama**. Limit tampilan 8 chip. Saat tap chip title → otomatis isi title + category. Saat tap chip category → hanya isi category. |
 | **Free-text Category** | Field category bersifat **free-text**, bukan enum tertutup. Pengguna bebas membuat kategori baru. Suggestion chip membantu konsistensi naming, namun tidak memaksa. |
 | **Filter Tanggal** | Hanya per hari. Navigasi `‹` `›` mengubah tanggal aktif ±1 hari. Tap teks tanggal membuka date picker untuk loncat ke tanggal tertentu. Tidak ada filter range. |
-| **Format Tanggal di UI** | Header Transaction List menggunakan format Inggris singkat: *"Fri, 01 May 2026"*. Form Add Transaction menggunakan format Indonesia: *"Jum, 01 Mei 2026"*. Konsistensi format perlu disepakati di Global Architecture. |
+| **Format Tanggal di UI** | Semua tampilan tanggal menggunakan `formatDisplayDate(date, useLocale())` — locale-aware. EN: *"Fri, 01 May 2026"*, ID: *"Jum, 01 Mei 2026"*. Lihat §4.2 Global Architecture untuk detail implementasi. |
 | **Format Penyimpanan Tanggal** | Selalu disimpan dalam **ISO 8601** (`YYYY-MM-DD` untuk date, `HH:MM` untuk time). Konversi ke format locale hanya dilakukan di lapisan UI. |
 | **Empty State Suggestion** | Saat user belum pernah membuat transaksi tipe tertentu, **tidak ada chip** yang ditampilkan. Form sepenuhnya kosong dan user input manual. Setelah transaksi pertama disimpan, chip akan muncul di transaksi berikutnya. |
 | **Export Excel** | Generate file `.xlsx` di sisi client menggunakan library spreadsheet (mis. SheetJS). File di-download otomatis. Nama file menggunakan format `transactions_<YYYYMMDD>.xlsx`. |
@@ -609,5 +628,5 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 
 ---
 
-*— End of Technical Specification: Module Transactions (v1.0) —*
+*— End of Technical Specification: Module Transactions (v1.3) —*
 *Dokumen terkait: Module Wallet · Global Architecture · Module Report · Module Loan · Module Settings*

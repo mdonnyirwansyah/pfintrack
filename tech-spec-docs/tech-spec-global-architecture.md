@@ -1,9 +1,9 @@
 # Technical Specification Document
 ## Global Architecture
 
-**Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.2
-**Tanggal:** 2026-05-03
+**Aplikasi:** PFinTrack — Personal Finance Tracker
+**Versi Dokumen:** 1.3
+**Tanggal:** 2026-05-04
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -27,7 +27,7 @@
 
 ### 1.1 Tujuan
 
-**Personal Finance Manager** adalah web app mobile-first untuk membantu pengguna individual mengelola keuangan pribadi, mencakup:
+**PFinTrack — Personal Finance Tracker** adalah web app mobile-first untuk membantu pengguna individual mengelola keuangan pribadi, mencakup:
 
 - Multi-wallet (rekening bank, e-wallet, investasi, tabungan, aset digital)
 - Pencatatan transaksi: income, expense, transfer antar wallet
@@ -304,14 +304,24 @@ Field nominal di semua form (Transactions, Loan, Wallet) menggunakan `type="text
 
 **Tampilan di UI:**
 
-> ✅ **RESOLVED (2026-05-01):** Standar tunggal telah ditetapkan — **English semua**, baik display maupun input.
+> ✅ **RESOLVED (2026-05-01):** Standar tunggal telah ditetapkan — **locale-aware** via `useLocale()`. Format output menyesuaikan bahasa aktif pengguna (English atau Indonesia).
 
-| Konteks | Format | Contoh |
-|---------|--------|--------|
-| Header Transactions list (current day) | English singkat | `Fri, 01 May 2026` |
-| Header Loan Detail (entry list) | English singkat | `Sun, 19 Apr 2026` |
-| Header section Report (Monthly, Custom) | English singkat | `01 May 2026 - 31 May 2026` |
-| Form input (Date Picker pre-filled) | English singkat | `Fri, 01 May 2026` |
+| Konteks | Format (EN) | Format (ID) | Contoh (EN) |
+|---------|-------------|-------------|-------------|
+| Header Transactions list (current day) | English singkat | Indonesia singkat | `Fri, 01 May 2026` |
+| Header Loan Detail (entry list) | English singkat | Indonesia singkat | `Sun, 19 Apr 2026` |
+| Header section Report (Monthly, Custom) | English singkat | Indonesia singkat | `01 May 2026 - 31 May 2026` |
+| Form input (Date Picker pre-filled) | English singkat | Indonesia singkat | `Fri, 01 May 2026` |
+
+**Implementasi di `lib/format/date.ts`:**
+- `formatDisplayDate(date, locale = "id")` — locale param opsional, default Indonesian
+- `formatDateRange(from, to, locale = "id")` — locale param opsional, default Indonesian
+- Komponen yang memanggil: `DateNavigator`, `RealtimeTab`, `LoanEntryListItem`, `transactions/history/page`, `report/detail/page`, `CustomReportSection`, `report/custom/add/page`, `report/custom/[id]/edit/page` — semuanya meneruskan `useLocale()` ke fungsi format.
+
+**DateNavigator calendar popup (locale-aware):**
+- Month label: menggunakan locale aktif via `date-fns` locale
+- Weekday headers: single-letter abbreviations di-generate dari `date-fns`, dimulai Minggu
+- Tombol "Today": menggunakan translation key `tc("today")` → `"Today"` (EN) / `"Hari ini"` (ID)
 
 ### 4.3 Palet Warna
 
@@ -535,7 +545,7 @@ User klik "Buat Akun" (Fase 2)
 |------|----------|----------|---------|
 | `wallets` | Wallet (CRUD) | Transactions (untuk pilih wallet, update balance), Loan (untuk pilih wallet, update balance), Report (referensi nama wallet) | Field `balance` di-update oleh siapa saja yang melakukan transaksi/loan |
 | `wallet_balance_history` | Wallet (saat tambah wallet dengan balance > 0, atau edit balance manual) | Report (untuk Balance Correction) | Dicatat saat: (1) Add Wallet dengan initial balance > 0, (2) Edit Wallet jika balance berubah. Tidak dicatat akibat transaksi/loan. |
-| `transactions` | Transactions (CRUD) | Report (Income, Expenses, Donut chart) | Transfer tidak dihitung di Income/Expenses |
+| `transactions` | Transactions (CRUD) **+ Wallet** (Balance Correction auto-transaction) | Report (Income, Expenses, Donut chart) | Transfer tidak dihitung di Income/Expenses. **Balance Correction** transactions (`type:"income"/"expense"`, `category:"Balance Correction"`) dibuat otomatis oleh Wallet saat Add/Edit dengan balance ≠ 0. Muncul di Transaction list seperti transaksi biasa. |
 | `loan_counterparties` | Loan (CRUD) | — | Internal Loan |
 | `loan_entries` | Loan (CRUD) | Report (Loan cash flow) | Cash flow loan = Get − Give per periode |
 | `custom_reports` | Report (CRUD) | — | Internal Report |
@@ -544,21 +554,31 @@ User klik "Buat Akun" (Fase 2)
 
 Berlaku untuk **semua operasi yang menyentuh `wallet.balance`**:
 
-| Aksi | Efek terhadap `wallet.balance` | Catat ke `wallet_balance_history`? |
-|------|-------------------------------|-------------------------------------|
-| Tambah wallet baru (initial balance > 0) | Set balance awal | ✅ Ya — dicatat sebagai koreksi awal (previous=0, new=balance) |
-| Tambah wallet baru (initial balance = 0) | Set balance awal (0) | ❌ Tidak |
-| Edit balance manual via Edit Wallet | Set balance baru | ✅ Ya (hanya jika balance berubah) |
-| Tambah transaksi income | `+= amount` | ❌ Tidak |
-| Tambah transaksi expense | `-= amount` | ❌ Tidak |
-| Tambah transaksi transfer | Source `-= amount`, Destination `+= amount` | ❌ Tidak |
-| Edit/hapus transaksi | Rollback efek lama, apply efek baru | ❌ Tidak |
-| Tambah loan give (dengan wallet) | `-= amount` | ❌ Tidak |
-| Tambah loan get (dengan wallet) | `+= amount` | ❌ Tidak |
-| Edit/hapus loan entry | Rollback efek lama, apply efek baru | ❌ Tidak |
-| Soft delete wallet | (tidak ubah balance) | ❌ Tidak |
+| Aksi | Efek terhadap `wallet.balance` | Catat ke `wallet_balance_history`? | Buat transaction Balance Correction? |
+|------|-------------------------------|-------------------------------------|--------------------------------------|
+| Tambah wallet baru (initial balance > 0) | Set `balance = 0` dulu, lalu income tx menaikkan ke initial balance | ✅ Ya — dicatat sebagai koreksi awal (previous=0, new=balance) | ✅ Ya — income `{type:"income", title:"Balance Correction", category:"Balance Correction", amount: initialBalance}` |
+| Tambah wallet baru (initial balance = 0) | Set balance = 0 | ❌ Tidak | ❌ Tidak |
+| Edit balance manual via Edit Wallet (delta ≠ 0) | Tidak di-update langsung — transaction side-effect yang mengubah balance | ✅ Ya (delta = new − old) | ✅ Ya — `{type: delta>0?"income":"expense", title:"Balance Correction", category:"Balance Correction", amount: Math.abs(delta)}` |
+| Edit wallet name/type saja (balance tidak berubah) | Tidak berubah | ❌ Tidak | ❌ Tidak |
+| Tambah transaksi income | `+= amount` | ❌ Tidak | — |
+| Tambah transaksi expense | `-= amount` | ❌ Tidak | — |
+| Tambah transaksi transfer | Source `-= amount`, Destination `+= amount` | ❌ Tidak | — |
+| Edit/hapus transaksi (termasuk Balance Correction) | Rollback efek lama, apply efek baru | ❌ Tidak | — |
+| Tambah loan give (dengan wallet) | `-= amount` | ❌ Tidak | — |
+| Tambah loan get (dengan wallet) | `+= amount` | ❌ Tidak | — |
+| Edit/hapus loan entry | Rollback efek lama, apply efek baru | ❌ Tidak | — |
+| Soft delete wallet | (tidak ubah balance) | ❌ Tidak | ❌ Tidak |
 
-**Filosofi:** "Koreksi" adalah ketika user secara **eksplisit menetapkan nilai balance** — baik saat membuat wallet dengan saldo awal, maupun saat mengedit balance via form. Perubahan akibat transaksi/loan sudah punya audit trail-nya sendiri di `transactions` atau `loan_entries`.
+**Balance Correction Transaction Pattern:**
+Saat Add Wallet (balance > 0) atau Edit Wallet (balance berubah), Wallet module membuat transaksi income/expense dengan:
+- `title: "Balance Correction"`, `category: "Balance Correction"`
+- `wallet_id`: wallet terkait
+- `amount`: initial balance (Add) atau `Math.abs(delta)` (Edit)
+- Side-effect `applyTransactionToWallet` yang memperbarui `wallet.balance`
+
+Transaksi ini tampil normal di Transaction list. Menghapus transaksi Balance Correction membalik balance wallet via `rollbackTransactionFromWallet` — perilaku yang diinginkan.
+
+**Filosofi:** `wallet_balance_history` merekam niat user ("saya menetapkan balance sekian"), sementara transaction Balance Correction adalah mekanisme yang **mengeksekusi** perubahan balance tersebut. Keduanya ditulis bersamaan saat Save.
 
 ---
 
@@ -717,4 +737,4 @@ Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
 
 ---
 
-*— End of Technical Specification: Global Architecture (v1.1) —*
+*— End of Technical Specification: Global Architecture (v1.3) —*

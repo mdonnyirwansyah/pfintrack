@@ -1,9 +1,9 @@
 # Technical Specification Document
 ## Module: Report
 
-**Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.2
-**Tanggal:** 2026-05-03
+**Aplikasi:** PFinTrack — Personal Finance Tracker
+**Versi Dokumen:** 1.3
+**Tanggal:** 2026-05-04
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -78,7 +78,7 @@
 |----------|-------|-----------------|
 | **Monthly Section** | Dinamis | Per bulan, ditampilkan satu blok dengan format konsisten (lihat di bawah). Section diurutkan dari bulan terbaru ke belakang. |
 | **Section Header** | Statis | Teks rata tengah dengan format range: `01 May 2026 - 31 May 2026`. Tap → drill-down ke detail periode. |
-| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (hitam) <br>• **Income** (hijau, prefix `+`) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
+| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (merah, prefix `"- "` jika > 0) <br>• **Income** (hijau, prefix `+`) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
 | **Section Chevron** | Interaktif | Ikon `›` di kanan section header. Tap → navigasi ke screen detail breakdown per kategori. |
 | **Auto-load (Infinite Scroll)** | Dinamis | Saat user scroll ke bawah, sistem menambahkan section bulan-bulan sebelumnya yang masih punya data. Berhenti otomatis saat sudah mencapai bulan transaksi paling lama. Load awal: 6 bulan. Load tambahan: 6 bulan per scroll. |
 
@@ -92,7 +92,7 @@
 | **Section Header** | Dinamis | Dua baris rata tengah: <br>• Baris atas: **nama report** (bold) <br>• Baris bawah: range periode `01 Jan 2026 - 31 Dec 2026` |
 | **Section Edit Action** | Interaktif | Ikon ✏️ di sudut kanan atas setiap section. Tap → membuka screen Edit Custom Report (rename, ubah range, atau delete). |
 | **Section Chevron** | Interaktif | Ikon `›` di kanan section. Tap → navigasi ke screen detail breakdown per kategori untuk periode custom tersebut. |
-| **Summary Rows** | Dinamis | **Identik dengan tab Monthly**: Start Balance · Expenses · Income · Balance · Loan (opsional) · Balance Correction (opsional) · End Balance. |
+| **Summary Rows** | Dinamis | **Identik dengan tab Monthly**: Start Balance · Expenses (merah, prefix `"- "` jika > 0) · Income · Balance · Loan (opsional) · Balance Correction (opsional) · End Balance. |
 | **FAB Button (`+`)** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → navigasi ke screen Add Custom Report. |
 | **Empty State** | Dinamis | Jika user belum punya custom report → tampilkan empty state dengan ajakan membuat report pertama. |
 
@@ -601,7 +601,7 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 
 | State | Tipe | Kondisi Awal | Keterangan |
 |-------|------|-------------|------------|
-| `activeTab` | `'realtime' / 'monthly' / 'custom'` | `'realtime'` | Tab aktif saat ini |
+| `activeTab` | `'realtime' / 'monthly' / 'custom'` | Dari `sessionStorage["report_active_tab"]`, fallback `'realtime'` | Tab aktif saat ini. **Dipersist ke `sessionStorage`** dengan key `"report_active_tab"` saat berubah. Dibaca saat mount. Ini mempertahankan tab aktif saat user navigasi ke detail dan kembali. |
 | `isLoading` | Boolean | `true` | Tampilkan skeleton saat true |
 
 ---
@@ -685,10 +685,11 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | **Performa Monthly** | Untuk user dengan riwayat panjang, render semua bulan sekaligus bisa lambat. Implementasikan **infinite scroll**: load 6 bulan pertama, lalu load tambahan 6 bulan saat user mendekati bawah list. |
 | **Performa Custom** | Saat user banyak punya custom report dengan range besar, tiap section membutuhkan iterasi seluruh transaksi. Pertimbangkan **memoization** hasil kalkulasi per range agar tidak dihitung ulang setiap re-render. |
 | **Balance Correction & Start Balance Dependency** | Fitur Balance Correction **dan** Start Balance bergantung pada `wallet_balance_history`. Key ini ditulis oleh Module Wallet dalam dua momen: (1) Add Wallet dengan balance > 0, (2) Edit balance wallet manual. Implementasi sudah ada di `useWalletStore`. |
+| **Balance Correction Transactions** | Wallet module membuat transaksi income/expense dengan `category:"Balance Correction"` yang **ikut terhitung di Income/Expenses di Report**. Ini adalah perilaku yang diinginkan: laporan mencerminkan semua arus masuk/keluar termasuk koreksi saldo. Transaksi ini muncul di Transaction list, Report Realtime donut chart, dan Monthly/Custom summary rows. |
 | **Transfer Tidak Dihitung** | Konsisten dengan Module Transactions: tipe `transfer` tidak ikut dalam Income, Expenses, atau Balance. Transfer adalah pemindahan dana internal user, bukan arus keluar/masuk. |
 | **Loan vs Income/Expense** | Loan **terpisah** dari Income/Expense. Walaupun Get terlihat seperti income dan Give seperti expense, mereka tidak masuk perhitungan Income/Expense — hanya muncul di baris Loan tersendiri. Ini agar laporan rutin (gaji, belanja) tidak bercampur dengan utang-piutang. |
 | **Empty Section** | Jika sebuah bulan tidak punya transaksi & loan & balance correction sama sekali → bulan itu **tidak perlu di-render** di tab Monthly. |
-| **Format Tanggal** | Header section: format **English** (`01 May 2026 - 31 May 2026`). Form Add/Edit: format **Indonesia** (`Jum, 01 Mei 2026`). Inkonsistensi ini ada di seluruh aplikasi — perlu disepakati standar di Global Architecture. |
+| **Format Tanggal** | Semua tampilan tanggal locale-aware via `formatDateRange(from, to, useLocale())` dan `formatDisplayDate(date, useLocale())`. EN: `"01 May 2026 - 31 May 2026"`. ID: `"01 Mei 2026 - 31 Mei 2026"`. Lihat §4.2 Global Architecture. |
 | **Soft Delete Custom Report** | Custom report yang dihapus di-flag `is_active=false`. Tidak menghapus permanen agar konsisten dengan pola modul lain dan memudahkan migrasi Fase 2. |
 | **Donut Chart Library** | Untuk implementasi visual donut chart, gunakan library yang sudah teruji di mobile-web (mis. Recharts, ApexCharts, atau Chart.js dengan plugin). Pastikan responsif di lebar 375px. |
 | **Warna Kategori** | Warna donut chart per kategori sebaiknya **deterministik** (mis. hash dari string kategori) agar konsisten antar render dan antar periode. |
@@ -709,8 +710,12 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | 7 | Balance Correction dari edit balance wallet | ✅ Dari `wallet_balance_history`, key sudah didefinisikan di Module Wallet v4.0 |
 | 8 | Periode Realtime | ✅ **Bulan penuh** (1 - akhir bulan). Data natural hanya sampai hari ini |
 | 9 | Range max custom report | ✅ **10 tahun** |
+| 10 | Expenses row prefix | ✅ Merah + prefix `"- "` jika expenses > 0 (Monthly & Custom PeriodSummaryRows) |
+| 11 | Report tab state persistence | ✅ `sessionStorage["report_active_tab"]` — dibaca on mount, ditulis on tab change |
+| 12 | Balance Correction transactions di report | ✅ Terhitung di Income/Expenses (seperti transaksi biasa). `wallet_balance_history` tetap untuk Balance Correction row terpisah di summary. |
+| 13 | Format tanggal | ✅ **Locale-aware** via `formatDateRange`/`formatDisplayDate` + `useLocale()` |
 
 ---
 
-*— End of Technical Specification: Module Report (v1.2) —*
+*— End of Technical Specification: Module Report (v1.3) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Module Loan · Global Architecture · Module Settings*

@@ -1,9 +1,9 @@
 # Technical Specification Document
 ## Module: Loan
 
-**Aplikasi:** Personal Finance Manager
-**Versi Dokumen:** 1.1
-**Tanggal:** 2026-05-03
+**Aplikasi:** PFinTrack — Personal Finance Tracker
+**Versi Dokumen:** 1.2
+**Tanggal:** 2026-05-04
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -33,7 +33,7 @@
 | 10 | **Pengelompokan per orang (counterparty):** Loan dikelompokkan **per nama orang**. Setiap entry baru dengan nama yang sama (case-insensitive) digabungkan ke counterparty existing. |
 | 11 | **Logika offset (saling tutup):** Setiap counterparty memiliki tiga total: `total_give`, `total_get`, dan `outstanding = total_give − total_get`. Get otomatis "mengurangi" outstanding dari Give sebelumnya. |
 | 12 | **Status "Paid off":** Counterparty otomatis berstatus paid off ketika `outstanding == 0`, atau ketika user secara **manual menandai** dengan tombol Mark as Paid di detail. Jika di-mark manual, status tetap paid off meskipun outstanding ≠ 0. |
-| 13 | **Integrasi dengan Wallet:** Wallet bersifat **opsional** di form Give/Get. Jika dipilih, balance wallet otomatis ter-update (Give → kurangi, Get → tambah). Jika dikosongkan, wallet tidak tersentuh. |
+| 13 | **Integrasi dengan Wallet:** Wallet bersifat **WAJIB** di form Give/Get. Harus dipilih sebelum form bisa di-submit. Balance wallet otomatis ter-update (Give → kurangi, Get → tambah). |
 | 14 | **Angka di Loan List samping nama** = `outstanding` (selisih `Give − Get`). Jika `outstanding == 0` atau status manual paid off → tampilkan teks **"Paid off"** menggantikan angka. |
 
 ---
@@ -45,9 +45,9 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Bar atas dengan background biru muda. Teks "Loan" rata tengah. |
-| **Summary Bar** | Dinamis | **Tiga kolom**: **Get** (hijau, `+ {total}` prefix jika > 0) · **Give** (merah) · **Balance** (dinamis: hijau jika > 0 / merah jika < 0 / abu jika 0, `+ ` prefix jika negatif karena Balance = Give − Get). Hanya menghitung counterparty dengan status `outstanding`. |
+| **Summary Bar** | Dinamis | **Tiga kolom**: **Get** (hijau, `+ {total}` prefix jika > 0) · **Give** (merah, `- {total}` prefix jika > 0) · **Balance** (dinamis: `balance = totalGive − totalGet`; hijau + prefix `"+"` jika balance < 0 (user untung), merah + prefix `"-"` jika balance > 0 (user rugi), abu jika 0). Hanya menghitung counterparty dengan status `outstanding`. |
 | **Counterparty List** | Dinamis | Daftar orang yang pernah loan dengan user, urut berdasarkan `updated_at` DESC. Setiap baris: nama + subtitle (note dari entry terakhir, atau "Without explanation") + outstanding/Paid off + chevron `›`. |
-| **Outstanding Display** | Dinamis | Logika tampilan: jika `outstanding > 0` → nominal hijau (orang berhutang ke user). Jika `outstanding < 0` → nominal merah, ditampilkan sebagai nilai absolut (user berhutang ke orang). Jika status `paid off` → teks "Paid off" hijau muda. |
+| **Outstanding Display** | Dinamis | Logika tampilan per baris counterparty: `outstanding = totalGive − totalGet`. Jika `outstanding > 0` → merah dengan prefix `"- "` (counterparty berhutang ke user). Jika `outstanding < 0` → hijau dengan prefix `"+ "` (user berhutang ke counterparty). Jika `outstanding === 0` **atau** `manual_paid_off` → teks **"Lunas"** dengan warna `--text-secondary` (bukan hijau). |
 | **FAB Expandable** | Interaktif | Tombol biru `+` di pojok kanan bawah. Tap → mengembang menjadi 2 sub-action: **Give** (merah, ikon `»` ke bawah) · **Get** (oranye, ikon `«` ke atas). |
 | **Bottom Navigation** | Shared · Statis | 5 tab. Tab **Loan** aktif. *(Lihat Global Architecture.)* |
 
@@ -63,8 +63,8 @@
 | **Header Action: Mark as Paid** | Interaktif | Ikon person dengan checkmark (👤✓) di kanan header. Tap → membuka konfirmasi untuk menandai counterparty sebagai paid off **secara manual**. Hanya tampil jika status saat ini `outstanding`. |
 | **Header Action: Edit** | Interaktif | Ikon pensil (✏️). Tap → masuk mode edit nama counterparty (rename). |
 | **Header Action: Delete** | Interaktif | Ikon tempat sampah (🗑️). Tap → membuka konfirmasi untuk **menghapus seluruh counterparty beserta semua entry**-nya (soft delete). |
-| **Summary Bar (3 Kolom)** | Dinamis | Tiga total agregat untuk counterparty ini: <br>• **Get** (hijau): `+ {total_get}` jika > 0 — akumulasi seluruh entry tipe Get <br>• **Give** (merah): `{total_give}` — akumulasi seluruh entry tipe Give <br>• **Balance** (dinamis: hijau jika > 0, merah jika < 0, abu jika 0): `outstanding = total_give − total_get`. Prefix `+ ` ditampilkan jika outstanding negatif (user untung). |
-| **Entry History List** | Dinamis | Daftar seluruh entry untuk counterparty ini, urut DESC by `transaction_date` lalu `transaction_time`. Setiap baris menampilkan: tanggal (format "Day, DD Mon YYYY"), subtitle (note atau "Without explanation"), nominal di kanan + chevron `›`. |
+| **Summary Bar (3 Kolom)** | Dinamis | Tiga total agregat untuk counterparty ini: <br>• **Get** (hijau): `+ {total_get}` jika > 0 — akumulasi seluruh entry tipe Get <br>• **Give** (merah): `{total_give}` — akumulasi seluruh entry tipe Give <br>• **Balance** (dinamis: hijau jika outstanding < 0, merah jika outstanding > 0, abu jika 0): `outstanding = total_give − total_get`. Prefix logic: `outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""`. |
+| **Entry History List** | Dinamis | Daftar seluruh entry untuk counterparty ini, urut DESC by `transaction_date` lalu `transaction_time`. Setiap baris menampilkan: tanggal (format locale-aware "Day, DD Mon YYYY"), subtitle (note atau "Without explanation"), **nama wallet** (baris ke-3, warna `--text-tertiary`) jika ada `wallet_id`, nominal di kanan + chevron `›`. |
 | **Entry Nominal Display** | Dinamis | Format tampilan tergantung tipe: <br>• Tipe **Get**: `+ {amount}` warna hijau (mis. `+ 5.000,00`) <br>• Tipe **Give**: `{amount}` warna hitam/abu (mis. `5.000,00`) |
 | **Entry Tap** | Interaktif | Tap baris entry → navigasi ke screen Edit Entry untuk mengubah/menghapus entry tersebut. |
 | **FAB Expandable** | Interaktif | Sama persis dengan Loan List: tombol `+` biru → expand ke **Give** (merah) + **Get** (oranye). Bedanya: saat dipilih, navigasi ke form Add Give/Get dengan **nama pre-filled & terkunci** ke counterparty saat ini. |
@@ -75,14 +75,15 @@
 
 > Form untuk mencatat user **memberi uang** ke orang lain.
 
+**Urutan field (atas ke bawah):**
+
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **App Header** | Statis | Background biru solid. Tombol back `‹`. Judul **"Give"** rata tengah. |
-| **Date Picker** | Interaktif | Field tanggal + ikon kalender. Default: hari ini. Tap → native date picker. |
-| **Time Picker** | Interaktif | Field jam (`HH:MM`). Default: waktu sekarang. |
+| **Date + Time Row** | Interaktif | Date dan Time dalam satu flex row dengan rasio **3:2** (Date lebih lebar). Date: field tanggal + ikon kalender, default hari ini. Time: field jam `HH:MM`, default waktu sekarang. |
+| **Wallet Selector** | **Wajib** | Field dropdown. Placeholder *"Select Wallet"*. **Wajib dipilih** — validasi error jika tidak dipilih saat submit. **Tidak ada** tombol clear/X. Di bawah selector ditampilkan `"Balance: {formatIDR(wallet.balance)}"` saat wallet dipilih. Untuk tipe **Give**: jika `amount > wallet.balance`, tampilkan warning AlertTriangle *"Insufficient wallet balance"* — non-blocking (form tetap bisa di-submit). |
 | **Amount Field** | Interaktif | Input teks (`type="text" inputMode="decimal"`). Placeholder *"Amount"*. Ikon kalkulator dekoratif di kanan. Wajib diisi, > 0. **onFocus**: format IDR dihapus → tampilkan angka mentah. **onBlur**: angka di-format IDR (mis. `1.500.000,00`). Parsing menggunakan `parseIDR()`. |
 | **Name Field** | Interaktif | Input teks bebas. Placeholder *"Enter the name"*. Wajib diisi. Auto-trim. Pencocokan ke counterparty existing case-insensitive. **Jika navigasi dari Loan Detail → field ini pre-filled & disabled (locked).** |
-| **Wallet Selector** | Opsional | Field dropdown. Placeholder *"Select Wallet (optional)"*. Boleh kosong. Jika dipilih → balance wallet ter-update saat Save. |
 | **Note Field** | Opsional | Input teks bebas. Placeholder *"Note (optional)"*. Maksimum 255 karakter. |
 | **Save Button** | Interaktif | Posisi kanan bawah. Warna biru, label "Save". Tiga kondisi: aktif / loading / disabled. |
 
@@ -90,7 +91,7 @@
 
 ### Screen 4 — Add "Get" (`/loan/add/get`)
 
-Struktur **identik** dengan Add "Give", hanya berbeda judul header (**"Get"**) dan logika penyimpanan:
+Struktur **identik** dengan Add "Give" (termasuk urutan field dan wallet wajib), hanya berbeda judul header (**"Get"**) dan logika penyimpanan:
 
 | Aspek | Give | Get |
 |-------|------|-----|
@@ -179,7 +180,7 @@ User tap FAB "+" di Loan Detail (counterparty: "Alma")
 ### Flow: Add Give / Get
 
 ```
-User isi Amount → isi Name (jika tidak locked) → (opsi) pilih Wallet → (opsi) Note
+User pilih Wallet (wajib) → isi Amount → isi Name (jika tidak locked) → (opsi) Note
                             ↓
                        Tap "Save"
                             ↓
@@ -368,11 +369,11 @@ User input nama: "  Alma Putri  "
 | Amount | Maksimum `999.999.999.999,99` | "Nominal melebihi batas maksimum" |
 | Name | Wajib diisi (kecuali locked dari Loan Detail) | "Nama tidak boleh kosong" |
 | Name | 2–50 karakter (setelah trim) | "Nama minimal 2 karakter / maksimal 50 karakter" |
-| Wallet | Opsional | — |
+| Wallet | **Wajib dipilih** | "Pilih wallet terlebih dahulu" |
 | Note | Opsional, maksimum 255 karakter | "Note maksimal 255 karakter" |
 
 **Catatan:**
-- Tidak ada validasi minimum balance untuk Give. Saldo wallet boleh menjadi minus.
+- Tidak ada validasi minimum balance untuk Give. Saldo wallet boleh menjadi minus (hanya warning, tidak blocking).
 - Untuk Get, tidak ada syarat user harus pernah Give terlebih dahulu (user bebas mencatat menerima uang).
 
 ### Validasi Edit Counterparty (Rename)
@@ -531,7 +532,18 @@ status =
 ```
 Total Get  = SUM(outstanding)      untuk counterparty di mana outstanding > 0 AND status != 'paid off'
 Total Give = SUM(|outstanding|)    untuk counterparty di mana outstanding < 0 AND status != 'paid off'
+Balance    = totalGive − totalGet  (di mana: positif = user rugi netto, negatif = user untung netto)
 ```
+
+**Tampilan prefix:**
+
+| Kondisi | Get | Give | Balance |
+|---------|-----|------|---------|
+| totalGet > 0 | `"+ " + formatIDR(totalGet)` | — | — |
+| totalGive > 0 | — | `"- " + formatIDR(totalGive)` | — |
+| balance < 0 (user untung) | — | — | `"+ " + formatIDR(Math.abs(balance))` hijau |
+| balance > 0 (user rugi) | — | — | `"- " + formatIDR(balance)` merah |
+| balance == 0 | — | — | `"0"` abu |
 
 Counterparty `paid off` (otomatis maupun manual) **tidak dihitung** di summary.
 
@@ -545,13 +557,21 @@ Give       = total_give              (akumulasi seluruh entry Give untuk orang i
 Selisih    = outstanding = total_give − total_get
 ```
 
+**Prefix Balance di Loan Detail:**
+```
+prefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""
+```
+- `outstanding > 0`: merah, prefix `"- "` (counterparty masih berhutang ke user)
+- `outstanding < 0`: hijau, prefix `"+ "` (user yang berhutang ke counterparty)
+- `outstanding === 0`: abu, tanpa prefix
+
 **Contoh dari UI (Alma):**
 
 | Kolom | Nilai | Penjelasan |
 |-------|-------|-----------|
-| Get (oranye) | `+ 494.288,00` | Total semua Get yang user terima dari Alma |
+| Get (hijau) | `+ 494.288,00` | Total semua Get yang user terima dari Alma |
 | Give (merah) | `499.288,00` | Total semua Give yang user beri ke Alma |
-| Selisih (pink) | `5.000,00` | `499.288 − 494.288 = 5.000` → Alma masih berhutang `5.000,00` ke user |
+| Balance (merah) | `- 5.000,00` | `499.288 − 494.288 = 5.000` → Alma masih berhutang `5.000,00` ke user, prefix `"- "` |
 
 ---
 
@@ -624,7 +644,7 @@ Selisih    = outstanding = total_give − total_get
 | **Outstanding Selalu Dihitung Ulang** | Outstanding, total_give, dan total_get **tidak disimpan** sebagai field di counterparty. Selalu dihitung on-the-fly dari entries. Mencegah desync data saat ada edit/delete entry. |
 | **Pencocokan Nama Case-Insensitive** | Saat user input nama di form: lakukan `LOWER(TRIM(name))` → cari counterparty existing. Jika ada → gunakan. Jika tidak → buat baru dengan nama persis seperti yang user ketik. Misal: "alma" dan "Alma" dianggap sama, tapi nama yang disimpan adalah dari entry pertama. |
 | **Re-open Counterparty** | Jika counterparty `manual_paid_off=true`, lalu user tambah entry baru → otomatis reset `manual_paid_off` ke `false`. Status counterparty kembali aktif. |
-| **Wallet Opsional di Loan** | Berbeda dengan Module Transactions (wallet wajib), di Loan **wallet bersifat opsional**. Konsekuensinya: jika `wallet_id=null`, balance wallet tidak ter-update. Loan tetap dicatat sebagai utang-piutang murni. |
+| **Wallet Wajib di Loan** | Wallet bersifat **WAJIB** di form Give/Get (sama seperti Module Transactions). Validasi error ditampilkan jika wallet tidak dipilih saat submit. `wallet_id` tidak boleh `null` pada entry baru. |
 | **Konsistensi Saldo Wallet** | Jika `wallet_id` terisi: Give → `wallet.balance −= amount`, Get → `wallet.balance += amount`. Saat edit/hapus entry yang memiliki `wallet_id`, balance wallet **wajib di-rollback** sebelum operasi baru diaplikasikan. |
 | **Edit Entry yang Mengganti Wallet** | Jika user edit entry dari `wallet_id=A` menjadi `wallet_id=B`: rollback ke wallet A, lalu apply ke wallet B. Jika dari ada-wallet menjadi `null` (atau sebaliknya): hanya satu sisi yang di-update. |
 | **Delete Counterparty (Cascade)** | Hapus counterparty wajib **soft-delete seluruh entry**-nya juga. Untuk setiap entry yang punya `wallet_id`, lakukan rollback balance wallet sebelum entry di-soft-delete. Operasi ini bersifat atomik secara konseptual — semua sukses atau semua di-rollback. |
@@ -632,7 +652,7 @@ Selisih    = outstanding = total_give − total_get
 | **Outstanding Negatif** | Mungkin terjadi jika user lebih banyak Get daripada Give (artinya user yang berhutang). Sistem tidak mencegah, ditampilkan di Summary kolom **Give** sebagai nilai absolut. |
 | **Soft Delete Pattern** | Entry & counterparty yang dihapus di-flag `is_active=false`. Tidak benar-benar dihapus dari localStorage untuk keperluan audit dan migrasi Fase 2. |
 | **Manual Mark as Paid** | Override outstanding. Berguna untuk kasus "utang dimaafkan" atau "lunas dengan barter non-uang". Outstanding tetap dihitung apa adanya, tapi UI menampilkan "Paid off". Jika ada entry baru → flag otomatis reset. |
-| **Format Tampilan Tanggal di Detail** | Format: `Day, DD Mon YYYY` (contoh: "Sun, 19 Apr 2026", "Tue, 06 Jan 2026"). Bahasa Inggris singkat. Konsistensi format dengan modul lain perlu disepakati di Global Architecture. |
+| **Format Tampilan Tanggal di Detail** | Format locale-aware via `formatDisplayDate(date, useLocale())`. EN: `"Sun, 19 Apr 2026"`. ID: `"Min, 19 Apr 2026"`. Lihat §4.2 Global Architecture. |
 | **Subtitle "Without explanation"** | Default subtitle saat entry tidak memiliki note. Berlaku baik di Loan List (note dari entry terakhir counterparty) maupun di Loan Detail (note per entry). |
 | **Migrasi Fase 2** | Field `anon_id` di counterparty dan entry adalah kunci migrasi. Saat user buat akun, kedua key (`loan_counterparties` & `loan_entries`) dikirim ke backend untuk dipindahkan ke `user_id` baru. |
 
@@ -651,8 +671,12 @@ Selisih    = outstanding = total_give − total_get
 | 7 | Saldo minus untuk Give | ✅ **Boleh minus**, konsisten dengan Transactions |
 | 8 | Paid off di list | ✅ **Tetap muncul + toggle hide/show** |
 | 9 | Format tampilan Get/Give | ✅ Get: `+ {amount}` hijau, Give: `{amount}` hitam/abu |
+| 10 | Wallet opsional/wajib di Loan | ✅ **WAJIB** — validasi error jika tidak dipilih. Balance display + insufficient warning untuk Give. |
+| 11 | Prefix "Lunas" di CounterpartyListItem | ✅ **Warna secondary** (`--text-secondary`), bukan hijau |
+| 12 | Prefix symbol di Summary Bar | ✅ Give: `"- "` prefix jika > 0. Balance: `"+"` jika balance < 0 (user untung), `"-"` jika balance > 0 (user rugi) |
+| 13 | Wallet name di LoanEntryListItem | ✅ Ditampilkan sebagai baris ke-3 (tertiary color) di detail entry list |
 
 ---
 
-*— End of Technical Specification: Module Loan (v2.0) —*
+*— End of Technical Specification: Module Loan (v1.2) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Global Architecture · Module Report · Module Settings*
