@@ -7,6 +7,7 @@ import { formatDateRange } from "@/lib/format/date";
 import { formatIDR, formatIDRSigned } from "@/lib/format/number";
 import type { MonthlySummary } from "@/lib/report/calculations";
 import type { CustomReport } from "@/lib/types/report";
+import { useLocale } from "next-intl";
 
 interface CustomReportSectionProps {
   report: CustomReport;
@@ -18,6 +19,7 @@ export function CustomReportSection({
   summary,
 }: CustomReportSectionProps) {
   const router = useRouter();
+  const locale = useLocale();
 
   const handleDrillDown = () => {
     router.push(
@@ -55,7 +57,7 @@ export function CustomReportSection({
             className="text-[12px] mt-0.5"
             style={{ color: "var(--text-secondary)" }}
           >
-            {formatDateRange(report.start_date, report.end_date)}
+            {formatDateRange(report.start_date, report.end_date, locale)}
           </span>
         </button>
 

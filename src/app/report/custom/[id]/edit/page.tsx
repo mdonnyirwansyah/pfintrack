@@ -7,7 +7,7 @@ import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useReportStore } from "@/lib/stores/useReportStore";
 import { customReportsRepo } from "@/lib/storage/custom-reports";
 import { formatDisplayDate } from "@/lib/format/date";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface FormErrors {
   name?: string;
@@ -27,6 +27,7 @@ export default function EditCustomReportPage() {
 
   const t = useTranslations("report");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -201,7 +202,7 @@ export default function EditCustomReportPage() {
               className="text-[11px]"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {formatDisplayDate(startDate)}
+              {formatDisplayDate(startDate, locale)}
             </p>
           )}
           {errors.start_date && (
@@ -247,7 +248,7 @@ export default function EditCustomReportPage() {
               className="text-[11px]"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {formatDisplayDate(endDate)}
+              {formatDisplayDate(endDate, locale)}
             </p>
           )}
           {errors.end_date && (

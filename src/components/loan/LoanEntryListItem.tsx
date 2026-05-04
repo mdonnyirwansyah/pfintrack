@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import type { LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
 import { formatDisplayDate } from "@/lib/format/date";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface LoanEntryListItemProps {
   entry: LoanEntry;
@@ -15,6 +15,7 @@ interface LoanEntryListItemProps {
 export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListItemProps) {
   const isGet = entry.type === "get";
   const t = useTranslations("loan");
+  const locale = useLocale();
   const subtitle = entry.note || t("withoutExplanation");
 
   return (
@@ -31,7 +32,7 @@ export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListI
           className="text-[10px] font-medium truncate"
           style={{ color: "var(--text-primary)" }}
         >
-          {formatDisplayDate(entry.transaction_date)}
+          {formatDisplayDate(entry.transaction_date, locale)}
         </p>
         <p
           className="text-[9px] truncate mt-0.5"

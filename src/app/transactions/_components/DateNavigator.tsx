@@ -19,20 +19,34 @@ import {
   isToday,
 } from "date-fns";
 import { formatDisplayDate } from "@/lib/format/date";
+import { id as idLocale, enUS } from "date-fns/locale";
+import { useLocale, useTranslations } from "next-intl";
 
 interface DateNavigatorProps {
   activeDate: string; // YYYY-MM-DD
   onDateChange: (date: string) => void;
 }
 
-const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+// Sun=0 reference week: 2023-01-01 was a Sunday
+const REFERENCE_SUNDAY = new Date(2023, 0, 1);
 
 export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) {
+  const locale = useLocale();
+  const tc = useTranslations("common");
+  const dfnsLocale = locale === "id" ? idLocale : enUS;
+
   const [isOpen, setIsOpen] = useState(false);
   const [viewDate, setViewDate] = useState(() => parseISO(activeDate));
 
   const selectedDate = parseISO(activeDate);
-  const displayDate = formatDisplayDate(activeDate);
+  const displayDate = formatDisplayDate(activeDate, locale);
+
+  // Locale-aware single-letter weekday headers (Sun–Sat)
+  const weekdays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(REFERENCE_SUNDAY);
+    d.setDate(REFERENCE_SUNDAY.getDate() + i);
+    return format(d, "EEEEE", { locale: dfnsLocale });
+  });
 
   const handlePrev = () => {
     onDateChange(format(subDays(selectedDate, 1), "yyyy-MM-dd"));
@@ -147,7 +161,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                   className="text-[13px] font-semibold"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  {format(viewDate, "MMMM yyyy")}
+                  {format(viewDate, "MMMM yyyy", { locale: dfnsLocale })}
                 </span>
 
                 <button
@@ -166,7 +180,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
 
               {/* Weekday headers */}
               <div className="grid grid-cols-7 mb-1">
-                {WEEKDAYS.map((d) => (
+                {weekdays.map((d) => (
                   <div
                     key={d}
                     className="text-center text-[10px] font-medium py-1"
@@ -225,7 +239,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                     background: "var(--bg-secondary)",
                   }}
                 >
-                  Today
+                  {tc("today")}
                 </button>
               </div>
             </div>

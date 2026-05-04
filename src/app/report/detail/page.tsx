@@ -17,7 +17,7 @@ import { transactionsRepo } from "@/lib/storage/transactions";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
 import type { Transaction } from "@/lib/types/transaction";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 function ReportDetailContent() {
   const searchParams = useSearchParams();
@@ -27,6 +27,7 @@ function ReportDetailContent() {
   const categoryParam = searchParams.get("category");
   const t = useTranslations("report");
   const tc = useTranslations("common");
+  const locale = useLocale();
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
@@ -81,7 +82,7 @@ function ReportDetailContent() {
   const headerTitle = nameParam
     ? nameParam
     : start && end
-      ? formatDateRange(start, end)
+      ? formatDateRange(start, end, locale)
       : "Report Detail";
 
   return (
@@ -96,7 +97,7 @@ function ReportDetailContent() {
               className="text-[12px]"
               style={{ color: "var(--text-secondary)" }}
             >
-              {formatDateRange(start, end)}
+              {formatDateRange(start, end, locale)}
             </span>
           </div>
         )}
@@ -167,7 +168,7 @@ function ReportDetailContent() {
                           {t.category && (
                             <span style={{ color: "var(--text-tertiary)" }}>{t.category} · </span>
                           )}
-                          {formatDisplayDate(t.transaction_date)}
+                          {formatDisplayDate(t.transaction_date, locale)}
                         </span>
                       </div>
                       <span

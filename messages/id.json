@@ -21,7 +21,8 @@
     "clear": "Hapus",
     "soon": "Segera",
     "noData": "Tidak ada data",
-    "items": "{count} item"
+    "items": "{count} item",
+    "today": "Hari ini"
   },
   "splash": {
     "tagline": "Pelacak Keuangan Pribadi"

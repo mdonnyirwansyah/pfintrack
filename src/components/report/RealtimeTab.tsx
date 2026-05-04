@@ -16,7 +16,7 @@ import type { SortKey } from "@/components/shared/SortPill";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
 import { formatIDR } from "@/lib/format/number";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface RealtimeTabProps {
   transactions: Transaction[];
@@ -25,6 +25,7 @@ interface RealtimeTabProps {
 export function RealtimeTab({ transactions }: RealtimeTabProps) {
   const t = useTranslations("report");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const start = currentMonthStart();
   const end = currentMonthEnd();
 
@@ -82,7 +83,7 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
       {/* Period label */}
       <div className="text-center">
         <span className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>
-          {formatDateRange(start, end)}
+          {formatDateRange(start, end, locale)}
         </span>
       </div>
 
@@ -145,7 +146,7 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
                         </span>
                         <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
                           {t.category && <span style={{ color: "var(--text-tertiary)" }}>{t.category} · </span>}
-                          {formatDisplayDate(t.transaction_date)}
+                          {formatDisplayDate(t.transaction_date, locale)}
                         </span>
                       </div>
                       <span

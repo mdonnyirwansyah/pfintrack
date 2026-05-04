@@ -21,7 +21,8 @@
     "clear": "Clear",
     "soon": "Soon",
     "noData": "No data",
-    "items": "{count, plural, one {# item} other {# items}}"
+    "items": "{count, plural, one {# item} other {# items}}",
+    "today": "Today"
   },
   "splash": {
     "tagline": "Personal Finance Tracker"

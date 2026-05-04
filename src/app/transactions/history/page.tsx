@@ -10,7 +10,7 @@ import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { formatDisplayDate } from "@/lib/format/date";
 import type { Transaction } from "@/lib/types/transaction";
 import { FileSearch } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 // Group transactions by date
 function groupByDate(transactions: Transaction[]): Map<string, Transaction[]> {
@@ -29,6 +29,7 @@ export default function TransactionHistoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
+  const locale = useLocale();
 
   useEffect(() => {
     loadTransactions();
@@ -138,7 +139,7 @@ export default function TransactionHistoryPage() {
                   className="text-[10px] font-semibold"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  {formatDisplayDate(date)}
+                  {formatDisplayDate(date, locale)}
                 </span>
                 <div
                   className="flex-1 h-px"
