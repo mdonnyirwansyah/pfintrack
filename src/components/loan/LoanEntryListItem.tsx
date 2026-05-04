@@ -8,10 +8,11 @@ import { useTranslations } from "next-intl";
 
 interface LoanEntryListItemProps {
   entry: LoanEntry;
+  walletName?: string | null;
   onClick: () => void;
 }
 
-export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
+export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListItemProps) {
   const isGet = entry.type === "get";
   const t = useTranslations("loan");
   const subtitle = entry.note || t("withoutExplanation");
@@ -38,6 +39,14 @@ export function LoanEntryListItem({ entry, onClick }: LoanEntryListItemProps) {
         >
           {subtitle}
         </p>
+        {walletName && (
+          <p
+            className="text-[9px] truncate mt-0.5"
+            style={{ color: "var(--text-tertiary)" }}
+          >
+            {walletName}
+          </p>
+        )}
       </div>
 
       {/* Amount */}

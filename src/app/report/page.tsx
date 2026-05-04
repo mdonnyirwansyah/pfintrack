@@ -19,7 +19,10 @@ type Tab = "realtime" | "monthly" | "custom";
 
 export default function ReportPage() {
   const t = useTranslations("report");
-  const [activeTab, setActiveTab] = useState<Tab>("realtime");
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    if (typeof window === "undefined") return "realtime";
+    return (sessionStorage.getItem("report_active_tab") as Tab) ?? "realtime";
+  });
 
   const TABS: { id: Tab; label: string }[] = [
     { id: "realtime", label: t("tabs.realtime") },
@@ -45,6 +48,7 @@ export default function ReportPage() {
   // Reload source data when switching tabs to pick up any changes
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
+    sessionStorage.setItem("report_active_tab", tab);
     setTransactions(transactionsRepo.getAll());
     setLoanEntries(loanEntriesRepo.getAll());
     setBalanceHistory(walletBalanceHistoryRepo.getAll());

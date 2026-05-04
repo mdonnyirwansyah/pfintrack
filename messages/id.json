@@ -24,7 +24,7 @@
     "items": "{count} item"
   },
   "splash": {
-    "tagline": "Manajer Keuangan Pribadi"
+    "tagline": "Pelacak Keuangan Pribadi"
   },
   "settings": {
     "title": "Pengaturan",
@@ -202,8 +202,8 @@
       "amount": "Nominal",
       "name": "Nama",
       "namePlaceholder": "Masukkan nama",
-      "walletOptional": "Dompet (opsional)",
-      "selectWalletOptional": "Pilih Dompet (opsional)",
+      "wallet": "Dompet",
+      "selectWallet": "Pilih Dompet",
       "noteOptional": "Catatan (opsional)",
       "notePlaceholder": "Catatan (opsional)",
       "clearWallet": "Hapus",
@@ -235,6 +235,7 @@
       "nameRequired": "Nama tidak boleh kosong",
       "nameTooShort": "Nama minimal 2 karakter",
       "nameTooLong": "Nama maksimal 50 karakter",
+      "walletRequired": "Pilih dompet terlebih dahulu",
       "noteTooLong": "Catatan maksimal 255 karakter",
       "renameRequired": "Nama tidak boleh kosong",
       "renameTaken": "Nama sudah dipakai"
@@ -334,7 +335,7 @@
       "cancel": "Batal"
     },
     "welcome": {
-      "title": "Selamat datang di pfintrack!",
+      "title": "Selamat datang di PFinTrack!",
       "description": "Mulai catat keuanganmu dari nol, atau jelajahi fitur aplikasi dengan data sampel realistis terlebih dahulu.",
       "exploreButton": "Eksplorasi dengan Data Sampel",
       "startFreshButton": "Mulai dari Nol"

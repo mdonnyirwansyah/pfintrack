@@ -17,6 +17,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { LoanDetailSummaryBar } from "@/components/loan/LoanDetailSummaryBar";
 import { LoanEntryListItem } from "@/components/loan/LoanEntryListItem";
 import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoanStore";
+import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { useTranslations } from "next-intl";
 
@@ -41,6 +42,7 @@ export default function LoanDetailPage({
   } = useLoanCounterpartyStore();
 
   const { entries, loadEntriesForCounterparty } = useLoanEntryStore();
+  const { wallets, loadWallets } = useWalletStore();
 
   const [isMarkAsPaidOpen, setIsMarkAsPaidOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -51,7 +53,8 @@ export default function LoanDetailPage({
   useEffect(() => {
     loadCounterparties();
     loadEntriesForCounterparty(counterpartyId);
-  }, [counterpartyId, loadCounterparties, loadEntriesForCounterparty]);
+    loadWallets();
+  }, [counterpartyId, loadCounterparties, loadEntriesForCounterparty, loadWallets]);
 
   const counterparty = useMemo(
     () => counterparties.find((c) => c.id === counterpartyId) ?? null,
@@ -227,6 +230,7 @@ export default function LoanDetailPage({
               <LoanEntryListItem
                 key={entry.id}
                 entry={entry}
+                walletName={wallets.find((w) => w.id === entry.wallet_id)?.name ?? null}
                 onClick={() =>
                   router.push(`/loan/${counterpartyId}/edit/${entry.id}`)
                 }

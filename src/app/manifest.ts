@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "pfintrack - Personal Finance Manager",
-    short_name: "pfintrack",
-    description: "Mobile-first personal finance manager. Track wallets, transactions, loans, and reports.",
+    name: "PFinTrack - Personal Finance Tracker",
+    short_name: "PFinTrack",
+    description: "Personal Finance Tracker — catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
     start_url: "/transactions",
     display: "standalone",
     background_color: "#F8F9FB",

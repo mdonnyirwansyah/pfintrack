@@ -24,7 +24,7 @@
     "items": "{count, plural, one {# item} other {# items}}"
   },
   "splash": {
-    "tagline": "Personal Finance Manager"
+    "tagline": "Personal Finance Tracker"
   },
   "settings": {
     "title": "Settings",
@@ -202,8 +202,8 @@
       "amount": "Amount",
       "name": "Name",
       "namePlaceholder": "Enter the name",
-      "walletOptional": "Wallet (optional)",
-      "selectWalletOptional": "Select Wallet (optional)",
+      "wallet": "Wallet",
+      "selectWallet": "Select Wallet",
       "noteOptional": "Note (optional)",
       "notePlaceholder": "Note (optional)",
       "clearWallet": "Clear",
@@ -235,6 +235,7 @@
       "nameRequired": "Name is required",
       "nameTooShort": "Name must be at least 2 characters",
       "nameTooLong": "Name must be 50 characters or less",
+      "walletRequired": "Please select a wallet",
       "noteTooLong": "Note must be 255 characters or less",
       "renameRequired": "Name is required",
       "renameTaken": "Name is already taken"
@@ -334,7 +335,7 @@
       "cancel": "Cancel"
     },
     "welcome": {
-      "title": "Welcome to pfintrack!",
+      "title": "Welcome to PFinTrack!",
       "description": "Start tracking your finances from scratch, or explore the app features with realistic sample data first.",
       "exploreButton": "Explore with Sample Data",
       "startFreshButton": "Start from Scratch"

@@ -81,16 +81,23 @@ export function CounterpartyListItem({
         {isPaidOff ? (
           <span
             className="text-[9px] font-medium"
-            style={{ color: "var(--color-positive)" }}
+            style={{ color: "var(--text-secondary)" }}
           >
             {t("paidOff")}
           </span>
-        ) : (
+        ) : outstanding > 0 ? (
           <span
             className="text-[10px] font-semibold tabular-nums"
             style={{ color: "var(--color-negative)" }}
           >
-            {formatIDR(Math.abs(outstanding))}
+            - {formatIDR(outstanding)}
+          </span>
+        ) : (
+          <span
+            className="text-[10px] font-semibold tabular-nums"
+            style={{ color: "var(--color-positive)" }}
+          >
+            + {formatIDR(Math.abs(outstanding))}
           </span>
         )}
         <ChevronRight

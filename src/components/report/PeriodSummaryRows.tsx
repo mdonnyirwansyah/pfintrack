@@ -57,7 +57,11 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
 
   return (
     <div className="space-y-0.5">
-      <SummaryRow label={t("expenses")} value={formatIDR(summary.expenses)} />
+      <SummaryRow
+        label={t("expenses")}
+        value={summary.expenses > 0 ? `- ${formatIDR(summary.expenses)}` : formatIDR(0)}
+        color="var(--color-negative)"
+      />
       <SummaryRow
         label={t("income")}
         value={`+ ${formatIDR(summary.income)}`}

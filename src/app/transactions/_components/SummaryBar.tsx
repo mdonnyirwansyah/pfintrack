@@ -13,8 +13,8 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
   const t = useTranslations("transactions.summary");
   // Income: "+" hanya jika > 0
   const incomePrefix = income > 0 ? "+ " : "";
-  // Balance: "+" hanya jika > 0, tanpa tanda jika 0 atau negatif
-  const balancePrefix = balance > 0 ? "+ " : "";
+  const expensesPrefix = expenses > 0 ? "- " : "";
+  const balancePrefix = balance > 0 ? "+ " : balance < 0 ? "- " : "";
   const balanceColor =
     balance > 0
       ? "var(--color-positive)"
@@ -59,7 +59,7 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           style={{ color: "var(--color-negative)" }}
           suppressHydrationWarning
         >
-          {formatIDR(expenses)}
+          {expensesPrefix}{formatIDR(expenses)}
         </span>
       </div>
 

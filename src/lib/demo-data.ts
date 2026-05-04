@@ -6,9 +6,10 @@
 
 import { walletsRepo } from "@/lib/storage/wallets";
 import { transactionsRepo } from "@/lib/storage/transactions";
+import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
-import { applyTransactionToWallet } from "@/lib/storage/wallet-balance-ops";
+import { applyTransactionToWallet, applyLoanEntryToWallet } from "@/lib/storage/wallet-balance-ops";
 import { writeKey } from "@/lib/storage/base";
 
 /** ISO date N days before today */
@@ -16,6 +17,61 @@ function daysAgo(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
   return d.toISOString().slice(0, 10);
+}
+
+/** Mirror of useWalletActions.handleCreate: create wallet at 0, then apply initial balance via Balance Correction transaction. */
+function createWalletWithBalance(
+  name: string,
+  wallet_type: Parameters<typeof walletsRepo.create>[0]["wallet_type"],
+  initialBalance: number,
+  daysBack: number
+) {
+  const wallet = walletsRepo.create({ name, wallet_type, balance: 0 });
+  if (initialBalance > 0) {
+    walletBalanceHistoryRepo.create({
+      wallet_id: wallet.id,
+      previous_balance: 0,
+      new_balance: initialBalance,
+    });
+    const tx = transactionsRepo.create({
+      type: "income",
+      wallet_id: wallet.id,
+      amount: initialBalance,
+      title: "Balance Correction",
+      category: "Balance Correction",
+      transaction_date: daysAgo(daysBack),
+      transaction_time: "07:00",
+    });
+    applyTransactionToWallet(tx);
+  }
+  return wallet;
+}
+
+/** Mirror of useWalletActions.handleUpdate: apply a manual balance correction as a transaction. */
+function applyBalanceCorrection(
+  walletId: string,
+  previousBalance: number,
+  newBalance: number,
+  daysBack: number,
+  time: string
+) {
+  const delta = newBalance - previousBalance;
+  if (delta === 0) return;
+  walletBalanceHistoryRepo.create({
+    wallet_id: walletId,
+    previous_balance: previousBalance,
+    new_balance: newBalance,
+  });
+  const tx = transactionsRepo.create({
+    type: delta > 0 ? "income" : "expense",
+    wallet_id: walletId,
+    amount: Math.abs(delta),
+    title: "Balance Correction",
+    category: "Balance Correction",
+    transaction_date: daysAgo(daysBack),
+    transaction_time: time,
+  });
+  applyTransactionToWallet(tx);
 }
 
 type TxDef = {
@@ -31,10 +87,16 @@ type TxDef = {
 };
 
 export function injectDemoData(): void {
-  // ── Wallets ──────────────────────────────────────────────────────────────
-  const bca   = walletsRepo.create({ name: "BCA",    wallet_type: "bank",     balance: 0 });
-  const gopay = walletsRepo.create({ name: "GoPay",  wallet_type: "e_wallet", balance: 0 });
-  const tunai = walletsRepo.create({ name: "Tunai",  wallet_type: "other",    balance: 0 });
+  // ── Wallets ───────────────────────────────────────────────────────────────
+  // Masing-masing wallet dibuat dengan saldo awal via Balance Correction transaction,
+  // persis seperti alur useWalletActions.handleCreate di production.
+  const bca   = createWalletWithBalance("BCA",   "bank",     3_500_000, 33);
+  const gopay = createWalletWithBalance("GoPay", "e_wallet", 0,         33); // mulai dari 0
+  const tunai = createWalletWithBalance("Tunai", "other",    750_000,   33);
+
+  // Simulasi edit saldo manual BCA setelah rekonsiliasi dengan buku tabungan
+  // (menemukan selisih dari biaya admin yang terlewat — pertengahan April)
+  applyBalanceCorrection(bca.id, 3_500_000, 3_450_000, 20, "09:00");
 
   // ── Transactions — 1 month full (today = day 0, ~30 days back) ──────────
   //
@@ -148,57 +210,62 @@ export function injectDemoData(): void {
   // ── Loan counterparties & entries ─────────────────────────────────────────
   // Budi — piutang (kita minjemin, belum lunas)
   const budi = loanCounterpartiesRepo.create({ name: "Budi" });
-  loanEntriesRepo.create({
+  const budiloan1 = loanEntriesRepo.create({
     counterparty_id: budi.id,
     type: "give",
     amount: 800_000,
-    wallet_id: null,
+    wallet_id: bca.id,
     note: "Pinjam untuk beli HP baru",
     transaction_date: daysAgo(20),
     transaction_time: "15:00",
   });
-  loanEntriesRepo.create({
+  applyLoanEntryToWallet(budiloan1);
+  const budiloan2 = loanEntriesRepo.create({
     counterparty_id: budi.id,
     type: "get",
     amount: 300_000,
-    wallet_id: null,
+    wallet_id: tunai.id,
     note: "Bayar sebagian",
     transaction_date: daysAgo(10),
     transaction_time: "11:00",
   });
+  applyLoanEntryToWallet(budiloan2);
 
   // Sinta — hutang (kita yang pinjam, sudah kita bayar balik)
   const sinta = loanCounterpartiesRepo.create({ name: "Sinta" });
-  loanEntriesRepo.create({
+  const sintaloan1 = loanEntriesRepo.create({
     counterparty_id: sinta.id,
     type: "get",
     amount: 500_000,
-    wallet_id: null,
+    wallet_id: gopay.id,
     note: "Patungan bayar sewa tempat acara",
     transaction_date: daysAgo(28),
     transaction_time: "10:00",
   });
-  loanEntriesRepo.create({
+  applyLoanEntryToWallet(sintaloan1);
+  const sintaloan2 = loanEntriesRepo.create({
     counterparty_id: sinta.id,
     type: "give",
     amount: 500_000,
-    wallet_id: null,
+    wallet_id: gopay.id,
     note: "Lunas",
     transaction_date: daysAgo(14),
     transaction_time: "09:00",
   });
+  applyLoanEntryToWallet(sintaloan2);
 
   // Andi — piutang modal usaha, belum dibayar
   const andi = loanCounterpartiesRepo.create({ name: "Andi" });
-  loanEntriesRepo.create({
+  const andiloan1 = loanEntriesRepo.create({
     counterparty_id: andi.id,
     type: "give",
     amount: 1_500_000,
-    wallet_id: null,
+    wallet_id: bca.id,
     note: "Modal usaha warung makan",
     transaction_date: daysAgo(25),
     transaction_time: "13:00",
   });
+  applyLoanEntryToWallet(andiloan1);
 
   // ── Set demo flag ─────────────────────────────────────────────────────────
   if (typeof window !== "undefined") {

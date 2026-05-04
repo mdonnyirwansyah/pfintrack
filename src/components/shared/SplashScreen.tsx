@@ -90,7 +90,7 @@ export function SplashScreen() {
             lineHeight: 1,
           }}
         >
-          pfintrack
+          PFinTrack
         </p>
         <p
           style={{

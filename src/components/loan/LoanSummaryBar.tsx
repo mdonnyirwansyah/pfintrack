@@ -21,7 +21,8 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
   const balance = totalGive - totalGet;
 
   const getPrefix = totalGet > 0 ? "+ " : "";
-  const balancePrefix = balance < 0 ? "+ " : "";
+  const givePrefix = totalGive > 0 ? "- " : "";
+  const balancePrefix = balance < 0 ? "+ " : balance > 0 ? "- " : "";
   const balanceColor =
     balance === 0
       ? "var(--text-secondary)"
@@ -68,7 +69,7 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
           style={{ color: "var(--color-negative)" }}
           suppressHydrationWarning
         >
-          {formatIDR(totalGive)}
+          {givePrefix}{formatIDR(totalGive)}
         </span>
       </div>
 

@@ -309,7 +309,7 @@ export default function SettingsPage() {
                 <Info className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
               <span className="text-[14px]" style={{ color: "var(--text-primary)" }}>
-                pfintrack
+                PFinTrack
               </span>
             </div>
             <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>

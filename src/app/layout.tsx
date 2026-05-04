@@ -16,15 +16,15 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "pfintrack",
-    template: "%s | pfintrack",
+    default: "PFinTrack",
+    template: "%s | PFinTrack",
   },
-  description: "Mobile-first personal finance manager. Track wallets, transactions, loans, and reports.",
+  description: "Personal Finance Tracker — catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "pfintrack",
+    title: "PFinTrack",
   },
   formatDetection: {
     telephone: false,

@@ -24,7 +24,7 @@ export function LoanDetailSummaryBar({
 }: LoanDetailSummaryBarProps) {
   const t = useTranslations("loan.summary");
   const getPrefix = totalGet > 0 ? "+ " : "";
-  const balancePrefix = outstanding < 0 ? "+ " : "";
+  const balancePrefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : "";
   const balanceColor =
     outstanding === 0
       ? "var(--text-secondary)"
