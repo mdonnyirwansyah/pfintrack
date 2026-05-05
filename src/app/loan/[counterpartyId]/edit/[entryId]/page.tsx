@@ -135,6 +135,7 @@ export default function EditLoanEntryPage({
         type={entry.type}
         initialValues={initialValues}
         isNameLocked
+        isEditMode
         wallets={wallets}
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}

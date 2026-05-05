@@ -93,19 +93,18 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     router.replace("/transactions");
   };
 
-  const deleteButton = (
+  const headerActions = (
     <button
-      type="button"
       onClick={() => setIsDeleteDialogOpen(true)}
-      className="w-full py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity flex items-center justify-center gap-2"
+      className="flex items-center justify-center rounded-full transition-opacity active:opacity-60"
       style={{
-        background: "var(--color-negative-soft)",
-        color: "var(--color-negative)",
+        minWidth: "var(--tap-target-min)",
         minHeight: "var(--tap-target-min)",
+        color: "var(--color-negative)",
       }}
+      aria-label="Delete transaction"
     >
-      <Trash2 className="w-4 h-4" />
-      {t("deleteConfirm.confirm")} Transaction
+      <Trash2 className="w-5 h-5" />
     </button>
   );
 
@@ -134,7 +133,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
 
     return (
       <>
-        <AppHeader title={typeLabel} showBack />
+        <AppHeader title={typeLabel} showBack actions={headerActions} />
         <TransferForm
           wallets={wallets}
           initialValues={{
@@ -146,8 +145,8 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
             description: transaction.description ?? "",
           }}
           isSubmitting={isSubmitting}
+          isEditMode
           onSubmit={handleTransferSubmit}
-          footerActions={deleteButton}
         />
         <ConfirmDialog
           open={isDeleteDialogOpen}
@@ -187,7 +186,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
 
   return (
     <>
-      <AppHeader title={typeLabel} showBack />
+      <AppHeader title={typeLabel} showBack actions={headerActions} />
       <IncomeExpenseForm
         type={transaction.type as "income" | "expense"}
         wallets={wallets}
@@ -203,8 +202,8 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
         titleSuggestions={titleSuggestions}
         categorySuggestions={categorySuggestions}
         isSubmitting={isSubmitting}
+        isEditMode
         onSubmit={handleIncomeExpenseSubmit}
-        footerActions={deleteButton}
       />
       <ConfirmDialog
         open={isDeleteDialogOpen}

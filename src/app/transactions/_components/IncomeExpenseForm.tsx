@@ -28,7 +28,7 @@ interface IncomeExpenseFormProps {
   titleSuggestions: Array<{ title: string; category: string }>;
   categorySuggestions: string[];
   isSubmitting: boolean;
-  submitLabel?: string;
+  isEditMode?: boolean;
   onSubmit: (values: IncomeExpenseFormValues) => void;
   /** Extra actions rendered after the form (e.g. delete button on edit page) */
   footerActions?: React.ReactNode;
@@ -43,14 +43,14 @@ export function IncomeExpenseForm({
   titleSuggestions,
   categorySuggestions,
   isSubmitting,
-  submitLabel,
+  isEditMode = false,
   onSubmit,
   footerActions,
 }: IncomeExpenseFormProps) {
   const router = useRouter();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
-  const resolvedSubmitLabel = submitLabel ?? tc("save");
+  const resolvedSubmitLabel = isEditMode ? tc("saveChanges") : tc("save");
 
   const defaults: IncomeExpenseFormValues = {
     transaction_date: todayISO(),
@@ -353,32 +353,18 @@ export function IncomeExpenseForm({
       {footerActions}
 
       {/* Submit */}
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity"
-          style={{
-            background: "var(--bg-secondary)",
-            color: "var(--text-secondary)",
-            minHeight: "var(--tap-target-min)",
-          }}
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
-          style={{
-            background: "var(--color-brand)",
-            color: "var(--text-on-primary)",
-            minHeight: "var(--tap-target-min)",
-          }}
-        >
-          {isSubmitting ? tc("saving") : resolvedSubmitLabel}
-        </button>
-      </div>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
+        style={{
+          background: "var(--color-brand)",
+          color: "var(--text-on-primary)",
+          minHeight: "var(--tap-target-min)",
+        }}
+      >
+        {isSubmitting ? tc("saving") : resolvedSubmitLabel}
+      </button>
 
       {/* Wallet picker */}
       <WalletPicker

@@ -35,6 +35,7 @@ interface LoanEntryFormProps {
   isNameLocked?: boolean;
   wallets: Wallet[];
   isSubmitting: boolean;
+  isEditMode?: boolean;
   /** If provided, shows a Delete button (edit mode) */
   onDelete?: () => void;
   onSubmit: (values: LoanEntryFormValues) => void;
@@ -68,6 +69,7 @@ export function LoanEntryForm({
   isNameLocked = false,
   wallets,
   isSubmitting,
+  isEditMode = false,
   onDelete,
   onSubmit,
 }: LoanEntryFormProps) {
@@ -438,8 +440,10 @@ export function LoanEntryForm({
                 />
                 {tc("saving")}
               </span>
+            ) : isEditMode ? (
+              tc("saveChanges")
             ) : (
-              type === "give" ? t("form.saveGive") : t("form.saveGet")
+              tc("save")
             )}
           </button>
         </div>

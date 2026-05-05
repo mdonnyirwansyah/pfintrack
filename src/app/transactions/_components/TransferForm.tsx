@@ -22,7 +22,7 @@ interface TransferFormProps {
   wallets: Wallet[];
   initialValues?: Partial<TransferFormValues>;
   isSubmitting: boolean;
-  submitLabel?: string;
+  isEditMode?: boolean;
   onSubmit: (values: TransferFormValues) => void;
   footerActions?: React.ReactNode;
 }
@@ -33,14 +33,14 @@ export function TransferForm({
   wallets,
   initialValues,
   isSubmitting,
-  submitLabel,
+  isEditMode = false,
   onSubmit,
   footerActions,
 }: TransferFormProps) {
   const router = useRouter();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
-  const resolvedSubmitLabel = submitLabel ?? tc("save");
+  const resolvedSubmitLabel = isEditMode ? tc("saveChanges") : tc("save");
 
   const defaults: TransferFormValues = {
     transaction_date: todayISO(),
@@ -315,32 +315,18 @@ export function TransferForm({
       {footerActions}
 
       {/* Submit */}
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity"
-          style={{
-            background: "var(--bg-secondary)",
-            color: "var(--text-secondary)",
-            minHeight: "var(--tap-target-min)",
-          }}
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex-1 py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
-          style={{
-            background: "var(--color-brand)",
-            color: "var(--text-on-primary)",
-            minHeight: "var(--tap-target-min)",
-          }}
-        >
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full py-3 rounded-[12px] text-[14px] font-semibold active:opacity-70 transition-opacity disabled:opacity-50"
+        style={{
+          background: "var(--color-brand)",
+          color: "var(--text-on-primary)",
+          minHeight: "var(--tap-target-min)",
+        }}
+      >
           {isSubmitting ? tc("saving") : resolvedSubmitLabel}
-        </button>
-      </div>
+      </button>
 
       {/* Source wallet picker */}
       <WalletPicker
