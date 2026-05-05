@@ -26,7 +26,9 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
   const balanceColor =
     balance === 0
       ? "var(--text-secondary)"
-      : "var(--color-negative)";
+      : balance < 0
+        ? "var(--color-positive)"
+        : "var(--color-negative)";
 
   return (
     <div

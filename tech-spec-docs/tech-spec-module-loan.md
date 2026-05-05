@@ -714,46 +714,37 @@ return { summaryGet: get, summaryGive: give };
 
 ---
 
-### Bug 2 — Balance Color Selalu Merah di `LoanSummaryBar`
+### ~~Bug 2~~ ✅ FIXED — Balance Color & Prefix di `LoanSummaryBar`
 
-**File:** `src/components/loan/LoanSummaryBar.tsx`
+**File:** `src/components/loan/LoanSummaryBar.tsx` — diperbaiki 2026-05-05.
 
-**Perilaku kode saat ini:**
+Karena `balance = totalGive − totalGet` dan data di-assign sebagai `totalGive = outstanding > 0` (counterparty berhutang ke user), `totalGet = |outstanding < 0|` (user berhutang ke counterparty):
+- `balance < 0` → Get > Give → lebih banyak uang masuk → user untung → **hijau, prefix `"+"`**
+- `balance > 0` → Give > Get → lebih banyak uang keluar → user rugi → **merah, prefix `"-"`**
+
 ```js
-const balanceColor = balance === 0
-  ? "var(--text-secondary)"
-  : "var(--color-negative)"; // selalu merah untuk non-zero
-```
-
-**Perilaku yang benar (sesuai §1 & §4):**
-```js
+// Sekarang sudah benar:
+const balancePrefix = balance < 0 ? "+ " : balance > 0 ? "- " : "";
 const balanceColor =
   balance === 0 ? "var(--text-secondary)"
-  : balance < 0 ? "var(--color-positive)"   // user untung → hijau
-  : "var(--color-negative)";                // user rugi  → merah
+  : balance < 0 ? "var(--color-positive)"  // Get > Give → hijau
+  : "var(--color-negative)";               // Give > Get → merah
 ```
 
-Catatan: bug ini mengakibatkan kondisi "user untung" (balance < 0) tetap ditampilkan merah alih-alih hijau.
+Contoh: Get=3.000.000, Give=2.000.000 → balance = −1.000.000 → tampil `"+ 1.000.000,00"` hijau ✓
 
 ---
 
-### Bug 3 — Balance Color Selalu Merah di `LoanDetailSummaryBar`
+### ~~Bug 3~~ ✅ FIXED — Balance Color di `LoanDetailSummaryBar`
 
-**File:** `src/components/loan/LoanDetailSummaryBar.tsx`
+**File:** `src/components/loan/LoanDetailSummaryBar.tsx` — diperbaiki 2026-05-05.
 
-**Perilaku kode saat ini:**
 ```js
-const balanceColor = outstanding === 0
-  ? "var(--text-secondary)"
-  : "var(--color-negative)"; // selalu merah untuk non-zero
-```
-
-**Perilaku yang benar (sesuai §4 Summary Bar di Loan Detail):**
-```js
+// Sekarang sudah benar:
 const balanceColor =
   outstanding === 0 ? "var(--text-secondary)"
-  : outstanding < 0 ? "var(--color-positive)"  // user berhutang ke counterparty → hijau
-  : "var(--color-negative)";                   // counterparty berhutang ke user → merah
+  : outstanding > 0 ? "var(--color-negative)"  // counterparty berhutang ke user → merah
+  : "var(--color-positive)";                   // user berhutang ke counterparty → hijau
 ```
 
 ---

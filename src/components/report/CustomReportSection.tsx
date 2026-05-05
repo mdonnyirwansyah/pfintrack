@@ -7,7 +7,7 @@ import { formatDateRange } from "@/lib/format/date";
 import { formatIDR, formatIDRSigned } from "@/lib/format/number";
 import type { MonthlySummary } from "@/lib/report/calculations";
 import type { CustomReport } from "@/lib/types/report";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface CustomReportSectionProps {
   report: CustomReport;
@@ -20,6 +20,7 @@ export function CustomReportSection({
 }: CustomReportSectionProps) {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("report.summary");
 
   const handleDrillDown = () => {
     router.push(
@@ -91,7 +92,7 @@ export function CustomReportSection({
       {/* Start Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>
-          Start Balance
+          {t("startBalance")}
         </span>
         <span
           className="text-[13px] font-semibold tabular-nums"
@@ -111,7 +112,7 @@ export function CustomReportSection({
       {/* End Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-          End Balance
+          {t("endBalance")}
         </span>
         <span
           className="text-[13px] font-bold tabular-nums"

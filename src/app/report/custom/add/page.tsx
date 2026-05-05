@@ -33,6 +33,7 @@ export default function AddCustomReportPage() {
 
   const t = useTranslations("report");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState(getDefaultStartDate());
   const [endDate, setEndDate] = useState(getDefaultEndDate());
@@ -182,7 +183,7 @@ export default function AddCustomReportPage() {
               className="text-[11px]"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {formatDisplayDate(startDate)}
+              {formatDisplayDate(startDate, locale)}
             </p>
           )}
           {errors.start_date && (
@@ -228,7 +229,7 @@ export default function AddCustomReportPage() {
               className="text-[11px]"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {formatDisplayDate(endDate)}
+              {formatDisplayDate(endDate, locale)}
             </p>
           )}
           {errors.end_date && (

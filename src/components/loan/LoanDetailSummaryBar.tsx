@@ -28,7 +28,9 @@ export function LoanDetailSummaryBar({
   const balanceColor =
     outstanding === 0
       ? "var(--text-secondary)"
-      : "var(--color-negative)";
+      : outstanding > 0
+        ? "var(--color-negative)"
+        : "var(--color-positive)";
 
   return (
     <div
