@@ -99,7 +99,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <span
-                      className="text-[14px]"
+                      className="text-[13px]"
                       style={{
                         color: isActive
                           ? "var(--color-brand)"
@@ -172,7 +172,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <span
-                      className="text-[14px]"
+                      className="text-[13px]"
                       style={{
                         color: isActive
                           ? "var(--color-brand)"
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                 <Hash className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
               <div className="text-left">
-                <p className="text-[14px]" style={{ color: "var(--text-primary)" }}>
+                <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                   {t("showDecimals")}
                 </p>
                 <p className="text-[11px] mt-0.5 font-medium tabular-nums" style={{ color: "var(--color-brand)" }}>
@@ -278,7 +278,7 @@ export default function SettingsPage() {
                     <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
                   </div>
                   <div className="text-left">
-                    <p className="text-[14px] font-medium" style={{ color: "var(--color-negative)" }}>
+                    <p className="text-[13px] font-medium" style={{ color: "var(--color-negative)" }}>
                       Hapus Data Sampel
                     </p>
                     <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
@@ -308,7 +308,7 @@ export default function SettingsPage() {
               >
                 <Info className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
-              <span className="text-[14px]" style={{ color: "var(--text-primary)" }}>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                 PFinTrack
               </span>
             </div>
