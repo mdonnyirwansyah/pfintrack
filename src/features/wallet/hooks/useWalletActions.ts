@@ -56,14 +56,10 @@ export function useWalletActions() {
     const delta = actualNewBalance - previousBalance;
 
     // Update name and type only — balance is handled via transaction below
-    const updated = updateWallet(
-      id,
-      {
-        name: values.name.trim(),
-        wallet_type: values.wallet_type as WalletType,
-      },
-      previousBalance
-    );
+    const updated = updateWallet(id, {
+      name: values.name.trim(),
+      wallet_type: values.wallet_type as WalletType,
+    });
 
     if (delta !== 0) {
       // Write balance history for the manual balance change

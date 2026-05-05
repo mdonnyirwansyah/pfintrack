@@ -13,7 +13,7 @@ export type CreateWalletInput = {
 };
 
 export type UpdateWalletInput = Partial<
-  Pick<Wallet, "name" | "wallet_type" | "balance" | "currency" | "sort_order">
+  Pick<Wallet, "name" | "wallet_type" | "currency" | "sort_order">
 >;
 
 export const walletsRepo = {

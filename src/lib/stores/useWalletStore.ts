@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import type { Wallet } from "@/lib/types/wallet";
 import { walletsRepo, type CreateWalletInput, type UpdateWalletInput } from "@/lib/storage/wallets";
-import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
 
 interface WalletState {
   wallets: Wallet[];
@@ -17,11 +16,8 @@ interface WalletActions {
   /** Create a wallet and refresh state. Writes balance history if initial balance > 0. */
   createWallet: (input: CreateWalletInput) => Wallet;
 
-  /**
-   * Update a wallet. If balance changed, writes to wallet_balance_history.
-   * This is the ONLY place that writes wallet_balance_history.
-   */
-  updateWallet: (id: string, patch: UpdateWalletInput, previousBalance: number) => Wallet;
+  /** Update a wallet's name, type, currency, or sort_order. */
+  updateWallet: (id: string, patch: UpdateWalletInput) => Wallet;
 
   /** Soft-delete a wallet. Does NOT write balance history. */
   softDeleteWallet: (id: string) => void;
@@ -45,35 +41,13 @@ export const useWalletStore = create<WalletStore>()((set, get) => ({
 
   createWallet(input) {
     const wallet = walletsRepo.create(input);
-
-    // Record initial balance as a correction entry if balance > 0
-    if (wallet.balance > 0) {
-      walletBalanceHistoryRepo.create({
-        wallet_id: wallet.id,
-        previous_balance: 0,
-        new_balance: wallet.balance,
-      });
-    }
-
-    // Reload all to keep sort_order consistent
     const wallets = walletsRepo.getAll();
     set({ wallets });
     return wallet;
   },
 
-  updateWallet(id, patch, previousBalance) {
+  updateWallet(id, patch) {
     const updated = walletsRepo.update(id, patch);
-
-    // Write balance history ONLY if balance actually changed
-    const newBalance = patch.balance;
-    if (newBalance !== undefined && newBalance !== previousBalance) {
-      walletBalanceHistoryRepo.create({
-        wallet_id: id,
-        previous_balance: previousBalance,
-        new_balance: newBalance,
-      });
-    }
-
     const wallets = walletsRepo.getAll();
     set({ wallets });
     return updated;
