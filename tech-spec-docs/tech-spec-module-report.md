@@ -701,7 +701,7 @@ Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows`
 | **Performa Monthly** | Untuk user dengan riwayat panjang, render semua bulan sekaligus bisa lambat. Implementasikan **infinite scroll**: load 6 bulan pertama, lalu load tambahan 6 bulan saat user mendekati bawah list. |
 | **Performa Custom** | Saat user banyak punya custom report dengan range besar, tiap section membutuhkan iterasi seluruh transaksi. Pertimbangkan **memoization** hasil kalkulasi per range agar tidak dihitung ulang setiap re-render. |
 | **Balance Correction & Start Balance Dependency** | Fitur Balance Correction **dan** Start Balance bergantung pada `wallet_balance_history`. Key ini ditulis oleh Module Wallet dalam dua momen: (1) Add Wallet dengan balance > 0, (2) Edit balance wallet manual. Implementasi sudah ada di `useWalletStore`. |
-| **Balance Correction Transactions** | Wallet module membuat transaksi income/expense dengan `category:"Balance Correction"` yang **ikut terhitung di Income/Expenses di Report**. Ini adalah perilaku yang diinginkan: laporan mencerminkan semua arus masuk/keluar termasuk koreksi saldo. Transaksi ini muncul di Transaction list, Report Realtime donut chart, dan Monthly/Custom summary rows. |
+| **Balance Correction Transactions** | Wallet module membuat transaksi income/expense dengan `category:"Balance Correction"` untuk menjaga `wallet.balance` tetap akurat. Transaksi ini **TIDAK dihitung** di Income, Expenses, Balance, dan donut chart (di Transactions dashboard maupun Report). Balance Correction hanya muncul sebagai baris tersendiri di Monthly/Custom summary, bersumber dari `wallet_balance_history`. Ini mencegah double-counting: saldo awal/koreksi wallet sudah tercermin di baris **Balance Correction** dan **Start Balance**, bukan di Income/Expenses. |
 | **Transfer Tidak Dihitung** | Konsisten dengan Module Transactions: tipe `transfer` tidak ikut dalam Income, Expenses, atau Balance. Transfer adalah pemindahan dana internal user, bukan arus keluar/masuk. |
 | **Loan vs Income/Expense** | Loan **terpisah** dari Income/Expense. Walaupun Get terlihat seperti income dan Give seperti expense, mereka tidak masuk perhitungan Income/Expense — hanya muncul di baris Loan tersendiri. Ini agar laporan rutin (gaji, belanja) tidak bercampur dengan utang-piutang. |
 | **Empty Section** | Jika sebuah bulan tidak punya transaksi & loan & balance correction sama sekali → bulan itu **tidak perlu di-render** di tab Monthly. |
@@ -731,7 +731,7 @@ Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows`
 | 9 | Range max custom report | ✅ **10 tahun** |
 | 10 | Expenses row prefix | ✅ Merah + prefix `"- "` jika expenses > 0 (Monthly & Custom PeriodSummaryRows) |
 | 11 | Report tab state persistence | ✅ `sessionStorage["report_active_tab"]` — dibaca on mount, ditulis on tab change |
-| 12 | Balance Correction transactions di report | ✅ Terhitung di Income/Expenses (seperti transaksi biasa). `wallet_balance_history` tetap untuk Balance Correction row terpisah di summary. |
+| 12 | Balance Correction transactions di report | ✅ **TIDAK terhitung** di Income/Expenses/Balance/Donut. Hanya muncul di baris Balance Correction tersendiri via `wallet_balance_history`. Mencegah double-counting. |
 | 13 | Format tanggal | ✅ **Locale-aware** via `formatDateRange`/`formatDisplayDate` + `useLocale()` |
 
 ---

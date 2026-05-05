@@ -52,7 +52,7 @@ function timestampInRange(ts: string, start: string, end: string): boolean {
   return datePart >= start && datePart <= end;
 }
 
-/** §4.1 Expenses calculation */
+/** §4.1 Expenses calculation — excludes Balance Correction transactions */
 export function calcExpenses(
   transactions: Transaction[],
   start: string,
@@ -63,12 +63,13 @@ export function calcExpenses(
       (t) =>
         t.is_active &&
         t.type === "expense" &&
+        t.category !== "Balance Correction" &&
         inRange(t.transaction_date, start, end)
     )
     .reduce((sum, t) => sum + t.amount, 0);
 }
 
-/** §4.2 Income calculation */
+/** §4.2 Income calculation — excludes Balance Correction transactions */
 export function calcIncome(
   transactions: Transaction[],
   start: string,
@@ -79,6 +80,7 @@ export function calcIncome(
       (t) =>
         t.is_active &&
         t.type === "income" &&
+        t.category !== "Balance Correction" &&
         inRange(t.transaction_date, start, end)
     )
     .reduce((sum, t) => sum + t.amount, 0);
@@ -148,6 +150,7 @@ export function calcCategoryBreakdown(
     (t) =>
       t.is_active &&
       t.type === "expense" &&
+      t.category !== "Balance Correction" &&
       inRange(t.transaction_date, start, end)
   );
 
@@ -212,6 +215,7 @@ export function getTransactionsForCategory(
       (t) =>
         t.is_active &&
         t.type === "expense" &&
+        t.category !== "Balance Correction" &&
         inRange(t.transaction_date, start, end)
     );
   }
@@ -219,6 +223,7 @@ export function getTransactionsForCategory(
     (t) =>
       t.is_active &&
       t.type === "expense" &&
+      t.category !== "Balance Correction" &&
       inRange(t.transaction_date, start, end) &&
       (t.category ?? "Other") === category
   );
@@ -284,11 +289,11 @@ export function calculateMonthlySummary(
   const activeHist = balanceHistory.filter((h) => h.is_active);
 
   const prevIncome = activeTx
-    .filter((t) => t.type === "income" && t.transaction_date < start)
+    .filter((t) => t.type === "income" && t.category !== "Balance Correction" && t.transaction_date < start)
     .reduce((s, t) => s + t.amount, 0);
 
   const prevExpenses = activeTx
-    .filter((t) => t.type === "expense" && t.transaction_date < start)
+    .filter((t) => t.type === "expense" && t.category !== "Balance Correction" && t.transaction_date < start)
     .reduce((s, t) => s + t.amount, 0);
 
   const prevCorrections = activeHist

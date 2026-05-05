@@ -45,6 +45,7 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
           (t) =>
             t.is_active &&
             t.type === "expense" &&
+            t.category !== "Balance Correction" &&
             t.transaction_date >= start &&
             t.transaction_date <= end
         )
