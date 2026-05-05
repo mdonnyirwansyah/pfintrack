@@ -4,13 +4,14 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { LoanEntryForm, type LoanEntryFormValues } from "@/components/loan/LoanEntryForm";
 import { useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { useMounted } from "@/hooks/useMounted";
-import { Users } from "lucide-react";
+import { Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
@@ -29,6 +30,7 @@ export default function EditLoanEntryPage({
   const { updateEntry, deleteEntry } = useLoanEntryStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     loadWallets();
@@ -110,12 +112,24 @@ export default function EditLoanEntryPage({
 
   const typeLabel = entry.type === "give" ? t("editGive") : t("editGet");
 
+  const headerActions = (
+    <button
+      onClick={() => setIsDeleteDialogOpen(true)}
+      className="flex items-center justify-center rounded-full transition-opacity active:opacity-60"
+      style={{
+        minWidth: "var(--tap-target-min)",
+        minHeight: "var(--tap-target-min)",
+        color: "var(--color-negative)",
+      }}
+      aria-label="Delete entry"
+    >
+      <Trash2 className="w-5 h-5" />
+    </button>
+  );
+
   return (
     <>
-      <AppHeader
-        title={typeLabel}
-        showBack
-      />
+      <AppHeader title={typeLabel} showBack actions={headerActions} />
 
       <LoanEntryForm
         type={entry.type}
@@ -123,8 +137,21 @@ export default function EditLoanEntryPage({
         isNameLocked
         wallets={wallets}
         isSubmitting={isSubmitting}
-        onDelete={handleDelete}
         onSubmit={handleSubmit}
+      />
+
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title={t("deleteEntryConfirm.title")}
+        description={t("deleteEntryConfirm.description")}
+        confirmLabel={t("deleteEntryConfirm.confirm")}
+        cancelLabel={t("deleteEntryConfirm.cancel")}
+        variant="destructive"
+        onConfirm={() => {
+          setIsDeleteDialogOpen(false);
+          handleDelete();
+        }}
       />
     </>
   );
