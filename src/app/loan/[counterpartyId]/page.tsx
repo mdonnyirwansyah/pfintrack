@@ -18,7 +18,6 @@ import { LoanDetailSummaryBar } from "@/components/loan/LoanDetailSummaryBar";
 import { LoanEntryListItem } from "@/components/loan/LoanEntryListItem";
 import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
-import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { useTranslations } from "next-intl";
 
 // [13] Loan Detail (entries list per counterparty)
