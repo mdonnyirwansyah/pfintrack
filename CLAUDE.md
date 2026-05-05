@@ -22,7 +22,7 @@ All implementation MUST follow `tech-spec-docs/`:
 7. **Producer-Consumer** rules in §6.2 are mandatory — wallet.balance updated by Transactions & Loan with rollback on edit/delete
 8. **Soft delete** only — set `is_active=false`, never remove from storage
 9. **Color tokens**: `#2196F3` primary blue, `#A6D5F2` light blue, `#4CAF50` positive, `#F44336` negative, `#FF9800` accent
-10. **18 routes** total, **4 bottom nav tabs** (Transactions/Wallet/Report/Loan — NO Settings)
+10. **5 bottom nav tabs**: Transactions · Wallet · Loan · Report · Settings (urutan di nav)
 
 ## Architecture
 

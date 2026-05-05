@@ -8,7 +8,6 @@ import {
   ArrowRightLeft,
   TrendingUp,
   ShoppingCart,
-  ArrowUpDown,
 } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { FABExpandable } from "@/components/shared/FABExpandable";
@@ -17,6 +16,7 @@ import { DateNavigator } from "./_components/DateNavigator";
 import { SummaryBar } from "./_components/SummaryBar";
 import { TransactionItem } from "./_components/TransactionItem";
 import { useTransactionStore, selectByDate, computeDailySummary } from "@/lib/stores/useTransactionStore";
+import { SortPill, SortKey, applySortKey } from "@/components/shared/SortPill";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { todayISO } from "@/lib/format/date";
 import { walletsRepo } from "@/lib/storage/wallets";
@@ -42,8 +42,7 @@ function TransactionsContent() {
   const dateParam = searchParams.get("date");
   const [activeDate, setActiveDate] = useState(dateParam ?? todayISO());
   const [isExporting, setIsExporting] = useState(false);
-  const [sortKey, setSortKey] = useState<"datetime_desc" | "datetime_asc" | "amount_desc" | "amount_asc">("datetime_desc");
-  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
   const [pendingDeletes, setPendingDeletes] = useState<Set<string>>(new Set());
 
   // Update state + sync URL sekaligus, hindari useEffect agar tidak ada timing issue
@@ -61,18 +60,7 @@ function TransactionsContent() {
     .filter((tx) => !pendingDeletes.has(tx.id));
   const summary = computeDailySummary(rawDailyTransactions);
 
-  const dailyTransactions = [...rawDailyTransactions].sort((a, b) => {
-    if (sortKey === "datetime_desc") {
-      const t = b.transaction_time.localeCompare(a.transaction_time);
-      return t !== 0 ? t : b.created_at.localeCompare(a.created_at);
-    }
-    if (sortKey === "datetime_asc") {
-      const t = a.transaction_time.localeCompare(b.transaction_time);
-      return t !== 0 ? t : a.created_at.localeCompare(b.created_at);
-    }
-    if (sortKey === "amount_desc") return b.amount - a.amount;
-    return a.amount - b.amount; // amount_asc
-  });
+  const dailyTransactions = applySortKey(rawDailyTransactions, sortKey);
 
   const handleConfirmDelete = useCallback((id: string) => {
     // Hide immediately from UI
@@ -114,13 +102,6 @@ function TransactionsContent() {
     onSwipeLeft: () => handleDateChange(format(addDays(parseISO(activeDate), 1), "yyyy-MM-dd")),
     onSwipeRight: () => handleDateChange(format(subDays(parseISO(activeDate), 1), "yyyy-MM-dd")),
   });
-
-  const SORT_OPTIONS = [
-    { key: "datetime_desc" as const, label: t("sort.datetime_desc") },
-    { key: "datetime_asc" as const, label: t("sort.datetime_asc") },
-    { key: "amount_desc" as const, label: t("sort.amount_desc") },
-    { key: "amount_asc" as const, label: t("sort.amount_asc") },
-  ];
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -230,56 +211,7 @@ function TransactionsContent() {
         {/* Sort bar — only show when there are transactions */}
         {!isLoading && dailyTransactions.length > 0 && (
           <div className="px-4 mb-2 flex items-center justify-end">
-            <div className="relative">
-              <button
-                onClick={() => setIsSortOpen((v) => !v)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
-                style={{
-                  background: sortKey !== "datetime_desc" ? "var(--color-brand)" : "var(--bg-secondary)",
-                  color: sortKey !== "datetime_desc" ? "var(--text-on-primary)" : "var(--text-secondary)",
-                  border: "1px solid var(--border-default)",
-                }}
-              >
-                <ArrowUpDown className="w-3.5 h-3.5" />
-                {t(`sort.${sortKey}`)}
-              </button>
-
-              {isSortOpen && (
-                <>
-                  {/* Backdrop */}
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsSortOpen(false)}
-                  />
-                  {/* Dropdown */}
-                  <div
-                    className="absolute right-0 top-full mt-1 z-50 rounded-[12px] overflow-hidden py-1 min-w-[130px]"
-                    style={{
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border-default)",
-                      boxShadow: "var(--shadow-lg)",
-                    }}
-                  >
-                    {SORT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.key}
-                        onClick={() => {
-                          setSortKey(opt.key);
-                          setIsSortOpen(false);
-                        }}
-                        className="w-full text-left px-4 py-2.5 text-[12px] font-medium transition-colors"
-                        style={{
-                          color: sortKey === opt.key ? "var(--color-brand)" : "var(--text-primary)",
-                          background: sortKey === opt.key ? "var(--color-brand-soft)" : "transparent",
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <SortPill value={sortKey} onChange={setSortKey} />
           </div>
         )}
 

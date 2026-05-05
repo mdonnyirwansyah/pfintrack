@@ -151,7 +151,7 @@ export function getTitleSuggestions(
 ): Array<{ title: string; category: string }> {
   const seen = new Map<string, { title: string; category: string }>();
   const sorted = [...transactions]
-    .filter((t) => t.type === type && t.is_active && t.title && t.category)
+    .filter((t) => t.type === type && t.is_active && t.title && t.category && t.title !== "Balance Correction")
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 
   for (const t of sorted) {
@@ -171,7 +171,7 @@ export function getCategorySuggestions(
 ): string[] {
   const seen = new Set<string>();
   const sorted = [...transactions]
-    .filter((t) => t.type === type && t.is_active && t.category)
+    .filter((t) => t.type === type && t.is_active && t.category && t.category !== "Balance Correction")
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 
   for (const t of sorted) {

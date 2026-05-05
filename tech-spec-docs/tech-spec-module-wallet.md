@@ -58,7 +58,7 @@
 | **Total Balance Row** | Dinamis | Card rounded di atas list. Label "Total Balance" di kiri (tebal) dan nilai agregat saldo di kanan. Nilai dihitung otomatis dari seluruh wallet aktif (`is_active=true`). Tampil dengan format locale `id-ID`. Saat loading ditampilkan skeleton `w-28`. |
 | **Wallet List** | Dinamis | Daftar scrollable seluruh wallet aktif (`is_active=true`). Tiap item ditampilkan sebagai **WalletCard** (card glass, rounded-[16px]): ikon tipe wallet (circle) + nama wallet (bold) + label tipe wallet (kecil, secondary) + saldo terformat (kanan, bold, tabular-nums) + ikon chevron `›`. Antar item dipisahkan space (bukan divider). Urutan tampil berdasarkan field `sort_order` ascending. Tap item → navigasi ke `/wallet/[id]`. |
 | **FAB Button (`+`)** | Interaktif | Tombol mengambang di pojok kanan bawah layar, posisi di atas bottom navigation. Bentuk lingkaran, warna biru `#2196F3`, ikon `+` putih. Tap → navigasi ke screen Add Wallet (`/wallet/add`). |
-| **Bottom Navigation** | Shared · Statis | Bar navigasi bawah dengan **4 tab**: Transactions · **Wallet** (aktif, biru) · Report · Loan. *(Tidak ada tab Settings di Fase 1. Komponen shared, lihat Global Architecture.)* |
+| **Bottom Navigation** | Shared · Statis | Bar navigasi bawah dengan **5 tab**: Transactions · **Wallet** (aktif, biru) · Loan · Report · Settings. *(Komponen shared, lihat Global Architecture.)* |
 
 **Daftar Wallet yang Teridentifikasi dari UI:**
 
