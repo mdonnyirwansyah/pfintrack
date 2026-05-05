@@ -2,8 +2,8 @@
 ## Module: Loan
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.2
-**Tanggal:** 2026-05-04
+**Versi Dokumen:** 1.3
+**Tanggal:** 2026-05-05
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -46,7 +46,7 @@
 |----------|-------|-----------------|
 | **App Header** | Statis | Bar atas dengan background biru muda. Teks "Loan" rata tengah. |
 | **Summary Bar** | Dinamis | **Tiga kolom**: **Get** (hijau, `+ {total}` prefix jika > 0) · **Give** (merah, `- {total}` prefix jika > 0) · **Balance** (dinamis: `balance = totalGive − totalGet`; hijau + prefix `"+"` jika balance < 0 (user untung), merah + prefix `"-"` jika balance > 0 (user rugi), abu jika 0). Hanya menghitung counterparty dengan status `outstanding`. |
-| **Counterparty List** | Dinamis | Daftar orang yang pernah loan dengan user, urut berdasarkan `updated_at` DESC. Setiap baris: nama + subtitle (note dari entry terakhir, atau "Without explanation") + outstanding/Paid off + chevron `›`. |
+| **Counterparty List** | Dinamis | Daftar orang yang pernah loan dengan user. **Urutan:** counterparty dengan status *outstanding* lebih dulu (sorted by `updated_at` DESC per grup), kemudian counterparty *paid off* (sorted by `updated_at` DESC). Setiap baris: nama + subtitle (note dari entry terakhir, atau "Without explanation") + outstanding/Paid off + chevron `›`. |
 | **Outstanding Display** | Dinamis | Logika tampilan per baris counterparty: `outstanding = totalGive − totalGet`. Jika `outstanding > 0` → merah dengan prefix `"- "` (counterparty berhutang ke user). Jika `outstanding < 0` → hijau dengan prefix `"+ "` (user berhutang ke counterparty). Jika `outstanding === 0` **atau** `manual_paid_off` → teks **"Lunas"** dengan warna `--text-secondary` (bukan hijau). |
 | **FAB Expandable** | Interaktif | Tombol biru `+` di pojok kanan bawah. Tap → mengembang menjadi 2 sub-action: **Give** (merah, ikon `»` ke bawah) · **Get** (oranye, ikon `«` ke atas). |
 | **Bottom Navigation** | Shared · Statis | 5 tab. Tab **Loan** aktif. *(Lihat Global Architecture.)* |
@@ -65,7 +65,7 @@
 | **Header Action: Delete** | Interaktif | Ikon tempat sampah (🗑️). Tap → membuka konfirmasi untuk **menghapus seluruh counterparty beserta semua entry**-nya (soft delete). |
 | **Summary Bar (3 Kolom)** | Dinamis | Tiga total agregat untuk counterparty ini: <br>• **Get** (hijau): `+ {total_get}` jika > 0 — akumulasi seluruh entry tipe Get <br>• **Give** (merah): `{total_give}` — akumulasi seluruh entry tipe Give <br>• **Balance** (dinamis: hijau jika outstanding < 0, merah jika outstanding > 0, abu jika 0): `outstanding = total_give − total_get`. Prefix logic: `outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""`. |
 | **Entry History List** | Dinamis | Daftar seluruh entry untuk counterparty ini, urut DESC by `transaction_date` lalu `transaction_time`. Setiap baris menampilkan: tanggal (format locale-aware "Day, DD Mon YYYY"), subtitle (note atau "Without explanation"), **nama wallet** (baris ke-3, warna `--text-tertiary`) jika ada `wallet_id`, nominal di kanan + chevron `›`. |
-| **Entry Nominal Display** | Dinamis | Format tampilan tergantung tipe: <br>• Tipe **Get**: `+ {amount}` warna hijau (mis. `+ 5.000,00`) <br>• Tipe **Give**: `{amount}` warna hitam/abu (mis. `5.000,00`) |
+| **Entry Nominal Display** | Dinamis | Format tampilan tergantung tipe: <br>• Tipe **Get**: `+ {amount}` warna hijau (`--color-positive`) (mis. `+ 5.000,00`) <br>• Tipe **Give**: `{amount}` warna merah (`--color-negative`) (mis. `5.000,00`) |
 | **Entry Tap** | Interaktif | Tap baris entry → navigasi ke screen Edit Entry untuk mengubah/menghapus entry tersebut. |
 | **FAB Expandable** | Interaktif | Sama persis dengan Loan List: tombol `+` biru → expand ke **Give** (merah) + **Get** (oranye). Bedanya: saat dipilih, navigasi ke form Add Give/Get dengan **nama pre-filled & terkunci** ke counterparty saat ini. |
 
@@ -81,8 +81,8 @@
 |----------|-------|-----------------|
 | **App Header** | Statis | Background biru solid. Tombol back `‹`. Judul **"Give"** rata tengah. |
 | **Date + Time Row** | Interaktif | Date dan Time dalam satu flex row dengan rasio **3:2** (Date lebih lebar). Date: field tanggal + ikon kalender, default hari ini. Time: field jam `HH:MM`, default waktu sekarang. |
-| **Wallet Selector** | **Wajib** | Field dropdown. Placeholder *"Select Wallet"*. **Wajib dipilih** — validasi error jika tidak dipilih saat submit. **Tidak ada** tombol clear/X. Di bawah selector ditampilkan `"Balance: {formatIDR(wallet.balance)}"` saat wallet dipilih. Untuk tipe **Give**: jika `amount > wallet.balance`, tampilkan warning AlertTriangle *"Insufficient wallet balance"* — non-blocking (form tetap bisa di-submit). |
-| **Amount Field** | Interaktif | Input teks (`type="text" inputMode="decimal"`). Placeholder *"Amount"*. Ikon kalkulator dekoratif di kanan. Wajib diisi, > 0. **onFocus**: format IDR dihapus → tampilkan angka mentah. **onBlur**: angka di-format IDR (mis. `1.500.000,00`). Parsing menggunakan `parseIDR()`. |
+| **Wallet Selector** | **Wajib** | Field dropdown. Placeholder *"Select Wallet"*. **Wajib dipilih** — validasi error jika tidak dipilih saat submit. **Tidak ada** tombol clear/X. Di bawah selector ditampilkan `"Balance: {formatIDR(wallet.balance)}"` saat wallet dipilih. Untuk tipe **Give**: jika `amount > wallet.balance`, tampilkan warning AlertTriangle *"Insufficient wallet balance"* — non-blocking (form tetap bisa di-submit). **Auto-open**: bottom sheet wallet picker otomatis terbuka saat form Add pertama kali di-mount (hanya berlaku di mode Add, tidak di mode Edit). |
+| **Amount Field** | Interaktif | Input teks (`type="text" inputMode="decimal"`). Placeholder *"Amount"*. Ikon kalkulator dekoratif di kanan. Wajib diisi, > 0. **Real-time formatting saat typing:** karakter non-numerik dihapus otomatis, titik ribuan ditambahkan secara langsung (contoh: `1.500.000`). Koma desimal boleh diketik (contoh: `1.500.000,50`). Parsing final menggunakan `parseIDR()`. |
 | **Name Field** | Interaktif | Input teks bebas. Placeholder *"Enter the name"*. Wajib diisi. Auto-trim. Pencocokan ke counterparty existing case-insensitive. **Jika navigasi dari Loan Detail → field ini pre-filled & disabled (locked).** |
 | **Note Field** | Opsional | Input teks bebas. Placeholder *"Note (optional)"*. Maksimum 255 karakter. |
 | **Save Button** | Interaktif | Posisi kanan bawah. Warna biru, label "Save". Tiga kondisi: aktif / loading / disabled. |
@@ -121,7 +121,7 @@ User tap tab "Loan" di Bottom Nav
      Total Get  = SUM(outstanding)      di mana outstanding > 0 AND status != 'paid off'
      Total Give = SUM(|outstanding|)    di mana outstanding < 0 AND status != 'paid off'
               ↓
-   Render list (urut by updated_at DESC)
+   Render list (outstanding group dulu by updated_at DESC, kemudian paid off group by updated_at DESC)
 ```
 
 ---
@@ -493,7 +493,7 @@ User input nama: "  Alma Putri  "
 
 | Nilai | Label UI | Warna FAB | Efek Outstanding | Efek Wallet (jika dipilih) | Format Tampilan di List Detail |
 |-------|----------|-----------|-----------------|---------------------------|--------------------------------|
-| `give` | Give | Merah | `outstanding += amount` | Balance wallet **berkurang** | `{amount}` warna hitam/abu |
+| `give` | Give | Merah | `outstanding += amount` | Balance wallet **berkurang** | `{amount}` warna merah (`--color-negative`) |
 | `get` | Get | Oranye | `outstanding −= amount` | Balance wallet **bertambah** | `+ {amount}` warna hijau |
 
 ---
@@ -632,7 +632,7 @@ prefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""
 | `/loan/[counterpartyId]` | Loan Detail per Orang | Riwayat & summary per counterparty |
 | `/loan/add/give` | Add Give | Form mencatat memberi uang. Param opsional `?counterpartyId={id}` untuk pre-fill dari detail |
 | `/loan/add/get` | Add Get | Form mencatat menerima uang. Param opsional `?counterpartyId={id}` |
-| `/loan/[counterpartyId]/edit/[entryId]` | Edit Entry | Edit single entry. *Belum ada gambar UI — diasumsikan struktur form sama dengan Add* |
+| `/loan/[counterpartyId]/edit/[entryId]` | Edit Entry | Edit single entry. Reuse form Add Give/Get dengan: name field locked, **tipe entry (give/get) terkunci dan tidak bisa diubah**, judul header menampilkan "Edit Give" atau "Edit Get" sesuai tipe entry, ada tombol Delete entry. |
 
 ---
 
@@ -653,6 +653,10 @@ prefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""
 | **Soft Delete Pattern** | Entry & counterparty yang dihapus di-flag `is_active=false`. Tidak benar-benar dihapus dari localStorage untuk keperluan audit dan migrasi Fase 2. |
 | **Manual Mark as Paid** | Override outstanding. Berguna untuk kasus "utang dimaafkan" atau "lunas dengan barter non-uang". Outstanding tetap dihitung apa adanya, tapi UI menampilkan "Paid off". Jika ada entry baru → flag otomatis reset. |
 | **Format Tampilan Tanggal di Detail** | Format locale-aware via `formatDisplayDate(date, useLocale())`. EN: `"Sun, 19 Apr 2026"`. ID: `"Min, 19 Apr 2026"`. Lihat §4.2 Global Architecture. |
+| **Auto-open Wallet Picker** | Di form Add Give/Get, bottom sheet wallet picker otomatis terbuka saat komponen pertama kali di-mount (jika belum ada wallet yang dipilih). Tujuan: mempercepat input karena wallet adalah field wajib. Di mode Edit, auto-open tidak berlaku karena `wallet_id` sudah terisi dari data entry yang di-edit. |
+| **Edit Entry: Tipe Terkunci** | Saat edit single entry, tipe (`give`/`get`) tidak bisa diubah. Judul header menampilkan "Edit Give" atau "Edit Get" sesuai tipe entry existing. Form yang digunakan identik dengan Add, bedanya: name locked + type locked + ada tombol Delete. |
+| **Dead Code: `src/features/loan/`** | Direktori `src/features/loan/` berisi file placeholder kosong (`CounterpartyCard.tsx`, `LoanEntryForm.tsx`, `useLoanActions.ts`) yang tidak digunakan. Implementasi aktual berada di `src/components/loan/` dan file halaman. File-file placeholder ini dapat dihapus. |
+| **Note Field Character Counter** | Di form Add/Edit, field Note menampilkan character counter `{length}/255` di pojok kanan bawah sebagai UX hint. Ini tidak mengubah validasi (masih server-validate di `> 255`). |
 | **Subtitle "Without explanation"** | Default subtitle saat entry tidak memiliki note. Berlaku baik di Loan List (note dari entry terakhir counterparty) maupun di Loan Detail (note per entry). |
 | **Migrasi Fase 2** | Field `anon_id` di counterparty dan entry adalah kunci migrasi. Saat user buat akun, kedua key (`loan_counterparties` & `loan_entries`) dikirim ke backend untuk dipindahkan ke `user_id` baru. |
 
@@ -665,12 +669,12 @@ prefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""
 | 1 | Outstanding negatif di Summary | ✅ **Di kolom Give, nilai absolut** |
 | 2 | Edit Counterparty (ikon ✏️) | ✅ Rename nama counterparty |
 | 3 | Delete Counterparty (ikon 🗑️) | ✅ Soft-delete semua entries + rollback wallet. Confirmation dialog wajib |
-| 4 | Edit single entry via tap | ✅ **Reuse form Add Give/Get**, name locked + Delete |
+| 4 | Edit single entry via tap | ✅ **Reuse form Add Give/Get**, name locked + **type locked** (tidak bisa ubah give↔get) + Delete. Judul header: "Edit Give" / "Edit Get" |
 | 5 | Subtitle "Without explanation" | ✅ Note dari entry **terakhir** counterparty |
-| 6 | Format tanggal | ✅ **English semua** — `Sun, 19 Apr 2026` |
+| 6 | Format tanggal | ✅ **Locale-aware** — EN: `Sun, 19 Apr 2026` · ID: `Min, 19 Apr 2026`. Via `formatDisplayDate(date, useLocale())` |
 | 7 | Saldo minus untuk Give | ✅ **Boleh minus**, konsisten dengan Transactions |
 | 8 | Paid off di list | ✅ **Tetap muncul + toggle hide/show** |
-| 9 | Format tampilan Get/Give | ✅ Get: `+ {amount}` hijau, Give: `{amount}` hitam/abu |
+| 9 | Format tampilan Get/Give | ✅ Get: `+ {amount}` hijau (`--color-positive`), Give: `{amount}` merah (`--color-negative`) tanpa prefix |
 | 10 | Wallet opsional/wajib di Loan | ✅ **WAJIB** — validasi error jika tidak dipilih. Balance display + insufficient warning untuk Give. |
 | 11 | Prefix "Lunas" di CounterpartyListItem | ✅ **Warna secondary** (`--text-secondary`), bukan hijau |
 | 12 | Prefix symbol di Summary Bar | ✅ Give: `"- "` prefix jika > 0. Balance: `"+"` jika balance < 0 (user untung), `"-"` jika balance > 0 (user rugi) |
@@ -678,5 +682,81 @@ prefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""
 
 ---
 
-*— End of Technical Specification: Module Loan (v1.2) —*
+---
+
+## 9. Known Implementation Issues (v1.3 — 2026-05-05)
+
+Bagian ini mendokumentasikan **bug yang diketahui** di implementasi saat ini — spec §4 tetap menjadi sumber kebenaran untuk perilaku yang *seharusnya*. Item di bawah perlu diperbaiki di kode.
+
+---
+
+### Bug 1 — Summary Bar Loan List: `summaryGet`/`summaryGive` Terbalik
+
+**File:** `src/app/loan/page.tsx`
+
+**Perilaku kode saat ini:**
+```js
+if (outstanding > 0) give += outstanding;  // SALAH: harusnya → get
+else get += Math.abs(outstanding);          // SALAH: harusnya → give
+return { summaryGet: get, summaryGive: give };
+```
+
+**Akibat di UI:**
+- Kolom **Get** (hijau, `+`) → menampilkan jumlah yang *user owe ke counterparty* (seharusnya di Give/merah)
+- Kolom **Give** (merah, `-`) → menampilkan jumlah yang *counterparty owe ke user* (seharusnya di Get/hijau)
+
+**Perilaku yang benar (sesuai §4):**
+```js
+if (outstanding > 0) get += outstanding;         // counterparty berhutang ke user → Total Get
+else give += Math.abs(outstanding);              // user berhutang ke counterparty → Total Give
+return { summaryGet: get, summaryGive: give };
+```
+
+---
+
+### Bug 2 — Balance Color Selalu Merah di `LoanSummaryBar`
+
+**File:** `src/components/loan/LoanSummaryBar.tsx`
+
+**Perilaku kode saat ini:**
+```js
+const balanceColor = balance === 0
+  ? "var(--text-secondary)"
+  : "var(--color-negative)"; // selalu merah untuk non-zero
+```
+
+**Perilaku yang benar (sesuai §1 & §4):**
+```js
+const balanceColor =
+  balance === 0 ? "var(--text-secondary)"
+  : balance < 0 ? "var(--color-positive)"   // user untung → hijau
+  : "var(--color-negative)";                // user rugi  → merah
+```
+
+Catatan: bug ini mengakibatkan kondisi "user untung" (balance < 0) tetap ditampilkan merah alih-alih hijau.
+
+---
+
+### Bug 3 — Balance Color Selalu Merah di `LoanDetailSummaryBar`
+
+**File:** `src/components/loan/LoanDetailSummaryBar.tsx`
+
+**Perilaku kode saat ini:**
+```js
+const balanceColor = outstanding === 0
+  ? "var(--text-secondary)"
+  : "var(--color-negative)"; // selalu merah untuk non-zero
+```
+
+**Perilaku yang benar (sesuai §4 Summary Bar di Loan Detail):**
+```js
+const balanceColor =
+  outstanding === 0 ? "var(--text-secondary)"
+  : outstanding < 0 ? "var(--color-positive)"  // user berhutang ke counterparty → hijau
+  : "var(--color-negative)";                   // counterparty berhutang ke user → merah
+```
+
+---
+
+*— End of Technical Specification: Module Loan (v1.3) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Global Architecture · Module Report · Module Settings*
