@@ -2,8 +2,8 @@
 ## Module: Report
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.3
-**Tanggal:** 2026-05-04
+**Versi Dokumen:** 1.4
+**Tanggal:** 2026-05-05
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -60,7 +60,7 @@
 | **Donut Chart (Expense by Category)** | Dinamis | Chart melingkar distribusi expense per kategori untuk periode bulan berjalan. Setiap segment punya warna berbeda. Hanya menampilkan transaksi tipe `expense` aktif. Lihat §DonutChart Enhancements di bawah. |
 | **Empty State Donut** | Dinamis | Jika tidak ada expense di periode → tampilkan placeholder ilustrasi/teks *"Belum ada pengeluaran bulan ini"*. |
 | **Category Legend List** | Dinamis | Daftar kategori expense di bawah chart. Setiap baris: color dot + nama kategori + persentase + total nominal. Row aktif mendapat background berwarna tint + outline ring + glowing dot. Urut berdasarkan nominal DESC. |
-| **Transaction List** | Dinamis | Selalu tampil di bawah donut chart (tidak perlu tap ke halaman lain). Default (tidak ada kategori dipilih): "All Transactions" — semua expense bulan berjalan, urut tanggal DESC, setiap baris: judul + "kategori · tanggal" + nominal negatif. Saat kategori dipilih: difilter ke kategori tersebut, header berubah menjadi "CategoryName — Transactions". Jumlah item ditampilkan di samping header. Semua baris dibungkus dalam satu container `.glass` dengan divider antar baris. |
+| **Transaction List** | Dinamis | Selalu tampil di bawah donut chart (tidak perlu tap ke halaman lain). Default (tidak ada kategori dipilih): "All Transactions" — semua expense bulan berjalan, urut tanggal DESC (default), setiap baris: judul + "kategori · tanggal" + nominal negatif (`-{amount}` warna merah). Saat kategori dipilih: difilter ke kategori tersebut, header berubah menjadi "CategoryName — Transactions". Jumlah item ditampilkan di samping header. **Sort control** (SortPill) tampil di kanan header list: Newest first (default) · Oldest first · Highest amount · Lowest amount. Semua baris dibungkus dalam satu container `.glass` dengan divider antar baris. |
 
 **DonutChart Enhancements:**
 
@@ -78,7 +78,7 @@
 |----------|-------|-----------------|
 | **Monthly Section** | Dinamis | Per bulan, ditampilkan satu blok dengan format konsisten (lihat di bawah). Section diurutkan dari bulan terbaru ke belakang. |
 | **Section Header** | Statis | Teks rata tengah dengan format range: `01 May 2026 - 31 May 2026`. Tap → drill-down ke detail periode. |
-| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (merah, prefix `"- "` jika > 0) <br>• **Income** (hijau, prefix `+`) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
+| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (merah, prefix `"- "` jika > 0) <br>• **Income** (hijau, prefix `+`) <br>• *divider* (antara Income dan Balance) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
 | **Section Chevron** | Interaktif | Ikon `›` di kanan section header. Tap → navigasi ke screen detail breakdown per kategori. |
 | **Auto-load (Infinite Scroll)** | Dinamis | Saat user scroll ke bawah, sistem menambahkan section bulan-bulan sebelumnya yang masih punya data. Berhenti otomatis saat sudah mencapai bulan transaksi paling lama. Load awal: 6 bulan. Load tambahan: 6 bulan per scroll. |
 
@@ -92,7 +92,7 @@
 | **Section Header** | Dinamis | Dua baris rata tengah: <br>• Baris atas: **nama report** (bold) <br>• Baris bawah: range periode `01 Jan 2026 - 31 Dec 2026` |
 | **Section Edit Action** | Interaktif | Ikon ✏️ di sudut kanan atas setiap section. Tap → membuka screen Edit Custom Report (rename, ubah range, atau delete). |
 | **Section Chevron** | Interaktif | Ikon `›` di kanan section. Tap → navigasi ke screen detail breakdown per kategori untuk periode custom tersebut. |
-| **Summary Rows** | Dinamis | **Identik dengan tab Monthly**: Start Balance · Expenses (merah, prefix `"- "` jika > 0) · Income · Balance · Loan (opsional) · Balance Correction (opsional) · End Balance. |
+| **Summary Rows** | Dinamis | **Identik dengan tab Monthly**: Start Balance · Expenses (merah, prefix `"- "` jika > 0) · Income · *divider* · Balance · Loan (opsional) · Balance Correction (opsional) · End Balance. |
 | **FAB Button (`+`)** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → navigasi ke screen Add Custom Report. |
 | **Empty State** | Dinamis | Jika user belum punya custom report → tampilkan empty state dengan ajakan membuat report pertama. |
 
@@ -137,14 +137,15 @@ Struktur form **identik** dengan Add Custom Report, dengan tambahan:
 | **Daily Summary Section** | Dinamis | Blok ringkasan per hari, tampil di bawah Donut Chart **jika ada data expense** pada periode tersebut. Lihat DailySummarySection di bawah. |
 | **Sort Control** | Interaktif | Pill button di kanan atas transaction list (hanya muncul jika ada expense). Komponen reusable `SortPill`. Opsi: **Newest first** (default) · **Oldest first** · **Highest amount** · **Lowest amount**. |
 | **Transaction List** | Dinamis | Tampil di bawah Daily Summary. Default (tidak ada kategori dipilih atau tidak ada param `?category=`): header "All Transactions" + jumlah item + semua expense aktif periode tersebut, diurutkan sesuai `sortKey` aktif. Saat kategori dipilih: header "CategoryName — Transactions" + item count + list difilter ke kategori itu. Setiap baris: judul (atau fallback nama kategori) + "kategori · tanggal" subtitle + nominal negatif. Semua baris dalam container `.glass` dengan divider. |
+| **Pre-selected Category** | Dinamis | Halaman ini mendukung param URL `?category=NamaKategori`. Jika ada, list langsung difilter ke kategori tersebut saat mount. |
 
 **DailySummarySection:**
 
 | Aspek | Spesifikasi |
 |-------|-------------|
-| **Toggle View** | Dua tombol (List / Calendar) di kanan header section. Default: List. |
-| **Mode List** | Daftar hari yang memiliki transaksi pada periode terpilih. Setiap baris: format hari (mis. "Thu, 01 May") + total expense hari itu (merah). Urut tanggal DESC. |
-| **Mode Calendar** | Kalender grid per bulan. Setiap sel: tanggal + total expense hari itu jika ada (teks kecil merah). Hari tanpa transaksi: hanya tanggal. |
+| **Toggle View** | Dua tombol (List / Calendar) di kanan header section. **Default: Calendar.** |
+| **Mode List** | Daftar hari yang memiliki transaksi pada periode terpilih. Setiap baris: format hari (mis. "Thu, 01 May") + **income hari itu (hijau, `+amount`)** jika ada + **total expense hari itu (merah, `-amount`)** jika ada. **Sort control** (SortPill) tampil di kanan header saat mode list aktif. Default sort: Newest first. |
+| **Mode Calendar** | Kalender grid per bulan. Setiap sel: tanggal + **income hari itu (hijau, `+abbr`)** jika ada + **expense hari itu (merah, `-abbr`)** jika ada. Angka disingkat otomatis: `1.200.000 → "1.2M"`, `50.000 → "50K"`. Hari tanpa transaksi: hanya tanggal. Hari di luar bulan saat ini: opacity 0.2. |
 | **Multi-month Navigation** | Jika periode mencakup lebih dari satu bulan (custom report): header kalender memiliki tombol `‹` (bulan sebelumnya) dan `›` (bulan berikutnya). Tombol `‹` di-disable pada bulan pertama range, `›` di-disable pada bulan terakhir range. |
 | **State `currentMonth`** | Dimulai dari bulan pertama periode (`startOfMonth(start)`). Navigasi prev/next menggunakan `subMonths`/`addMonths` dari `date-fns`. |
 
@@ -376,9 +377,9 @@ Balance(periode) = Income(periode) − Expenses(periode)
 
 | Hasil | Tampilan |
 |-------|----------|
-| Positif | Warna hitam, prefix `+` (mis. `+ 1.500.000,00`) |
-| Nol | `0,00` |
-| Negatif | Warna merah, prefix `-` (mis. `- 17.000,00`) |
+| Positif | Warna hijau (`var(--color-positive)`), prefix `+` (mis. `+ 1.500.000,00`) |
+| Nol | `0,00` warna netral (`var(--text-primary)`) |
+| Negatif | Warna merah (`var(--color-negative)`), prefix `-` (mis. `- 17.000,00`) |
 
 **Catatan:** `Transfer` tidak ikut dihitung di Income/Expenses/Balance — sama seperti aturan di Module Transactions Summary.
 
@@ -603,6 +604,9 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 |-------|------|-------------|------------|
 | `activeTab` | `'realtime' / 'monthly' / 'custom'` | Dari `sessionStorage["report_active_tab"]`, fallback `'realtime'` | Tab aktif saat ini. **Dipersist ke `sessionStorage`** dengan key `"report_active_tab"` saat berubah. Dibaca saat mount. Ini mempertahankan tab aktif saat user navigasi ke detail dan kembali. |
 | `isLoading` | Boolean | `true` | Tampilkan skeleton saat true |
+| `transactions` | `Transaction[]` | `[]` | Dimuat sekali saat mount **dan juga di-reload setiap kali tab berubah** untuk memastikan data selalu fresh. |
+| `loanEntries` | `LoanEntry[]` | `[]` | Sama — reload on tab change |
+| `balanceHistory` | `WalletBalanceHistory[]` | `[]` | Sama — reload on tab change |
 
 ---
 
@@ -638,6 +642,18 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
   endBalance: number
 }
 ```
+
+Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows` component):
+```
+{
+  expenses: number,
+  income: number,
+  balance: number,
+  loan: number | null,
+  balanceCorrection: number | null
+}
+```
+`PeriodSummary` adalah subset dari `MonthlySummary` (tanpa startBalance dan endBalance). Digunakan agar `PeriodSummaryRows` bisa di-reuse antara `MonthlySection` dan `CustomReportSection`.
 
 ---
 
@@ -691,9 +707,12 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | **Empty Section** | Jika sebuah bulan tidak punya transaksi & loan & balance correction sama sekali → bulan itu **tidak perlu di-render** di tab Monthly. |
 | **Format Tanggal** | Semua tampilan tanggal locale-aware via `formatDateRange(from, to, useLocale())` dan `formatDisplayDate(date, useLocale())`. EN: `"01 May 2026 - 31 May 2026"`. ID: `"01 Mei 2026 - 31 Mei 2026"`. Lihat §4.2 Global Architecture. |
 | **Soft Delete Custom Report** | Custom report yang dihapus di-flag `is_active=false`. Tidak menghapus permanen agar konsisten dengan pola modul lain dan memudahkan migrasi Fase 2. |
-| **Donut Chart Library** | Untuk implementasi visual donut chart, gunakan library yang sudah teruji di mobile-web (mis. Recharts, ApexCharts, atau Chart.js dengan plugin). Pastikan responsif di lebar 375px. |
+| **Donut Chart Library** | Implementasi menggunakan **Recharts** (`PieChart`, `Pie`, `Cell`, `Sector`, `ResponsiveContainer`). Responsif di semua viewport. |
 | **Warna Kategori** | Warna donut chart per kategori sebaiknya **deterministik** (mis. hash dari string kategori) agar konsisten antar render dan antar periode. |
 | **Migrasi Fase 2** | Saat migrasi, hanya `custom_reports` & `wallet_balance_history` yang perlu dipindahkan dari localStorage ke backend. Data utama (transactions, loan_entries, wallets) sudah ditangani migrasi modul masing-masing. |
+| **Data Refresh on Tab Switch** | Saat user berpindah tab, data source (`transactions`, `loanEntries`, `balanceHistory`) dibaca ulang dari localStorage untuk memastikan data selalu fresh (jika user menambah/edit transaksi di tab lain dan kembali ke Report). |
+| **DailySummarySection — Category Filter** | Saat `selectedCategory` aktif di DailySummarySection, hanya expense yang cocok dengan kategori tersebut yang ditampilkan (income tidak ditampilkan dalam mode filter kategori). |
+| **Dead Code: `src/features/report/`** | Direktori ini berisi 4 file placeholder kosong (`CustomReportForm.tsx`, `ExpenseDonut.tsx`, `ReportSummary.tsx`, `useReportAggregation.ts`) yang tidak digunakan. Implementasi aktual berada di `src/components/report/` dan `src/lib/report/`. File-file ini dapat dihapus. |
 
 ---
 
@@ -705,7 +724,7 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | 2 | Donut chart max kategori | ✅ **Limit 8 + "Lainnya"** |
 | 3 | Tap kategori di legend | ✅ **In-place** — list transaksi diperbarui di bawah chart tanpa navigasi ke halaman lain |
 | 4 | Edit Custom Report + tombol Delete | ✅ Tombol Delete merah di bawah form, confirmation dialog |
-| 5 | Ikon ⚙️ di header Report | ✅ Shortcut ke Settings (out of scope Fase 1, ikon tetap ada tapi disabled/hidden) |
+| 5 | Ikon ⚙️ di header Report | ⚠️ **Tidak diimplementasikan** — header Report hanya menampilkan judul tanpa ikon settings. Out of scope Fase 1. |
 | 6 | Custom Report nama unik per anon_id | ✅ Case-insensitive unique |
 | 7 | Balance Correction dari edit balance wallet | ✅ Dari `wallet_balance_history`, key sudah didefinisikan di Module Wallet v4.0 |
 | 8 | Periode Realtime | ✅ **Bulan penuh** (1 - akhir bulan). Data natural hanya sampai hari ini |
@@ -717,5 +736,61 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 
 ---
 
-*— End of Technical Specification: Module Report (v1.3) —*
+---
+
+## 10. Known Implementation Issues (v1.4 — 2026-05-05)
+
+Bagian ini mendokumentasikan **bug yang diketahui** di implementasi saat ini. Item di bawah perlu diperbaiki di kode.
+
+---
+
+### Bug 1 — `formatDisplayDate` tanpa locale di Add Custom Report
+
+**File:** `src/app/report/custom/add/page.tsx`
+
+**Perilaku kode saat ini:**
+```js
+// Add page — locale TIDAK diteruskan:
+{formatDisplayDate(startDate)}
+{formatDisplayDate(endDate)}
+
+// Edit page — locale DITERUSKAN (benar):
+{formatDisplayDate(startDate, locale)}
+{formatDisplayDate(endDate, locale)}
+```
+
+**Akibat:** Di halaman Add, tanggal selalu ditampilkan dalam locale default (biasanya `en`), tidak mengikuti locale user. Halaman Edit sudah benar.
+
+**Perbaikan:**
+```js
+// Tambahkan useLocale() dan teruskan ke formatDisplayDate
+const locale = useLocale();
+{formatDisplayDate(startDate, locale)}
+```
+
+---
+
+### Bug 2 — Hardcoded String "Start Balance" / "End Balance" di `CustomReportSection`
+
+**File:** `src/components/report/CustomReportSection.tsx`
+
+**Perilaku kode saat ini:**
+```jsx
+<span>Start Balance</span>  {/* hardcoded English */}
+<span>End Balance</span>    {/* hardcoded English */}
+```
+
+**`MonthlySection` yang benar:**
+```jsx
+<span>{t("startBalance")}</span>
+<span>{t("endBalance")}</span>
+```
+
+**Akibat:** Label "Start Balance" dan "End Balance" di Custom Report selalu dalam bahasa Inggris, tidak mengikuti locale, sehingga tidak konsisten dengan MonthlySection.
+
+**Perbaikan:** Gunakan `const t = useTranslations("report.summary")` dan ganti dengan key i18n.
+
+---
+
+*— End of Technical Specification: Module Report (v1.4) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Module Loan · Global Architecture · Module Settings*
