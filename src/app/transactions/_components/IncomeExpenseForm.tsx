@@ -147,7 +147,7 @@ export function IncomeExpenseForm({
         {/* Date */}
         <div className="flex-[3] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Date
+            {t("form.date")}
           </label>
           <input
             type="date"
@@ -166,7 +166,7 @@ export function IncomeExpenseForm({
         {/* Time */}
         <div className="flex-[2] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Time
+            {t("form.time")}
           </label>
           <input
             type="time"
@@ -186,7 +186,7 @@ export function IncomeExpenseForm({
       {/* Wallet selector */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Wallet
+          {t("form.wallet")}
         </label>
         <button
           type="button"
@@ -198,13 +198,13 @@ export function IncomeExpenseForm({
           }}
         >
           <span style={{ color: selectedWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-            {selectedWallet ? selectedWallet.name : "Select wallet"}
+            {selectedWallet ? selectedWallet.name : t("form.selectWallet")}
           </span>
           <WalletIcon className="w-4 h-4" style={{ color: "var(--text-tertiary)" }} />
         </button>
         {selectedWallet && (
           <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-            Balance: {formatIDR(selectedWallet.balance)}
+            {t("form.balance")}: {formatIDR(selectedWallet.balance)}
           </p>
         )}
         {errors.wallet_id && (
@@ -217,13 +217,13 @@ export function IncomeExpenseForm({
       {/* Amount */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Amount
+          {t("form.amount")}
         </label>
         <div className="relative">
           <input
             type="text"
             inputMode="decimal"
-            placeholder="Enter the amount"
+            placeholder={t("form.amountPlaceholder")}
             value={form.amount}
             onChange={(e) => {
               let val = e.target.value;
@@ -271,11 +271,11 @@ export function IncomeExpenseForm({
       {/* Title */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Title
+          {t("form.title")}
         </label>
         <input
           type="text"
-          placeholder="Type here for new title"
+          placeholder={t("form.titlePlaceholder")}
           value={form.title}
           onChange={(e) => set("title", e.target.value)}
           maxLength={100}
@@ -299,11 +299,11 @@ export function IncomeExpenseForm({
       {/* Category */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Category
+          {t("form.category")}
         </label>
         <input
           type="text"
-          placeholder="Type here for new category"
+          placeholder={t("form.categoryPlaceholder")}
           value={form.category}
           onChange={(e) => set("category", e.target.value)}
           maxLength={50}
@@ -327,10 +327,10 @@ export function IncomeExpenseForm({
       {/* Description */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Description (optional)
+          {t("form.description")}
         </label>
         <textarea
-          placeholder="Description (optional)"
+          placeholder={t("form.descriptionPlaceholder")}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
           maxLength={255}

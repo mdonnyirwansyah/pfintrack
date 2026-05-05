@@ -43,7 +43,16 @@
       "id": "Indonesia"
     },
     "showDecimals": "Tampilkan Desimal",
-    "showDecimalsDesc": "Tampilkan sen pada semua nilai mata uang"
+    "showDecimalsDesc": "Tampilkan sen pada semua nilai mata uang",
+    "demo": {
+      "sectionTitle": "Data Sampel",
+      "clearButton": "Hapus Data Sampel",
+      "clearDesc": "Hapus semua data demo dan mulai dari nol",
+      "confirmTitle": "Hapus Data Sampel?",
+      "confirmDesc": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
+      "confirmAction": "Ya, Hapus Semua",
+      "confirmCancel": "Batal"
+    }
   },
   "wallet": {
     "title": "Dompet",
@@ -138,6 +147,10 @@
       "sourceWallet": "Dompet Asal",
       "destWallet": "Dompet Tujuan",
       "selectWallet": "Pilih Dompet",
+      "selectSourceWallet": "Pilih dompet asal",
+      "selectDestWallet": "Pilih dompet tujuan",
+      "categoryPlaceholder": "Ketik kategori baru",
+      "balance": "Saldo",
       "insufficientBalance": "Saldo dompet tidak mencukupi"
     },
     "validation": {
@@ -177,6 +190,7 @@
     "noEntries": "Belum ada entri",
     "noEntriesDesc": "Ketuk + untuk mencatat pinjam keluar atau masuk",
     "paidOff": "Lunas",
+    "notPaidOff": "Belum lunas",
     "markPaidOff": "Tandai Lunas",
     "markPaidOffTitle": "Tandai {name} sebagai lunas?",
     "editGive": "Edit Pinjam Keluar",

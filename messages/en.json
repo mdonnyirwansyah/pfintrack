@@ -43,7 +43,16 @@
       "id": "Indonesia"
     },
     "showDecimals": "Show Decimals",
-    "showDecimalsDesc": "Display cents in all currency values"
+    "showDecimalsDesc": "Display cents in all currency values",
+    "demo": {
+      "sectionTitle": "Sample Data",
+      "clearButton": "Clear Sample Data",
+      "clearDesc": "Delete all sample data and start fresh",
+      "confirmTitle": "Delete Sample Data?",
+      "confirmDesc": "All sample data (wallets, transactions, and loans) will be permanently deleted. This action cannot be undone.",
+      "confirmAction": "Yes, Delete All",
+      "confirmCancel": "Cancel"
+    }
   },
   "wallet": {
     "title": "Wallet",
@@ -138,6 +147,10 @@
       "sourceWallet": "Source Wallet",
       "destWallet": "Destination Wallet",
       "selectWallet": "Select Wallet",
+      "selectSourceWallet": "Select source wallet",
+      "selectDestWallet": "Select destination wallet",
+      "categoryPlaceholder": "Enter new category",
+      "balance": "Balance",
       "insufficientBalance": "Insufficient wallet balance"
     },
     "validation": {
@@ -177,6 +190,7 @@
     "noEntries": "No entries yet",
     "noEntriesDesc": "Tap + to record a Give or Get loan",
     "paidOff": "Paid off",
+    "notPaidOff": "Not paid off",
     "markPaidOff": "Mark as Paid Off",
     "markPaidOffTitle": "Mark {name} as paid off?",
     "editGive": "Edit Give",

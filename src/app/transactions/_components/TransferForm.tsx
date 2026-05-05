@@ -144,7 +144,7 @@ export function TransferForm({
         {/* Date */}
         <div className="flex-[3] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Date
+            {t("form.date")}
           </label>
           <input
             type="date"
@@ -163,7 +163,7 @@ export function TransferForm({
         {/* Time */}
         <div className="flex-[2] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Time
+            {t("form.time")}
           </label>
           <input
             type="time"
@@ -183,7 +183,7 @@ export function TransferForm({
       {/* Source Wallet */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          From Wallet
+          {t("form.sourceWallet")}
         </label>
         <button
           type="button"
@@ -195,7 +195,7 @@ export function TransferForm({
           }}
         >
           <span style={{ color: sourceWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-            {sourceWallet ? sourceWallet.name : "Select source wallet"}
+            {sourceWallet ? sourceWallet.name : t("form.selectSourceWallet")}
           </span>
           {sourceWallet && (
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
@@ -213,7 +213,7 @@ export function TransferForm({
       {/* Destination Wallet */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          To Wallet
+          {t("form.destWallet")}
         </label>
         <button
           type="button"
@@ -225,7 +225,7 @@ export function TransferForm({
           }}
         >
           <span style={{ color: destWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-            {destWallet ? destWallet.name : "Select destination wallet"}
+            {destWallet ? destWallet.name : t("form.selectDestWallet")}
           </span>
           {destWallet && (
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
@@ -243,13 +243,13 @@ export function TransferForm({
       {/* Amount */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Amount
+          {t("form.amount")}
         </label>
         <div className="relative">
           <input
             type="text"
             inputMode="decimal"
-            placeholder="Enter the amount"
+            placeholder={t("form.amountPlaceholder")}
             value={form.amount}
             onChange={(e) => {
               let val = e.target.value;
@@ -289,10 +289,10 @@ export function TransferForm({
       {/* Description */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Description (optional)
+          {t("form.description")}
         </label>
         <textarea
-          placeholder="Description (optional)"
+          placeholder={t("form.descriptionPlaceholder")}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
           maxLength={255}

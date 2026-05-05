@@ -204,7 +204,7 @@ export default function LoanDetailPage({
     <>
       <AppHeader
         title={counterparty.name}
-        subtitle={isPaidOff ? "Paid off" : "Not paid off"}
+        subtitle={isPaidOff ? t("paidOff") : t("notPaidOff")}
         showBack
         actions={headerActions}
       />

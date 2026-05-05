@@ -263,7 +263,7 @@ export default function SettingsPage() {
               className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
               style={{ color: "var(--color-negative)" }}
             >
-              Data Sampel
+              {t("demo.sectionTitle")}
             </p>
             <div className={sectionClass}>
               <button
@@ -279,10 +279,10 @@ export default function SettingsPage() {
                   </div>
                   <div className="text-left">
                     <p className="text-[13px] font-medium" style={{ color: "var(--color-negative)" }}>
-                      Hapus Data Sampel
+                      {t("demo.clearButton")}
                     </p>
                     <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-                      Hapus semua data demo dan mulai dari nol
+                      {t("demo.clearDesc")}
                     </p>
                   </div>
                 </div>
@@ -323,10 +323,10 @@ export default function SettingsPage() {
       <ConfirmDialog
         open={demoConfirmOpen}
         onOpenChange={setDemoConfirmOpen}
-        title="Hapus Data Sampel?"
-        description="Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan."
-        confirmLabel="Ya, Hapus Semua"
-        cancelLabel="Batal"
+        title={t("demo.confirmTitle")}
+        description={t("demo.confirmDesc")}
+        confirmLabel={t("demo.confirmAction")}
+        cancelLabel={t("demo.confirmCancel")}
         variant="destructive"
         onConfirm={() => {
           setDemoConfirmOpen(false);
