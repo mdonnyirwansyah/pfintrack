@@ -10,9 +10,6 @@ const withSerwist = withSerwistInit({
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
-const nextConfig: NextConfig = {
-  // Silence Turbopack warning — Serwist injects webpack config, we don't need it in dev
-  turbopack: {},
-};
+const nextConfig: NextConfig = {};
 
 export default withNextIntl(withSerwist(nextConfig));

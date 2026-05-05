@@ -191,6 +191,7 @@ export function LoanEntryForm({
               onChange={(e) => set("transaction_date", e.target.value)}
               className={inputClass}
               style={inputStyle(errors.transaction_date)}
+              suppressHydrationWarning
             />
             {errors.transaction_date && (
               <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
@@ -213,6 +214,7 @@ export function LoanEntryForm({
               onChange={(e) => set("transaction_time", e.target.value)}
               className={inputClass}
               style={inputStyle(errors.transaction_time)}
+              suppressHydrationWarning
             />
             {errors.transaction_time && (
               <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>

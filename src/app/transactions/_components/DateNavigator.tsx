@@ -94,6 +94,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
         <button
           type="button"
           onClick={handleToggle}
+          suppressHydrationWarning
           className="flex items-center gap-1 text-[14px] font-semibold transition-opacity active:opacity-70"
           style={{
             color: "var(--text-primary)",
