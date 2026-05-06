@@ -26,13 +26,6 @@ export function formatDateRange(from: string | Date, to: string | Date, locale =
 }
 
 /**
- * Format time string HH:MM to display
- */
-export function formatTime(time: string): string {
-  return time;
-}
-
-/**
  * Format a date with locale awareness: "Fri, 01 May 2026" (en) / "Jum, 01 Mei 2026" (id)
  */
 export function formatDisplayDateLocale(date: string | Date, locale: string): string {

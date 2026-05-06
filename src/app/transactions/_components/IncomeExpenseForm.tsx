@@ -382,15 +382,3 @@ export function IncomeExpenseForm({
     </form>
   );
 }
-
-// Helper to determine transaction type display label
-export function getTypeLabel(type: TransactionType): string {
-  switch (type) {
-    case "income":
-      return "Income";
-    case "expense":
-      return "Expense";
-    case "transfer":
-      return "Transfer";
-  }
-}
