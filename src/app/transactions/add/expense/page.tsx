@@ -19,7 +19,7 @@ function AddExpenseContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("transactions");
 
-  // Baca ?date= dari URL, fallback ke hari ini
+  // Read ?date= from URL, fallback to today
   const dateParam = searchParams.get("date");
   const initialDate = dateParam ?? todayISO();
 

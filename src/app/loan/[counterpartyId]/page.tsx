@@ -74,7 +74,7 @@ export default function LoanDetailPage({
   const isPaidOff =
     counterparty?.manual_paid_off || outstanding === 0;
 
-  // Sort entries: DESC by date+time, fallback ke created_at jika sama (resolusi menit)
+  // Sort entries: DESC by date+time, fallback to created_at on tie (minute resolution)
   const sortedEntries = useMemo(
     () =>
       [...entries].sort((a, b) => {
@@ -82,7 +82,7 @@ export default function LoanDetailPage({
         const db = `${b.transaction_date}T${b.transaction_time}`;
         const byDatetime = db.localeCompare(da);
         if (byDatetime !== 0) return byDatetime;
-        // Tiebreaker: created_at (ISO dengan detik) — DESC
+        // Tiebreaker: created_at (ISO with seconds) — DESC
         return b.created_at.localeCompare(a.created_at);
       }),
     [entries]

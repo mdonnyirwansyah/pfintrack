@@ -38,14 +38,14 @@ function TransactionsContent() {
   const t = useTranslations("transactions");
   const td = useTranslations("demo.welcome");
 
-  // Init activeDate dari ?date= query param, fallback ke hari ini
+  // Initialize activeDate from ?date= query param, fallback to today
   const dateParam = searchParams.get("date");
   const [activeDate, setActiveDate] = useState(dateParam ?? todayISO());
   const [isExporting, setIsExporting] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
   const [pendingDeletes, setPendingDeletes] = useState<Set<string>>(new Set());
 
-  // Update state + sync URL sekaligus, hindari useEffect agar tidak ada timing issue
+  // Update state and sync URL together to avoid timing issues from useEffect
   const handleDateChange = (date: string) => {
     setActiveDate(date);
     router.replace(`/transactions?date=${date}`, { scroll: false });

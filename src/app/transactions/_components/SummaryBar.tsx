@@ -11,7 +11,7 @@ interface SummaryBarProps {
 
 export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
   const t = useTranslations("transactions.summary");
-  // Income: "+" hanya jika > 0
+  // Income: "+" only if > 0
   const incomePrefix = income > 0 ? "+ " : "";
   const expensesPrefix = expenses > 0 ? "- " : "";
   const balancePrefix = balance > 0 ? "+ " : balance < 0 ? "- " : "";

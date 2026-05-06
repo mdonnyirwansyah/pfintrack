@@ -36,7 +36,7 @@ export default function EditLoanEntryPage({
     loadWallets();
   }, [loadWallets]);
 
-  // Render title yang konsisten saat SSR (sebelum mount, localStorage belum tersedia)
+  // Render consistent title during SSR before localStorage is available
   if (!mounted) {
     return (
       <>
@@ -54,8 +54,7 @@ export default function EditLoanEntryPage({
     );
   }
 
-  // Load entry and counterparty directly from storage (source of truth)
-  // Hanya dijalankan setelah mounted (client-side) untuk menghindari hydration mismatch
+  // Load entry and counterparty directly from storage (source of truth, runs client-side after mount)
   const entry = loanEntriesRepo.getById(entryId);
   const counterparty = loanCounterpartiesRepo.getById(counterpartyId);
 
