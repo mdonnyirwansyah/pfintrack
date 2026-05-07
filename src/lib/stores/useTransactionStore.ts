@@ -11,6 +11,7 @@ import {
   applyTransactionToWallet,
   rollbackTransactionFromWallet,
 } from "@/lib/storage/wallet-balance-ops";
+import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
 import { useWalletStore } from "./useWalletStore";
 
 interface TransactionState {
@@ -64,6 +65,22 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
   async softDeleteTransaction(id) {
     const tx = await transactionsRepo.getById(id);
     if (!tx) throw new Error(`Transaction not found: ${id}`);
+
+    // When deleting a Balance Correction, also soft-delete the matching history record
+    // so the Report module no longer counts it in calcBalanceCorrection.
+    if (tx.category === "Balance Correction") {
+      const expectedDelta = tx.type === "income" ? tx.amount : -tx.amount;
+      const history = await walletBalanceHistoryRepo.getByWalletId(tx.wallet_id);
+      const match = history
+        .filter(
+          (h) =>
+            h.is_active &&
+            h.delta === expectedDelta &&
+            h.corrected_at.startsWith(tx.transaction_date),
+        )
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+      if (match) await walletBalanceHistoryRepo.softDelete(match.id);
+    }
 
     await rollbackTransactionFromWallet(tx);
     await transactionsRepo.softDelete(id);

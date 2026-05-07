@@ -24,6 +24,7 @@ export function LoanDetailSummaryBar({
 }: LoanDetailSummaryBarProps) {
   const t = useTranslations("loan.summary");
   const getPrefix = totalGet > 0 ? "+ " : "";
+  const givePrefix = totalGive > 0 ? "- " : "";
   const balancePrefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : "";
   const balanceColor =
     outstanding === 0
@@ -71,7 +72,7 @@ export function LoanDetailSummaryBar({
           className="text-[13px] font-semibold tabular-nums"
           style={{ color: "var(--color-negative)" }}
         >
-          {formatIDR(totalGive)}
+          {givePrefix}{formatIDR(totalGive)}
         </span>
       </div>
 

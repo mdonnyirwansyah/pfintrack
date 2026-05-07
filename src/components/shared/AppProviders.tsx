@@ -17,14 +17,15 @@ export function AppProviders({ children }: AppProvidersProps) {
   const setHydrated = useAppStore((s) => s.setHydrated);
   const showDecimals = useAppStore((s) => s.showDecimals);
 
-  // Lazy init: already-migrated users start as true (no loading flash).
-  // First-time migration users start as false until runStorageMigration resolves.
-  const [migrationReady, setMigrationReady] = useState(() => isMigrationDone());
+  // Start as true so the initial client render matches the server HTML (avoids hydration mismatch).
+  // useEffect then checks if migration is still needed and flips to false until it completes.
+  const [migrationReady, setMigrationReady] = useState(true);
 
   useEffect(() => {
-    if (migrationReady) return;
+    if (isMigrationDone()) return;
+    setMigrationReady(false);
     runStorageMigration().then(() => setMigrationReady(true));
-  }, [migrationReady]);
+  }, []);
 
   useEffect(() => {
     // Bootstrap: ensure anon_id exists in localStorage

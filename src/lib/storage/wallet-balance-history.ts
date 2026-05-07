@@ -158,9 +158,7 @@ export const walletBalanceHistoryRepo = {
   },
 
   softDelete(id: string): Promise<void> {
-    if (STORAGE_BACKEND === "idb") {
-      throw new Error("walletBalanceHistoryRepo.softDelete not yet supported for IDB backend");
-    }
+    if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.softDelete(id);
     walletBalanceHistoryLsRepo.softDelete(id);
     return Promise.resolve();
   },

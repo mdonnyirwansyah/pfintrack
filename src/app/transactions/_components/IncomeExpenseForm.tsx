@@ -83,11 +83,12 @@ export function IncomeExpenseForm({
 
   const selectedWallet = wallets.find((w) => w.id === form.wallet_id) ?? null;
   const parsedAmount = parseIDR(form.amount) || 0;
+  const originalAmount = isEditMode ? (parseIDR(initialValues?.amount ?? "0") || 0) : 0;
   const insufficientBalance =
     type === "expense" &&
     selectedWallet !== null &&
     parsedAmount > 0 &&
-    parsedAmount > selectedWallet.balance;
+    parsedAmount > selectedWallet.balance + originalAmount;
 
   const set = useCallback(
     (field: keyof IncomeExpenseFormValues, value: string) => {
@@ -259,7 +260,7 @@ export function IncomeExpenseForm({
           <div className="flex items-center gap-1.5 mt-1">
             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--color-accent-warm)" }} />
             <p className="text-[11px]" style={{ color: "var(--color-accent-warm)" }}>
-              Insufficient wallet balance
+              {t("form.insufficientBalance")}
             </p>
           </div>
         )}

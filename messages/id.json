@@ -182,6 +182,7 @@
   },
   "loan": {
     "title": "Pinjaman",
+    "insufficientBalance": "Saldo dompet tidak mencukupi",
     "addGive": "Tambah Pinjam Keluar",
     "addGet": "Tambah Pinjam Masuk",
     "editEntry": "Edit Entri",

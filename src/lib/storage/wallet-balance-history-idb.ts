@@ -1,5 +1,5 @@
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
-import { idbGetAll, idbGetAllByIndex, idbPut, idbPutAll } from "./idb-client";
+import { idbGet, idbGetAll, idbGetAllByIndex, idbPut, idbPutAll } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateWalletBalanceHistoryInput } from "./wallet-balance-history";
 
@@ -40,6 +40,16 @@ export const walletBalanceHistoryIdbRepo = {
 
     await idbPut<WalletBalanceHistory>(STORE, record);
     return record;
+  },
+
+  async softDelete(id: string): Promise<void> {
+    const existing = await idbGet<WalletBalanceHistory>(STORE, id);
+    if (!existing) return;
+    await idbPut<WalletBalanceHistory>(STORE, {
+      ...existing,
+      is_active: false,
+      updated_at: new Date().toISOString(),
+    });
   },
 
   /** For migration runner — bulk-write records without transformation */

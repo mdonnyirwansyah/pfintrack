@@ -182,6 +182,7 @@
   },
   "loan": {
     "title": "Loan",
+    "insufficientBalance": "Insufficient wallet balance",
     "addGive": "Add Give",
     "addGet": "Add Get",
     "editEntry": "Edit Entry",

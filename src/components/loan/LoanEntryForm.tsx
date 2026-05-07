@@ -89,11 +89,14 @@ export function LoanEntryForm({
 
   const selectedWallet = wallets.find((w) => w.id === values.wallet_id) ?? null;
   const parsedAmount = parseIDR(values.amount) || 0;
+  // In edit mode the wallet balance already reflects the original entry being deducted,
+  // so add it back before comparing to avoid a false "insufficient" warning.
+  const originalAmount = isEditMode ? (parseIDR(initialValues?.amount ?? "0") || 0) : 0;
   const insufficientBalance =
     type === "give" &&
     selectedWallet !== null &&
     parsedAmount > 0 &&
-    parsedAmount > selectedWallet.balance;
+    parsedAmount > selectedWallet.balance + originalAmount;
 
   const t = useTranslations("loan");
   const tc = useTranslations("common");
@@ -322,7 +325,7 @@ export function LoanEntryForm({
             <div className="flex items-center gap-1.5 mt-1">
               <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--color-accent-warm)" }} />
               <p className="text-[11px]" style={{ color: "var(--color-accent-warm)" }}>
-                Insufficient wallet balance
+                {t("insufficientBalance")}
               </p>
             </div>
           )}

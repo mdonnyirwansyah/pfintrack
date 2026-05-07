@@ -58,7 +58,7 @@ export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListI
             color: isGet ? "var(--color-positive)" : "var(--color-negative)",
           }}
         >
-          {isGet ? `+ ${formatIDR(entry.amount)}` : formatIDR(entry.amount)}
+          {isGet ? `+ ${formatIDR(entry.amount)}` : `- ${formatIDR(entry.amount)}`}
         </span>
         <ChevronRight
           className="w-4 h-4"
