@@ -43,9 +43,10 @@ export function BottomNav() {
               key={href}
               href={href}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-0.5 transition-opacity active:opacity-70",
-                "min-h-[44px]"
+                "flex flex-1 flex-col items-center justify-center gap-0.5",
+                "min-h-[44px] active:scale-[0.88] transition-transform duration-75 will-change-transform"
               )}
+              style={{ touchAction: "manipulation" }}
               aria-label={label}
             >
               <Icon
