@@ -317,7 +317,7 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
                           className="text-[13px] font-medium truncate"
                           style={{ color: "var(--text-primary)" }}
                         >
-                          {tx.title ?? tx.category ?? (isIncomeMode ? "Income" : "Expense")}
+                          {tx.title ?? tx.category ?? (isIncomeMode ? t("detail.filterIncome") : t("detail.filterExpense"))}
                         </span>
                         <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
                           {tx.category && (

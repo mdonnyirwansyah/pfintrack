@@ -7,7 +7,7 @@ import { IncomeExpenseForm, type IncomeExpenseFormValues } from "../../_componen
 import { useTransactionStore, getTitleSuggestions, getCategorySuggestions } from "@/lib/stores/useTransactionStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { todayISO } from "@/lib/format/date";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
 function AddExpenseContent() {
@@ -17,6 +17,7 @@ function AddExpenseContent() {
   const { wallets, loadWallets } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("transactions");
+  const locale = useLocale();
 
   // Read ?date= from URL, fallback to today
   const dateParam = searchParams.get("date");
@@ -28,7 +29,7 @@ function AddExpenseContent() {
   }, [loadTransactions, loadWallets]);
 
   const titleSuggestions = getTitleSuggestions(transactions, "expense");
-  const categorySuggestions = getCategorySuggestions(transactions, "expense");
+  const categorySuggestions = getCategorySuggestions(transactions, "expense", locale);
 
   const handleSubmit = async (values: IncomeExpenseFormValues) => {
     setIsSubmitting(true);

@@ -203,7 +203,7 @@ function ReportDetailContent() {
     ? nameParam
     : start && end
       ? formatDateRange(start, end, locale)
-      : "Report Detail";
+      : t("detail.title");
 
   const isIncomeMode = donutMode === "income";
 

@@ -13,7 +13,7 @@ import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import type { Transaction } from "@/lib/types/transaction";
 import { FileText } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
 interface EditTransactionPageProps {
@@ -27,6 +27,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   const { wallets, loadWallets } = useWalletStore();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
+  const locale = useLocale();
 
   const [transaction, setTransaction] = useState<Transaction | null | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,7 +46,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
       : [];
   const categorySuggestions =
     transaction?.type === "income" || transaction?.type === "expense"
-      ? getCategorySuggestions(transactions, transaction.type)
+      ? getCategorySuggestions(transactions, transaction.type, locale)
       : [];
 
   // Loading

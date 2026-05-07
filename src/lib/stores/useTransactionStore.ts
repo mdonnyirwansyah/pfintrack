@@ -141,31 +141,20 @@ export function getTitleSuggestions(
   return Array.from(seen.values());
 }
 
-const DEFAULT_EXPENSE_CATEGORIES = [
-  "Makanan & Minuman",
-  "Transportasi",
-  "Tagihan",
-  "Belanja",
-  "Kesehatan",
-  "Hiburan",
-  "Pendidikan",
-  "Lainnya",
-];
+const DEFAULT_EXPENSE_CATEGORIES: Record<string, string[]> = {
+  id: ["Makanan & Minuman", "Transportasi", "Tagihan", "Belanja", "Kesehatan", "Hiburan", "Pendidikan", "Lainnya"],
+  en: ["Food & Drinks", "Transportation", "Bills", "Shopping", "Health", "Entertainment", "Education", "Other"],
+};
 
-const DEFAULT_INCOME_CATEGORIES = [
-  "Gaji",
-  "Freelance",
-  "Bisnis",
-  "Investasi",
-  "Bonus",
-  "Hadiah",
-  "Pendapatan Lain",
-  "Lainnya",
-];
+const DEFAULT_INCOME_CATEGORIES: Record<string, string[]> = {
+  id: ["Gaji", "Freelance", "Bisnis", "Investasi", "Bonus", "Hadiah", "Pendapatan Lain", "Lainnya"],
+  en: ["Salary", "Freelance", "Business", "Investment", "Bonus", "Gift", "Other Income", "Other"],
+};
 
 export function getCategorySuggestions(
   transactions: Transaction[],
-  type: "income" | "expense"
+  type: "income" | "expense",
+  locale = "id"
 ): string[] {
   const seen = new Set<string>();
   const sorted = [...transactions]
@@ -180,7 +169,8 @@ export function getCategorySuggestions(
   }
 
   if (seen.size === 0) {
-    const defaults = type === "expense" ? DEFAULT_EXPENSE_CATEGORIES : DEFAULT_INCOME_CATEGORIES;
+    const map = type === "expense" ? DEFAULT_EXPENSE_CATEGORIES : DEFAULT_INCOME_CATEGORIES;
+    const defaults = map[locale] ?? map["id"];
     return defaults;
   }
 

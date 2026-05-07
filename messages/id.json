@@ -331,6 +331,7 @@
       "noExpensesDesc": "Tidak ada transaksi pengeluaran untuk rentang tanggal yang dipilih.",
       "noTransactions": "Tidak ada transaksi",
       "noTransactionsDesc": "Tidak ada transaksi pengeluaran untuk \"{category}\".",
+      "title": "Detail Laporan",
       "summaryTitle": "Ringkasan Periode",
       "loanTitle": "Pinjaman Periode Ini",
       "loanGive": "Pinjam Keluar",
