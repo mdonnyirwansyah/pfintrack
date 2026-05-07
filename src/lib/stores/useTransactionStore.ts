@@ -141,6 +141,28 @@ export function getTitleSuggestions(
   return Array.from(seen.values());
 }
 
+const DEFAULT_EXPENSE_CATEGORIES = [
+  "Makanan & Minuman",
+  "Transportasi",
+  "Tagihan",
+  "Belanja",
+  "Kesehatan",
+  "Hiburan",
+  "Pendidikan",
+  "Lainnya",
+];
+
+const DEFAULT_INCOME_CATEGORIES = [
+  "Gaji",
+  "Freelance",
+  "Bisnis",
+  "Investasi",
+  "Bonus",
+  "Hadiah",
+  "Pendapatan Lain",
+  "Lainnya",
+];
+
 export function getCategorySuggestions(
   transactions: Transaction[],
   type: "income" | "expense"
@@ -155,6 +177,11 @@ export function getCategorySuggestions(
       seen.add(t.category);
     }
     if (seen.size >= 8) break;
+  }
+
+  if (seen.size === 0) {
+    const defaults = type === "expense" ? DEFAULT_EXPENSE_CATEGORIES : DEFAULT_INCOME_CATEGORIES;
+    return defaults;
   }
 
   return Array.from(seen);
