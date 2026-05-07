@@ -140,16 +140,19 @@ export function calcPeriodSummary(
   };
 }
 
-/** §4.6 Expense breakdown by category — max 8 + "Lainnya" */
+/** §4.6 / §4.10 Category breakdown — max 8 + "Lainnya".
+ *  @param type "expense" (default, backward compatible) | "income"
+ */
 export function calcCategoryBreakdown(
   transactions: Transaction[],
   start: string,
-  end: string
+  end: string,
+  type: "expense" | "income" = "expense"
 ): CategoryBreakdown[] {
   const expenses = transactions.filter(
     (t) =>
       t.is_active &&
-      t.type === "expense" &&
+      t.type === type &&
       t.category !== "Balance Correction" &&
       inRange(t.transaction_date, start, end)
   );

@@ -10,6 +10,8 @@ import {
   calculateMonthlySummary,
 } from "@/lib/report/calculations";
 import { MonthlySection } from "./MonthlySection";
+import { MonthlyOverviewChart } from "./MonthlyOverviewChart";
+import { NetWorthChart } from "./NetWorthChart";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
@@ -79,6 +81,16 @@ export function MonthlyTab({
 
   return (
     <div className="space-y-4">
+      {/* A1-beta — 6-Month Overview Chart */}
+      <MonthlyOverviewChart transactions={transactions} />
+
+      {/* C2 — Net Worth Line Chart */}
+      <NetWorthChart
+        transactions={transactions}
+        loanEntries={loanEntries}
+        balanceHistory={balanceHistory}
+      />
+
       {visibleMonths.map(({ start, end }) => {
         const summary = calculateMonthlySummary(
           transactions,

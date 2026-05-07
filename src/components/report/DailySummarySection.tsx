@@ -1,11 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { List, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { List, CalendarDays, BarChart2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Transaction } from "@/lib/types/transaction";
 import { formatIDR } from "@/lib/format/number";
 import { formatDisplayDateLocale, formatMonthLabelLocale } from "@/lib/format/date";
 import { SortPill, type SortKey } from "@/components/shared/SortPill";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import {
   format,
   parseISO,
@@ -84,6 +91,34 @@ function abbr(n: number): string {
   return Math.round(n).toString();
 }
 
+interface DailyBarTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number; name: string }>;
+  label?: string;
+}
+
+function DailyBarTooltip({ active, payload, label }: DailyBarTooltipProps) {
+  if (!active || !payload || payload.length === 0) return null;
+  const income = payload.find((p) => p.name === "income")?.value ?? 0;
+  const expenses = payload.find((p) => p.name === "expenses")?.value ?? 0;
+  return (
+    <div
+      className="glass rounded-[10px] px-2.5 py-1.5 text-[10px] space-y-0.5"
+      style={{ pointerEvents: "none" }}
+    >
+      <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+        {label}
+      </p>
+      {income > 0 && (
+        <p style={{ color: "var(--color-positive)" }}>+ {formatIDR(income)}</p>
+      )}
+      {expenses > 0 && (
+        <p style={{ color: "var(--color-negative)" }}>- {formatIDR(expenses)}</p>
+      )}
+    </div>
+  );
+}
+
 interface DailySummarySectionProps {
   transactions: Transaction[];
   start: string; // YYYY-MM-DD
@@ -101,7 +136,7 @@ export function DailySummarySection({
 }: DailySummarySectionProps) {
   const t = useTranslations("report");
   const locale = useLocale();
-  const [view, setView] = useState<"list" | "calendar">("calendar");
+  const [view, setView] = useState<"list" | "calendar" | "chart">("calendar");
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
 
   const startMonth = startOfMonth(parseISO(start));
@@ -130,6 +165,23 @@ export function DailySummarySection({
   const calStart = startOfWeek(startOfMonth(currentMonth));
   const calEnd   = endOfWeek(endOfMonth(currentMonth));
   const calDays  = eachDayOfInterval({ start: calStart, end: calEnd });
+
+  // Chart data: sorted ascending by date, with short day label for X-axis
+  const chartData = useMemo(() => {
+    const sorted = [...rawSummaries].sort((a, b) => a.date.localeCompare(b.date));
+    // If > 20 days, only show every 5th label to avoid crowding
+    const total = sorted.length;
+    return sorted.map((s, idx) => {
+      const dayNum = parseInt(s.date.slice(8, 10), 10);
+      const showLabel = total <= 20 || (dayNum % 5 === 1 || dayNum === 1);
+      return {
+        date: s.date,
+        label: showLabel ? String(dayNum) : "",
+        income: s.income,
+        expenses: s.expenses,
+      };
+    });
+  }, [rawSummaries]);
 
   return (
     <div className="space-y-3">
@@ -182,6 +234,17 @@ export function DailySummarySection({
             >
               <CalendarDays className="w-3.5 h-3.5" />
             </button>
+            <button
+              onClick={() => setView("chart")}
+              className="flex items-center justify-center w-7 h-7 rounded-full transition-all"
+              style={{
+                background: view === "chart" ? "var(--color-brand)" : "transparent",
+                color: view === "chart" ? "white" : "var(--text-tertiary)",
+              }}
+              aria-label={t("daily.chartView")}
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </div>
@@ -229,6 +292,59 @@ export function DailySummarySection({
               </div>
             </div>
           ))}
+        </div>
+      ) : view === "chart" ? (
+        /* ── Chart View (E1) ── */
+        <div className="glass rounded-[16px] px-2 pt-3 pb-4">
+          <div style={{ width: "100%", height: 160, minWidth: 0 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              barGap={2}
+              barCategoryGap="20%"
+              margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
+            >
+              <XAxis
+                dataKey="label"
+                tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip
+                content={<DailyBarTooltip />}
+                cursor={{ fill: "rgba(0,0,0,0.04)" }}
+              />
+              <Bar
+                dataKey="income"
+                name="income"
+                radius={[2, 2, 0, 0]}
+                maxBarSize={14}
+                fill="var(--color-positive)"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onClick={(data: any) => {
+                  const dateStr = (data as { date: string }).date;
+                  const el = document.getElementById(`day-${dateStr}`);
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                style={{ cursor: "pointer" }}
+              />
+              <Bar
+                dataKey="expenses"
+                name="expenses"
+                radius={[2, 2, 0, 0]}
+                maxBarSize={14}
+                fill="var(--color-negative)"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onClick={(data: any) => {
+                  const dateStr = (data as { date: string }).date;
+                  const el = document.getElementById(`day-${dateStr}`);
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+          </div>
         </div>
       ) : (
         /* ── Calendar View ── */

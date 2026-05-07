@@ -19,10 +19,13 @@ type Tab = "realtime" | "monthly" | "custom";
 
 export default function ReportPage() {
   const t = useTranslations("report");
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
-    if (typeof window === "undefined") return "realtime";
-    return (sessionStorage.getItem("report_active_tab") as Tab) ?? "realtime";
-  });
+  const [activeTab, setActiveTab] = useState<Tab>("realtime");
+
+  // Restore last-visited tab after hydration — must not run on server
+  useEffect(() => {
+    const saved = sessionStorage.getItem("report_active_tab") as Tab | null;
+    if (saved === "monthly" || saved === "custom") setActiveTab(saved);
+  }, []);
 
   const TABS: { id: Tab; label: string }[] = [
     { id: "realtime", label: t("tabs.realtime") },

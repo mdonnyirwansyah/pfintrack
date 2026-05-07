@@ -8,6 +8,8 @@ interface DonutChartProps {
   data: CategoryBreakdown[];
   onCategorySelect?: (category: string) => void;
   selectedCategory?: string | null;
+  /** Override the default "Total" center label when no category is selected */
+  centerLabel?: string;
 }
 
 // Active segment — slightly expanded with glow shadow
@@ -54,6 +56,7 @@ export function DonutChart({
   data,
   onCategorySelect,
   selectedCategory,
+  centerLabel,
 }: DonutChartProps) {
   if (data.length === 0) return null;
 
@@ -63,9 +66,9 @@ export function DonutChart({
 
   const total = data.reduce((sum, d) => sum + d.total, 0);
 
-  const centerLabel = selectedCategory && activeIndex >= 0
+  const centerLabelData = selectedCategory && activeIndex >= 0
     ? { label: selectedCategory, amount: data[activeIndex].total, color: data[activeIndex].color }
-    : { label: "Total", amount: total, color: "var(--text-secondary)" };
+    : { label: centerLabel ?? "Total", amount: total, color: "var(--text-secondary)" };
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -119,13 +122,13 @@ export function DonutChart({
             className="text-[10px] font-medium truncate"
             style={{ color: "var(--text-tertiary)", marginBottom: 2 }}
           >
-            {centerLabel.label}
+            {centerLabelData.label}
           </p>
           <p
             className="text-[13px] font-bold tabular-nums leading-tight"
-            style={{ color: centerLabel.color === "var(--text-secondary)" ? "var(--text-primary)" : centerLabel.color }}
+            style={{ color: centerLabelData.color === "var(--text-secondary)" ? "var(--text-primary)" : centerLabelData.color }}
           >
-            {formatIDR(centerLabel.amount)}
+            {formatIDR(centerLabelData.amount)}
           </p>
         </div>
       </div>

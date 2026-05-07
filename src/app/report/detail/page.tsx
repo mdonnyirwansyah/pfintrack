@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { PackageOpen } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { PackageOpen, TrendingUp } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { DonutChart } from "@/components/report/DonutChart";
 import { DailySummarySection } from "@/components/report/DailySummarySection";
@@ -21,6 +21,7 @@ import { useTranslations, useLocale } from "next-intl";
 
 function ReportDetailContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const start = searchParams.get("start") ?? "";
   const end = searchParams.get("end") ?? "";
   const nameParam = searchParams.get("name");
@@ -110,13 +111,36 @@ function ReportDetailContent() {
             description={t("detail.noExpensesDesc")}
           />
         ) : (
-          <DonutChart
-            data={breakdown}
-            onCategorySelect={(cat) =>
-              setSelectedCategory((prev) => (prev === cat ? null : cat))
-            }
-            selectedCategory={selectedCategory}
-          />
+          <>
+            <DonutChart
+              data={breakdown}
+              onCategorySelect={(cat) =>
+                setSelectedCategory((prev) => (prev === cat ? null : cat))
+              }
+              selectedCategory={selectedCategory}
+            />
+            {/* A2 — View Trend link when a real category is selected */}
+            {selectedCategory && selectedCategory !== "Lainnya" && (
+              <button
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-[12px] transition-opacity active:opacity-70"
+                style={{
+                  background: "var(--color-brand-soft)",
+                  color: "var(--color-brand)",
+                  minHeight: "var(--tap-target-min)",
+                }}
+                onClick={() =>
+                  router.push(
+                    `/report/category?name=${encodeURIComponent(selectedCategory)}`
+                  )
+                }
+              >
+                <TrendingUp className="w-4 h-4" />
+                <span className="text-[13px] font-semibold">
+                  {t("categoryTrend.title")}
+                </span>
+              </button>
+            )}
+          </>
         )}
 
         {/* Daily summary */}
@@ -152,35 +176,40 @@ function ReportDetailContent() {
               />
             ) : (
               <div className="glass rounded-[16px] overflow-hidden">
-                {drillTransactions.map((t, idx) => (
-                  <div key={t.id}>
-                    {idx > 0 && (
-                      <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
-                    )}
-                    <div className="flex items-center justify-between px-4 py-3">
-                      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                {drillTransactions.map((tx, idx) => {
+                  // Emit day anchor ID for the first transaction of each date (for chart tap-to-scroll)
+                  const prevTx = drillTransactions[idx - 1];
+                  const isDayStart = idx === 0 || prevTx?.transaction_date !== tx.transaction_date;
+                  return (
+                    <div key={tx.id} id={isDayStart ? `day-${tx.transaction_date}` : undefined}>
+                      {idx > 0 && (
+                        <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
+                      )}
+                      <div className="flex items-center justify-between px-4 py-3">
+                        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                          <span
+                            className="text-[13px] font-medium truncate"
+                            style={{ color: "var(--text-primary)" }}
+                          >
+                            {tx.title ?? tx.category ?? "Expense"}
+                          </span>
+                          <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
+                            {tx.category && (
+                              <span style={{ color: "var(--text-tertiary)" }}>{tx.category} · </span>
+                            )}
+                            {formatDisplayDate(tx.transaction_date, locale)}
+                          </span>
+                        </div>
                         <span
-                          className="text-[13px] font-medium truncate"
-                          style={{ color: "var(--text-primary)" }}
+                          className="text-[13px] font-semibold tabular-nums ml-3 flex-shrink-0"
+                          style={{ color: "var(--color-negative)" }}
                         >
-                          {t.title ?? t.category ?? "Expense"}
-                        </span>
-                        <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
-                          {t.category && (
-                            <span style={{ color: "var(--text-tertiary)" }}>{t.category} · </span>
-                          )}
-                          {formatDisplayDate(t.transaction_date, locale)}
+                          -{formatIDR(tx.amount)}
                         </span>
                       </div>
-                      <span
-                        className="text-[13px] font-semibold tabular-nums ml-3 flex-shrink-0"
-                        style={{ color: "var(--color-negative)" }}
-                      >
-                        -{formatIDR(t.amount)}
-                      </span>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

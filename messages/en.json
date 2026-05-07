@@ -299,12 +299,15 @@
     },
     "realtime": {
       "noExpenses": "No expenses this month",
-      "noExpensesDesc": "Transactions you mark as expense will appear here."
+      "noExpensesDesc": "Transactions you mark as expense will appear here.",
+      "noIncome": "No income this period",
+      "noIncomeDesc": "Transactions you mark as income will appear here."
     },
     "daily": {
       "title": "Daily Summary",
       "noData": "No income or expense transactions this period.",
       "filteredBy": "Filtered: {category}",
+      "chartView": "Chart",
       "weekdays": {
         "sun": "Su",
         "mon": "Mo",
@@ -350,10 +353,47 @@
       "loan": "Loan",
       "balanceCorrection": "Balance Correction",
       "startBalance": "Start Balance",
-      "endBalance": "End Balance"
+      "endBalance": "End Balance",
+      "savingRate": "Saving Rate"
     },
     "chart": {
       "total": "Total"
+    },
+    "savingRate": {
+      "title": "Saving Rate",
+      "benchmark": "Healthy target: ≥ 20%",
+      "na": "N/A",
+      "income": "Income",
+      "saved": "Saved"
+    },
+    "donut": {
+      "expense": "Expenses",
+      "income": "Income"
+    },
+    "monthlyOverview": {
+      "title": "Last 6 Months"
+    },
+    "netWorth": {
+      "title": "Net Worth Trend",
+      "now": "Now: {value}",
+      "from": "from {month}",
+      "insufficient": "Need at least 2 months of data"
+    },
+    "insight": {
+      "categoryUp": "{category} spending up {percent}% from {month}",
+      "lowSavingRate": "Expenses exceed 90% of income this month",
+      "categoryDominant": "{category} dominates {percent}% of your spending",
+      "expenseDown": "Spending down {percent}% — more frugal than last month",
+      "noIncome": "No income recorded this month"
+    },
+    "categoryTrend": {
+      "title": "Category Trend",
+      "sixMonths": "6-month trend for {category}",
+      "noData": "No data for this category",
+      "avgPerMonth": "Avg per month",
+      "highest": "Highest",
+      "lowest": "Lowest",
+      "recentTransactions": "Recent Transactions"
     },
     "validation": {
       "nameRequired": "Report name is required",

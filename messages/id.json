@@ -299,12 +299,15 @@
     },
     "realtime": {
       "noExpenses": "Tidak ada pengeluaran bulan ini",
-      "noExpensesDesc": "Transaksi yang ditandai sebagai pengeluaran akan muncul di sini."
+      "noExpensesDesc": "Transaksi yang ditandai sebagai pengeluaran akan muncul di sini.",
+      "noIncome": "Tidak ada pemasukan periode ini",
+      "noIncomeDesc": "Transaksi yang ditandai sebagai pemasukan akan muncul di sini."
     },
     "daily": {
       "title": "Ringkasan Harian",
       "noData": "Tidak ada transaksi masuk atau keluar pada periode ini.",
       "filteredBy": "Difilter: {category}",
+      "chartView": "Grafik",
       "weekdays": {
         "sun": "Mi",
         "mon": "Sn",
@@ -350,10 +353,47 @@
       "loan": "Pinjaman",
       "balanceCorrection": "Koreksi Saldo",
       "startBalance": "Saldo Awal",
-      "endBalance": "Saldo Akhir"
+      "endBalance": "Saldo Akhir",
+      "savingRate": "Saving Rate"
     },
     "chart": {
       "total": "Total"
+    },
+    "savingRate": {
+      "title": "Saving Rate",
+      "benchmark": "Target sehat: ≥ 20%",
+      "na": "N/A",
+      "income": "Pemasukan",
+      "saved": "Tersimpan"
+    },
+    "donut": {
+      "expense": "Pengeluaran",
+      "income": "Pemasukan"
+    },
+    "monthlyOverview": {
+      "title": "6 Bulan Terakhir"
+    },
+    "netWorth": {
+      "title": "Tren Kekayaan Bersih",
+      "now": "Sekarang: {value}",
+      "from": "dari {month}",
+      "insufficient": "Butuh minimal 2 bulan data"
+    },
+    "insight": {
+      "categoryUp": "Pengeluaran {category} naik {percent}% dari {month}",
+      "lowSavingRate": "Pengeluaran bulan ini melebihi 90% penghasilan",
+      "categoryDominant": "{category} mendominasi {percent}% pengeluaranmu",
+      "expenseDown": "Pengeluaran turun {percent}% — lebih hemat dari bulan lalu",
+      "noIncome": "Belum ada pemasukan bulan ini"
+    },
+    "categoryTrend": {
+      "title": "Tren Kategori",
+      "sixMonths": "Tren 6 bulan untuk {category}",
+      "noData": "Tidak ada data untuk kategori ini",
+      "avgPerMonth": "Rata-rata per bulan",
+      "highest": "Tertinggi",
+      "lowest": "Terendah",
+      "recentTransactions": "Transaksi Terbaru"
     },
     "validation": {
       "nameRequired": "Nama laporan tidak boleh kosong",

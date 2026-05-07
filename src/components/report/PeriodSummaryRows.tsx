@@ -87,6 +87,32 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
           color={correctionColor}
         />
       )}
+      {/* Saving Rate row */}
+      {(() => {
+        if (summary.income === 0) {
+          return (
+            <SummaryRow
+              label={t("savingRate")}
+              value="N/A"
+              color="var(--text-tertiary)"
+            />
+          );
+        }
+        const rate = ((summary.income - summary.expenses) / summary.income) * 100;
+        const rateColor =
+          rate >= 20
+            ? "var(--color-positive)"
+            : rate >= 10
+              ? "var(--color-accent)"
+              : "var(--color-negative)";
+        return (
+          <SummaryRow
+            label={t("savingRate")}
+            value={`${Math.round(rate)}%`}
+            color={rateColor}
+          />
+        );
+      })()}
     </div>
   );
 }

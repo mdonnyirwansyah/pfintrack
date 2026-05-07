@@ -2,16 +2,28 @@
 ## Module: Report
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.4
-**Tanggal:** 2026-05-05
+**Versi Dokumen:** 2.0
+**Tanggal:** 2026-05-07
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
 ---
 
+## Riwayat Revisi
+
+| Versi | Tanggal | Perubahan Utama |
+|-------|---------|----------------|
+| **2.0** | **2026-05-07** | **Formalisasi PROP-0002: Gelombang 1 (B1 Saving Rate, C1 Income Donut Toggle, A1-beta 6-Month Bar Chart), Gelombang 2 (E1 Daily Bar Chart, C2 Net Worth Line Chart, B2 Insight Card), Gelombang 3 (A2 Category Trend, D1 Loan Aging). Tambah §11 Fitur Analitik Baru, update §1 Tab Realtime dan §2 flow, update §4 kalkulasi (calcCategoryBreakdown signature, savingRate, calcCategoryBreakdownIncome), update §6 route map, update §8 Catatan Developer. Tidak ada perubahan skema data atau localStorage key.** |
+| 1.4 | 2026-05-05 | Tambah Known Implementation Issues (Bug 1: locale di Add Custom Report, Bug 2: hardcoded string di CustomReportSection). Sinkronisasi DailySummarySection: default mode Calendar, multi-month navigation, Sort pill hanya di mode List. |
+
+---
+
 > **Catatan Scope:**
-> Dokumen ini hanya mencakup **Module Report** (laporan keuangan), terdiri dari 4 tampilan utama:
-> Realtime Report, Monthly Report, Custom Report, dan Add/Edit Custom Report.
+> Dokumen ini mencakup **Module Report** (laporan keuangan), terdiri dari 4 tampilan utama yang sudah ada:
+> Realtime Report, Monthly Report, Custom Report, dan Add/Edit Custom Report —
+> ditambah fitur analitik baru dari PROP-0002: Saving Rate, Income Donut Toggle,
+> 6-Month Bar Chart, Daily Bar Chart, Net Worth Line Chart, Insight Card,
+> Category Trend Drill-down, dan Loan Aging Summary.
 > Module Report bersifat **read-only & computed** — tidak menyimpan data transaksi sendiri, melainkan mengagregasi data dari Module Transactions, Loan, dan Wallet.
 > Modul lain (Wallet, Transactions, Loan, Settings) dibahas dalam dokumen terpisah.
 > Konfigurasi global (layout, navigasi, migrasi auth) dibahas dalam dokumen **Global Architecture**.
@@ -33,7 +45,12 @@
 | 9 | **Monthly Report**: list otomatis ter-generate per bulan, mulai dari bulan terbaru ke belakang, terus mundur sepanjang ada data transaksi. |
 | 10 | **Loan** di summary report dihitung sebagai **cash flow loan**: `SUM(Get) − SUM(Give)` pada periode tersebut, dari `loan_entries` aktif. |
 | 11 | **Balance Correction** mencerminkan efek dari **edit initial balance wallet** yang terjadi pada periode tersebut. Initial balance = nilai `balance` saat wallet pertama dibuat (lihat Bagian 4 untuk perhitungan detail). |
-| 12 | **Donut chart** di Realtime hanya menampilkan kategori **Expense** (bukan Income, bukan Transfer). |
+| 12 | **Donut chart** di Realtime menampilkan dua mode: **Expense by Category** (default) dan **Income by Category** (via toggle). Toggle state disimpan di `sessionStorage` (bukan localStorage) agar tidak melanggar 7-key contract. |
+| 13 | **Saving Rate** dihitung on-the-fly dari `income` dan `expenses` yang sudah tersedia — tidak disimpan ke storage. Formula: `((Income − Expenses) / Income) × 100`. Jika Income = 0, tampilkan "N/A". |
+| 14 | **6-Month Bar Chart** di tab Monthly adalah section kolapsibel di atas list bulanan — bukan tab baru. Data: 6 bulan terakhir dari hari ini, dihitung via `calcIncome` + `calcExpenses` per bulan. Dimemoize dengan `useMemo([transactions])`. |
+| 15 | **Net Worth** per bulan = `calculateMonthlySummary().endBalance` untuk bulan tersebut. Loan cash flow sudah tercakup dalam `endBalance` sesuai formula §4.8. |
+| 16 | **Insight Card** dismiss state disimpan ke `sessionStorage` dengan key `"dismissed_insight_{YYYY-MM}"`. Reset setiap sesi baru — bukan data finansial, tidak masuk localStorage. |
+| 17 | **Fitur analitik baru** (B1, C1, A1, E1, C2, B2, A2, D1) semuanya **computed-on-the-fly** dari data existing. Tidak ada key IndexedDB/localStorage baru. Tidak ada field baru pada record yang ada. |
 
 ---
 
@@ -57,18 +74,78 @@
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
 | **Period Label** | Dinamis | Teks rata tengah menampilkan range periode bulan berjalan, format: `01 May 2026 - 31 May 2026`. Otomatis update tiap bulan. |
-| **Donut Chart (Expense by Category)** | Dinamis | Chart melingkar distribusi expense per kategori untuk periode bulan berjalan. Setiap segment punya warna berbeda. Hanya menampilkan transaksi tipe `expense` aktif. Lihat §DonutChart Enhancements di bawah. |
-| **Empty State Donut** | Dinamis | Jika tidak ada expense di periode → tampilkan placeholder ilustrasi/teks *"Belum ada pengeluaran bulan ini"*. |
-| **Category Legend List** | Dinamis | Daftar kategori expense di bawah chart. Setiap baris: color dot + nama kategori + persentase + total nominal. Row aktif mendapat background berwarna tint + outline ring + glowing dot. Urut berdasarkan nominal DESC. |
-| **Transaction List** | Dinamis | Selalu tampil di bawah donut chart (tidak perlu tap ke halaman lain). Default (tidak ada kategori dipilih): "All Transactions" — semua expense bulan berjalan, urut tanggal DESC (default), setiap baris: judul + "kategori · tanggal" + nominal negatif (`-{amount}` warna merah). Saat kategori dipilih: difilter ke kategori tersebut, header berubah menjadi "CategoryName — Transactions". Jumlah item ditampilkan di samping header. **Sort control** (SortPill) tampil di kanan header list: Newest first (default) · Oldest first · Highest amount · Lowest amount. Semua baris dibungkus dalam satu container `.glass` dengan divider antar baris. |
+| **Saving Rate Card** **(BARU di v2.0)** | Dinamis | Card di bawah Period Label. Tampil selalu (bukan hanya jika ada expense). Lihat §SavingRateCard di bawah. |
+| **Insight Card** **(BARU di v2.0)** | Dinamis (kondisional) | Card otomatis di bawah Saving Rate Card. Tampil hanya jika ada insight yang applicable — jika tidak ada, tidak ada empty state. Bisa di-dismiss oleh user. Lihat §InsightCard di bawah. |
+| **Donut Toggle Pill** **(BARU di v2.0)** | Interaktif | Dua tombol pill di atas donut chart: **"Expense"** (default) · **"Income"**. Toggle aktif: background biru, teks putih. Toggle non-aktif: background transparan, teks redup. Tap target minimal 44×44px. State disimpan ke `sessionStorage["report_donut_mode"]` saat berubah. |
+| **Donut Chart (mode Expense)** | Dinamis | Chart melingkar distribusi expense per kategori untuk periode bulan berjalan (perilaku existing — tidak berubah). Hanya menampilkan transaksi tipe `expense` aktif. Transfer wajib dikecualikan. Lihat §DonutChart Enhancements di bawah. |
+| **Donut Chart (mode Income)** **(BARU di v2.0)** | Dinamis | Chart melingkar distribusi income per kategori untuk periode bulan berjalan. Hanya menampilkan transaksi tipe `income` aktif. Transfer wajib dikecualikan. Center label: "Total Income" + grand total. Lihat §DonutChart Enhancements di bawah. |
+| **Empty State Donut** | Dinamis | Mode Expense: jika tidak ada expense di periode → teks *"Belum ada pengeluaran bulan ini"*. Mode Income **(BARU di v2.0)**: jika tidak ada income → teks *"Belum ada pemasukan bulan ini"*. |
+| **Category Legend List** | Dinamis | Daftar kategori di bawah chart. Konten menyesuaikan mode toggle (expense atau income). Setiap baris: color dot + nama kategori + persentase + total nominal. Row aktif mendapat background berwarna tint + outline ring + glowing dot. Urut berdasarkan nominal DESC. |
+| **Loan Outstanding Section** **(BARU di v2.0 — Gelombang 3)** | Dinamis (kondisional) | Section di bawah chart, tampil hanya jika ada counterparty dengan `outstanding ≠ 0`. Lihat §LoanOutstandingSection di bawah. |
+| **Transaction List** | Dinamis | Selalu tampil di bawah donut chart. Default (tidak ada kategori dipilih): "All Transactions" — semua transaksi sesuai mode toggle aktif (expense atau income), urut tanggal DESC (default). Saat mode Income aktif: menampilkan semua transaksi income bulan berjalan, nominal hijau dengan prefix `+`. Saat kategori dipilih: difilter ke kategori tersebut. Jumlah item di samping header. **Sort control** (SortPill) di kanan header: Newest first (default) · Oldest first · Highest amount · Lowest amount. Semua baris dalam container `.glass` dengan divider. |
+
+**SavingRateCard (BARU di v2.0 — Gelombang 1 / B1):**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **File** | `src/components/report/SavingRateCard.tsx` (komponen baru) |
+| **Formula** | `savingRate = ((income - expenses) / income) * 100`. Jika `income === 0` → tampilkan `"N/A"` (bukan `0%` atau angka). Jika `expenses > income && income > 0` → negatif, tampilkan sebagai bilangan negatif merah. |
+| **Progress bar** | Horizontal, lebar penuh container. Rentang: 0% = kiri, 100% = kanan. Nilai melebihi 100% di-cap di 100% untuk progress bar (angka tetap ditampilkan apa adanya). |
+| **Warna progress bar** | `>= 20%` → `var(--color-positive)` · `>= 10% dan < 20%` → `var(--color-accent)` (kuning-oranye) · `< 10%` → `var(--color-negative)` · `N/A` → `var(--bg-secondary)` (abu) |
+| **Warna angka** | Mengikuti warna progress bar |
+| **Teks benchmark** | Teks kecil di bawah bar (fixed, tidak bisa dikonfigurasi user): *"Target sehat: ≥ 20%"*. i18n key: `report.savingRate.benchmark` |
+| **Tampilan angka** | Format persentase: `"38%"` (bukan `"38,00%"` — tidak perlu desimal). Khusus N/A: teks `"N/A"` tanpa satuan. |
+| **Baris income/saved** | Di bawah progress bar: teks tertiary `"Income {formatIDR(income)}"` dan `"Saved {formatIDR(income - expenses)}"`. |
+| **Interaksi** | Tidak ada (informational only). Tidak navigasi ke halaman lain. |
+| **i18n keys yang diperlukan** | `report.savingRate.title`, `report.savingRate.benchmark`, `report.savingRate.na`, `report.savingRate.income`, `report.savingRate.saved` |
+| **Backward compatibility** | Tidak ada breaking change — ini adalah komponen baru yang diinsert di bawah Period Label. |
+
+**InsightCard (BARU di v2.0 — Gelombang 2 / B2):**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **File** | `src/components/report/InsightCard.tsx` (komponen baru) |
+| **Kondisi tampil** | Hanya jika ada satu insight yang applicable (lihat §tabel insight). Jika tidak ada → komponen tidak di-render (bukan empty state). |
+| **Dismiss** | Ikon `×` di sudut kanan atas. Tap → card tersembunyi. State dismiss disimpan ke `sessionStorage["dismissed_insight_{YYYY-MM}"]` di mana `YYYY-MM` = bulan berjalan. Reset otomatis tiap awal bulan atau sesi baru (sessionStorage bukan localStorage — tidak melanggar 7-key contract). |
+| **Prioritas insight** | Tampilkan hanya **1 insight** paling relevan berdasarkan severity score. Urutan prioritas (tinggi → rendah): anomali kategori naik (1) → saving rate < 10% (2) → satu kategori dominan (3) → pengeluaran turun (4) → tidak ada income (5). |
+| **Computational dependency** | Membutuhkan data bulan lalu: `calcExpenses(transactions, lastMonthStart, lastMonthEnd)` dan `calcCategoryBreakdown` untuk bulan lalu. Memoize semua via `useMemo`. |
+
+**Tabel jenis insight yang dihasilkan (B2):**
+
+| Kondisi | Teks Insight | i18n Key |
+|---------|-------------|----------|
+| Kategori X naik ≥ 30% dari bulan lalu | "Pengeluaran [Kategori] naik [N]% dari bulan [BulanLalu]" | `report.insight.categoryUp` |
+| Saving rate < 10% | "Pengeluaran bulan ini melebihi 90% penghasilan" | `report.insight.lowSavingRate` |
+| Satu kategori > 50% total expense | "[Kategori] mendominasi [N]% pengeluaranmu" | `report.insight.categoryDominant` |
+| Expense bulan ini < bulan lalu (semua kategori gabung) | "Pengeluaran turun [N]% — lebih hemat dari bulan lalu" | `report.insight.expenseDown` |
+| Tidak ada income bulan ini | "Belum ada pemasukan bulan ini" | `report.insight.noIncome` |
+
+**Edge case InsightCard:**
+- Jika bulan lalu tidak ada data transaksi sama sekali → insight tipe comparison (kategori naik/turun) tidak ditampilkan, fallback ke insight berikutnya yang applicable.
+- Threshold kenaikan kategori: `≥ 30%` (hardcoded, tidak bisa dikonfigurasi user di Fase 1).
 
 **DonutChart Enhancements:**
 
 | Aspek | Spesifikasi |
 |-------|-------------|
-| **Center label** | Default: "Total" + sum seluruh expense. Saat kategori dipilih: nama kategori + nominalnya, teks berwarna sesuai warna kategori tersebut. |
+| **Center label (mode Expense)** | Default: "Total" + sum seluruh expense. Saat kategori dipilih: nama kategori + nominalnya, teks berwarna sesuai warna kategori tersebut. |
+| **Center label (mode Income) (BARU)** | Default: "Total Income" + sum seluruh income. Saat kategori dipilih: nama kategori + nominalnya. |
 | **Segment aktif** | `outerRadius +6`, `innerRadius -2` (segment mengembang). Di belakang segment aktif ditambahkan glow layer: opacity `0.20`, `outerRadius +10`. |
-| **Interaksi kategori** | Tap legend/segment → toggle pilih kategori. Tidak navigasi ke halaman lain — list transaksi diperbarui in-place di bawah chart. |
+| **Interaksi kategori** | Tap legend/segment → toggle pilih kategori. Tidak navigasi ke halaman lain — list transaksi diperbarui in-place di bawah chart. Saat toggle Expense/Income berubah: `selectedCategory` direset ke `null`. |
+| **Transfer exclusion** | Wajib dikecualikan dari KEDUA mode. Filter: `type !== 'transfer'` sebelum agregasi. |
+
+**LoanOutstandingSection (BARU di v2.0 — Gelombang 3 / D1):**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **File** | `src/components/report/LoanOutstandingSection.tsx` (komponen baru) |
+| **Kondisi tampil** | Hanya jika ada minimal 1 counterparty dengan `outstanding ≠ 0` dan status bukan `paid off`. Jika tidak ada → section tidak di-render sama sekali. |
+| **Data source** | `loan_counterparties` (aktif) + `loan_entries` (aktif). Gunakan formula outstanding dari §4.4 Module Loan: `total_give − total_get` per counterparty. |
+| **Jumlah ditampilkan** | Maksimum 3 counterparty. Jika lebih dari 3 outstanding → tampilkan 3 teratas (by `Math.abs(outstanding)` DESC) + tombol "Lihat semua ›". |
+| **Format baris** | Nama counterparty + outstanding dengan warna dan prefix sesuai konvensi Loan module (merah prefix `"- "` jika outstanding > 0, hijau prefix `"+ "` jika outstanding < 0) + **aging dalam hari** (contoh: `28d`). |
+| **Kalkulasi aging** | `agingDays = floor((today - max(transaction_date dari entry outstanding)) / 86400000)`. Aging per counterparty dihitung dari entry aktif terakhir yang berkontribusi pada outstanding — bukan dari `created_at` counterparty. |
+| **Tombol "Lihat semua ›"** | Navigate ke `/loan`. Tap target ≥ 44px. |
+| **i18n keys** | `report.loanOutstanding.title`, `report.loanOutstanding.viewAll`, `report.loanOutstanding.days` |
 
 ---
 
@@ -76,11 +153,46 @@
 
 | Komponen | Sifat | Deskripsi Teknis |
 |----------|-------|-----------------|
+| **6-Month Overview Chart** **(BARU di v2.0)** | Dinamis | Section pertama di tab Monthly, di atas list bulanan. Berisi bar chart grouped income/expense untuk 6 bulan terakhir. Lihat §MonthlyOverviewChart di bawah. |
+| **Net Worth Trend Chart** **(BARU di v2.0 — Gelombang 2)** | Dinamis | Section kedua di tab Monthly, di bawah 6-Month Overview Chart dan di atas list bulanan. Berisi line chart `endBalance` per bulan selama 12 bulan terakhir. Lihat §NetWorthChart di bawah. |
 | **Monthly Section** | Dinamis | Per bulan, ditampilkan satu blok dengan format konsisten (lihat di bawah). Section diurutkan dari bulan terbaru ke belakang. |
 | **Section Header** | Statis | Teks rata tengah dengan format range: `01 May 2026 - 31 May 2026`. Tap → drill-down ke detail periode. |
-| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (merah, prefix `"- "` jika > 0) <br>• **Income** (hijau, prefix `+`) <br>• *divider* (antara Income dan Balance) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
+| **Summary Rows** | Dinamis | Daftar baris kunci-nilai untuk bulan tersebut (urut dari atas ke bawah): <br>• **Start Balance** — saldo kumulatif sebelum bulan ini (netral) <br>• *divider* <br>• **Expenses** (merah, prefix `"- "` jika > 0) <br>• **Income** (hijau, prefix `+`) <br>• *divider* (antara Income dan Balance) <br>• **Balance** (hijau/merah/netral, prefix `+`/`-`) <br>• **Loan** (hijau/merah) — tampil hanya jika ada loan_entry aktif di bulan tersebut <br>• **Balance Correction** (hijau/merah) — tampil hanya jika ada perubahan balance wallet di bulan tersebut <br>• *divider* <br>• **Saving Rate** (BARU di v2.0) — `((income - expenses) / income) × 100`. Warna sesuai threshold: hijau ≥ 20%, kuning 10–19%, merah < 10%. Tampil `"N/A"` jika income = 0. Tampil selalu (tidak kondisional). <br>• **End Balance** — `Start Balance + Balance + Balance Correction` (bold, hijau/merah/netral) |
 | **Section Chevron** | Interaktif | Ikon `›` di kanan section header. Tap → navigasi ke screen detail breakdown per kategori. |
 | **Auto-load (Infinite Scroll)** | Dinamis | Saat user scroll ke bawah, sistem menambahkan section bulan-bulan sebelumnya yang masih punya data. Berhenti otomatis saat sudah mencapai bulan transaksi paling lama. Load awal: 6 bulan. Load tambahan: 6 bulan per scroll. |
+
+**MonthlyOverviewChart (BARU di v2.0 — Gelombang 1 / A1-beta):**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **File** | `src/components/report/MonthlyOverviewChart.tsx` (komponen baru) |
+| **Library** | Recharts `BarChart` + `Bar` + `ResponsiveContainer` (sudah tersedia sebagai dependency). Tidak perlu dependency baru. |
+| **Data** | 6 bulan terakhir dihitung mundur dari bulan berjalan (inklusif). Per bulan: `income = calcIncome(transactions, start, end)`, `expenses = calcExpenses(transactions, start, end)`. |
+| **Memoization** | `useMemo` dengan dependency `[transactions]`. Tidak re-compute saat state lain berubah. |
+| **Tampilan bar** | Grouped bar per bulan: income (warna `var(--color-positive)`) di kiri, expense (warna `var(--color-negative)`) di kanan. |
+| **X-axis** | Label bulan dalam format singkat locale-aware: `"May"` (EN) atau `"Mei"` (ID). Gunakan `date-fns` locale untuk format. |
+| **Y-axis** | Tidak ditampilkan (terlalu sempit di 375px). Nilai numerik cukup dari tooltip. |
+| **Tooltip** | Muncul saat tap/hover bar. Tampilkan: bulan penuh + income + expense. Format nilai: `formatIDR()`. |
+| **Interaksi tap bar** | Tap bar mana saja → navigasi ke `/report/detail?start={YYYY-MM-01}&end={YYYY-MM-akhir}`. |
+| **Viewport** | Wajib tidak overflow di 375px / 390px / 430px. Gunakan `<ResponsiveContainer width="100%" height={160}>`. |
+| **Empty/partial** | Jika hanya ada 1 bulan data → tampilkan 1 bar. Jika bulan tertentu tidak ada transaksi → nilai 0 (bar tidak muncul, tapi slot X-axis tetap ada). |
+| **i18n keys** | `report.monthlyOverview.title` |
+| **Posisi di tab** | Di atas seluruh list `MonthlySection`. Di bawah section ini: Net Worth Trend Chart (jika ada), kemudian list bulanan. |
+
+**NetWorthChart (BARU di v2.0 — Gelombang 2 / C2):**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **File** | `src/components/report/NetWorthChart.tsx` (komponen baru) |
+| **Library** | Recharts `LineChart` + `Line` + `ResponsiveContainer` (sudah tersedia). |
+| **Data** | 12 bulan terakhir. Per bulan: `endBalance = calculateMonthlySummary(...).endBalance`. Loan cash flow sudah tercakup dalam `endBalance` — tidak perlu formula terpisah. |
+| **Memoization** | `useMemo` dengan dependency `[transactions, loanEntries, balanceHistory]`. |
+| **Tampilan garis** | Single line chart. Warna garis: `var(--color-brand)`. Titik (dot) aktif pada hover/tap. |
+| **Nilai ringkasan** | Di bawah chart: teks "Sekarang: {formatIDR(endBalanceBulanIni)}" dan "+{formatIDR(delta)} dari {bulanTermawal}" (atau nilai negatif jika turun). |
+| **X-axis** | Label bulan singkat locale-aware (sama dengan MonthlyOverviewChart). |
+| **Viewport** | `<ResponsiveContainer width="100%" height={120}>`. Tidak overflow di 375px. |
+| **Edge case** | Jika hanya 1 bulan data → tampilkan 1 titik, bukan garis. Jika semua bulan `endBalance = 0` → chart tetap ditampilkan dengan garis mendatar di 0. |
+| **i18n keys** | `report.netWorth.title`, `report.netWorth.now`, `report.netWorth.from` |
 
 ---
 
@@ -143,11 +255,27 @@ Struktur form **identik** dengan Add Custom Report, dengan tambahan:
 
 | Aspek | Spesifikasi |
 |-------|-------------|
-| **Toggle View** | Dua tombol (List / Calendar) di kanan header section. **Default: Calendar.** |
+| **Toggle View** | Tiga tombol di kanan header section: **List** · **Calendar** · **Chart** **(BARU di v2.0 — Gelombang 2 / E1)**. **Default: Calendar.** |
 | **Mode List** | Daftar hari yang memiliki transaksi pada periode terpilih. Setiap baris: format hari (mis. "Thu, 01 May") + **income hari itu (hijau, `+amount`)** jika ada + **total expense hari itu (merah, `-amount`)** jika ada. **Sort control** (SortPill) tampil di kanan header saat mode list aktif. Default sort: Newest first. |
 | **Mode Calendar** | Kalender grid per bulan. Setiap sel: tanggal + **income hari itu (hijau, `+abbr`)** jika ada + **expense hari itu (merah, `-abbr`)** jika ada. Angka disingkat otomatis: `1.200.000 → "1.2M"`, `50.000 → "50K"`. Hari tanpa transaksi: hanya tanggal. Hari di luar bulan saat ini: opacity 0.2. |
+| **Mode Chart (BARU di v2.0)** | Bar chart grouped per hari: income (hijau) dan expense (merah). Menggunakan data yang sama dengan Mode List (dari `buildDailySummaries`). Tap bar → scroll ke transaksi hari tersebut di Transaction List di bawah. Lihat §DailyBarChart di bawah. |
 | **Multi-month Navigation** | Jika periode mencakup lebih dari satu bulan (custom report): header kalender memiliki tombol `‹` (bulan sebelumnya) dan `›` (bulan berikutnya). Tombol `‹` di-disable pada bulan pertama range, `›` di-disable pada bulan terakhir range. |
 | **State `currentMonth`** | Dimulai dari bulan pertama periode (`startOfMonth(start)`). Navigasi prev/next menggunakan `subMonths`/`addMonths` dari `date-fns`. |
+
+**DailyBarChart (BARU di v2.0 — Gelombang 2 / E1):**
+
+| Aspek | Spesifikasi |
+|-------|-------------|
+| **File** | Diimplementasikan di dalam `DailySummarySection.tsx` sebagai case ketiga pada view toggle. Tidak perlu file komponen baru. |
+| **Library** | Recharts `BarChart` grouped. Gunakan data yang sudah dihitung oleh `buildDailySummaries()` — data yang sama dengan Mode List dan Mode Calendar. Tidak ada kalkulasi tambahan. |
+| **X-axis** | Label tanggal (angka saja, mis. `"1"`, `"5"`, `"10"`). Jika periode > 20 hari, tampilkan setiap 5 hari agar tidak berdesakan di 375px. |
+| **Y-axis** | Tidak ditampilkan (sempit). Nilai via tooltip. |
+| **Grouped bar** | Income (kiri, `var(--color-positive)`) dan Expense (kanan, `var(--color-negative)`) per hari. |
+| **Tooltip** | Tap/hover: tanggal + income + expense. |
+| **Interaksi tap** | Tap bar hari X → scroll ke section hari X di Transaction List di bawah DailySummarySection. Gunakan anchor ID berformat `day-{YYYY-MM-DD}`. |
+| **Viewport** | `<ResponsiveContainer width="100%" height={160}>`. Tidak overflow di 375px. |
+| **Backward compatibility** | View toggle yang sebelumnya `"list" | "calendar"` diperluas menjadi `"list" | "calendar" | "chart"`. Default tetap `"calendar"`. Tidak ada breaking change. |
+| **i18n keys** | `report.daily.chartView` (label tombol toggle Chart) |
 
 ---
 
@@ -316,9 +444,70 @@ User tap segment atau baris legend di tab Realtime
    Transaction list di bawah chart diperbarui in-place:
      - Kategori dipilih → filter ke kategori tersebut
        Header: "CategoryName — Transactions"
-     - Tidak ada pilihan → tampilkan semua expense bulan ini
+     - Tidak ada pilihan → tampilkan semua expense/income bulan ini
+       (sesuai mode toggle aktif)
        Header: "All Transactions"
    (Tidak ada navigasi ke /report/detail)
+```
+
+---
+
+### Flow: Toggle Expense/Income di Tab Realtime (BARU di v2.0)
+
+```
+User tap toggle "Income" di atas donut chart
+              ↓
+   State donut_mode = 'income'
+   Simpan ke sessionStorage["report_donut_mode"]
+              ↓
+   selectedCategory direset ke null
+              ↓
+   Donut chart di-rerender:
+     Data: calcCategoryBreakdown(transactions, start, end, 'income')
+     Center label: "Total Income" + grand total income
+     Legend: kategori income DESC
+              ↓
+   Transaction list di bawah diperbarui in-place:
+     Filter: type='income', is_active=true, periode bulan berjalan
+     Nominal: hijau + prefix "+"
+              ↓
+   Jika tidak ada income → Empty State "Belum ada pemasukan bulan ini"
+              ↓
+User tap toggle "Expense" (kembali ke default)
+              ↓
+   State donut_mode = 'expense'
+   Simpan ke sessionStorage
+   selectedCategory direset ke null
+   Donut chart + list kembali ke mode expense (perilaku existing)
+```
+
+---
+
+### Flow: Tap Bar di 6-Month Overview Chart (BARU di v2.0)
+
+```
+User tap bar bulan "Apr" di MonthlyOverviewChart
+              ↓
+   Navigasi ke /report/detail?start=2026-04-01&end=2026-04-30
+              ↓
+   Report detail terbuka (donut chart expense + DailySummarySection + transaction list)
+   Perilaku identik dengan drill-down dari Monthly section
+```
+
+---
+
+### Flow: Dismiss Insight Card (BARU di v2.0)
+
+```
+User melihat InsightCard di tab Realtime
+              ↓
+   User tap ikon × di kanan atas card
+              ↓
+   Card tersembunyi (tidak re-render)
+   Simpan ke sessionStorage["dismissed_insight_{YYYY-MM}"]
+              ↓
+   Sesi baru (reload app) atau bulan baru:
+     sessionStorage terhapus → card akan muncul lagi jika insight masih applicable
 ```
 
 ---
@@ -494,6 +683,90 @@ End Balance(periode) = Start Balance + Balance + (Balance Correction ?? 0)
 
 ---
 
+### 4.9 Saving Rate (BARU di v2.0)
+
+```
+Saving Rate(periode) = ((Income(periode) − Expenses(periode)) / Income(periode)) × 100
+```
+
+| Kondisi | Nilai | Tampilan |
+|---------|-------|----------|
+| `Income > 0 AND (Income - Expenses) >= 0` | Persentase positif | Format: `"38%"`. Warna sesuai threshold. |
+| `Income > 0 AND Expenses > Income` | Persentase negatif | Format: `"-12%"`. Warna: `var(--color-negative)`. |
+| `Income == 0` | N/A | Tampilkan string `"N/A"`. Tidak ada progress bar (atau bar abu-abu kosong). |
+
+**Threshold warna:**
+- `>= 20%` → `var(--color-positive)` (sehat)
+- `>= 10% AND < 20%` → `var(--color-accent)` (perhatian)
+- `< 10%` (termasuk negatif) → `var(--color-negative)` (boros)
+
+**Benchmark hardcoded:** "Target sehat: ≥ 20%" — tidak bisa dikonfigurasi user di Fase 1.
+
+**Computed dependency:** Menggunakan `income` dan `expenses` dari `calcPeriodSummary()` atau `calculateMonthlySummary()` yang sudah ada. Tidak ada fungsi baru diperlukan untuk menghitung nilai dasar — hanya formula turunan yang diterapkan di komponen.
+
+**Fase 2 note:** Pure derived metric — tidak perlu disimpan ke database.
+
+---
+
+### 4.10 calcCategoryBreakdown — Perluasan Signature (BARU di v2.0)
+
+Fungsi `calcCategoryBreakdown` di `src/lib/report/calculations.ts` diperluas dengan parameter `type` baru:
+
+```ts
+export function calcCategoryBreakdown(
+  transactions: Transaction[],
+  start: string,
+  end: string,
+  type: "expense" | "income" = "expense"  // DEFAULT tetap "expense" — backward compatible
+): CategoryBreakdown[]
+```
+
+**Perubahan internal:**
+- Filter `t.type === "expense"` diubah menjadi `t.type === type`
+- Filter `t.category !== "Balance Correction"` tetap berlaku untuk KEDUA mode
+- Transfer (`type === "transfer"`) wajib dikecualikan dari kedua mode
+
+**Backward compatibility:**
+- Semua caller existing yang memanggil `calcCategoryBreakdown(transactions, start, end)` tanpa parameter keempat tetap mendapat perilaku expense yang sama karena default `"expense"`.
+- Tidak ada breaking change pada call sites yang ada.
+
+**Call sites yang perlu diperbarui:**
+- `src/components/report/RealtimeTab.tsx` — tambah state `donutMode` dan teruskan ke fungsi
+- `src/app/report/detail/page.tsx` — tetap memanggil default (tidak perlu diubah)
+
+---
+
+### 4.11 Category Trend Calculation (BARU di v2.0 — Gelombang 3 / A2)
+
+Untuk halaman `/report/category`, dihitung data trend 6 bulan per kategori:
+
+```
+Untuk setiap bulan dalam 6 bulan terakhir:
+  monthTotal[month] = SUM(amount WHERE category=X AND type='expense'
+                          AND is_active=true AND transaction_date IN [start, end])
+  avgPerMonth       = SUM(monthTotal[*]) / count(bulan dengan monthTotal > 0)
+  highestMonth      = month dengan MAX(monthTotal)
+  lowestMonth       = month dengan MIN(monthTotal) di mana monthTotal > 0
+```
+
+**Computational complexity:** O(6n) — 6 pass filter `O(n)` masing-masing. Dimemoize via `useMemo([transactions, categoryName])`.
+
+---
+
+### 4.12 Net Worth History Calculation (BARU di v2.0 — Gelombang 2 / C2)
+
+```
+Untuk setiap bulan dalam 12 bulan terakhir:
+  netWorth[month] = calculateMonthlySummary(transactions, loanEntries,
+                    balanceHistory, start, end).endBalance
+```
+
+**Catatan:** `endBalance` sudah mencakup loan cash flow via formula §4.8. Tidak ada formula terpisah "net worth tanpa loan".
+
+**Computational complexity:** O(12n) — 12 panggilan `calculateMonthlySummary()` masing-masing O(n). Dimemoize via `useMemo([transactions, loanEntries, balanceHistory])`.
+
+---
+
 ## 5. Data Modeling (localStorage Schema)
 
 > Module Report **tidak memiliki tabel data utama**. Hanya satu key tambahan yang murni dimiliki Module Report: `custom_reports`. Plus satu key auxiliary: `wallet_balance_history` (terkait Balance Correction).
@@ -607,6 +880,7 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 | `transactions` | `Transaction[]` | `[]` | Dimuat sekali saat mount **dan juga di-reload setiap kali tab berubah** untuk memastikan data selalu fresh. |
 | `loanEntries` | `LoanEntry[]` | `[]` | Sama — reload on tab change |
 | `balanceHistory` | `WalletBalanceHistory[]` | `[]` | Sama — reload on tab change |
+| `loanCounterparties` **(BARU di v2.0 — Gelombang 3)** | `LoanCounterparty[]` | `[]` | Dimuat untuk Loan Outstanding Section di Realtime tab. Reload on tab change. Hanya digunakan jika LoanOutstandingSection diimplementasikan (Gelombang 3). |
 
 ---
 
@@ -616,8 +890,11 @@ Module Report **tidak boleh menulis** ke key milik modul lain.
 |-------|------|-------------|------------|
 | `period.start` | String (ISO date) | Tanggal 1 bulan ini | |
 | `period.end` | String (ISO date) | Tanggal akhir bulan ini | |
-| `categoryBreakdown` | Array of `{category, total, percentage, color}` | `[]` | Data untuk chart + legend |
-| `grandTotalExpense` | Number | `0` | Total expense periode |
+| `categoryBreakdown` | Array of `{category, total, percentage, color}` | `[]` | Data untuk chart + legend (expense atau income tergantung `donutMode`) |
+| `grandTotal` | Number | `0` | Total expense atau income periode (tergantung `donutMode`) |
+| `donutMode` **(BARU di v2.0)** | `'expense' / 'income'` | Dari `sessionStorage["report_donut_mode"]`, fallback `'expense'` | Mode donut chart aktif. Dipersist ke `sessionStorage` saat berubah. |
+| `selectedCategory` | String atau `null` | `null` | Kategori yang dipilih di donut. **Direset ke `null` saat `donutMode` berubah.** |
+| `insightDismissed` **(BARU di v2.0)** | Boolean | Dari `sessionStorage["dismissed_insight_{YYYY-MM}"]`, fallback `false` | Flag dismiss Insight Card. Baca dari sessionStorage saat mount. |
 
 ---
 
@@ -689,6 +966,25 @@ Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows`
 | `/report/custom/add` | Add Custom Report | Form tambah custom report baru |
 | `/report/custom/[id]/edit` | Edit Custom Report | Form edit + delete custom report |
 | `/report/detail?start=...&end=...` | Report Detail per Periode | Drill-down dari Monthly/Custom: donut chart per kategori untuk periode terpilih |
+| `/report/category?name={CategoryName}` **(BARU di v2.0 — Gelombang 3 / A2)** | Category Trend | Trend 6 bulan per kategori expense. Accessible dari tap nama kategori di donut chart atau legend. Lihat §CategoryTrendScreen di bawah. |
+
+---
+
+**CategoryTrendScreen (BARU di v2.0 — Gelombang 3 / A2):**
+
+> File: `src/app/report/category/page.tsx` (halaman baru)
+> Diakses via: `/report/category?name={CategoryName}`
+
+| Komponen | Sifat | Deskripsi Teknis |
+|----------|-------|-----------------|
+| **App Header** | Statis | Tombol back `‹`. Judul = nama kategori (dari query param `name`). |
+| **6-Month Trend Chart** | Dinamis | Bar chart vertikal per bulan (6 bulan terakhir) untuk kategori ini. Hanya tipe `expense`. Warna bar: `var(--color-negative)`. Library: Recharts `BarChart`. `<ResponsiveContainer width="100%" height={160}>`. |
+| **Ringkasan Statistik** | Dinamis | Tiga baris di bawah chart: "Rata-rata per bulan: {formatIDR(avg)}" · "Tertinggi: {bulan} ({formatIDR(max)})" · "Terendah: {bulan} ({formatIDR(min)})" — hanya menampilkan bulan yang memiliki data (bukan bulan dengan nilai 0). |
+| **Recent Transactions** | Dinamis | Daftar transaksi expense kategori ini, urut DESC by date. Filter: periode bulan berjalan saja (bukan 6 bulan). Format baris: identik dengan transaction list di Realtime Tab. |
+
+**Navigasi ke Category Trend:**
+- Dari Realtime Tab: tidak ada navigasi langsung di gelombang 1. Fitur ini Gelombang 3.
+- Dari Report Detail (`/report/detail`): tap nama kategori di legend — tambah link ke `/report/category?name={kategori}`.
 
 ---
 
@@ -713,6 +1009,15 @@ Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows`
 | **Data Refresh on Tab Switch** | Saat user berpindah tab, data source (`transactions`, `loanEntries`, `balanceHistory`) dibaca ulang dari localStorage untuk memastikan data selalu fresh (jika user menambah/edit transaksi di tab lain dan kembali ke Report). |
 | **DailySummarySection — Category Filter** | Saat `selectedCategory` aktif di DailySummarySection, hanya expense yang cocok dengan kategori tersebut yang ditampilkan (income tidak ditampilkan dalam mode filter kategori). |
 | **Dead Code: `src/features/report/`** | Direktori ini berisi 4 file placeholder kosong (`CustomReportForm.tsx`, `ExpenseDonut.tsx`, `ReportSummary.tsx`, `useReportAggregation.ts`) yang tidak digunakan. Implementasi aktual berada di `src/components/report/` dan `src/lib/report/`. File-file ini dapat dihapus. |
+| **Recharts — BarChart & LineChart** | `BarChart` dan `LineChart` dari Recharts tersedia via dependensi yang sama dengan `PieChart` yang sudah ada. Tidak perlu instalasi package baru. Gunakan `ResponsiveContainer` untuk semua chart agar responsif di semua viewport. |
+| **sessionStorage (bukan localStorage)** | Tiga state UI ephemeral disimpan di `sessionStorage`: (1) `"report_donut_mode"` — toggle Expense/Income, (2) `"dismissed_insight_{YYYY-MM}"` — dismiss insight card, (3) `"report_active_tab"` — tab aktif (sudah ada). Semua ini bukan data finansial dan tidak melanggar 7-key localStorage contract. |
+| **calcCategoryBreakdown — Parameter Baru** | Saat mengimplementasikan Income Donut (C1), parameter `type` ditambahkan ke `calcCategoryBreakdown` dengan default `"expense"`. Semua call site existing memanggil tanpa parameter keempat — perilaku tidak berubah. Hanya `RealtimeTab.tsx` yang perlu diperbarui untuk meneruskan mode aktif. |
+| **Saving Rate di PeriodSummaryRows** | Baris Saving Rate ditambahkan di `PeriodSummaryRows.tsx` antara Balance Correction dan End Balance. `PeriodSummaryRows` menerima `PeriodSummary` yang sudah memiliki `income` dan `expenses` — tidak perlu prop baru, hanya tambah baris perhitungan di-dalam komponen. Warna baris: ikuti threshold §4.9. |
+| **MonthlyTab — Props Tambahan** | `MonthlyTab.tsx` sudah menerima `transactions`, `loanEntries`, `balanceHistory`. Tidak perlu props baru untuk `MonthlyOverviewChart` dan `NetWorthChart` — semua data sudah tersedia. Kedua komponen baru di-instantiate di atas loop `visibleMonths`. |
+| **LoanOutstandingSection — Data Source** | Komponen ini membutuhkan `loan_counterparties` dan `loan_entries` yang saat ini tidak di-pass ke `RealtimeTab`. Halaman `src/app/report/page.tsx` perlu di-update untuk load dan pass `loanEntries` dan `counterparties` ke `RealtimeTab`, atau ke komponen baru tersebut secara langsung. |
+| **CategoryTrendScreen — Route Baru** | Buat file `src/app/report/category/page.tsx`. Ambil query param `name` via `useSearchParams()`. Semua data dibaca dari `transactionsRepo.getAll()` via `useEffect` + `useState`. |
+| **Viewport Testing** | Semua komponen baru (SavingRateCard, MonthlyOverviewChart, NetWorthChart, DailyBarChart, LoanOutstandingSection, InsightCard) wajib diuji di viewport 375px / 390px / 430px. Khususnya chart — gunakan `<ResponsiveContainer width="100%">` selalu. |
+| **i18n — Keys Baru** | Lihat tabel i18n keys di §11. Semua keys baru wajib ditambahkan ke `src/i18n/messages/en.json` dan `src/i18n/messages/id.json` sebelum komponen dirender. |
 
 ---
 
@@ -792,5 +1097,161 @@ const locale = useLocale();
 
 ---
 
-*— End of Technical Specification: Module Report (v1.4) —*
+## 11. Fitur Analitik Baru — PROP-0002 (v2.0)
+
+> Bagian ini menjadi referensi cepat untuk `module-report-dev`. Detail teknis masing-masing fitur ada di §1 (UI), §2 (Flow), dan §4 (Kalkulasi).
+
+### 11.1 Invariant Check — Semua Fitur PROP-0002
+
+| Constraint | Status |
+|------------|--------|
+| Tidak menambah localStorage/IndexedDB key baru | Semua 8 fitur: **OK** |
+| Semua data computed-on-the-fly, tidak di-cache | **OK** |
+| Transfer dikecualikan dari income/expense breakdown | **OK** |
+| Balance Correction dikecualikan dari income/expense breakdown | **OK** |
+| Soft delete dihormati (hanya data `is_active=true`) | **OK** |
+| Wallet balance rules tidak disentuh (read-only module) | **OK** |
+| Tidak ada record baru yang dibuat | **OK** |
+| sessionStorage (bukan localStorage) untuk UI state ephemeral | `report_donut_mode`, `dismissed_insight_*` |
+
+### 11.2 Gelombang 1 — P0, Segera Diimplementasikan
+
+**Status: Siap dieksekusi oleh `module-report-dev`.**
+
+| Fitur | ID | File yang Diedit | File Baru | Ref Spec |
+|-------|----|-----------------|-----------|---------|
+| Saving Rate di Realtime + Monthly | B1 | `RealtimeTab.tsx`, `PeriodSummaryRows.tsx` | `SavingRateCard.tsx` | §1 Tab 1, §4.9 |
+| Income Donut Toggle | C1 | `RealtimeTab.tsx`, `calculations.ts` | — | §1 Tab 1, §4.10 |
+| 6-Month Bar Chart di Monthly | A1-beta | `MonthlyTab.tsx` | `MonthlyOverviewChart.tsx` | §1 Tab 2, §4 |
+
+**Checklist per fitur Gelombang 1:**
+
+**B1 — Saving Rate:**
+- [ ] Buat `src/components/report/SavingRateCard.tsx` dengan props `{ income: number, expenses: number }`
+- [ ] Tambah `<SavingRateCard>` di `RealtimeTab.tsx` di bawah Period Label
+- [ ] Tambah baris Saving Rate di `PeriodSummaryRows.tsx` antara Balance Correction dan End Balance. Props `PeriodSummary` sudah memiliki `income` dan `expenses` — tidak perlu prop baru.
+- [ ] Handle edge case `income === 0` → tampilkan `"N/A"`
+- [ ] Handle negatif (expenses > income) → warna merah, angka negatif
+- [ ] Warna progress bar sesuai threshold: ≥20% hijau, 10–19% oranye, <10% merah
+- [ ] Tambah i18n keys: `report.savingRate.title`, `report.savingRate.benchmark`, `report.savingRate.na`, `report.savingRate.income`, `report.savingRate.saved`
+- [ ] Test viewport 375 / 390 / 430px
+
+**C1 — Income Donut Toggle:**
+- [ ] Update signature `calcCategoryBreakdown` di `calculations.ts`: tambah param `type: "expense" | "income" = "expense"` (backward compatible)
+- [ ] Perbarui filter internal: `t.type === type` (bukan hardcode `'expense'`)
+- [ ] Pastikan `category !== "Balance Correction"` dan `type !== "transfer"` masih dikecualikan di kedua mode
+- [ ] Tambah toggle pill di `RealtimeTab.tsx` di atas `<DonutChart>`
+- [ ] State `donutMode: 'expense' | 'income'` di-init dari `sessionStorage["report_donut_mode"]`, fallback `'expense'`
+- [ ] Saat toggle berubah: reset `selectedCategory` ke `null`, simpan ke `sessionStorage`
+- [ ] Saat mode Income: update center label chart menjadi "Total Income"
+- [ ] Transaction list filter: saat Income → `type='income'`, saat Expense → `type='expense'`
+- [ ] Tap target toggle pill: minimal 44×44px
+- [ ] Tambah i18n keys: `report.donut.expense`, `report.donut.income`
+- [ ] Test viewport 375 / 390 / 430px
+
+**A1-beta — 6-Month Bar Chart:**
+- [ ] Buat `src/components/report/MonthlyOverviewChart.tsx` dengan props `{ transactions: Transaction[] }`
+- [ ] Hitung 6 bulan terakhir (inklusif bulan berjalan): loop mundur dari bulan ini
+- [ ] Per bulan: `calcIncome(transactions, start, end)` dan `calcExpenses(transactions, start, end)`
+- [ ] `useMemo` dengan dependency `[transactions]`
+- [ ] Render `<BarChart>` grouped: income (hijau) | expense (merah)
+- [ ] `<ResponsiveContainer width="100%" height={160}>`
+- [ ] Tap bar → navigate ke `/report/detail?start=...&end=...`
+- [ ] X-axis: label bulan singkat locale-aware dari `date-fns`
+- [ ] Sisipkan `<MonthlyOverviewChart>` di `MonthlyTab.tsx` di atas loop `visibleMonths`
+- [ ] Tidak overflow di 375px
+- [ ] Tambah i18n key: `report.monthlyOverview.title`
+- [ ] Test viewport 375 / 390 / 430px
+
+### 11.3 Gelombang 2 — P1, Setelah Gelombang 1 Selesai
+
+**Status: Spec cukup untuk dieksekusi. Maksimum satu klarifikasi per fitur diperbolehkan.**
+
+| Fitur | ID | File yang Diedit | File Baru | Ref Spec |
+|-------|----|-----------------|-----------|---------|
+| Daily Bar Chart di Report Detail | E1 | `DailySummarySection.tsx` | — | §1 Screen 4, §4 |
+| Net Worth Line Chart | C2 | `MonthlyTab.tsx` | `NetWorthChart.tsx` | §1 Tab 2, §4.12 |
+| Top Spending Insight Card | B2 | `RealtimeTab.tsx` | `InsightCard.tsx` | §1 Tab 1, §4 |
+
+**Ringkasan per fitur Gelombang 2:**
+
+**E1 — Daily Bar Chart:**
+- Tambah state `view: "list" | "calendar" | "chart"` di `DailySummarySection.tsx` (extend existing toggle)
+- Mode Chart: render `<BarChart>` dengan data dari `buildDailySummaries()` (sudah ada, tidak perlu fungsi baru)
+- Grouped bar per hari: income (hijau) | expense (merah). X-axis: tanggal (angka saja)
+- Tap bar → scroll ke anchor `day-{YYYY-MM-DD}` di Transaction List
+- Viewport: `<ResponsiveContainer width="100%" height={160}>`
+
+**C2 — Net Worth Line Chart:**
+- Buat `src/components/report/NetWorthChart.tsx` dengan props `{ transactions, loanEntries, balanceHistory }`
+- Hitung `endBalance` untuk 12 bulan terakhir via `calculateMonthlySummary()`
+- `useMemo([transactions, loanEntries, balanceHistory])`
+- Render `<LineChart>`, warna `var(--color-brand)`
+- Sisipkan di `MonthlyTab.tsx` di bawah `MonthlyOverviewChart`, di atas loop bulanan
+- `MonthlyTab` sudah menerima `loanEntries` dan `balanceHistory` — tidak perlu props baru
+
+**B2 — Insight Card:**
+- Buat `src/components/report/InsightCard.tsx` dengan props `{ insight: InsightData | null, onDismiss: () => void }`
+- Logic `generateInsight()` dihitung di `RealtimeTab.tsx` via `useMemo([transactions])`
+- Membutuhkan data bulan lalu: hitung `start/end` bulan lalu, panggil `calcExpenses` dan `calcCategoryBreakdown` dua kali (bulan ini + bulan lalu)
+- Tampil hanya jika `insight !== null`. Jika tidak ada insight → `null` (bukan empty state)
+- Dismiss: `sessionStorage["dismissed_insight_{YYYY-MM}"]`
+- Threshold comparison: ≥ 30% naik untuk insight kategori naik
+
+### 11.4 Gelombang 3 — P1–P2, Setelah Gelombang 2
+
+**Status: Spec ringkas — cukup untuk planning, detail minor bisa dikembangkan saat implementasi.**
+
+| Fitur | ID | File yang Diedit | File Baru | Ref Spec |
+|-------|----|-----------------|-----------|---------|
+| Category Trend Drill-down | A2 | `src/app/report/detail/page.tsx` (tambah link) | `src/app/report/category/page.tsx` | §7, §4.11 |
+| Loan Aging di Report | D1 | `RealtimeTab.tsx`, `src/app/report/page.tsx` | `LoanOutstandingSection.tsx` | §1 Tab 1 |
+
+**Ringkasan Gelombang 3:**
+
+**A2 — Category Trend:**
+- Buat `src/app/report/category/page.tsx` — halaman baru
+- Ambil `?name=` via `useSearchParams()`
+- Hitung trend 6 bulan via formula §4.11
+- Bar chart vertikal (single color merah), statistik ringkasan, recent transactions
+- Tambahkan link dari legend di `/report/detail` ke `/report/category?name={kategori}`
+
+**D1 — Loan Aging:**
+- Buat `src/components/report/LoanOutstandingSection.tsx`
+- `src/app/report/page.tsx` perlu load `loan_counterparties` dan `loan_entries` lalu pass ke komponen ini
+- Tampil kondisional: hanya jika ada outstanding ≠ 0
+- Max 3 counterparty + tombol "Lihat semua ›" navigate ke `/loan`
+- Aging: `floor((today - max(transaction_date of outstanding entries)) / 86400000)` hari
+
+### 11.5 Tabel i18n Keys yang Diperlukan
+
+Developer wajib menambahkan semua keys berikut ke `src/i18n/messages/en.json` dan `src/i18n/messages/id.json` sebelum komponen terkait dirender.
+
+| Key | Konteks | Gelombang |
+|-----|---------|-----------|
+| `report.savingRate.title` | Label header SavingRateCard | G1 |
+| `report.savingRate.benchmark` | Teks "Target sehat: ≥ 20%" | G1 |
+| `report.savingRate.na` | Teks "N/A" saat income = 0 | G1 |
+| `report.savingRate.income` | Label "Income" di bawah bar | G1 |
+| `report.savingRate.saved` | Label "Saved" di bawah bar | G1 |
+| `report.donut.expense` | Label toggle pill "Expense" | G1 |
+| `report.donut.income` | Label toggle pill "Income" | G1 |
+| `report.monthlyOverview.title` | Judul section 6-Month Overview | G1 |
+| `report.daily.chartView` | Label tombol toggle "Chart" di DailySummarySection | G2 |
+| `report.netWorth.title` | Judul section Net Worth | G2 |
+| `report.netWorth.now` | Label "Sekarang: {value}" | G2 |
+| `report.netWorth.from` | Label "dari {bulan}" | G2 |
+| `report.insight.categoryUp` | Template insight kategori naik | G2 |
+| `report.insight.lowSavingRate` | Template insight saving rate rendah | G2 |
+| `report.insight.categoryDominant` | Template insight kategori dominan | G2 |
+| `report.insight.expenseDown` | Template insight pengeluaran turun | G2 |
+| `report.insight.noIncome` | Template insight tidak ada income | G2 |
+| `report.loanOutstanding.title` | Judul section Loan Outstanding | G3 |
+| `report.loanOutstanding.viewAll` | Teks "Lihat semua ›" | G3 |
+| `report.loanOutstanding.days` | Format "{N}d" aging | G3 |
+
+---
+
+*— End of Technical Specification: Module Report (v2.0) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Module Loan · Global Architecture · Module Settings*
+*PROP-0002 status: Formalized into spec on 2026-05-07, see §11 of tech-spec-module-report.md*

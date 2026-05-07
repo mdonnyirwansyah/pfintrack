@@ -2,10 +2,19 @@
 ## Global Architecture
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.3
-**Tanggal:** 2026-05-04
+**Versi Dokumen:** 1.4
+**Tanggal:** 2026-05-07
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
+
+---
+
+## Riwayat Revisi
+
+| Versi | Tanggal | Perubahan Utama |
+|-------|---------|----------------|
+| **1.4** | **2026-05-07** | **Tambah route `/report/category` di §2.2 Route Map sebagai bagian formalisasi PROP-0002 (Module Report v2.0).** |
+| 1.3 | 2026-05-04 | Versi awal yang didokumentasikan. |
 
 ---
 
@@ -78,6 +87,7 @@
 | `/report/custom/add` | Report | Form tambah custom report |
 | `/report/custom/[id]/edit` | Report | Edit/delete custom report |
 | `/report/detail` | Report | Drill-down detail per periode |
+| `/report/category` | Report | Category trend drill-down (6 bulan per kategori) — BARU v2.0 |
 | `/loan` | Loan | Daftar counterparty |
 | `/loan/[counterpartyId]` | Loan | Detail per orang |
 | `/loan/add/give` | Loan | Form tambah Give |
@@ -737,4 +747,4 @@ Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
 
 ---
 
-*— End of Technical Specification: Global Architecture (v1.3) —*
+*— End of Technical Specification: Global Architecture (v1.4) —*
