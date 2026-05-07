@@ -147,6 +147,7 @@
   --border-glass: rgba(255, 255, 255, 0.5);
   --border-nav: rgba(0, 0, 0, 0.06);
   --divider: rgba(0, 0, 0, 0.08);
+  --bg-icon: rgba(0, 0, 0, 0.06);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.03);
@@ -225,6 +226,7 @@
   --border-glass: rgba(255, 255, 255, 0.12);
   --border-nav: rgba(255, 255, 255, 0.08);
   --divider: rgba(255, 255, 255, 0.06);
+  --bg-icon: rgba(255, 255, 255, 0.10);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.20), 0 4px 12px rgba(0, 0, 0, 0.18), 0 8px 20px rgba(0, 0, 0, 0.10);

@@ -98,11 +98,11 @@ export default function SettingsPage() {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                      className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
                       style={{
                         background: isActive
                           ? "var(--color-brand-soft)"
-                          : "var(--bg-secondary)",
+                          : "var(--bg-icon)",
                       }}
                     >
                       <Icon
@@ -171,11 +171,11 @@ export default function SettingsPage() {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                      className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
                       style={{
                         background: isActive
                           ? "var(--color-brand-soft)"
-                          : "var(--bg-secondary)",
+                          : "var(--bg-icon)",
                       }}
                     >
                       <Globe
@@ -239,8 +239,8 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
-                style={{ background: "var(--bg-secondary)" }}
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
               >
                 <Hash className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
@@ -288,7 +288,7 @@ export default function SettingsPage() {
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                    className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
                     style={{ background: "var(--color-negative-soft)" }}
                   >
                     <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
@@ -328,11 +328,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
                 style={{
                   background: storagePersisted
                     ? "color-mix(in srgb, var(--color-positive) 15%, transparent)"
-                    : "var(--bg-secondary)",
+                    : "var(--bg-icon)",
                 }}
               >
                 {storagePersisted ? (
@@ -371,8 +371,8 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
-                style={{ background: "var(--bg-secondary)" }}
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
               >
                 <Download className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
@@ -396,8 +396,8 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
-                style={{ background: "var(--bg-secondary)" }}
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
               >
                 <Upload className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
@@ -434,7 +434,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
                 style={{ background: "color-mix(in srgb, var(--color-negative) 12%, transparent)" }}
               >
                 <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
@@ -463,8 +463,8 @@ export default function SettingsPage() {
           <div className={rowClass}>
             <div className="flex items-center gap-3">
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
-                style={{ background: "var(--bg-secondary)" }}
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
               >
                 <Info className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
