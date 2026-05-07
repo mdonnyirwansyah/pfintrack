@@ -17,13 +17,13 @@ export default function AddWalletPage() {
 
   // Ensure wallet store is hydrated so duplicate-name check works
   useEffect(() => {
-    loadWallets();
+    void loadWallets();
   }, [loadWallets]);
 
   const handleSubmit = async (values: WalletFormValues) => {
     setIsSubmitting(true);
     try {
-      handleCreate(values);
+      await handleCreate(values);
       router.push("/wallet");
     } finally {
       setIsSubmitting(false);

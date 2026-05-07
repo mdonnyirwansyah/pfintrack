@@ -7,6 +7,7 @@ import { LoanEntryForm, type LoanEntryFormValues } from "@/components/loan/LoanE
 import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
+import type { LoanCounterparty } from "@/lib/types/loan";
 import { useTranslations } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
@@ -21,16 +22,15 @@ function AddGiveContent() {
   const { createEntry } = useLoanEntryStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lockedCounterparty, setLockedCounterparty] = useState<LoanCounterparty | null>(null);
   const t = useTranslations("loan");
 
   useEffect(() => {
-    loadWallets();
-  }, [loadWallets]);
-
-  // Pre-fill name if counterpartyId param is provided
-  const lockedCounterparty = counterpartyIdParam
-    ? loanCounterpartiesRepo.getById(counterpartyIdParam)
-    : null;
+    void loadWallets();
+    if (counterpartyIdParam) {
+      void loanCounterpartiesRepo.getById(counterpartyIdParam).then(setLockedCounterparty);
+    }
+  }, [loadWallets, counterpartyIdParam]);
 
   const initialValues: Partial<LoanEntryFormValues> = {
     name: lockedCounterparty?.name ?? "",
@@ -39,9 +39,8 @@ function AddGiveContent() {
   async function handleSubmit(values: LoanEntryFormValues) {
     setIsSubmitting(true);
     try {
-      const counterparty = findOrCreateCounterparty(values.name);
-
-      createEntry({
+      const counterparty = await findOrCreateCounterparty(values.name);
+      await createEntry({
         counterpartyId: counterparty.id,
         type: "give",
         amount: parseIDR(values.amount),
@@ -50,7 +49,6 @@ function AddGiveContent() {
         transaction_date: values.transaction_date,
         transaction_time: values.transaction_time,
       });
-
       router.back();
     } finally {
       setIsSubmitting(false);
@@ -59,11 +57,7 @@ function AddGiveContent() {
 
   return (
     <>
-      <AppHeader
-        title={t("addGive")}
-        showBack
-      />
-
+      <AppHeader title={t("addGive")} showBack />
       <LoanEntryForm
         type="give"
         initialValues={initialValues}

@@ -69,7 +69,7 @@ implementasi MVP-nya sesuai roadmap di section 8."
 
 | ID | Judul | Status | Modul | Effort | Tanggal |
 |---|---|---|---|---|---|
-| *(belum ada — buat dengan feature-architect)* | | | | | |
+| [PROP-0001](./PROP-0001-migration-localstorage-to-indexeddb.md) | Migrate Storage Layer: localStorage → IndexedDB | Draft | Cross-cutting | L | 2026-05-06 |
 
 > Saat agent membuat proposal baru, **wajib update tabel ini** sebagai bagian dari output.
 
@@ -78,7 +78,7 @@ implementasi MVP-nya sesuai roadmap di section 8."
 ## Tips
 
 - **Jangan langsung implementasi** ide-ide besar. Lewat proposal dulu — biaya berpikir kecil, biaya refactor mahal.
-- **Ide kecil & jelas tidak perlu proposal**. Misal "tambah simbol minus di Expenses" → langsung `bugfix-adjuster`. Proposal hanya untuk yang berdampak ke arsitektur / lintas modul / butuh diskusi.
+- **Ide kecil & jelas tidak perlu proposal**. Misal "tambah simbol minus di Expenses" → langsung `bugfix-adjuster`. Proposal hanya untuk yang berdampak ke arsitektur / lintas modul / butuh seksi.
 - **Multiple options > single recommendation**. Proposal yang bagus menyajikan 2–3 pendekatan dengan tradeoff jelas, bukan satu solusi yang harus diambil.
 - **Refer ke proposal yang sudah ada**. Kalau ide baru terkait, jangan duplikasi — link ke yang lama dan extend.
 

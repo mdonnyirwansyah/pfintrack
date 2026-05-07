@@ -20,20 +20,20 @@ function daysAgo(n: number): string {
 }
 
 /** Mirror of useWalletActions.handleCreate: create wallet at 0, then apply initial balance via Balance Correction transaction. */
-function createWalletWithBalance(
+async function createWalletWithBalance(
   name: string,
   wallet_type: Parameters<typeof walletsRepo.create>[0]["wallet_type"],
   initialBalance: number,
   daysBack: number
 ) {
-  const wallet = walletsRepo.create({ name, wallet_type, balance: 0 });
+  const wallet = await walletsRepo.create({ name, wallet_type, balance: 0 });
   if (initialBalance > 0) {
-    walletBalanceHistoryRepo.create({
+    await walletBalanceHistoryRepo.create({
       wallet_id: wallet.id,
       previous_balance: 0,
       new_balance: initialBalance,
     });
-    const tx = transactionsRepo.create({
+    const tx = await transactionsRepo.create({
       type: "income",
       wallet_id: wallet.id,
       amount: initialBalance,
@@ -42,13 +42,13 @@ function createWalletWithBalance(
       transaction_date: daysAgo(daysBack),
       transaction_time: "07:00",
     });
-    applyTransactionToWallet(tx);
+    await applyTransactionToWallet(tx);
   }
   return wallet;
 }
 
 /** Mirror of useWalletActions.handleUpdate: apply a manual balance correction as a transaction. */
-function applyBalanceCorrection(
+async function applyBalanceCorrection(
   walletId: string,
   previousBalance: number,
   newBalance: number,
@@ -57,12 +57,12 @@ function applyBalanceCorrection(
 ) {
   const delta = newBalance - previousBalance;
   if (delta === 0) return;
-  walletBalanceHistoryRepo.create({
+  await walletBalanceHistoryRepo.create({
     wallet_id: walletId,
     previous_balance: previousBalance,
     new_balance: newBalance,
   });
-  const tx = transactionsRepo.create({
+  const tx = await transactionsRepo.create({
     type: delta > 0 ? "income" : "expense",
     wallet_id: walletId,
     amount: Math.abs(delta),
@@ -71,7 +71,7 @@ function applyBalanceCorrection(
     transaction_date: daysAgo(daysBack),
     transaction_time: time,
   });
-  applyTransactionToWallet(tx);
+  await applyTransactionToWallet(tx);
 }
 
 type TxDef = {
@@ -86,17 +86,17 @@ type TxDef = {
   description?: string;
 };
 
-export function injectDemoData(): void {
+export async function injectDemoData(): Promise<void> {
   // ── Wallets ───────────────────────────────────────────────────────────────
   // Each wallet is initialized with an opening balance via a Balance Correction transaction,
   // mirroring the useWalletActions.handleCreate flow in production.
-  const bca   = createWalletWithBalance("BCA",   "bank",     3_500_000, 33);
-  const gopay = createWalletWithBalance("GoPay", "e_wallet", 0,         33); // starts at 0
-  const tunai = createWalletWithBalance("Tunai", "other",    750_000,   33);
+  const bca   = await createWalletWithBalance("BCA",   "bank",     3_500_000, 33);
+  const gopay = await createWalletWithBalance("GoPay", "e_wallet", 0,         33); // starts at 0
+  const tunai = await createWalletWithBalance("Tunai", "other",    750_000,   33);
 
   // Simulate a manual BCA balance edit after reconciling with the passbook
   // (discrepancy from an overlooked admin fee — mid-April)
-  applyBalanceCorrection(bca.id, 3_500_000, 3_450_000, 20, "09:00");
+  await applyBalanceCorrection(bca.id, 3_500_000, 3_450_000, 20, "09:00");
 
   // ── Transactions — 1 month full (today = day 0, ~30 days back) ──────────
   //
@@ -193,7 +193,7 @@ export function injectDemoData(): void {
   ];
 
   for (const def of txDefs) {
-    const tx = transactionsRepo.create({
+    const tx = await transactionsRepo.create({
       type: def.type,
       wallet_id: def.walletId,
       destination_wallet_id: def.destId ?? null,
@@ -204,13 +204,13 @@ export function injectDemoData(): void {
       transaction_date: daysAgo(def.daysBack),
       transaction_time: def.time,
     });
-    applyTransactionToWallet(tx);
+    await applyTransactionToWallet(tx);
   }
 
   // ── Loan counterparties & entries ─────────────────────────────────────────
   // Budi — receivable (we lent money, not yet repaid)
-  const budi = loanCounterpartiesRepo.create({ name: "Budi" });
-  const budiloan1 = loanEntriesRepo.create({
+  const budi = await loanCounterpartiesRepo.create({ name: "Budi" });
+  const budiloan1 = await loanEntriesRepo.create({
     counterparty_id: budi.id,
     type: "give",
     amount: 800_000,
@@ -219,8 +219,8 @@ export function injectDemoData(): void {
     transaction_date: daysAgo(20),
     transaction_time: "15:00",
   });
-  applyLoanEntryToWallet(budiloan1);
-  const budiloan2 = loanEntriesRepo.create({
+  await applyLoanEntryToWallet(budiloan1);
+  const budiloan2 = await loanEntriesRepo.create({
     counterparty_id: budi.id,
     type: "get",
     amount: 300_000,
@@ -229,11 +229,11 @@ export function injectDemoData(): void {
     transaction_date: daysAgo(10),
     transaction_time: "11:00",
   });
-  applyLoanEntryToWallet(budiloan2);
+  await applyLoanEntryToWallet(budiloan2);
 
   // Sinta — payable (we borrowed, fully repaid)
-  const sinta = loanCounterpartiesRepo.create({ name: "Sinta" });
-  const sintaloan1 = loanEntriesRepo.create({
+  const sinta = await loanCounterpartiesRepo.create({ name: "Sinta" });
+  const sintaloan1 = await loanEntriesRepo.create({
     counterparty_id: sinta.id,
     type: "get",
     amount: 500_000,
@@ -242,8 +242,8 @@ export function injectDemoData(): void {
     transaction_date: daysAgo(28),
     transaction_time: "10:00",
   });
-  applyLoanEntryToWallet(sintaloan1);
-  const sintaloan2 = loanEntriesRepo.create({
+  await applyLoanEntryToWallet(sintaloan1);
+  const sintaloan2 = await loanEntriesRepo.create({
     counterparty_id: sinta.id,
     type: "give",
     amount: 500_000,
@@ -252,11 +252,11 @@ export function injectDemoData(): void {
     transaction_date: daysAgo(14),
     transaction_time: "09:00",
   });
-  applyLoanEntryToWallet(sintaloan2);
+  await applyLoanEntryToWallet(sintaloan2);
 
   // Andi — receivable for business capital, not yet repaid
-  const andi = loanCounterpartiesRepo.create({ name: "Andi" });
-  const andiloan1 = loanEntriesRepo.create({
+  const andi = await loanCounterpartiesRepo.create({ name: "Andi" });
+  const andiloan1 = await loanEntriesRepo.create({
     counterparty_id: andi.id,
     type: "give",
     amount: 1_500_000,
@@ -265,7 +265,7 @@ export function injectDemoData(): void {
     transaction_date: daysAgo(25),
     transaction_time: "13:00",
   });
-  applyLoanEntryToWallet(andiloan1);
+  await applyLoanEntryToWallet(andiloan1);
 
   // ── Set demo flag ─────────────────────────────────────────────────────────
   if (typeof window !== "undefined") {

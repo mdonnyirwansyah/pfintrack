@@ -24,7 +24,7 @@ function AddTransferContent() {
 
   useEffect(() => {
     loadTransactions();
-    loadWallets();
+    void loadWallets();
   }, [loadTransactions, loadWallets]);
 
   const handleSubmit = async (values: TransferFormValues) => {

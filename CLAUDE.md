@@ -10,6 +10,7 @@ All implementation MUST follow `tech-spec-docs/`:
 - `tech-spec-module-transactions.md` — income/expense/transfer
 - `tech-spec-module-loan.md` — give/get utang-piutang
 - `tech-spec-module-report.md` — agregat realtime/monthly/custom
+- `tech-spec-migration-indexeddb.md` — storage migration: localStorage → IndexedDB (PROP-0001)
 
 ## Critical Invariants
 

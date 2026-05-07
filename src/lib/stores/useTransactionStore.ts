@@ -19,116 +19,76 @@ interface TransactionState {
 }
 
 interface TransactionActions {
-  /** Load all active transactions from localStorage */
-  loadTransactions: () => void;
-
-  /**
-   * Create a new transaction and apply its effect to wallet balance.
-   * NEVER writes to wallet_balance_history.
-   */
-  createTransaction: (input: CreateTransactionInput) => Transaction;
-
-  /**
-   * Update a transaction:
-   * 1. Rollback old transaction effect from wallet
-   * 2. Apply new transaction effect to wallet
-   * 3. Persist updated record
-   * NEVER writes to wallet_balance_history.
-   */
-  updateTransaction: (id: string, patch: UpdateTransactionInput) => Transaction;
-
-  /**
-   * Soft-delete a transaction:
-   * 1. Rollback transaction effect from wallet
-   * 2. Set is_active = false
-   * NEVER writes to wallet_balance_history.
-   */
-  softDeleteTransaction: (id: string) => void;
-
-  /** Refresh store from localStorage (e.g. after external wallet changes) */
-  refreshTransactions: () => void;
+  loadTransactions: () => Promise<void>;
+  createTransaction: (input: CreateTransactionInput) => Promise<Transaction>;
+  updateTransaction: (id: string, patch: UpdateTransactionInput) => Promise<Transaction>;
+  softDeleteTransaction: (id: string) => Promise<void>;
+  refreshTransactions: () => Promise<void>;
 }
 
 type TransactionStore = TransactionState & TransactionActions;
 
-export const useTransactionStore = create<TransactionStore>()((set, get) => ({
+export const useTransactionStore = create<TransactionStore>()((set) => ({
   transactions: [],
   isLoading: true,
 
-  loadTransactions() {
+  async loadTransactions() {
     set({ isLoading: true });
-    const transactions = transactionsRepo.getAll();
+    const transactions = await transactionsRepo.getAll();
     set({ transactions, isLoading: false });
   },
 
-  createTransaction(input) {
-    const tx = transactionsRepo.create(input);
-    // Apply wallet balance side-effect (§6.3 — NEVER writes wallet_balance_history)
-    applyTransactionToWallet(tx);
-    // Reload from storage to keep state in sync
-    const transactions = transactionsRepo.getAll();
+  async createTransaction(input) {
+    const tx = await transactionsRepo.create(input);
+    await applyTransactionToWallet(tx);
+    const transactions = await transactionsRepo.getAll();
     set({ transactions });
-    useWalletStore.getState().loadWallets();
+    await useWalletStore.getState().loadWallets();
     return tx;
   },
 
-  updateTransaction(id, patch) {
-    // 1. Get old record for rollback
-    const old = transactionsRepo.getById(id);
+  async updateTransaction(id, patch) {
+    const old = await transactionsRepo.getById(id);
     if (!old) throw new Error(`Transaction not found: ${id}`);
 
-    // 2. Rollback old balance effect
-    rollbackTransactionFromWallet(old);
+    await rollbackTransactionFromWallet(old);
+    const updated = await transactionsRepo.update(id, patch);
+    await applyTransactionToWallet(updated);
 
-    // 3. Persist the update
-    const updated = transactionsRepo.update(id, patch);
-
-    // 4. Apply new balance effect
-    applyTransactionToWallet(updated);
-
-    // 5. Refresh store
-    const transactions = transactionsRepo.getAll();
+    const transactions = await transactionsRepo.getAll();
     set({ transactions });
-    useWalletStore.getState().loadWallets();
+    await useWalletStore.getState().loadWallets();
     return updated;
   },
 
-  softDeleteTransaction(id) {
-    // 1. Get record for rollback
-    const tx = transactionsRepo.getById(id);
+  async softDeleteTransaction(id) {
+    const tx = await transactionsRepo.getById(id);
     if (!tx) throw new Error(`Transaction not found: ${id}`);
 
-    // 2. Rollback balance effect before soft-deleting
-    rollbackTransactionFromWallet(tx);
+    await rollbackTransactionFromWallet(tx);
+    await transactionsRepo.softDelete(id);
 
-    // 3. Soft delete
-    transactionsRepo.softDelete(id);
-
-    // 4. Refresh store
-    const transactions = transactionsRepo.getAll();
+    const transactions = await transactionsRepo.getAll();
     set({ transactions });
-    useWalletStore.getState().loadWallets();
+    await useWalletStore.getState().loadWallets();
   },
 
-  refreshTransactions() {
-    const transactions = transactionsRepo.getAll();
+  async refreshTransactions() {
+    const transactions = await transactionsRepo.getAll();
     set({ transactions });
   },
 }));
 
-// Convenience selector: get transactions for a specific date
 export function selectByDate(transactions: Transaction[], date: string): Transaction[] {
   return transactions
     .filter((t) => t.is_active && t.transaction_date === date)
     .sort((a, b) => {
-      // Sort DESC by transaction_time, then by created_at
       const timeCompare = b.transaction_time.localeCompare(a.transaction_time);
       if (timeCompare !== 0) return timeCompare;
       return b.created_at.localeCompare(a.created_at);
     });
 }
 
-// Convenience: compute daily summary
 export function computeDailySummary(transactions: Transaction[]): {
   income: number;
   expenses: number;
@@ -140,12 +100,10 @@ export function computeDailySummary(transactions: Transaction[]): {
     if (t.category === "Balance Correction") continue;
     if (t.type === "income") income += t.amount;
     else if (t.type === "expense") expenses += t.amount;
-    // transfer is neutral — not counted
   }
   return { income, expenses, balance: income - expenses };
 }
 
-// Get suggestion chips from transaction history
 export function getTitleSuggestions(
   transactions: Transaction[],
   type: "income" | "expense"

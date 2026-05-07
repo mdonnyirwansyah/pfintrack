@@ -53,7 +53,7 @@ function TransactionsContent() {
 
   useEffect(() => {
     loadTransactions();
-    loadWallets();
+    void loadWallets();
   }, [loadTransactions, loadWallets]);
 
   const rawDailyTransactions = selectByDate(transactions, activeDate)
@@ -107,9 +107,9 @@ function TransactionsContent() {
     setIsExporting(true);
     try {
       const XLSX = await import("xlsx");
-      const allTxns = transactionsRepo.getAll();
+      const allTxns = await transactionsRepo.getAll();
       const anonId = getOrCreateAnonId();
-      const allWallets = walletsRepo.getAll();
+      const allWallets = await walletsRepo.getAll();
 
       const walletMap = new Map(allWallets.map((w) => [w.id, w.name]));
 
@@ -233,8 +233,7 @@ function TransactionsContent() {
               <div className="flex flex-col gap-2.5">
                 <button
                   onClick={() => {
-                    injectDemoData();
-                    window.location.reload();
+                    void injectDemoData().then(() => window.location.reload());
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-semibold active:opacity-70 transition-opacity"
                   style={{

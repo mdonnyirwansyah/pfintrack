@@ -16,12 +16,12 @@ export function useWalletActions() {
   const { createWallet, updateWallet, softDeleteWallet, isNameTaken, loadWallets } =
     useWalletStore();
 
-  function handleCreate(values: WalletFormValues) {
+  async function handleCreate(values: WalletFormValues) {
     const balance = parseIDR(values.balance.trim());
     const actualBalance = isNaN(balance) ? 0 : balance;
 
     // Create wallet with 0 balance — balance will be applied via Balance Correction transaction
-    const wallet = createWallet({
+    const wallet = await createWallet({
       name: values.name.trim(),
       wallet_type: values.wallet_type as WalletType,
       balance: 0,
@@ -29,7 +29,7 @@ export function useWalletActions() {
 
     if (actualBalance > 0) {
       // Write balance history for the initial balance (manual edit = wallet creation)
-      walletBalanceHistoryRepo.create({
+      await walletBalanceHistoryRepo.create({
         wallet_id: wallet.id,
         previous_balance: 0,
         new_balance: actualBalance,
@@ -50,20 +50,20 @@ export function useWalletActions() {
     return wallet;
   }
 
-  function handleUpdate(id: string, values: WalletFormValues, previousBalance: number) {
+  async function handleUpdate(id: string, values: WalletFormValues, previousBalance: number) {
     const newBalanceParsed = parseIDR(values.balance.trim());
     const actualNewBalance = isNaN(newBalanceParsed) ? previousBalance : newBalanceParsed;
     const delta = actualNewBalance - previousBalance;
 
     // Update name and type only — balance is handled via transaction below
-    const updated = updateWallet(id, {
+    const updated = await updateWallet(id, {
       name: values.name.trim(),
       wallet_type: values.wallet_type as WalletType,
     });
 
     if (delta !== 0) {
       // Write balance history for the manual balance change
-      walletBalanceHistoryRepo.create({
+      await walletBalanceHistoryRepo.create({
         wallet_id: id,
         previous_balance: previousBalance,
         new_balance: actualNewBalance,
@@ -84,8 +84,8 @@ export function useWalletActions() {
     return updated;
   }
 
-  function handleDelete(id: string) {
-    softDeleteWallet(id);
+  async function handleDelete(id: string) {
+    await softDeleteWallet(id);
   }
 
   return { handleCreate, handleUpdate, handleDelete, isNameTaken, loadWallets };

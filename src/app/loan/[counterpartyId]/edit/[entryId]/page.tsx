@@ -10,7 +10,7 @@ import { useLoanEntryStore } from "@/lib/stores/useLoanStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
-import { useMounted } from "@/hooks/useMounted";
+import type { LoanEntry, LoanCounterparty } from "@/lib/types/loan";
 import { Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
@@ -23,7 +23,6 @@ export default function EditLoanEntryPage({
 }) {
   const { counterpartyId, entryId } = use(params);
   const router = useRouter();
-  const mounted = useMounted();
   const t = useTranslations("loan");
 
   const { wallets, loadWallets } = useWalletStore();
@@ -31,32 +30,34 @@ export default function EditLoanEntryPage({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [entry, setEntry] = useState<LoanEntry | null | undefined>(undefined);
+  const [counterparty, setCounterparty] = useState<LoanCounterparty | null | undefined>(undefined);
 
   useEffect(() => {
-    loadWallets();
+    void loadWallets();
   }, [loadWallets]);
 
-  // Render consistent title during SSR before localStorage is available
-  if (!mounted) {
-    return (
-      <>
-        <AppHeader title={t("editEntry")} showBack />
-        <div className="px-4 py-8 space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-12 rounded-[12px] animate-pulse"
-              style={{ background: "var(--bg-secondary)" }}
-            />
-          ))}
-        </div>
-      </>
-    );
-  }
+  useEffect(() => {
+    void loanEntriesRepo.getById(entryId).then(setEntry);
+    void loanCounterpartiesRepo.getById(counterpartyId).then(setCounterparty);
+  }, [entryId, counterpartyId]);
 
-  // Load entry and counterparty directly from storage (source of truth, runs client-side after mount)
-  const entry = loanEntriesRepo.getById(entryId);
-  const counterparty = loanCounterpartiesRepo.getById(counterpartyId);
+  const skeleton = (
+    <>
+      <AppHeader title={t("editEntry")} showBack />
+      <div className="px-4 py-8 space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-12 rounded-[12px] animate-pulse"
+            style={{ background: "var(--bg-secondary)" }}
+          />
+        ))}
+      </div>
+    </>
+  );
+
+  if (entry === undefined || counterparty === undefined) return skeleton;
 
   if (!entry || !entry.is_active || !counterparty) {
     return (
@@ -85,7 +86,7 @@ export default function EditLoanEntryPage({
   async function handleSubmit(values: LoanEntryFormValues) {
     setIsSubmitting(true);
     try {
-      updateEntry(
+      await updateEntry(
         entryId,
         {
           type: entry!.type,
@@ -97,15 +98,14 @@ export default function EditLoanEntryPage({
         },
         counterpartyId
       );
-
       router.back();
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  function handleDelete() {
-    deleteEntry(entryId, counterpartyId);
+  async function handleDelete() {
+    await deleteEntry(entryId, counterpartyId);
     router.replace(`/loan/${counterpartyId}`);
   }
 
@@ -150,7 +150,7 @@ export default function EditLoanEntryPage({
         variant="destructive"
         onConfirm={() => {
           setIsDeleteDialogOpen(false);
-          handleDelete();
+          void handleDelete();
         }}
       />
     </>

@@ -39,9 +39,9 @@ export default function ReportPage() {
 
   // Load all data on mount — computed-on-the-fly, no caching
   useEffect(() => {
-    setTransactions(transactionsRepo.getAll());
-    setLoanEntries(loanEntriesRepo.getAll());
-    setBalanceHistory(walletBalanceHistoryRepo.getAll());
+    void transactionsRepo.getAll().then(setTransactions);
+    void loanEntriesRepo.getAll().then(setLoanEntries);
+    void walletBalanceHistoryRepo.getAll().then(setBalanceHistory);
     loadCustomReports();
   }, [loadCustomReports]);
 
@@ -49,9 +49,9 @@ export default function ReportPage() {
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
     sessionStorage.setItem("report_active_tab", tab);
-    setTransactions(transactionsRepo.getAll());
-    setLoanEntries(loanEntriesRepo.getAll());
-    setBalanceHistory(walletBalanceHistoryRepo.getAll());
+    void transactionsRepo.getAll().then(setTransactions);
+    void loanEntriesRepo.getAll().then(setLoanEntries);
+    void walletBalanceHistoryRepo.getAll().then(setBalanceHistory);
     if (tab === "custom") loadCustomReports();
   };
 

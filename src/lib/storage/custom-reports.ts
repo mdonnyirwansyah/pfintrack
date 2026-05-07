@@ -1,6 +1,8 @@
 import type { CustomReport } from "@/lib/types/report";
 import { readKey, writeKey } from "./base";
 import { getOrCreateAnonId } from "./anon-id";
+import { STORAGE_BACKEND } from "./config";
+import { customReportsIdbRepo } from "./custom-reports-idb";
 
 const KEY = "custom_reports";
 
@@ -14,8 +16,7 @@ export type UpdateCustomReportInput = Partial<
   Pick<CustomReport, "name" | "start_date" | "end_date">
 >;
 
-export const customReportsRepo = {
-  /** Returns only is_active=true records */
+const customReportsLsRepo = {
   getAll(): CustomReport[] {
     return readKey<CustomReport>(KEY).filter((r) => r.is_active);
   },
@@ -28,10 +29,6 @@ export const customReportsRepo = {
     return readKey<CustomReport>(KEY).find((r) => r.id === id) ?? null;
   },
 
-  /**
-   * Case-insensitive name lookup among active reports.
-   * Used for duplicate-name validation.
-   */
   findByName(name: string): CustomReport | null {
     const normalized = name.trim().toLowerCase();
     return (
@@ -44,7 +41,6 @@ export const customReportsRepo = {
   create(input: CreateCustomReportInput): CustomReport {
     const all = readKey<CustomReport>(KEY);
     const now = new Date().toISOString();
-
     const report: CustomReport = {
       id: crypto.randomUUID(),
       anon_id: getOrCreateAnonId(),
@@ -55,7 +51,6 @@ export const customReportsRepo = {
       created_at: now,
       updated_at: now,
     };
-
     writeKey(KEY, [...all, report]);
     return report;
   },
@@ -64,12 +59,7 @@ export const customReportsRepo = {
     const all = readKey<CustomReport>(KEY);
     const idx = all.findIndex((r) => r.id === id);
     if (idx === -1) throw new Error(`CustomReport not found: ${id}`);
-
-    const updated: CustomReport = {
-      ...all[idx],
-      ...patch,
-      updated_at: new Date().toISOString(),
-    };
+    const updated: CustomReport = { ...all[idx], ...patch, updated_at: new Date().toISOString() };
     all[idx] = updated;
     writeKey(KEY, all);
     return updated;
@@ -79,12 +69,49 @@ export const customReportsRepo = {
     const all = readKey<CustomReport>(KEY);
     const idx = all.findIndex((r) => r.id === id);
     if (idx === -1) throw new Error(`CustomReport not found: ${id}`);
-
-    all[idx] = {
-      ...all[idx],
-      is_active: false,
-      updated_at: new Date().toISOString(),
-    };
+    all[idx] = { ...all[idx], is_active: false, updated_at: new Date().toISOString() };
     writeKey(KEY, all);
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
+// ---------------------------------------------------------------------------
+
+export const customReportsRepo = {
+  getAll(): Promise<CustomReport[]> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getAll();
+    return Promise.resolve(customReportsLsRepo.getAll());
+  },
+
+  getAllIncludingInactive(): Promise<CustomReport[]> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getAllIncludingInactive();
+    return Promise.resolve(customReportsLsRepo.getAllIncludingInactive());
+  },
+
+  getById(id: string): Promise<CustomReport | null> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getById(id);
+    return Promise.resolve(customReportsLsRepo.getById(id));
+  },
+
+  findByName(name: string): Promise<CustomReport | null> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.findByName(name);
+    return Promise.resolve(customReportsLsRepo.findByName(name));
+  },
+
+  create(input: CreateCustomReportInput): Promise<CustomReport> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.create(input);
+    return Promise.resolve(customReportsLsRepo.create(input));
+  },
+
+  update(id: string, patch: UpdateCustomReportInput): Promise<CustomReport> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.update(id, patch);
+    return Promise.resolve(customReportsLsRepo.update(id, patch));
+  },
+
+  softDelete(id: string): Promise<void> {
+    if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.softDelete(id);
+    customReportsLsRepo.softDelete(id);
+    return Promise.resolve();
   },
 };

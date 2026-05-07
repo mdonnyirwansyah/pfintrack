@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { getOrCreateAnonId } from "@/lib/bootstrap/anon-id";
 import { useAppStore } from "@/lib/stores/useAppStore";
 import { setFormatDecimals } from "@/lib/format/number";
+import { runStorageMigration } from "@/lib/storage/migrate-from-localstorage";
 import { DemoBanner } from "./DemoBanner";
 
 interface AppProvidersProps {
@@ -15,6 +16,11 @@ export function AppProviders({ children }: AppProvidersProps) {
   const setAnonId = useAppStore((s) => s.setAnonId);
   const setHydrated = useAppStore((s) => s.setHydrated);
   const showDecimals = useAppStore((s) => s.showDecimals);
+
+  useEffect(() => {
+    // Run one-time localStorage → IndexedDB migration before any store reads
+    void runStorageMigration();
+  }, []);
 
   useEffect(() => {
     // Bootstrap: ensure anon_id exists in localStorage

@@ -28,25 +28,11 @@ interface CounterpartyState {
 }
 
 interface CounterpartyActions {
-  /** Load all active counterparties from localStorage */
-  loadCounterparties: () => void;
-
-  /** Find existing counterparty by name (case-insensitive) or create a new one */
-  findOrCreateCounterparty: (name: string) => LoanCounterparty;
-
-  /** Rename a counterparty */
-  renameCounterparty: (id: string, newName: string) => LoanCounterparty;
-
-  /** Mark counterparty as manually paid off */
-  markAsPaid: (id: string) => void;
-
-  /**
-   * Cascade soft-delete: rollback wallet effects for all active entries,
-   * soft-delete all entries, then soft-delete the counterparty itself.
-   */
-  deleteCounterparty: (id: string) => void;
-
-  /** Check if a name is taken by another active counterparty (case-insensitive) */
+  loadCounterparties: () => Promise<void>;
+  findOrCreateCounterparty: (name: string) => Promise<LoanCounterparty>;
+  renameCounterparty: (id: string, newName: string) => Promise<LoanCounterparty>;
+  markAsPaid: (id: string) => Promise<void>;
+  deleteCounterparty: (id: string) => Promise<void>;
   isNameTaken: (name: string, excludeId?: string) => boolean;
 }
 
@@ -57,66 +43,57 @@ export const useLoanCounterpartyStore = create<CounterpartyStore>()(
     counterparties: [],
     isLoading: true,
 
-    loadCounterparties() {
+    async loadCounterparties() {
       set({ isLoading: true });
-      const counterparties = loanCounterpartiesRepo.getAll();
+      const counterparties = await loanCounterpartiesRepo.getAll();
       set({ counterparties, isLoading: false });
     },
 
-    findOrCreateCounterparty(name) {
+    async findOrCreateCounterparty(name) {
       const trimmed = name.trim();
-      const existing = loanCounterpartiesRepo.findByName(trimmed);
+      const existing = await loanCounterpartiesRepo.findByName(trimmed);
 
       if (existing) {
-        // Reset manual_paid_off if adding a new entry to a paid-off counterparty
         if (existing.manual_paid_off) {
-          const updated = loanCounterpartiesRepo.update(existing.id, {
+          const updated = await loanCounterpartiesRepo.update(existing.id, {
             manual_paid_off: false,
           });
-          const counterparties = loanCounterpartiesRepo.getAll();
+          const counterparties = await loanCounterpartiesRepo.getAll();
           set({ counterparties });
           return updated;
         }
         return existing;
       }
 
-      const created = loanCounterpartiesRepo.create({ name: trimmed });
-      const counterparties = loanCounterpartiesRepo.getAll();
+      const created = await loanCounterpartiesRepo.create({ name: trimmed });
+      const counterparties = await loanCounterpartiesRepo.getAll();
       set({ counterparties });
       return created;
     },
 
-    renameCounterparty(id, newName) {
-      const updated = loanCounterpartiesRepo.update(id, {
-        name: newName.trim(),
-      });
-      const counterparties = loanCounterpartiesRepo.getAll();
+    async renameCounterparty(id, newName) {
+      const updated = await loanCounterpartiesRepo.update(id, { name: newName.trim() });
+      const counterparties = await loanCounterpartiesRepo.getAll();
       set({ counterparties });
       return updated;
     },
 
-    markAsPaid(id) {
-      loanCounterpartiesRepo.update(id, { manual_paid_off: true });
-      const counterparties = loanCounterpartiesRepo.getAll();
+    async markAsPaid(id) {
+      await loanCounterpartiesRepo.update(id, { manual_paid_off: true });
+      const counterparties = await loanCounterpartiesRepo.getAll();
       set({ counterparties });
     },
 
-    deleteCounterparty(id) {
-      // Rollback wallet effects for all active entries before deleting
-      const entries = loanEntriesRepo.getByCounterpartyId(id);
+    async deleteCounterparty(id) {
+      const entries = await loanEntriesRepo.getByCounterpartyId(id);
       for (const entry of entries) {
-        rollbackLoanEntryFromWallet(entry);
+        await rollbackLoanEntryFromWallet(entry);
       }
-
-      // Soft-delete all entries for this counterparty
-      loanEntriesRepo.softDeleteByCounterpartyId(id);
-
-      // Soft-delete the counterparty
-      loanCounterpartiesRepo.softDelete(id);
-
-      const counterparties = loanCounterpartiesRepo.getAll();
+      await loanEntriesRepo.softDeleteByCounterpartyId(id);
+      await loanCounterpartiesRepo.softDelete(id);
+      const counterparties = await loanCounterpartiesRepo.getAll();
       set({ counterparties });
-      useWalletStore.getState().loadWallets();
+      await useWalletStore.getState().loadWallets();
     },
 
     isNameTaken(name, excludeId) {
@@ -141,16 +118,8 @@ interface EntryState {
 }
 
 interface EntryActions {
-  /** Load all active entries from localStorage */
-  loadEntries: () => void;
-
-  /** Load entries for a specific counterparty */
-  loadEntriesForCounterparty: (counterpartyId: string) => void;
-
-  /**
-   * Create a new loan entry and apply wallet side-effect.
-   * Also updates counterparty.updated_at.
-   */
+  loadEntries: () => Promise<void>;
+  loadEntriesForCounterparty: (counterpartyId: string) => Promise<void>;
   createEntry: (input: {
     counterpartyId: string;
     type: import("@/lib/types/loan").LoanEntryType;
@@ -159,23 +128,9 @@ interface EntryActions {
     note?: string | null;
     transaction_date: string;
     transaction_time: string;
-  }) => LoanEntry;
-
-  /**
-   * Update an existing entry: rollback old wallet effect, apply new.
-   * Also updates counterparty.updated_at.
-   */
-  updateEntry: (
-    id: string,
-    patch: UpdateLoanEntryInput,
-    counterpartyId: string
-  ) => LoanEntry;
-
-  /**
-   * Soft-delete a single entry with wallet rollback.
-   * Also updates counterparty.updated_at.
-   */
-  deleteEntry: (id: string, counterpartyId: string) => void;
+  }) => Promise<LoanEntry>;
+  updateEntry: (id: string, patch: UpdateLoanEntryInput, counterpartyId: string) => Promise<LoanEntry>;
+  deleteEntry: (id: string, counterpartyId: string) => Promise<void>;
 }
 
 type EntryStore = EntryState & EntryActions;
@@ -184,20 +139,20 @@ export const useLoanEntryStore = create<EntryStore>()((set) => ({
   entries: [],
   isLoading: true,
 
-  loadEntries() {
+  async loadEntries() {
     set({ isLoading: true });
-    const entries = loanEntriesRepo.getAll();
+    const entries = await loanEntriesRepo.getAll();
     set({ entries, isLoading: false });
   },
 
-  loadEntriesForCounterparty(counterpartyId) {
+  async loadEntriesForCounterparty(counterpartyId) {
     set({ isLoading: true });
-    const entries = loanEntriesRepo.getByCounterpartyId(counterpartyId);
+    const entries = await loanEntriesRepo.getByCounterpartyId(counterpartyId);
     set({ entries, isLoading: false });
   },
 
-  createEntry(input) {
-    const entry = loanEntriesRepo.create({
+  async createEntry(input) {
+    const entry = await loanEntriesRepo.create({
       counterparty_id: input.counterpartyId,
       type: input.type,
       amount: input.amount,
@@ -206,56 +161,35 @@ export const useLoanEntryStore = create<EntryStore>()((set) => ({
       transaction_date: input.transaction_date,
       transaction_time: input.transaction_time,
     });
-
-    // Apply wallet side-effect if wallet_id is set
-    applyLoanEntryToWallet(entry);
-
-    // Bump counterparty.updated_at
-    loanCounterpartiesRepo.update(input.counterpartyId, {});
-
-    const entries = loanEntriesRepo.getByCounterpartyId(input.counterpartyId);
+    await applyLoanEntryToWallet(entry);
+    await loanCounterpartiesRepo.update(input.counterpartyId, {});
+    const entries = await loanEntriesRepo.getByCounterpartyId(input.counterpartyId);
     set({ entries });
-    useWalletStore.getState().loadWallets();
+    await useWalletStore.getState().loadWallets();
     return entry;
   },
 
-  updateEntry(id, patch, counterpartyId) {
-    const old = loanEntriesRepo.getById(id);
+  async updateEntry(id, patch, counterpartyId) {
+    const old = await loanEntriesRepo.getById(id);
     if (!old) throw new Error(`LoanEntry not found: ${id}`);
-
-    // Rollback old wallet effect
-    rollbackLoanEntryFromWallet(old);
-
-    // Update the entry
-    const updated = loanEntriesRepo.update(id, patch);
-
-    // Apply new wallet effect
-    applyLoanEntryToWallet(updated);
-
-    // Bump counterparty.updated_at
-    loanCounterpartiesRepo.update(counterpartyId, {});
-
-    const entries = loanEntriesRepo.getByCounterpartyId(counterpartyId);
+    await rollbackLoanEntryFromWallet(old);
+    const updated = await loanEntriesRepo.update(id, patch);
+    await applyLoanEntryToWallet(updated);
+    await loanCounterpartiesRepo.update(counterpartyId, {});
+    const entries = await loanEntriesRepo.getByCounterpartyId(counterpartyId);
     set({ entries });
-    useWalletStore.getState().loadWallets();
+    await useWalletStore.getState().loadWallets();
     return updated;
   },
 
-  deleteEntry(id, counterpartyId) {
-    const entry = loanEntriesRepo.getById(id);
+  async deleteEntry(id, counterpartyId) {
+    const entry = await loanEntriesRepo.getById(id);
     if (!entry) throw new Error(`LoanEntry not found: ${id}`);
-
-    // Rollback wallet effect
-    rollbackLoanEntryFromWallet(entry);
-
-    // Soft-delete entry
-    loanEntriesRepo.softDelete(id);
-
-    // Bump counterparty.updated_at
-    loanCounterpartiesRepo.update(counterpartyId, {});
-
-    const entries = loanEntriesRepo.getByCounterpartyId(counterpartyId);
+    await rollbackLoanEntryFromWallet(entry);
+    await loanEntriesRepo.softDelete(id);
+    await loanCounterpartiesRepo.update(counterpartyId, {});
+    const entries = await loanEntriesRepo.getByCounterpartyId(counterpartyId);
     set({ entries });
-    useWalletStore.getState().loadWallets();
+    await useWalletStore.getState().loadWallets();
   },
 }));

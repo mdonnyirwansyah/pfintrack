@@ -38,32 +38,37 @@ export default function EditWalletPage({
   const t = useTranslations("wallet");
 
   useEffect(() => {
-    loadWallets();
-    const found = walletsRepo.getById(id);
-    if (!found || !found.is_active) {
-      setNotFound(true);
-    } else {
-      setWallet(found);
-      const txs = transactionsRepo.getByWalletId(found.id);
-      const loans = loanEntriesRepo.getByWalletId(found.id);
-      setIsInUse(txs.length > 0 || loans.length > 0);
+    async function init() {
+      await loadWallets();
+      const found = await walletsRepo.getById(id);
+      if (!found || !found.is_active) {
+        setNotFound(true);
+      } else {
+        setWallet(found);
+        const [txs, loans] = await Promise.all([
+          transactionsRepo.getByWalletId(found.id),
+          loanEntriesRepo.getByWalletId(found.id),
+        ]);
+        setIsInUse(txs.length > 0 || loans.length > 0);
+      }
     }
+    void init();
   }, [id, loadWallets]);
 
   const handleSubmit = async (values: WalletFormValues) => {
     if (!wallet) return;
     setIsSubmitting(true);
     try {
-      handleUpdate(wallet.id, values, wallet.balance);
+      await handleUpdate(wallet.id, values, wallet.balance);
       router.push("/wallet");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!wallet) return;
-    handleDelete(wallet.id);
+    await handleDelete(wallet.id);
     router.push("/wallet");
   };
 

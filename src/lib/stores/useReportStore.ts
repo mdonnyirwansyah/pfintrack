@@ -14,22 +14,10 @@ interface ReportState {
 }
 
 interface ReportActions {
-  /** Load all active custom reports from localStorage */
-  loadCustomReports: () => void;
-
-  /** Create a new custom report and refresh state */
-  createCustomReport: (input: CreateCustomReportInput) => CustomReport;
-
-  /** Update an existing custom report and refresh state */
-  updateCustomReport: (
-    id: string,
-    patch: UpdateCustomReportInput
-  ) => CustomReport;
-
-  /** Soft-delete a custom report and refresh state */
-  softDeleteCustomReport: (id: string) => void;
-
-  /** Check if a name is taken (case-insensitive). Pass excludeId when editing. */
+  loadCustomReports: () => Promise<void>;
+  createCustomReport: (input: CreateCustomReportInput) => Promise<CustomReport>;
+  updateCustomReport: (id: string, patch: UpdateCustomReportInput) => Promise<CustomReport>;
+  softDeleteCustomReport: (id: string) => Promise<void>;
   isNameTaken: (name: string, excludeId?: string) => boolean;
 }
 
@@ -39,29 +27,29 @@ export const useReportStore = create<ReportStore>()((set, get) => ({
   customReports: [],
   isLoading: true,
 
-  loadCustomReports() {
+  async loadCustomReports() {
     set({ isLoading: true });
-    const customReports = customReportsRepo.getAll();
+    const customReports = await customReportsRepo.getAll();
     set({ customReports, isLoading: false });
   },
 
-  createCustomReport(input) {
-    const report = customReportsRepo.create(input);
-    const customReports = customReportsRepo.getAll();
+  async createCustomReport(input) {
+    const report = await customReportsRepo.create(input);
+    const customReports = await customReportsRepo.getAll();
     set({ customReports });
     return report;
   },
 
-  updateCustomReport(id, patch) {
-    const updated = customReportsRepo.update(id, patch);
-    const customReports = customReportsRepo.getAll();
+  async updateCustomReport(id, patch) {
+    const updated = await customReportsRepo.update(id, patch);
+    const customReports = await customReportsRepo.getAll();
     set({ customReports });
     return updated;
   },
 
-  softDeleteCustomReport(id) {
-    customReportsRepo.softDelete(id);
-    const customReports = customReportsRepo.getAll();
+  async softDeleteCustomReport(id) {
+    await customReportsRepo.softDelete(id);
+    const customReports = await customReportsRepo.getAll();
     set({ customReports });
   },
 

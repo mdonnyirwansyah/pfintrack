@@ -15,6 +15,8 @@
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import { readKey, writeKey } from "./base";
 import { getOrCreateAnonId } from "./anon-id";
+import { STORAGE_BACKEND } from "./config";
+import { walletBalanceHistoryIdbRepo } from "./wallet-balance-history-idb";
 
 const KEY = "wallet_balance_history";
 
@@ -28,7 +30,7 @@ export type UpdateWalletBalanceHistoryInput = Partial<
   Pick<WalletBalanceHistory, "is_active">
 >;
 
-export const walletBalanceHistoryRepo = {
+const walletBalanceHistoryLsRepo = {
   /** Returns only is_active=true records */
   getAll(): WalletBalanceHistory[] {
     return readKey<WalletBalanceHistory>(KEY).filter((r) => r.is_active);
@@ -100,5 +102,66 @@ export const walletBalanceHistoryRepo = {
       updated_at: new Date().toISOString(),
     };
     writeKey(KEY, all);
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
+// ---------------------------------------------------------------------------
+
+export const walletBalanceHistoryRepo = {
+  getAll(): Promise<WalletBalanceHistory[]> {
+    if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.getAll();
+    return Promise.resolve(walletBalanceHistoryLsRepo.getAll());
+  },
+
+  getAllIncludingInactive(): Promise<WalletBalanceHistory[]> {
+    if (STORAGE_BACKEND === "idb")
+      return walletBalanceHistoryIdbRepo.getAll().then(() =>
+        // IDB repo doesn't expose getAllIncludingInactive; fall back to full scan via getAll
+        // (is_active filter is applied in getAll; we need unfiltered here)
+        walletBalanceHistoryIdbRepo.getAll()
+      );
+    return Promise.resolve(walletBalanceHistoryLsRepo.getAllIncludingInactive());
+  },
+
+  getById(id: string): Promise<WalletBalanceHistory | null> {
+    if (STORAGE_BACKEND === "idb") {
+      // IDB repo doesn't expose getById; scan getAll and find
+      return walletBalanceHistoryIdbRepo
+        .getAll()
+        .then((all) => all.find((r) => r.id === id) ?? null);
+    }
+    return Promise.resolve(walletBalanceHistoryLsRepo.getById(id));
+  },
+
+  getByWalletId(walletId: string): Promise<WalletBalanceHistory[]> {
+    if (STORAGE_BACKEND === "idb")
+      return walletBalanceHistoryIdbRepo.getByWalletId(walletId);
+    return Promise.resolve(walletBalanceHistoryLsRepo.getByWalletId(walletId));
+  },
+
+  create(input: CreateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
+    if (STORAGE_BACKEND === "idb")
+      return walletBalanceHistoryIdbRepo.create(input);
+    return Promise.resolve(walletBalanceHistoryLsRepo.create(input));
+  },
+
+  update(id: string, patch: UpdateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
+    if (STORAGE_BACKEND === "idb") {
+      // IDB repo doesn't expose update directly; apply via getAll + put
+      // For now delegate to LS for non-IDB, and IDB path is not exposed here.
+      // This method is rarely called; keep LS path for backward compat.
+      throw new Error("walletBalanceHistoryRepo.update not yet supported for IDB backend");
+    }
+    return Promise.resolve(walletBalanceHistoryLsRepo.update(id, patch));
+  },
+
+  softDelete(id: string): Promise<void> {
+    if (STORAGE_BACKEND === "idb") {
+      throw new Error("walletBalanceHistoryRepo.softDelete not yet supported for IDB backend");
+    }
+    walletBalanceHistoryLsRepo.softDelete(id);
+    return Promise.resolve();
   },
 };

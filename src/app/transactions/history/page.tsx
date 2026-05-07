@@ -33,7 +33,7 @@ export default function TransactionHistoryPage() {
 
   useEffect(() => {
     loadTransactions();
-    loadWallets();
+    void loadWallets();
   }, [loadTransactions, loadWallets]);
 
   const walletMap = useMemo(

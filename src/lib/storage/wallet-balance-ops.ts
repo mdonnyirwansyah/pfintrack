@@ -11,26 +11,43 @@
 
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
-import { readKey, writeKey } from "./base";
 import type { Wallet } from "@/lib/types/wallet";
+import { readKey, writeKey } from "./base";
+import { idbGet, idbPut } from "./idb-client";
+import { STORAGE_BACKEND } from "./config";
 
 const WALLETS_KEY = "wallets";
 
-function applyDelta(walletId: string, delta: number): void {
-  const all = readKey<Wallet>(WALLETS_KEY);
-  const idx = all.findIndex((w) => w.id === walletId);
-  if (idx === -1) {
-    console.warn(
-      `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
-    );
-    return;
+async function applyDelta(walletId: string, delta: number): Promise<void> {
+  if (STORAGE_BACKEND === "idb") {
+    const wallet = await idbGet<Wallet>("wallets", walletId);
+    if (!wallet) {
+      console.warn(
+        `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
+      );
+      return;
+    }
+    await idbPut<Wallet>("wallets", {
+      ...wallet,
+      balance: wallet.balance + delta,
+      updated_at: new Date().toISOString(),
+    });
+  } else {
+    const all = readKey<Wallet>(WALLETS_KEY);
+    const idx = all.findIndex((w) => w.id === walletId);
+    if (idx === -1) {
+      console.warn(
+        `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
+      );
+      return;
+    }
+    all[idx] = {
+      ...all[idx],
+      balance: all[idx].balance + delta,
+      updated_at: new Date().toISOString(),
+    };
+    writeKey(WALLETS_KEY, all);
   }
-  all[idx] = {
-    ...all[idx],
-    balance: all[idx].balance + delta,
-    updated_at: new Date().toISOString(),
-  };
-  writeKey(WALLETS_KEY, all);
 }
 
 // ---------------------------------------------------------------------------
@@ -43,18 +60,18 @@ function applyDelta(walletId: string, delta: number): void {
  * - expense:  wallet.balance -= amount
  * - transfer: source -= amount, destination += amount
  */
-export function applyTransactionToWallet(tx: Transaction): void {
+export async function applyTransactionToWallet(tx: Transaction): Promise<void> {
   switch (tx.type) {
     case "income":
-      applyDelta(tx.wallet_id, tx.amount);
+      await applyDelta(tx.wallet_id, tx.amount);
       break;
     case "expense":
-      applyDelta(tx.wallet_id, -tx.amount);
+      await applyDelta(tx.wallet_id, -tx.amount);
       break;
     case "transfer":
-      applyDelta(tx.wallet_id, -tx.amount);
+      await applyDelta(tx.wallet_id, -tx.amount);
       if (tx.destination_wallet_id) {
-        applyDelta(tx.destination_wallet_id, tx.amount);
+        await applyDelta(tx.destination_wallet_id, tx.amount);
       }
       break;
   }
@@ -64,18 +81,18 @@ export function applyTransactionToWallet(tx: Transaction): void {
  * Rollback (reverse) a transaction's effect from wallet balance(s).
  * Used before editing or soft-deleting a transaction.
  */
-export function rollbackTransactionFromWallet(tx: Transaction): void {
+export async function rollbackTransactionFromWallet(tx: Transaction): Promise<void> {
   switch (tx.type) {
     case "income":
-      applyDelta(tx.wallet_id, -tx.amount);
+      await applyDelta(tx.wallet_id, -tx.amount);
       break;
     case "expense":
-      applyDelta(tx.wallet_id, tx.amount);
+      await applyDelta(tx.wallet_id, tx.amount);
       break;
     case "transfer":
-      applyDelta(tx.wallet_id, tx.amount);
+      await applyDelta(tx.wallet_id, tx.amount);
       if (tx.destination_wallet_id) {
-        applyDelta(tx.destination_wallet_id, -tx.amount);
+        await applyDelta(tx.destination_wallet_id, -tx.amount);
       }
       break;
   }
@@ -90,15 +107,15 @@ export function rollbackTransactionFromWallet(tx: Transaction): void {
  * - give: wallet.balance -= amount  (user paid out)
  * - get:  wallet.balance += amount  (user received)
  */
-export function applyLoanEntryToWallet(entry: LoanEntry): void {
+export async function applyLoanEntryToWallet(entry: LoanEntry): Promise<void> {
   if (!entry.wallet_id) return;
 
   switch (entry.type) {
     case "give":
-      applyDelta(entry.wallet_id, -entry.amount);
+      await applyDelta(entry.wallet_id, -entry.amount);
       break;
     case "get":
-      applyDelta(entry.wallet_id, entry.amount);
+      await applyDelta(entry.wallet_id, entry.amount);
       break;
   }
 }
@@ -107,15 +124,15 @@ export function applyLoanEntryToWallet(entry: LoanEntry): void {
  * Rollback (reverse) a loan entry's effect from wallet balance.
  * Used before editing or soft-deleting a loan entry.
  */
-export function rollbackLoanEntryFromWallet(entry: LoanEntry): void {
+export async function rollbackLoanEntryFromWallet(entry: LoanEntry): Promise<void> {
   if (!entry.wallet_id) return;
 
   switch (entry.type) {
     case "give":
-      applyDelta(entry.wallet_id, entry.amount);
+      await applyDelta(entry.wallet_id, entry.amount);
       break;
     case "get":
-      applyDelta(entry.wallet_id, -entry.amount);
+      await applyDelta(entry.wallet_id, -entry.amount);
       break;
   }
 }

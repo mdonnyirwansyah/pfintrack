@@ -1,6 +1,9 @@
 import type { Transaction, TransactionType } from "@/lib/types/transaction";
 import { readKey, writeKey } from "./base";
 import { getOrCreateAnonId } from "./anon-id";
+import { STORAGE_BACKEND } from "./config";
+import { transactionsIdbRepo } from "./transactions-idb";
+import { idbGetAll } from "./idb-client";
 
 const KEY = "transactions";
 
@@ -31,8 +34,7 @@ export type UpdateTransactionInput = Partial<
   >
 >;
 
-export const transactionsRepo = {
-  /** Returns only is_active=true records */
+const transactionsLsRepo = {
   getAll(): Transaction[] {
     return readKey<Transaction>(KEY).filter((t) => t.is_active);
   },
@@ -45,14 +47,12 @@ export const transactionsRepo = {
     return readKey<Transaction>(KEY).find((t) => t.id === id) ?? null;
   },
 
-  /** Returns active transactions for a specific date (YYYY-MM-DD) */
   getByDate(date: string): Transaction[] {
     return readKey<Transaction>(KEY).filter(
       (t) => t.is_active && t.transaction_date === date
     );
   },
 
-  /** Returns active transactions for a wallet */
   getByWalletId(walletId: string): Transaction[] {
     return readKey<Transaction>(KEY).filter(
       (t) =>
@@ -112,5 +112,52 @@ export const transactionsRepo = {
       updated_at: new Date().toISOString(),
     };
     writeKey(KEY, all);
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
+// ---------------------------------------------------------------------------
+
+export const transactionsRepo = {
+  getAll(): Promise<Transaction[]> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getAll();
+    return Promise.resolve(transactionsLsRepo.getAll());
+  },
+
+  getAllIncludingInactive(): Promise<Transaction[]> {
+    if (STORAGE_BACKEND === "idb") return idbGetAll<Transaction>("transactions");
+    return Promise.resolve(transactionsLsRepo.getAllIncludingInactive());
+  },
+
+  getById(id: string): Promise<Transaction | null> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getById(id);
+    return Promise.resolve(transactionsLsRepo.getById(id));
+  },
+
+  getByDate(date: string): Promise<Transaction[]> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getByDate(date);
+    return Promise.resolve(transactionsLsRepo.getByDate(date));
+  },
+
+  getByWalletId(walletId: string): Promise<Transaction[]> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getByWalletId(walletId);
+    return Promise.resolve(transactionsLsRepo.getByWalletId(walletId));
+  },
+
+  create(input: CreateTransactionInput): Promise<Transaction> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.create(input);
+    return Promise.resolve(transactionsLsRepo.create(input));
+  },
+
+  update(id: string, patch: UpdateTransactionInput): Promise<Transaction> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.update(id, patch);
+    return Promise.resolve(transactionsLsRepo.update(id, patch));
+  },
+
+  softDelete(id: string): Promise<void> {
+    if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.softDelete(id);
+    transactionsLsRepo.softDelete(id);
+    return Promise.resolve();
   },
 };

@@ -19,7 +19,7 @@ export default function WalletPage() {
   const t = useTranslations("wallet");
 
   useEffect(() => {
-    loadWallets();
+    void loadWallets();
   }, [loadWallets]);
 
   const sortedWallets = [...wallets].sort((a, b) => a.sort_order - b.sort_order);

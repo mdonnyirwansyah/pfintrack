@@ -33,20 +33,19 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
-    loadTransactions();
-    loadWallets();
-    const tx = transactionsRepo.getById(id);
-    setTransaction(tx);
+    void loadTransactions();
+    void loadWallets();
+    void transactionsRepo.getById(id).then(setTransaction);
   }, [id, loadTransactions, loadWallets]);
 
-  const allTxns = transactionsRepo.getAll();
+  const { transactions } = useTransactionStore();
   const titleSuggestions =
     transaction?.type === "income" || transaction?.type === "expense"
-      ? getTitleSuggestions(allTxns, transaction.type)
+      ? getTitleSuggestions(transactions, transaction.type)
       : [];
   const categorySuggestions =
     transaction?.type === "income" || transaction?.type === "expense"
-      ? getCategorySuggestions(allTxns, transaction.type)
+      ? getCategorySuggestions(transactions, transaction.type)
       : [];
 
   // Loading

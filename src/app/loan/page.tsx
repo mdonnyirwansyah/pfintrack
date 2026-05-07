@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Users, TrendingDown, TrendingUp } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
@@ -24,15 +24,18 @@ export default function LoanPage() {
     loadCounterparties();
   }, [loadCounterparties]);
 
-  // Load all active entries once and group by counterparty_id
-  const entriesByCounterparty = useMemo<Record<string, LoanEntry[]>>(() => {
-    const allEntries = loanEntriesRepo.getAll();
-    const map: Record<string, LoanEntry[]> = {};
-    for (const entry of allEntries) {
-      if (!map[entry.counterparty_id]) map[entry.counterparty_id] = [];
-      map[entry.counterparty_id].push(entry);
-    }
-    return map;
+  // Load all active entries and group by counterparty_id
+  const [entriesByCounterparty, setEntriesByCounterparty] = useState<Record<string, LoanEntry[]>>({});
+
+  useEffect(() => {
+    void loanEntriesRepo.getAll().then((allEntries) => {
+      const map: Record<string, LoanEntry[]> = {};
+      for (const entry of allEntries) {
+        if (!map[entry.counterparty_id]) map[entry.counterparty_id] = [];
+        map[entry.counterparty_id].push(entry);
+      }
+      setEntriesByCounterparty(map);
+    });
   }, [counterparties]); // re-compute when counterparties change (after mutations)
 
   // Summary: total get (outstanding > 0) + total give (outstanding < 0) across active counterparties

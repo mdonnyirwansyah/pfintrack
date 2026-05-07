@@ -52,7 +52,7 @@ export default function LoanDetailPage({
   useEffect(() => {
     loadCounterparties();
     loadEntriesForCounterparty(counterpartyId);
-    loadWallets();
+    void loadWallets();
   }, [counterpartyId, loadCounterparties, loadEntriesForCounterparty, loadWallets]);
 
   const counterparty = useMemo(

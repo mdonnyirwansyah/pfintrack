@@ -39,15 +39,17 @@ export default function EditCustomReportPage() {
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    loadCustomReports();
-    const report = customReportsRepo.getById(id);
-    if (!report || !report.is_active) {
-      setNotFound(true);
-      return;
-    }
-    setName(report.name);
-    setStartDate(report.start_date);
-    setEndDate(report.end_date);
+    void (async () => {
+      loadCustomReports();
+      const report = await customReportsRepo.getById(id);
+      if (!report || !report.is_active) {
+        setNotFound(true);
+        return;
+      }
+      setName(report.name);
+      setStartDate(report.start_date);
+      setEndDate(report.end_date);
+    })();
   }, [id, loadCustomReports]);
 
   function validate(): FormErrors {

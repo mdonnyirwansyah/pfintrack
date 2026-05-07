@@ -6,7 +6,6 @@ import { AppHeader } from "@/components/shared/AppHeader";
 import { IncomeExpenseForm, type IncomeExpenseFormValues } from "../../_components/IncomeExpenseForm";
 import { useTransactionStore, getTitleSuggestions, getCategorySuggestions } from "@/lib/stores/useTransactionStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
-import { transactionsRepo } from "@/lib/storage/transactions";
 import { todayISO } from "@/lib/format/date";
 import { useTranslations } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
@@ -14,7 +13,7 @@ import { parseIDR } from "@/lib/format/number";
 function AddExpenseContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { createTransaction, loadTransactions } = useTransactionStore();
+  const { transactions, createTransaction, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("transactions");
@@ -25,12 +24,11 @@ function AddExpenseContent() {
 
   useEffect(() => {
     loadTransactions();
-    loadWallets();
+    void loadWallets();
   }, [loadTransactions, loadWallets]);
 
-  const allTxns = transactionsRepo.getAll();
-  const titleSuggestions = getTitleSuggestions(allTxns, "expense");
-  const categorySuggestions = getCategorySuggestions(allTxns, "expense");
+  const titleSuggestions = getTitleSuggestions(transactions, "expense");
+  const categorySuggestions = getCategorySuggestions(transactions, "expense");
 
   const handleSubmit = async (values: IncomeExpenseFormValues) => {
     setIsSubmitting(true);

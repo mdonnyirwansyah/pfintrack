@@ -10,17 +10,17 @@ interface WalletState {
 }
 
 interface WalletActions {
-  /** Load active wallets from localStorage via walletsRepo */
-  loadWallets: () => void;
+  /** Load active wallets from storage via walletsRepo */
+  loadWallets: () => Promise<void>;
 
   /** Create a wallet and refresh state. Writes balance history if initial balance > 0. */
-  createWallet: (input: CreateWalletInput) => Wallet;
+  createWallet: (input: CreateWalletInput) => Promise<Wallet>;
 
   /** Update a wallet's name, type, currency, or sort_order. */
-  updateWallet: (id: string, patch: UpdateWalletInput) => Wallet;
+  updateWallet: (id: string, patch: UpdateWalletInput) => Promise<Wallet>;
 
   /** Soft-delete a wallet. Does NOT write balance history. */
-  softDeleteWallet: (id: string) => void;
+  softDeleteWallet: (id: string) => Promise<void>;
 
   /** Check if a name is already used by an active wallet (case-insensitive).
    *  Pass excludeId to skip a wallet when editing. */
@@ -33,29 +33,29 @@ export const useWalletStore = create<WalletStore>()((set, get) => ({
   wallets: [],
   isLoading: true,
 
-  loadWallets() {
+  async loadWallets() {
     set({ isLoading: true });
-    const wallets = walletsRepo.getAll();
+    const wallets = await walletsRepo.getAll();
     set({ wallets, isLoading: false });
   },
 
-  createWallet(input) {
-    const wallet = walletsRepo.create(input);
-    const wallets = walletsRepo.getAll();
+  async createWallet(input) {
+    const wallet = await walletsRepo.create(input);
+    const wallets = await walletsRepo.getAll();
     set({ wallets });
     return wallet;
   },
 
-  updateWallet(id, patch) {
-    const updated = walletsRepo.update(id, patch);
-    const wallets = walletsRepo.getAll();
+  async updateWallet(id, patch) {
+    const updated = await walletsRepo.update(id, patch);
+    const wallets = await walletsRepo.getAll();
     set({ wallets });
     return updated;
   },
 
-  softDeleteWallet(id) {
-    walletsRepo.softDelete(id);
-    const wallets = walletsRepo.getAll();
+  async softDeleteWallet(id) {
+    await walletsRepo.softDelete(id);
+    const wallets = await walletsRepo.getAll();
     set({ wallets });
   },
 

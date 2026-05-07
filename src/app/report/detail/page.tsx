@@ -32,7 +32,7 @@ function ReportDetailContent() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    setTransactions(transactionsRepo.getAll());
+    void transactionsRepo.getAll().then(setTransactions);
   }, []);
 
   const breakdown = useMemo(
