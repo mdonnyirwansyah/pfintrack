@@ -12,6 +12,10 @@ export const walletBalanceHistoryIdbRepo = {
     return all.filter((r) => r.is_active);
   },
 
+  async getAllIncludingInactive(): Promise<WalletBalanceHistory[]> {
+    return idbGetAll<WalletBalanceHistory>(STORE);
+  },
+
   /** Get all active history records for a specific wallet */
   async getByWalletId(walletId: string): Promise<WalletBalanceHistory[]> {
     const records = await idbGetAllByIndex<WalletBalanceHistory>(

@@ -28,6 +28,10 @@ export function AppProviders({ children }: AppProvidersProps) {
   }, []);
 
   useEffect(() => {
+    if (navigator.storage?.persist) void navigator.storage.persist();
+  }, []);
+
+  useEffect(() => {
     // Bootstrap: ensure anon_id exists in localStorage
     const id = getOrCreateAnonId();
     setAnonId(id);

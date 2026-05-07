@@ -116,12 +116,7 @@ export const walletBalanceHistoryRepo = {
   },
 
   getAllIncludingInactive(): Promise<WalletBalanceHistory[]> {
-    if (STORAGE_BACKEND === "idb")
-      return walletBalanceHistoryIdbRepo.getAll().then(() =>
-        // IDB repo doesn't expose getAllIncludingInactive; fall back to full scan via getAll
-        // (is_active filter is applied in getAll; we need unfiltered here)
-        walletBalanceHistoryIdbRepo.getAll()
-      );
+    if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.getAllIncludingInactive();
     return Promise.resolve(walletBalanceHistoryLsRepo.getAllIncludingInactive());
   },
 

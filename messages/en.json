@@ -44,6 +44,23 @@
     },
     "showDecimals": "Show Decimals",
     "showDecimalsDesc": "Display cents in all currency values",
+    "data": {
+      "sectionTitle": "Data & Storage",
+      "persistTitle": "Protected Storage",
+      "persistDesc": "Data protected from automatic browser cleanup",
+      "persistNotGranted": "Not protected — tap to request",
+      "persistUnsupported": "Not supported on this browser",
+      "exportTitle": "Export Backup",
+      "exportDesc": "Download all data as a JSON file",
+      "importTitle": "Restore Backup",
+      "importDesc": "Replace all data from a backup file",
+      "importConfirmTitle": "Replace All Data?",
+      "importConfirmDesc": "All current data will be permanently replaced with the contents of the backup file. This cannot be undone.",
+      "importConfirmAction": "Yes, Restore",
+      "importConfirmCancel": "Cancel",
+      "importSuccess": "Data restored successfully",
+      "importError": "Failed to restore: invalid or unsupported file"
+    },
     "demo": {
       "sectionTitle": "Sample Data",
       "clearButton": "Clear Sample Data",

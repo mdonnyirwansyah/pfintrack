@@ -1,8 +1,8 @@
 "use client";
 
-import { useTransition, useState, useEffect } from "react";
+import { useTransition, useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2 } from "lucide-react";
+import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useMounted } from "@/hooks/useMounted";
 import { useTranslations, useLocale } from "next-intl";
@@ -10,7 +10,9 @@ import { useRouter } from "next/navigation";
 import { setLocale } from "@/actions/setLocale";
 import { useAppStore } from "@/lib/stores/useAppStore";
 import { clearDemoData } from "@/lib/demo-data";
+import { exportBackup, importBackup } from "@/lib/storage/backup";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { toast } from "sonner";
 
 type ThemeOption = "light" | "dark" | "system";
 
@@ -25,9 +27,21 @@ export default function SettingsPage() {
   const setShowDecimals = useAppStore((s) => s.setShowDecimals);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
+  const [importConfirmOpen, setImportConfirmOpen] = useState(false);
+  const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
+  const [storagePersisted, setStoragePersisted] = useState<boolean | null>(null);
+  const [storageSupported, setStorageSupported] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const td = useTranslations("settings.data");
 
   useEffect(() => {
     setIsDemoMode(window.localStorage.getItem("pfintrack_demo_mode") === "true");
+  }, []);
+
+  useEffect(() => {
+    if (!navigator.storage?.persisted) return;
+    setStorageSupported(true);
+    void navigator.storage.persisted().then(setStoragePersisted);
   }, []);
 
   const THEME_OPTIONS: { value: ThemeOption; label: string; icon: React.ElementType }[] = [
@@ -291,6 +305,125 @@ export default function SettingsPage() {
           </>
         )}
 
+        {/* ── Data & Storage ── */}
+        <p
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          {td("sectionTitle")}
+        </p>
+
+        <div className={sectionClass}>
+          {/* Persistent storage */}
+          <button
+            className={rowClass + " w-full"}
+            disabled={!storageSupported || storagePersisted === true}
+            onClick={async () => {
+              if (!navigator.storage?.persist) return;
+              const granted = await navigator.storage.persist();
+              setStoragePersisted(granted);
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                style={{
+                  background: storagePersisted
+                    ? "color-mix(in srgb, var(--color-positive) 15%, transparent)"
+                    : "var(--bg-secondary)",
+                }}
+              >
+                {storagePersisted ? (
+                  <ShieldCheck className="w-4 h-4" style={{ color: "var(--color-positive)" }} />
+                ) : (
+                  <ShieldOff className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+                )}
+              </div>
+              <div className="text-left">
+                <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                  {td("persistTitle")}
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: storagePersisted ? "var(--color-positive)" : "var(--text-tertiary)" }}>
+                  {!storageSupported
+                    ? td("persistUnsupported")
+                    : storagePersisted
+                      ? td("persistDesc")
+                      : td("persistNotGranted")}
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Export */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={async () => {
+              try {
+                await exportBackup();
+              } catch {
+                toast.error(td("importError"));
+              }
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                style={{ background: "var(--bg-secondary)" }}
+              >
+                <Download className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                  {td("exportTitle")}
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                  {td("exportDesc")}
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Import */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => importInputRef.current?.click()}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                style={{ background: "var(--bg-secondary)" }}
+              >
+                <Upload className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                  {td("importTitle")}
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                  {td("importDesc")}
+                </p>
+              </div>
+            </div>
+          </button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json,.gz,application/json,application/gzip"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setPendingImportFile(file);
+              setImportConfirmOpen(true);
+              e.target.value = "";
+            }}
+          />
+        </div>
+
         {/* ── About ── */}
         <p
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
@@ -331,6 +464,29 @@ export default function SettingsPage() {
         onConfirm={() => {
           setDemoConfirmOpen(false);
           void clearDemoData();
+        }}
+      />
+
+      <ConfirmDialog
+        open={importConfirmOpen}
+        onOpenChange={setImportConfirmOpen}
+        title={td("importConfirmTitle")}
+        description={td("importConfirmDesc")}
+        confirmLabel={td("importConfirmAction")}
+        cancelLabel={td("importConfirmCancel")}
+        variant="destructive"
+        onConfirm={async () => {
+          setImportConfirmOpen(false);
+          if (!pendingImportFile) return;
+          try {
+            await importBackup(pendingImportFile);
+            toast.success(td("importSuccess"));
+            setTimeout(() => window.location.reload(), 800);
+          } catch {
+            toast.error(td("importError"));
+          } finally {
+            setPendingImportFile(null);
+          }
         }}
       />
     </>

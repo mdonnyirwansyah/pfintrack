@@ -44,6 +44,23 @@
     },
     "showDecimals": "Tampilkan Desimal",
     "showDecimalsDesc": "Tampilkan sen pada semua nilai mata uang",
+    "data": {
+      "sectionTitle": "Data & Penyimpanan",
+      "persistTitle": "Penyimpanan Terlindungi",
+      "persistDesc": "Data terlindungi dari pembersihan otomatis browser",
+      "persistNotGranted": "Belum terlindungi — ketuk untuk meminta izin",
+      "persistUnsupported": "Tidak didukung di browser ini",
+      "exportTitle": "Ekspor Backup",
+      "exportDesc": "Unduh semua data sebagai file JSON",
+      "importTitle": "Pulihkan Backup",
+      "importDesc": "Ganti semua data dari file backup",
+      "importConfirmTitle": "Ganti Semua Data?",
+      "importConfirmDesc": "Semua data saat ini akan diganti permanen dengan isi file backup. Tindakan ini tidak bisa dibatalkan.",
+      "importConfirmAction": "Ya, Pulihkan",
+      "importConfirmCancel": "Batal",
+      "importSuccess": "Data berhasil dipulihkan",
+      "importError": "Gagal memulihkan: file tidak valid atau tidak didukung"
+    },
     "demo": {
       "sectionTitle": "Data Sampel",
       "clearButton": "Hapus Data Sampel",
