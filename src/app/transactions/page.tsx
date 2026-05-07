@@ -34,7 +34,9 @@ function TransactionsContent() {
   const searchParams = useSearchParams();
   const { transactions, isLoading, loadTransactions, softDeleteTransaction } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
-  const [dismissedWelcome, setDismissedWelcome] = useState(false);
+  const [dismissedWelcome, setDismissedWelcome] = useState(
+    () => typeof window !== "undefined" && !!window.localStorage.getItem("pfintrack_welcomed"),
+  );
   const t = useTranslations("transactions");
   const td = useTranslations("demo.welcome");
 
@@ -233,6 +235,7 @@ function TransactionsContent() {
               <div className="flex flex-col gap-2.5">
                 <button
                   onClick={() => {
+                    window.localStorage.setItem("pfintrack_welcomed", "true");
                     void injectDemoData().then(() => window.location.reload());
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-semibold active:opacity-70 transition-opacity"
@@ -247,9 +250,7 @@ function TransactionsContent() {
                 </button>
                 <button
                   onClick={() => {
-                    if (typeof window !== "undefined") {
-                      window.localStorage.removeItem("pfintrack_demo_mode");
-                    }
+                    window.localStorage.setItem("pfintrack_welcomed", "true");
                     setDismissedWelcome(true);
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-medium active:opacity-70 transition-opacity"
