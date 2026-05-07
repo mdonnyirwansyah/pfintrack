@@ -8,9 +8,10 @@ import { CustomTab } from "@/components/report/CustomTab";
 import { useReportStore } from "@/lib/stores/useReportStore";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
+import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
 import type { Transaction } from "@/lib/types/transaction";
-import type { LoanEntry } from "@/lib/types/loan";
+import type { LoanEntry, LoanCounterparty } from "@/lib/types/loan";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -34,6 +35,7 @@ export default function ReportPage() {
   ];
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loanEntries, setLoanEntries] = useState<LoanEntry[]>([]);
+  const [loanCounterparties, setLoanCounterparties] = useState<LoanCounterparty[]>([]);
   const [balanceHistory, setBalanceHistory] = useState<WalletBalanceHistory[]>(
     []
   );
@@ -44,6 +46,7 @@ export default function ReportPage() {
   useEffect(() => {
     void transactionsRepo.getAll().then(setTransactions);
     void loanEntriesRepo.getAll().then(setLoanEntries);
+    void loanCounterpartiesRepo.getAll().then(setLoanCounterparties);
     void walletBalanceHistoryRepo.getAll().then(setBalanceHistory);
     loadCustomReports();
   }, [loadCustomReports]);
@@ -54,6 +57,7 @@ export default function ReportPage() {
     sessionStorage.setItem("report_active_tab", tab);
     void transactionsRepo.getAll().then(setTransactions);
     void loanEntriesRepo.getAll().then(setLoanEntries);
+    void loanCounterpartiesRepo.getAll().then(setLoanCounterparties);
     void walletBalanceHistoryRepo.getAll().then(setBalanceHistory);
     if (tab === "custom") loadCustomReports();
   };
@@ -100,7 +104,11 @@ export default function ReportPage() {
 
         {/* Tab content */}
         {activeTab === "realtime" && (
-          <RealtimeTab transactions={transactions} />
+          <RealtimeTab
+            transactions={transactions}
+            loanEntries={loanEntries}
+            loanCounterparties={loanCounterparties}
+          />
         )}
         {activeTab === "monthly" && (
           <MonthlyTab

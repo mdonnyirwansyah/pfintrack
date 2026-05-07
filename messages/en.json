@@ -386,6 +386,12 @@
       "expenseDown": "Spending down {percent}% — more frugal than last month",
       "noIncome": "No income recorded this month"
     },
+    "loanSummary": {
+      "title": "Active Loans",
+      "receivable": "Receivable",
+      "payable": "Payable",
+      "empty": "No active loans"
+    },
     "categoryTrend": {
       "title": "Category Trend",
       "sixMonths": "6-month trend for {category}",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useMounted } from "@/hooks/useMounted";
 import {
   Area,
   AreaChart,
@@ -66,6 +67,7 @@ export function NetWorthChart({
   const t = useTranslations("report");
   const locale = useLocale();
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
+  const mounted = useMounted();
 
   const chartData = useMemo<MonthPoint[]>(() => {
     const now = new Date();
@@ -113,7 +115,7 @@ export function NetWorthChart({
       </h3>
 
       <div style={{ width: "100%", height: 120, minWidth: 0 }}>
-      <ResponsiveContainer width="100%" height="100%">
+      {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
         <AreaChart
           data={chartData}
           margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
@@ -144,7 +146,7 @@ export function NetWorthChart({
             activeDot={{ r: 4, fill: lineColor, strokeWidth: 0 }}
           />
         </AreaChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer> : null}
       </div>
 
       {/* Summary row */}

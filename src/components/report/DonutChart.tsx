@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Sector, ResponsiveContainer } from "recharts";
+import { useMounted } from "@/hooks/useMounted";
 import type { CategoryBreakdown } from "@/lib/report/calculations";
 import { formatIDR } from "@/lib/format/number";
 
@@ -58,6 +59,7 @@ export function DonutChart({
   selectedCategory,
   centerLabel,
 }: DonutChartProps) {
+  const mounted = useMounted();
   if (data.length === 0) return null;
 
   const activeIndex = selectedCategory
@@ -74,7 +76,7 @@ export function DonutChart({
     <div className="flex flex-col items-center w-full">
       {/* Donut + center label */}
       <div style={{ width: "100%", height: 240, position: "relative" }}>
-        <ResponsiveContainer width="100%" height="100%">
+        {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
           <PieChart>
             <Pie
               data={data}
@@ -104,7 +106,7 @@ export function DonutChart({
               ))}
             </Pie>
           </PieChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer> : null}
 
         {/* Center label overlay */}
         <div

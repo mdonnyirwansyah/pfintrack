@@ -5,6 +5,7 @@ import { PackageOpen } from "lucide-react";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { id as idLocale, enUS } from "date-fns/locale";
 import type { Transaction } from "@/lib/types/transaction";
+import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
 import {
   calcCategoryBreakdown,
   calcIncome,
@@ -17,6 +18,7 @@ import { DonutChart } from "./DonutChart";
 import { SavingRateCard } from "./SavingRateCard";
 import { InsightCard, type InsightData } from "./InsightCard";
 import { DailySummarySection } from "./DailySummarySection";
+import { LoanOutstandingSection } from "./LoanOutstandingSection";
 import { SortPill, applySortKey } from "@/components/shared/SortPill";
 import type { SortKey } from "@/components/shared/SortPill";
 import { formatDateRange, formatDisplayDate } from "@/lib/format/date";
@@ -29,9 +31,11 @@ type DonutMode = "expense" | "income";
 
 interface RealtimeTabProps {
   transactions: Transaction[];
+  loanEntries: LoanEntry[];
+  loanCounterparties: LoanCounterparty[];
 }
 
-export function RealtimeTab({ transactions }: RealtimeTabProps) {
+export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: RealtimeTabProps) {
   const t = useTranslations("report");
   const tc = useTranslations("common");
   const locale = useLocale();
@@ -208,6 +212,12 @@ export function RealtimeTab({ transactions }: RealtimeTabProps) {
 
       {/* B1 — Saving Rate Card (always shown, not conditional on income > 0 — component handles N/A) */}
       <SavingRateCard income={income} expenses={expenses} />
+
+      {/* D1 — Loan Outstanding Section (conditional, below SavingRateCard) */}
+      <LoanOutstandingSection
+        loanCounterparties={loanCounterparties}
+        loanEntries={loanEntries}
+      />
 
       {/* B2 — Insight Card (conditional, dismissible) */}
       {insight && !insightDismissed && (

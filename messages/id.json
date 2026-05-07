@@ -386,6 +386,12 @@
       "expenseDown": "Pengeluaran turun {percent}% — lebih hemat dari bulan lalu",
       "noIncome": "Belum ada pemasukan bulan ini"
     },
+    "loanSummary": {
+      "title": "Pinjaman Aktif",
+      "receivable": "Piutang",
+      "payable": "Hutang",
+      "empty": "Tidak ada pinjaman aktif"
+    },
     "categoryTrend": {
       "title": "Tren Kategori",
       "sixMonths": "Tren 6 bulan untuk {category}",

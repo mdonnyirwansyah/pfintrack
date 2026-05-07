@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useMounted } from "@/hooks/useMounted";
 import { List, CalendarDays, BarChart2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Transaction } from "@/lib/types/transaction";
 import { formatIDR } from "@/lib/format/number";
@@ -136,6 +137,7 @@ export function DailySummarySection({
 }: DailySummarySectionProps) {
   const t = useTranslations("report");
   const locale = useLocale();
+  const mounted = useMounted();
   const [view, setView] = useState<"list" | "calendar" | "chart">("calendar");
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
 
@@ -297,7 +299,7 @@ export function DailySummarySection({
         /* ── Chart View (E1) ── */
         <div className="glass rounded-[16px] px-2 pt-3 pb-4">
           <div style={{ width: "100%", height: 160, minWidth: 0 }}>
-          <ResponsiveContainer width="100%" height="100%">
+          {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
             <BarChart
               data={chartData}
               barGap={2}
@@ -343,7 +345,7 @@ export function DailySummarySection({
                 style={{ cursor: "pointer" }}
               />
             </BarChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer> : null}
           </div>
         </div>
       ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useMounted } from "@/hooks/useMounted";
 import {
   BarChart,
   Bar,
@@ -58,6 +59,7 @@ export function CategoryTrendChart({
   const t = useTranslations("report.categoryTrend");
   const locale = useLocale();
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
+  const mounted = useMounted();
 
   const { chartData, stats } = useMemo(() => {
     const now = new Date();
@@ -127,7 +129,7 @@ export function CategoryTrendChart({
       </h3>
 
       <div style={{ width: "100%", height: 160, minWidth: 0 }}>
-      <ResponsiveContainer width="100%" height="100%">
+      {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
         <BarChart
           data={chartData}
           barCategoryGap="30%"
@@ -151,7 +153,7 @@ export function CategoryTrendChart({
             fill="var(--color-negative)"
           />
         </BarChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer> : null}
       </div>
 
       {/* Stats */}

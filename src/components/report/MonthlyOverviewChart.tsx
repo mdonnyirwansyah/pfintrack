@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useMounted } from "@/hooks/useMounted";
 import {
   BarChart,
   Bar,
@@ -64,6 +65,7 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
   const t = useTranslations("report");
   const locale = useLocale();
   const router = useRouter();
+  const mounted = useMounted();
 
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
 
@@ -98,7 +100,7 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
       </h3>
 
       <div style={{ width: "100%", height: 160, minWidth: 0 }}>
-      <ResponsiveContainer width="100%" height="100%">
+      {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
         <BarChart
           data={chartData}
           barGap={2}
@@ -136,7 +138,7 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
             fill="var(--color-negative)"
           />
         </BarChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer> : null}
       </div>
     </div>
   );
