@@ -10,8 +10,9 @@ import { useRouter } from "next/navigation";
 import { setLocale } from "@/actions/setLocale";
 import { useAppStore } from "@/lib/stores/useAppStore";
 import { clearDemoData } from "@/lib/demo-data";
-import { exportBackup, importBackup } from "@/lib/storage/backup";
+import { exportBackup, importBackup, deleteAllData } from "@/lib/storage/backup";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { TypeToConfirmDialog } from "@/components/shared/TypeToConfirmDialog";
 import { toast } from "sonner";
 
 type ThemeOption = "light" | "dark" | "system";
@@ -29,6 +30,7 @@ export default function SettingsPage() {
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
   const [importConfirmOpen, setImportConfirmOpen] = useState(false);
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
+  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
   const [storagePersisted, setStoragePersisted] = useState<boolean | null>(null);
   const [storageSupported, setStorageSupported] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -422,6 +424,31 @@ export default function SettingsPage() {
               e.target.value = "";
             }}
           />
+
+          <div style={dividerStyle} />
+
+          {/* Delete All Data */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setDeleteAllOpen(true)}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px]"
+                style={{ background: "color-mix(in srgb, var(--color-negative) 12%, transparent)" }}
+              >
+                <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-[13px] font-medium" style={{ color: "var(--color-negative)" }}>
+                  {td("deleteAllTitle")}
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                  {td("deleteAllDesc").split(".")[0]}
+                </p>
+              </div>
+            </div>
+          </button>
         </div>
 
         {/* ── About ── */}
@@ -486,6 +513,27 @@ export default function SettingsPage() {
             toast.error(td("importError"));
           } finally {
             setPendingImportFile(null);
+          }
+        }}
+      />
+
+      <TypeToConfirmDialog
+        open={deleteAllOpen}
+        onOpenChange={setDeleteAllOpen}
+        title={td("deleteAllTitle")}
+        description={td("deleteAllDesc")}
+        confirmPhrase={td("deleteAllPhrase")}
+        inputLabel={td("deleteAllInputLabel")}
+        inputPlaceholder={td("deleteAllInputPlaceholder")}
+        confirmLabel={td("deleteAllConfirm")}
+        cancelLabel={td("deleteAllCancel")}
+        onConfirm={async () => {
+          try {
+            await deleteAllData();
+            toast.success(td("deleteAllSuccess"));
+            setTimeout(() => window.location.reload(), 800);
+          } catch {
+            toast.error(td("importError"));
           }
         }}
       />

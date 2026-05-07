@@ -59,7 +59,15 @@
       "importConfirmAction": "Ya, Pulihkan",
       "importConfirmCancel": "Batal",
       "importSuccess": "Data berhasil dipulihkan",
-      "importError": "Gagal memulihkan: file tidak valid atau tidak didukung"
+      "importError": "Gagal memulihkan: file tidak valid atau tidak didukung",
+      "deleteAllTitle": "Hapus Semua Data",
+      "deleteAllDesc": "Ini akan menghapus permanen semua dompet, transaksi, pinjaman, dan laporan. Tindakan ini tidak bisa dibatalkan.",
+      "deleteAllPhrase": "HAPUS SEMUA DATA",
+      "deleteAllInputLabel": "Ketik frasa berikut untuk konfirmasi:",
+      "deleteAllInputPlaceholder": "Ketik di sini secara manual",
+      "deleteAllConfirm": "Hapus Semua",
+      "deleteAllCancel": "Batal",
+      "deleteAllSuccess": "Semua data telah dihapus"
     },
     "demo": {
       "sectionTitle": "Data Sampel",

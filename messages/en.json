@@ -59,7 +59,15 @@
       "importConfirmAction": "Yes, Restore",
       "importConfirmCancel": "Cancel",
       "importSuccess": "Data restored successfully",
-      "importError": "Failed to restore: invalid or unsupported file"
+      "importError": "Failed to restore: invalid or unsupported file",
+      "deleteAllTitle": "Delete All Data",
+      "deleteAllDesc": "This will permanently delete all wallets, transactions, loans, and reports. This action cannot be undone.",
+      "deleteAllPhrase": "DELETE ALL DATA",
+      "deleteAllInputLabel": "Type the following phrase to confirm:",
+      "deleteAllInputPlaceholder": "Type here manually",
+      "deleteAllConfirm": "Delete All",
+      "deleteAllCancel": "Cancel",
+      "deleteAllSuccess": "All data has been deleted"
     },
     "demo": {
       "sectionTitle": "Sample Data",

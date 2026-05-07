@@ -80,6 +80,29 @@ async function decompressBlob(blob: Blob): Promise<string> {
   return new TextDecoder().decode(decompressed);
 }
 
+export async function deleteAllData(): Promise<void> {
+  if (STORAGE_BACKEND === "idb") {
+    await Promise.all([
+      idbClearStore("wallets"),
+      idbClearStore("wallet_balance_history"),
+      idbClearStore("transactions"),
+      idbClearStore("loan_counterparties"),
+      idbClearStore("loan_entries"),
+      idbClearStore("custom_reports"),
+    ]);
+  } else {
+    writeKey("wallets", []);
+    writeKey("wallet_balance_history", []);
+    writeKey("transactions", []);
+    writeKey("loan_counterparties", []);
+    writeKey("loan_entries", []);
+    writeKey("custom_reports", []);
+  }
+  // Reset onboarding flags so welcome screen shows again
+  localStorage.removeItem("pfintrack_demo_mode");
+  localStorage.removeItem("pfintrack_welcomed");
+}
+
 export async function importBackup(file: File): Promise<void> {
   let text: string;
   try {
