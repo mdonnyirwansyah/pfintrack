@@ -21,6 +21,7 @@ export default function TransactionHistoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [activeWalletId, setActiveWalletId] = useState<string | null>(null);
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
 
@@ -34,6 +35,16 @@ export default function TransactionHistoryPage() {
     [wallets]
   );
 
+  // Wallets that appear in at least one transaction (for filter chips)
+  const activeWallets = useMemo(() => {
+    const ids = new Set(transactions.flatMap((tx) =>
+      tx.destination_wallet_id ? [tx.wallet_id, tx.destination_wallet_id] : [tx.wallet_id]
+    ));
+    return wallets.filter((w) => ids.has(w.id));
+  }, [transactions, wallets]);
+
+  const hasFilters = activeFilter !== "all" || activeWalletId !== null || searchQuery.trim() !== "";
+
   const filtered = useMemo(() => {
     let base = transactions;
 
@@ -43,6 +54,13 @@ export default function TransactionHistoryPage() {
         activeFilter === "balanceCorrection"
           ? tx.category === "Balance Correction"
           : tx.type === activeFilter && tx.category !== "Balance Correction"
+      );
+    }
+
+    // Wallet filter — matches source OR destination wallet
+    if (activeWalletId !== null) {
+      base = base.filter(
+        (tx) => tx.wallet_id === activeWalletId || tx.destination_wallet_id === activeWalletId
       );
     }
 
@@ -65,7 +83,7 @@ export default function TransactionHistoryPage() {
     }
 
     return applySortKey(base, sortKey);
-  }, [transactions, activeFilter, searchQuery, walletMap, sortKey]);
+  }, [transactions, activeFilter, activeWalletId, searchQuery, walletMap, sortKey]);
 
   return (
     <>
@@ -102,7 +120,7 @@ export default function TransactionHistoryPage() {
           )}
         </div>
 
-        {/* Filter chips */}
+        {/* Type filter chips */}
         {!isLoading && (
           <div className="flex gap-2 mt-3 overflow-x-auto pb-0.5 no-scrollbar">
             {FILTERS.map((f) => {
@@ -119,6 +137,40 @@ export default function TransactionHistoryPage() {
                   }}
                 >
                   {t(`filter.${f}`)}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Wallet filter chips — only when 2+ wallets have transactions */}
+        {!isLoading && activeWallets.length >= 2 && (
+          <div className="flex gap-2 mt-2 overflow-x-auto pb-0.5 no-scrollbar">
+            <button
+              onClick={() => setActiveWalletId(null)}
+              className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
+              style={{
+                background: activeWalletId === null ? "var(--color-brand-soft)" : "var(--bg-secondary)",
+                color: activeWalletId === null ? "var(--color-brand)" : "var(--text-secondary)",
+                border: `1px solid ${activeWalletId === null ? "var(--color-brand)" : "var(--border-default)"}`,
+              }}
+            >
+              {t("filter.all")}
+            </button>
+            {activeWallets.map((w) => {
+              const isActive = activeWalletId === w.id;
+              return (
+                <button
+                  key={w.id}
+                  onClick={() => setActiveWalletId(isActive ? null : w.id)}
+                  className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
+                  style={{
+                    background: isActive ? "var(--color-brand-soft)" : "var(--bg-secondary)",
+                    color: isActive ? "var(--color-brand)" : "var(--text-secondary)",
+                    border: `1px solid ${isActive ? "var(--color-brand)" : "var(--border-default)"}`,
+                  }}
+                >
+                  {w.name}
                 </button>
               );
             })}
@@ -150,8 +202,8 @@ export default function TransactionHistoryPage() {
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={FileSearch}
-          title={searchQuery || activeFilter !== "all" ? t("noResults") : t("noHistory")}
-          description={searchQuery || activeFilter !== "all" ? t("noResultsDesc") : t("noHistoryDesc")}
+          title={hasFilters ? t("noResults") : t("noHistory")}
+          description={hasFilters ? t("noResultsDesc") : t("noHistoryDesc")}
         />
       ) : (
         <div className="px-4">
