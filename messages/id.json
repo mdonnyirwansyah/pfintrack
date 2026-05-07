@@ -139,6 +139,13 @@
     "noResultsDesc": "Tidak ada transaksi yang sesuai pencarian.",
     "noHistory": "Belum ada transaksi",
     "noHistoryDesc": "Tambah transaksi pertama Anda menggunakan tombol +.",
+    "filter": {
+      "all": "Semua",
+      "income": "Pemasukan",
+      "expense": "Pengeluaran",
+      "transfer": "Transfer",
+      "balanceCorrection": "Koreksi Saldo"
+    },
     "notFound": "Transaksi tidak ditemukan",
     "notFoundDesc": "Transaksi ini mungkin telah dihapus.",
     "sort": {

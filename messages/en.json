@@ -139,6 +139,13 @@
     "noResultsDesc": "No transactions match your search.",
     "noHistory": "No transactions yet",
     "noHistoryDesc": "Add your first transaction using the + button.",
+    "filter": {
+      "all": "All",
+      "income": "Income",
+      "expense": "Expense",
+      "transfer": "Transfer",
+      "balanceCorrection": "Balance Correction"
+    },
     "notFound": "Transaction not found",
     "notFoundDesc": "This transaction may have been deleted.",
     "sort": {

@@ -8,18 +8,21 @@ import { formatIDR } from "@/lib/format/number";
 import { ArrowRightLeft } from "lucide-react";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useLongPress } from "@/hooks/useLongPress";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { formatDisplayDate } from "@/lib/format/date";
 
 interface TransactionItemProps {
   transaction: Transaction;
   wallets: Wallet[];
+  showDate?: boolean;
   onConfirmDelete?: (id: string) => void;
 }
 
-export function TransactionItem({ transaction, wallets, onConfirmDelete }: TransactionItemProps) {
+export function TransactionItem({ transaction, wallets, showDate = false, onConfirmDelete }: TransactionItemProps) {
   const router = useRouter();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
+  const locale = useLocale();
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -111,7 +114,9 @@ export function TransactionItem({ transaction, wallets, onConfirmDelete }: Trans
               className="text-[9px] flex-shrink-0"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {transaction.transaction_time}
+              {showDate
+                ? `${formatDisplayDate(transaction.transaction_date, locale)} · ${transaction.transaction_time}`
+                : transaction.transaction_time}
             </span>
           </div>
           {!isTransfer && wallet && (
