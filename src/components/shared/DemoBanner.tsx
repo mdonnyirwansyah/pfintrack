@@ -65,7 +65,7 @@ export function DemoBanner() {
         variant="destructive"
         onConfirm={() => {
           setConfirmOpen(false);
-          clearDemoData();
+          void clearDemoData();
         }}
       />
     </>

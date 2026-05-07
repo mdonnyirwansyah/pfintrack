@@ -2,7 +2,6 @@ import type { Wallet } from "@/lib/types/wallet";
 import {
   idbGet,
   idbGetAll,
-  idbGetAllByIndex,
   idbPut,
   idbPutAll,
 } from "./idb-client";
@@ -14,8 +13,8 @@ const STORE = "wallets" as const;
 export const walletsIdbRepo = {
   /** Returns only is_active=true records */
   async getAll(): Promise<Wallet[]> {
-    // IDB stores boolean is_active as a boolean; cast to satisfy IDBValidKey type
-    return idbGetAllByIndex<Wallet>(STORE, "by_is_active", true as unknown as IDBValidKey);
+    const all = await idbGetAll<Wallet>(STORE);
+    return all.filter((w) => w.is_active);
   },
 
   async getAllIncludingInactive(): Promise<Wallet[]> {
@@ -28,7 +27,7 @@ export const walletsIdbRepo = {
   },
 
   async create(input: CreateWalletInput): Promise<Wallet> {
-    const activeWallets = await idbGetAllByIndex<Wallet>(STORE, "by_is_active", 1);
+    const activeWallets = await walletsIdbRepo.getAll();
     const now = new Date().toISOString();
 
     const wallet: Wallet = {

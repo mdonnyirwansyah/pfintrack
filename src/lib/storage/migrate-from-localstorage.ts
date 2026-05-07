@@ -13,6 +13,12 @@ import type { CustomReport } from "@/lib/types/report";
 const STORAGE_VERSION_KEY = "storage_version";
 const STORAGE_VERSION_VALUE = "idb_v1";
 
+/** Synchronous check — safe to call during React lazy state init. */
+export function isMigrationDone(): boolean {
+  if (typeof window === "undefined") return true;
+  return localStorage.getItem(STORAGE_VERSION_KEY) === STORAGE_VERSION_VALUE;
+}
+
 /**
  * One-time migration from localStorage to IndexedDB.
  *

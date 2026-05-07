@@ -13,11 +13,8 @@ const STORE = "loan_entries" as const;
 
 export const loanEntriesIdbRepo = {
   async getAll(): Promise<LoanEntry[]> {
-    return idbGetAllByIndex<LoanEntry>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await idbGetAll<LoanEntry>(STORE);
+    return all.filter((e) => e.is_active);
   },
 
   async getAllIncludingInactive(): Promise<LoanEntry[]> {

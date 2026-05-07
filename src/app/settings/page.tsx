@@ -330,7 +330,7 @@ export default function SettingsPage() {
         variant="destructive"
         onConfirm={() => {
           setDemoConfirmOpen(false);
-          clearDemoData();
+          void clearDemoData();
         }}
       />
     </>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { getOrCreateAnonId } from "@/lib/bootstrap/anon-id";
 import { useAppStore } from "@/lib/stores/useAppStore";
 import { setFormatDecimals } from "@/lib/format/number";
-import { runStorageMigration } from "@/lib/storage/migrate-from-localstorage";
+import { runStorageMigration, isMigrationDone } from "@/lib/storage/migrate-from-localstorage";
 import { DemoBanner } from "./DemoBanner";
 
 interface AppProvidersProps {
@@ -17,10 +17,14 @@ export function AppProviders({ children }: AppProvidersProps) {
   const setHydrated = useAppStore((s) => s.setHydrated);
   const showDecimals = useAppStore((s) => s.showDecimals);
 
+  // Lazy init: already-migrated users start as true (no loading flash).
+  // First-time migration users start as false until runStorageMigration resolves.
+  const [migrationReady, setMigrationReady] = useState(() => isMigrationDone());
+
   useEffect(() => {
-    // Run one-time localStorage → IndexedDB migration before any store reads
-    void runStorageMigration();
-  }, []);
+    if (migrationReady) return;
+    runStorageMigration().then(() => setMigrationReady(true));
+  }, [migrationReady]);
 
   useEffect(() => {
     // Bootstrap: ensure anon_id exists in localStorage
@@ -33,6 +37,14 @@ export function AppProviders({ children }: AppProvidersProps) {
   useEffect(() => {
     setFormatDecimals(showDecimals);
   }, [showDecimals]);
+
+  if (!migrationReady) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[var(--bg-base)]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <>

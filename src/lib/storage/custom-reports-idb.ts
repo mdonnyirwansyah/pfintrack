@@ -2,7 +2,6 @@ import type { CustomReport } from "@/lib/types/report";
 import {
   idbGet,
   idbGetAll,
-  idbGetAllByIndex,
   idbPut,
   idbPutAll,
 } from "./idb-client";
@@ -13,11 +12,8 @@ const STORE = "custom_reports" as const;
 
 export const customReportsIdbRepo = {
   async getAll(): Promise<CustomReport[]> {
-    return idbGetAllByIndex<CustomReport>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await idbGetAll<CustomReport>(STORE);
+    return all.filter((r) => r.is_active);
   },
 
   async getAllIncludingInactive(): Promise<CustomReport[]> {
@@ -30,11 +26,7 @@ export const customReportsIdbRepo = {
 
   async findByName(name: string): Promise<CustomReport | null> {
     const normalized = name.trim().toLowerCase();
-    const all = await idbGetAllByIndex<CustomReport>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await customReportsIdbRepo.getAll();
     return (
       all.find((r) => r.name.trim().toLowerCase() === normalized) ?? null
     );

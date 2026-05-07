@@ -2,7 +2,6 @@ import type { LoanCounterparty } from "@/lib/types/loan";
 import {
   idbGet,
   idbGetAll,
-  idbGetAllByIndex,
   idbPut,
   idbPutAll,
 } from "./idb-client";
@@ -12,11 +11,8 @@ const STORE = "loan_counterparties" as const;
 
 export const loanCounterpartiesIdbRepo = {
   async getAll(): Promise<LoanCounterparty[]> {
-    return idbGetAllByIndex<LoanCounterparty>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await idbGetAll<LoanCounterparty>(STORE);
+    return all.filter((c) => c.is_active);
   },
 
   async getAllIncludingInactive(): Promise<LoanCounterparty[]> {
@@ -29,11 +25,7 @@ export const loanCounterpartiesIdbRepo = {
 
   async findByName(name: string): Promise<LoanCounterparty | null> {
     const normalized = name.trim().toLowerCase();
-    const all = await idbGetAllByIndex<LoanCounterparty>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await loanCounterpartiesIdbRepo.getAll();
     return all.find((c) => c.name.trim().toLowerCase() === normalized) ?? null;
   },
 

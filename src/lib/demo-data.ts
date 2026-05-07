@@ -10,6 +10,8 @@ import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
 import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import { applyTransactionToWallet, applyLoanEntryToWallet } from "@/lib/storage/wallet-balance-ops";
+import { STORAGE_BACKEND } from "@/lib/storage/config";
+import { idbClearStore } from "@/lib/storage/idb-client";
 import { writeKey } from "@/lib/storage/base";
 
 /** ISO date N days before today */
@@ -273,15 +275,26 @@ export async function injectDemoData(): Promise<void> {
   }
 }
 
-export function clearDemoData(): void {
+export async function clearDemoData(): Promise<void> {
   if (typeof window === "undefined") return;
 
-  writeKey("wallets", []);
-  writeKey("wallet_balance_history", []);
-  writeKey("transactions", []);
-  writeKey("loan_counterparties", []);
-  writeKey("loan_entries", []);
-  writeKey("custom_reports", []);
+  if (STORAGE_BACKEND === "idb") {
+    await Promise.all([
+      idbClearStore("wallets"),
+      idbClearStore("wallet_balance_history"),
+      idbClearStore("transactions"),
+      idbClearStore("loan_counterparties"),
+      idbClearStore("loan_entries"),
+      idbClearStore("custom_reports"),
+    ]);
+  } else {
+    writeKey("wallets", []);
+    writeKey("wallet_balance_history", []);
+    writeKey("transactions", []);
+    writeKey("loan_counterparties", []);
+    writeKey("loan_entries", []);
+    writeKey("custom_reports", []);
+  }
 
   window.localStorage.removeItem("pfintrack_demo_mode");
   window.location.reload();

@@ -204,3 +204,8 @@ export async function idbPutAll<T>(
   const tx = db.transaction(storeName, "readwrite");
   await Promise.all([...records.map((r: T) => tx.store.put(r)), tx.done]);
 }
+
+export async function idbClearStore(storeName: StoreName): Promise<void> {
+  const db: AnyDB = await getDB();
+  await db.clear(storeName);
+}

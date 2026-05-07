@@ -1,5 +1,5 @@
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
-import { idbGetAllByIndex, idbPut, idbPutAll } from "./idb-client";
+import { idbGetAll, idbGetAllByIndex, idbPut, idbPutAll } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateWalletBalanceHistoryInput } from "./wallet-balance-history";
 
@@ -8,11 +8,8 @@ const STORE = "wallet_balance_history" as const;
 export const walletBalanceHistoryIdbRepo = {
   /** Returns only is_active=true records */
   async getAll(): Promise<WalletBalanceHistory[]> {
-    return idbGetAllByIndex<WalletBalanceHistory>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await idbGetAll<WalletBalanceHistory>(STORE);
+    return all.filter((r) => r.is_active);
   },
 
   /** Get all active history records for a specific wallet */

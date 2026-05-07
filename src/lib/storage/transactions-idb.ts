@@ -1,6 +1,7 @@
 import type { Transaction } from "@/lib/types/transaction";
 import {
   idbGet,
+  idbGetAll,
   idbGetAllByIndex,
   idbPut,
   idbPutAll,
@@ -13,11 +14,8 @@ const STORE = "transactions" as const;
 export const transactionsIdbRepo = {
   /** Returns only is_active=true records */
   async getAll(): Promise<Transaction[]> {
-    return idbGetAllByIndex<Transaction>(
-      STORE,
-      "by_is_active",
-      true as unknown as IDBValidKey,
-    );
+    const all = await idbGetAll<Transaction>(STORE);
+    return all.filter((t) => t.is_active);
   },
 
   /** Returns active transactions for a specific date (YYYY-MM-DD) */
