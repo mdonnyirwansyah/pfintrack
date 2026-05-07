@@ -257,6 +257,32 @@ export function WalletForm({
             <Calculator className="w-5 h-5" />
           </div>
         </div>
+        <div className="flex gap-1.5 mt-1.5">
+          {["000", "00"].map((zeros) => (
+            <button
+              key={zeros}
+              type="button"
+              onClick={() => {
+                const intPart = (balance || "0").replace(/\./g, "").split(",")[0];
+                const num = parseInt(intPart || "0", 10);
+                const factor = zeros === "000" ? 1000 : 100;
+                const newNum = num * factor;
+                if (newNum <= 999_999_999_999) {
+                  setBalance(newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                }
+              }}
+              className="px-3 rounded-full text-[11px] font-semibold transition-opacity active:opacity-60"
+              style={{
+                minHeight: 28,
+                background: "var(--bg-secondary)",
+                color: "var(--text-secondary)",
+                border: "1px solid var(--border-default)",
+              }}
+            >
+              +{zeros}
+            </button>
+          ))}
+        </div>
         {errors.balance && (
           <p
             id="wallet-balance-error"

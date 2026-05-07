@@ -256,6 +256,32 @@ export function IncomeExpenseForm({
             style={{ color: "var(--text-tertiary)" }}
           />
         </div>
+        <div className="flex gap-1.5 mt-1.5">
+          {["000", "00"].map((zeros) => (
+            <button
+              key={zeros}
+              type="button"
+              onClick={() => {
+                const intPart = (form.amount || "0").replace(/\./g, "").split(",")[0];
+                const num = parseInt(intPart || "0", 10);
+                const factor = zeros === "000" ? 1000 : 100;
+                const newNum = num * factor;
+                if (newNum <= 999_999_999_999) {
+                  set("amount", newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                }
+              }}
+              className="px-3 rounded-full text-[11px] font-semibold transition-opacity active:opacity-60"
+              style={{
+                minHeight: 28,
+                background: "var(--bg-secondary)",
+                color: "var(--text-secondary)",
+                border: "1px solid var(--border-default)",
+              }}
+            >
+              +{zeros}
+            </button>
+          ))}
+        </div>
         {insufficientBalance && !errors.amount && (
           <div className="flex items-center gap-1.5 mt-1">
             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--color-accent-warm)" }} />
