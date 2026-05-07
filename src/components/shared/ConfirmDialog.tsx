@@ -45,14 +45,12 @@ export function ConfirmDialog({
           >
             {title}
           </AlertDialogTitle>
-          {description && (
-            <AlertDialogDescription
-              className="text-[14px]"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              {description}
-            </AlertDialogDescription>
-          )}
+          <AlertDialogDescription
+            className="text-[14px]"
+            style={{ color: "var(--text-secondary)", display: description ? undefined : "none" }}
+          >
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-row gap-3">
           <AlertDialogCancel

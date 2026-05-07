@@ -3,6 +3,7 @@
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
@@ -43,6 +44,7 @@ export function WalletPicker({
           >
             {t("title")}
           </DrawerTitle>
+          <DrawerDescription className="sr-only">{t("title")}</DrawerDescription>
         </DrawerHeader>
 
         <div className="p-4 pb-8" style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}>
