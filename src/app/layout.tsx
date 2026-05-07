@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AppProviders } from "@/components/shared/AppProviders";
 import { BottomNav } from "@/components/shared/BottomNav";
@@ -93,6 +94,7 @@ export default async function RootLayout({
             </AppProviders>
           </NextIntlClientProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
