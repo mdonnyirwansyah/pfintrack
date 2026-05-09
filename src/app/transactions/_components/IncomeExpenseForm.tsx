@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Calculator, Wallet as WalletIcon, AlertTriangle } from "lucide-react";
 import type { TransactionType } from "@/lib/types/transaction";
@@ -29,6 +29,8 @@ interface IncomeExpenseFormProps {
   categorySuggestions: string[];
   isSubmitting: boolean;
   isEditMode?: boolean;
+  /** If true, hides title, category and description fields (e.g. Balance Correction) */
+  hideMetaFields?: boolean;
   onSubmit: (values: IncomeExpenseFormValues) => void;
   /** Extra actions rendered after the form (e.g. delete button on edit page) */
   footerActions?: React.ReactNode;
@@ -44,6 +46,7 @@ export function IncomeExpenseForm({
   categorySuggestions,
   isSubmitting,
   isEditMode = false,
+  hideMetaFields = false,
   onSubmit,
   footerActions,
 }: IncomeExpenseFormProps) {
@@ -73,6 +76,10 @@ export function IncomeExpenseForm({
   const [form, setForm] = useState<IncomeExpenseFormValues>(defaults);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isWalletOpen, setIsWalletOpen] = useState(false);
+  const amountInputRef = useRef<HTMLInputElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const categoryInputRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-open wallet picker on mount if it's add mode
   useEffect(() => {
@@ -108,11 +115,13 @@ export function IncomeExpenseForm({
     if (!form.amount) e.amount = t("validation.amountRequired");
     else if (isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
     else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
-    if (!form.title.trim()) e.title = t("validation.titleRequired");
-    else if (form.title.trim().length > 100) e.title = t("validation.titleTooLong");
-    if (!form.category.trim()) e.category = t("validation.categoryRequired");
-    else if (form.category.trim().length > 50) e.category = t("validation.categoryTooLong");
-    if (form.description.trim().length > 255) e.description = t("validation.descriptionTooLong");
+    if (!hideMetaFields) {
+      if (!form.title.trim()) e.title = t("validation.titleRequired");
+      else if (form.title.trim().length > 100) e.title = t("validation.titleTooLong");
+      if (!form.category.trim()) e.category = t("validation.categoryRequired");
+      else if (form.category.trim().length > 50) e.category = t("validation.categoryTooLong");
+      if (form.description.trim().length > 255) e.description = t("validation.descriptionTooLong");
+    }
 
     return e;
   };
@@ -155,7 +164,11 @@ export function IncomeExpenseForm({
             value={form.transaction_date}
             onChange={(e) => set("transaction_date", e.target.value)}
             className={inputClass}
-            style={inputStyle(errors.transaction_date)}
+            style={{
+              ...inputStyle(errors.transaction_date),
+              ...(hideMetaFields ? { opacity: 0.5, cursor: "not-allowed" } : {}),
+            }}
+            disabled={hideMetaFields}
             suppressHydrationWarning
           />
           {errors.transaction_date && (
@@ -175,7 +188,11 @@ export function IncomeExpenseForm({
             value={form.transaction_time}
             onChange={(e) => set("transaction_time", e.target.value)}
             className={inputClass}
-            style={inputStyle(errors.transaction_time)}
+            style={{
+              ...inputStyle(errors.transaction_time),
+              ...(hideMetaFields ? { opacity: 0.5, cursor: "not-allowed" } : {}),
+            }}
+            disabled={hideMetaFields}
             suppressHydrationWarning
           />
           {errors.transaction_time && (
@@ -193,11 +210,13 @@ export function IncomeExpenseForm({
         </label>
         <button
           type="button"
-          onClick={() => setIsWalletOpen(true)}
+          onClick={() => !hideMetaFields && setIsWalletOpen(true)}
+          disabled={hideMetaFields}
           className="w-full flex items-center justify-between px-4 py-3 rounded-[12px] active:opacity-70 transition-opacity"
           style={{
             ...inputStyle(errors.wallet_id),
             minHeight: "var(--tap-target-min)",
+            ...(hideMetaFields ? { opacity: 0.5, cursor: "not-allowed" } : {}),
           }}
         >
           <span style={{ color: selectedWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
@@ -224,6 +243,7 @@ export function IncomeExpenseForm({
         </label>
         <div className="relative">
           <input
+            ref={amountInputRef}
             type="text"
             inputMode="decimal"
             placeholder={t("form.amountPlaceholder")}
@@ -250,6 +270,12 @@ export function IncomeExpenseForm({
             }}
             className={inputClass + " pr-12"}
             style={inputStyle(errors.amount)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                titleInputRef.current?.focus();
+              }
+            }}
           />
           <Calculator
             className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
@@ -298,85 +324,106 @@ export function IncomeExpenseForm({
       </div>
 
       {/* Title */}
-      <div>
-        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          {t("form.title")}
-        </label>
-        <input
-          type="text"
-          placeholder={t("form.titlePlaceholder")}
-          value={form.title}
-          onChange={(e) => set("title", e.target.value)}
-          maxLength={100}
-          className={inputClass}
-          style={inputStyle(errors.title)}
-        />
-        <TitleSuggestionChips
-          suggestions={titleSuggestions}
-          onSelect={(title, category) => {
-            setForm((prev) => ({ ...prev, title, category }));
-            setErrors((prev) => ({ ...prev, title: undefined, category: undefined }));
-          }}
-        />
-        {errors.title && (
-          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
-            {errors.title}
-          </p>
-        )}
-      </div>
+      {!hideMetaFields && (
+        <div>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            {t("form.title")}
+          </label>
+          <input
+            ref={titleInputRef}
+            type="text"
+            placeholder={t("form.titlePlaceholder")}
+            value={form.title}
+            onChange={(e) => set("title", e.target.value)}
+            maxLength={100}
+            className={inputClass}
+            style={inputStyle(errors.title)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                categoryInputRef.current?.focus();
+              }
+            }}
+          />
+          <TitleSuggestionChips
+            suggestions={titleSuggestions}
+            onSelect={(title, category) => {
+              setForm((prev) => ({ ...prev, title, category }));
+              setErrors((prev) => ({ ...prev, title: undefined, category: undefined }));
+            }}
+          />
+          {errors.title && (
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
+              {errors.title}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Category */}
-      <div>
-        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          {t("form.category")}
-        </label>
-        <input
-          type="text"
-          placeholder={t("form.categoryPlaceholder")}
-          value={form.category}
-          onChange={(e) => set("category", e.target.value)}
-          maxLength={50}
-          className={inputClass}
-          style={inputStyle(errors.category)}
-        />
-        <CategorySuggestionChips
-          suggestions={categorySuggestions}
-          onSelect={(cat) => {
-            setForm((prev) => ({ ...prev, category: cat }));
-            setErrors((prev) => ({ ...prev, category: undefined }));
-          }}
-        />
-        {errors.category && (
-          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
-            {errors.category}
-          </p>
-        )}
-      </div>
+      {!hideMetaFields && (
+        <div>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            {t("form.category")}
+          </label>
+          <input
+            ref={categoryInputRef}
+            type="text"
+            placeholder={t("form.categoryPlaceholder")}
+            value={form.category}
+            onChange={(e) => set("category", e.target.value)}
+            maxLength={50}
+            className={inputClass}
+            style={inputStyle(errors.category)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                descriptionRef.current?.focus();
+              }
+            }}
+          />
+          <CategorySuggestionChips
+            suggestions={categorySuggestions}
+            onSelect={(cat) => {
+              setForm((prev) => ({ ...prev, category: cat }));
+              setErrors((prev) => ({ ...prev, category: undefined }));
+            }}
+          />
+          {errors.category && (
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
+              {errors.category}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Description */}
-      <div>
-        <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          {t("form.description")}
-        </label>
-        <textarea
-          placeholder={t("form.descriptionPlaceholder")}
-          value={form.description}
-          onChange={(e) => set("description", e.target.value)}
-          maxLength={255}
-          rows={3}
-          className="w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors resize-none"
-          style={{
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            border: `1px solid ${errors.description ? "var(--color-negative)" : "var(--border-default)"}`,
-          }}
-        />
-        {errors.description && (
-          <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
-            {errors.description}
-          </p>
-        )}
-      </div>
+      {!hideMetaFields && (
+        <div>
+          <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            {t("form.description")}
+          </label>
+          <textarea
+            ref={descriptionRef}
+            placeholder={t("form.descriptionPlaceholder")}
+            value={form.description}
+            onChange={(e) => set("description", e.target.value)}
+            maxLength={255}
+            rows={3}
+            className="w-full px-4 py-3 rounded-[12px] text-[14px] outline-none transition-colors resize-none"
+            style={{
+              background: "var(--bg-secondary)",
+              color: "var(--text-primary)",
+              border: `1px solid ${errors.description ? "var(--color-negative)" : "var(--border-default)"}`,
+            }}
+          />
+          {errors.description && (
+            <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
+              {errors.description}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Footer actions */}
       {footerActions}
@@ -404,6 +451,9 @@ export function IncomeExpenseForm({
         onSelect={(wallet) => {
           set("wallet_id", wallet.id);
           setIsWalletOpen(false);
+          setTimeout(() => {
+            amountInputRef.current?.focus();
+          }, 300);
         }}
       />
     </form>

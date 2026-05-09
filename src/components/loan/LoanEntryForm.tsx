@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Calculator, ChevronDown, Trash2, AlertTriangle } from "lucide-react";
 import type { LoanEntryType } from "@/lib/types/loan";
 import type { Wallet } from "@/lib/types/wallet";
@@ -79,6 +79,9 @@ export function LoanEntryForm({
   const [errors, setErrors] = useState<LoanEntryFormErrors>({});
   const [isWalletPickerOpen, setIsWalletPickerOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const amountInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const noteRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-open wallet picker on mount if it's add mode
   useEffect(() => {
@@ -289,6 +292,7 @@ export function LoanEntryForm({
             }}
           >
             <input
+              ref={amountInputRef}
               type="text"
               inputMode="decimal"
               placeholder={t("form.amount")}
@@ -315,6 +319,12 @@ export function LoanEntryForm({
               }}
               className="flex-1 bg-transparent outline-none text-[14px] py-3"
               style={{ color: "var(--text-primary)" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  nameInputRef.current?.focus();
+                }
+              }}
             />
             <Calculator
               className="w-4 h-4 ml-3 shrink-0"
@@ -380,6 +390,7 @@ export function LoanEntryForm({
             }}
           >
             <input
+              ref={nameInputRef}
               type="text"
               placeholder={t("form.namePlaceholder")}
               value={values.name}
@@ -388,6 +399,12 @@ export function LoanEntryForm({
               maxLength={50}
               className="flex-1 bg-transparent outline-none text-[14px] py-3 disabled:cursor-not-allowed"
               style={{ color: "var(--text-primary)" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  noteRef.current?.focus();
+                }
+              }}
             />
           </div>
           {errors.name && (
@@ -413,6 +430,7 @@ export function LoanEntryForm({
             }}
           >
             <textarea
+              ref={noteRef}
               placeholder={t("form.notePlaceholder")}
               value={values.note}
               onChange={(e) => set("note", e.target.value)}
@@ -490,6 +508,9 @@ export function LoanEntryForm({
           setValues((prev) => ({ ...prev, wallet_id: wallet.id }));
           setErrors((prev) => ({ ...prev, wallet_id: undefined }));
           setIsWalletPickerOpen(false);
+          setTimeout(() => {
+            amountInputRef.current?.focus();
+          }, 300);
         }}
       />
 

@@ -61,7 +61,6 @@ export function WalletPicker({
                     key={wallet.id}
                     onClick={() => {
                       onSelect(wallet);
-                      onClose();
                     }}
                     className="flex flex-col items-center justify-center p-3 rounded-[16px] transition-all active:scale-95"
                     style={{

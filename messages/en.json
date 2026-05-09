@@ -142,6 +142,7 @@
     "editIncome": "Edit Income",
     "editExpense": "Edit Expense",
     "editTransfer": "Edit Transfer",
+    "editBalanceCorrection": "Edit Balance Correction",
     "noData": "There is no data",
     "noDataDesc": "No transactions on this day. Tap + to add one.",
     "searchPlaceholder": "Search transactions...",

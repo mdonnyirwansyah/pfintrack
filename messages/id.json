@@ -142,6 +142,7 @@
     "editIncome": "Edit Pemasukan",
     "editExpense": "Edit Pengeluaran",
     "editTransfer": "Edit Transfer",
+    "editBalanceCorrection": "Edit Koreksi Saldo",
     "noData": "Tidak ada data",
     "noDataDesc": "Belum ada transaksi hari ini. Ketuk + untuk menambah.",
     "searchPlaceholder": "Cari transaksi...",

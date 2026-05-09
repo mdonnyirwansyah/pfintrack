@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Calculator } from "lucide-react";
 import type { Wallet } from "@/lib/types/wallet";
@@ -64,6 +64,8 @@ export function TransferForm({
   const [activeWalletPicker, setActiveWalletPicker] = useState<
     "source" | "destination" | null
   >(null);
+  const amountInputRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-open source wallet picker on mount if it's add mode
   useEffect(() => {
@@ -249,6 +251,7 @@ export function TransferForm({
         </label>
         <div className="relative">
           <input
+            ref={amountInputRef}
             type="text"
             inputMode="decimal"
             placeholder={t("form.amountPlaceholder")}
@@ -275,6 +278,12 @@ export function TransferForm({
             }}
             className={inputClass + " pr-12"}
             style={inputStyle(errors.amount)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                descriptionRef.current?.focus();
+              }
+            }}
           />
           <Calculator
             className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
@@ -320,6 +329,7 @@ export function TransferForm({
           {t("form.description")}
         </label>
         <textarea
+          ref={descriptionRef}
           placeholder={t("form.descriptionPlaceholder")}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
@@ -381,6 +391,10 @@ export function TransferForm({
         onSelect={(wallet) => {
           set("destination_wallet_id", wallet.id);
           setActiveWalletPicker(null);
+          // Focus amount input after a short delay to allow the drawer to start closing
+          setTimeout(() => {
+            amountInputRef.current?.focus();
+          }, 300);
         }}
       />
     </form>

@@ -82,7 +82,9 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   }
 
   const typeLabel =
-    transaction.type === "income"
+    transaction.category === "Balance Correction"
+      ? t("editBalanceCorrection")
+      : transaction.type === "income"
       ? t("editIncome")
       : transaction.type === "expense"
       ? t("editExpense")
@@ -203,6 +205,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
         categorySuggestions={categorySuggestions}
         isSubmitting={isSubmitting}
         isEditMode
+        hideMetaFields={transaction.category === "Balance Correction"}
         onSubmit={handleIncomeExpenseSubmit}
       />
       <ConfirmDialog
