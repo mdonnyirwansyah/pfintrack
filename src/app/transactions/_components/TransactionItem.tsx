@@ -35,6 +35,7 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
   const isIncome = transaction.type === "income";
   const isExpense = transaction.type === "expense";
   const isTransfer = transaction.type === "transfer";
+  const isBalanceCorrection = transaction.category === "Balance Correction";
 
   const amountColor = isIncome
     ? "var(--color-positive)"
@@ -91,7 +92,7 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
             >
               {isTransfer
                 ? `${wallet?.name ?? "?"} → ${destWallet?.name ?? "?"}`
-                : transaction.category === "Balance Correction"
+                : isBalanceCorrection
                   ? t("filter.balanceCorrection")
                   : (transaction.title ?? transaction.category ?? "-")}
             </span>
@@ -103,38 +104,64 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
               {formatIDR(transaction.amount)}
             </span>
           </div>
-          <div className="flex items-center justify-between gap-2 mt-0.5">
-            <span
-              className="text-[9px] truncate"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              {isTransfer
-                ? (transaction.description ?? "Transfer")
-                : (transaction.category === "Balance Correction"
-                    ? t("filter.balanceCorrection")
-                    : (transaction.category ?? "")) + (transaction.description ? ` • ${transaction.description}` : "")}
-            </span>
-            <span
-              className="text-[9px] flex-shrink-0"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              {showDate
-                ? `${formatDisplayDate(transaction.transaction_date, locale)} · ${transaction.transaction_time}`
-                : transaction.transaction_time}
-            </span>
-          </div>
-          {!isTransfer && wallet && (
-            <div className="mt-0.5">
+
+          {isBalanceCorrection ? (
+            /* Balance Correction: wallet badge + time in one compact row */
+            <div className="flex items-center justify-between gap-2 mt-0.5">
+              {wallet ? (
+                <span
+                  className="text-[10px] px-2 py-0.5 rounded-full"
+                  style={{
+                    background: "var(--color-brand-soft)",
+                    color: "var(--color-brand)",
+                  }}
+                >
+                  {wallet.name}
+                </span>
+              ) : <span />}
               <span
-                className="text-[10px] px-2 py-0.5 rounded-full"
-                style={{
-                  background: "var(--color-brand-soft)",
-                  color: "var(--color-brand)",
-                }}
+                className="text-[9px] flex-shrink-0"
+                style={{ color: "var(--text-tertiary)" }}
               >
-                {wallet.name}
+                {showDate
+                  ? `${formatDisplayDate(transaction.transaction_date, locale)} · ${transaction.transaction_time}`
+                  : transaction.transaction_time}
               </span>
             </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between gap-2 mt-0.5">
+                <span
+                  className="text-[9px] truncate"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {isTransfer
+                    ? (transaction.description ?? "Transfer")
+                    : (transaction.category ?? "") + (transaction.description ? ` • ${transaction.description}` : "")}
+                </span>
+                <span
+                  className="text-[9px] flex-shrink-0"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  {showDate
+                    ? `${formatDisplayDate(transaction.transaction_date, locale)} · ${transaction.transaction_time}`
+                    : transaction.transaction_time}
+                </span>
+              </div>
+              {!isTransfer && wallet && (
+                <div className="mt-0.5">
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full"
+                    style={{
+                      background: "var(--color-brand-soft)",
+                      color: "var(--color-brand)",
+                    }}
+                  >
+                    {wallet.name}
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </button>

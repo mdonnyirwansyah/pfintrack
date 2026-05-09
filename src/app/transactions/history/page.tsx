@@ -30,12 +30,15 @@ function toDateObj(str: string): Date {
 }
 
 function toDateStr(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
-function oneMonthAgo(): Date {
+function firstOfMonth(): Date {
   const d = todayDate();
-  d.setMonth(d.getMonth() - 1);
+  d.setDate(1);
   return d;
 }
 
@@ -50,9 +53,9 @@ export default function TransactionHistoryPage() {
   const tc = useTranslations("common");
   const locale = useLocale();
 
-  // Applied date range (null = all time); default last 1 month
+  // Applied date range (null = all time); default 1st of current month to today
   const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(() => ({
-    start: toDateStr(oneMonthAgo()),
+    start: toDateStr(firstOfMonth()),
     end: toDateStr(todayDate()),
   }));
 
@@ -62,7 +65,7 @@ export default function TransactionHistoryPage() {
   const [draftFromStr, setDraftFromStr] = useState(""); // YYYY-MM-DD
   const [draftToStr, setDraftToStr] = useState("");     // YYYY-MM-DD
   const [rangeError, setRangeError] = useState("");
-  const [calendarMonth, setCalendarMonth] = useState<Date>(oneMonthAgo());
+  const [calendarMonth, setCalendarMonth] = useState<Date>(firstOfMonth());
 
   useEffect(() => {
     loadTransactions();
@@ -135,7 +138,7 @@ export default function TransactionHistoryPage() {
     setDraftToStr(dateRange?.end ?? "");
     setActiveField("from");
     setRangeError("");
-    setCalendarMonth(dateRange ? toDateObj(dateRange.start) : oneMonthAgo());
+    setCalendarMonth(dateRange ? toDateObj(dateRange.start) : firstOfMonth());
     setIsDatePickerOpen(true);
   }
 
