@@ -364,7 +364,11 @@ export function TransferForm({
         selectedWalletId={form.source_wallet_id}
         onSelect={(wallet) => {
           set("source_wallet_id", wallet.id);
-          setActiveWalletPicker(null);
+          if (!initialValues?.source_wallet_id && !form.destination_wallet_id) {
+            setActiveWalletPicker("destination");
+          } else {
+            setActiveWalletPicker(null);
+          }
         }}
       />
 

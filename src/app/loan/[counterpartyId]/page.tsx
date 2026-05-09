@@ -35,6 +35,7 @@ export default function LoanDetailPage({
     counterparties,
     loadCounterparties,
     markAsPaid,
+    unmarkAsPaid,
     renameCounterparty,
     deleteCounterparty,
     isNameTaken,
@@ -44,6 +45,7 @@ export default function LoanDetailPage({
   const { wallets, loadWallets } = useWalletStore();
 
   const [isMarkAsPaidOpen, setIsMarkAsPaidOpen] = useState(false);
+  const [isUnmarkPaidOffOpen, setIsUnmarkPaidOffOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [editNameValue, setEditNameValue] = useState("");
@@ -168,6 +170,20 @@ export default function LoanDetailPage({
           <UserCheck className="w-5 h-5" />
         </button>
       )}
+      {isPaidOff && (
+        <button
+          onClick={() => setIsUnmarkPaidOffOpen(true)}
+          className="flex items-center justify-center rounded-full transition-opacity active:opacity-60"
+          style={{
+            minWidth: "var(--tap-target-min)",
+            minHeight: "var(--tap-target-min)",
+            color: "var(--color-accent-warm)",
+          }}
+          aria-label="Unmark paid off"
+        >
+          <UserCheck className="w-5 h-5" />
+        </button>
+      )}
       <button
         onClick={() => {
           setEditNameValue(counterparty.name);
@@ -253,6 +269,21 @@ export default function LoanDetailPage({
         onConfirm={() => {
           markAsPaid(counterpartyId);
           setIsMarkAsPaidOpen(false);
+        }}
+      />
+
+      {/* Unmark paid off confirmation */}
+      <ConfirmDialog
+        open={isUnmarkPaidOffOpen}
+        onOpenChange={setIsUnmarkPaidOffOpen}
+        title={t("unmarkPaidOff")}
+        description={t("markPaidOffDesc")}
+        confirmLabel={t("unmarkPaidOff")}
+        cancelLabel={tc("cancel")}
+        variant="default"
+        onConfirm={() => {
+          unmarkAsPaid(counterpartyId);
+          setIsUnmarkPaidOffOpen(false);
         }}
       />
 

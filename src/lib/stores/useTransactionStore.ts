@@ -56,6 +56,29 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
     const updated = await transactionsRepo.update(id, patch);
     await applyTransactionToWallet(updated);
 
+    // Keep wallet_balance_history in sync when editing a Balance Correction tx
+    if (old.category === "Balance Correction") {
+      const oldDelta = old.type === "income" ? old.amount : -old.amount;
+      const newDelta = updated.type === "income" ? updated.amount : -updated.amount;
+      if (oldDelta !== newDelta) {
+        const history = await walletBalanceHistoryRepo.getByWalletId(old.wallet_id);
+        const match = history
+          .filter(
+            (h) =>
+              h.is_active &&
+              h.delta === oldDelta &&
+              h.corrected_at.startsWith(old.transaction_date),
+          )
+          .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+        if (match) {
+          await walletBalanceHistoryRepo.update(match.id, {
+            delta: newDelta,
+            new_balance: match.previous_balance + newDelta,
+          });
+        }
+      }
+    }
+
     const transactions = await transactionsRepo.getAll();
     set({ transactions });
     await useWalletStore.getState().loadWallets();

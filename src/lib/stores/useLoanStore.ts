@@ -32,6 +32,7 @@ interface CounterpartyActions {
   findOrCreateCounterparty: (name: string) => Promise<LoanCounterparty>;
   renameCounterparty: (id: string, newName: string) => Promise<LoanCounterparty>;
   markAsPaid: (id: string) => Promise<void>;
+  unmarkAsPaid: (id: string) => Promise<void>;
   deleteCounterparty: (id: string) => Promise<void>;
   isNameTaken: (name: string, excludeId?: string) => boolean;
 }
@@ -80,6 +81,12 @@ export const useLoanCounterpartyStore = create<CounterpartyStore>()(
 
     async markAsPaid(id) {
       await loanCounterpartiesRepo.update(id, { manual_paid_off: true });
+      const counterparties = await loanCounterpartiesRepo.getAll();
+      set({ counterparties });
+    },
+
+    async unmarkAsPaid(id) {
+      await loanCounterpartiesRepo.update(id, { manual_paid_off: false });
       const counterparties = await loanCounterpartiesRepo.getAll();
       set({ counterparties });
     },

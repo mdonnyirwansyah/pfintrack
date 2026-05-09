@@ -46,7 +46,7 @@ export function WalletForm({
     return !isNaN(parsed) ? formatIDR(parsed) : init;
   });
   const [walletType, setWalletType] = useState<WalletType>(
-    initialValues?.wallet_type ?? "other"
+    initialValues?.wallet_type ?? "bank"
   );
   const [errors, setErrors] = useState<WalletFormErrors>({});
   const nameRef = useRef<HTMLInputElement>(null);

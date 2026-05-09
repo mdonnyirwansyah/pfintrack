@@ -199,7 +199,7 @@ function TransactionsContent() {
         }
       />
 
-      <div className="pt-2" {...swipeHandlers}>
+      <div className="pt-2 pb-24" {...swipeHandlers}>
         {/* Date navigator */}
         <DateNavigator activeDate={activeDate} onDateChange={handleDateChange} />
 

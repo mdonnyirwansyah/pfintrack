@@ -34,7 +34,7 @@ function AddExpenseContent() {
   const handleSubmit = async (values: IncomeExpenseFormValues) => {
     setIsSubmitting(true);
     try {
-      createTransaction({
+      await createTransaction({
         type: "expense",
         wallet_id: values.wallet_id,
         amount: parseIDR(values.amount),

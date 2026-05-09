@@ -125,7 +125,17 @@
   },
   "transactions": {
     "title": "Transaksi",
-    "history": "Riwayat",
+    "history": {
+      "title": "Riwayat",
+      "dateFilter": "Filter Tanggal",
+      "from": "Dari",
+      "to": "Hingga",
+      "allTime": "Semua waktu",
+      "apply": "Terapkan",
+      "pickStart": "Pilih tanggal mulai",
+      "pickEnd": "Pilih tanggal akhir",
+      "errorStartAfterEnd": "Tanggal mulai tidak boleh lebih besar dari tanggal akhir"
+    },
     "addIncome": "Tambah Pemasukan",
     "addExpense": "Tambah Pengeluaran",
     "addTransfer": "Tambah Transfer",
@@ -369,13 +379,13 @@
       "balanceCorrection": "Koreksi Saldo",
       "startBalance": "Saldo Awal",
       "endBalance": "Saldo Akhir",
-      "savingRate": "Saving Rate"
+      "savingRate": "Tingkat Menabung"
     },
     "chart": {
       "total": "Total"
     },
     "savingRate": {
-      "title": "Saving Rate",
+      "title": "Tingkat Menabung",
       "benchmark": "Target sehat: ≥ 20%",
       "na": "N/A",
       "income": "Pemasukan",

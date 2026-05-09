@@ -30,7 +30,7 @@ function AddTransferContent() {
   const handleSubmit = async (values: TransferFormValues) => {
     setIsSubmitting(true);
     try {
-      createTransaction({
+      await createTransaction({
         type: "transfer",
         wallet_id: values.source_wallet_id,
         destination_wallet_id: values.destination_wallet_id,

@@ -17,6 +17,7 @@ import { readKey, writeKey } from "./base";
 import { getOrCreateAnonId } from "./anon-id";
 import { STORAGE_BACKEND } from "./config";
 import { walletBalanceHistoryIdbRepo } from "./wallet-balance-history-idb";
+import { idbPut } from "./idb-client";
 
 const KEY = "wallet_balance_history";
 
@@ -27,7 +28,7 @@ export type CreateWalletBalanceHistoryInput = {
 };
 
 export type UpdateWalletBalanceHistoryInput = Partial<
-  Pick<WalletBalanceHistory, "is_active">
+  Pick<WalletBalanceHistory, "is_active" | "delta" | "new_balance">
 >;
 
 const walletBalanceHistoryLsRepo = {
@@ -142,12 +143,18 @@ export const walletBalanceHistoryRepo = {
     return Promise.resolve(walletBalanceHistoryLsRepo.create(input));
   },
 
-  update(id: string, patch: UpdateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
+  async update(id: string, patch: UpdateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
     if (STORAGE_BACKEND === "idb") {
-      // IDB repo doesn't expose update directly; apply via getAll + put
-      // For now delegate to LS for non-IDB, and IDB path is not exposed here.
-      // This method is rarely called; keep LS path for backward compat.
-      throw new Error("walletBalanceHistoryRepo.update not yet supported for IDB backend");
+      const all = await walletBalanceHistoryIdbRepo.getAllIncludingInactive();
+      const existing = all.find((r) => r.id === id);
+      if (!existing) throw new Error(`WalletBalanceHistory not found: ${id}`);
+      const updated: WalletBalanceHistory = {
+        ...existing,
+        ...patch,
+        updated_at: new Date().toISOString(),
+      };
+      await idbPut<WalletBalanceHistory>("wallet_balance_history", updated);
+      return updated;
     }
     return Promise.resolve(walletBalanceHistoryLsRepo.update(id, patch));
   },

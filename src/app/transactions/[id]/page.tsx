@@ -112,7 +112,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     const handleTransferSubmit = async (values: TransferFormValues) => {
       setIsSubmitting(true);
       try {
-        updateTransaction(transaction.id, {
+        await updateTransaction(transaction.id, {
           type: "transfer",
           wallet_id: values.source_wallet_id,
           destination_wallet_id: values.destination_wallet_id,
@@ -165,7 +165,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   const handleIncomeExpenseSubmit = async (values: IncomeExpenseFormValues) => {
     setIsSubmitting(true);
     try {
-      updateTransaction(transaction.id, {
+      await updateTransaction(transaction.id, {
         type: transaction.type,
         wallet_id: values.wallet_id,
         destination_wallet_id: null,

@@ -91,7 +91,9 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
             >
               {isTransfer
                 ? `${wallet?.name ?? "?"} → ${destWallet?.name ?? "?"}`
-                : (transaction.title ?? transaction.category ?? "-")}
+                : transaction.category === "Balance Correction"
+                  ? t("filter.balanceCorrection")
+                  : (transaction.title ?? transaction.category ?? "-")}
             </span>
             <span
               className="text-[10px] font-semibold flex-shrink-0 tabular-nums"
@@ -108,7 +110,9 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
             >
               {isTransfer
                 ? (transaction.description ?? "Transfer")
-                : (transaction.category ?? "") + (transaction.description ? ` • ${transaction.description}` : "")}
+                : (transaction.category === "Balance Correction"
+                    ? t("filter.balanceCorrection")
+                    : (transaction.category ?? "")) + (transaction.description ? ` • ${transaction.description}` : "")}
             </span>
             <span
               className="text-[9px] flex-shrink-0"

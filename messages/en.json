@@ -125,7 +125,17 @@
   },
   "transactions": {
     "title": "Transactions",
-    "history": "History",
+    "history": {
+      "title": "History",
+      "dateFilter": "Date Filter",
+      "from": "From",
+      "to": "To",
+      "allTime": "All time",
+      "apply": "Apply",
+      "pickStart": "Select start date",
+      "pickEnd": "Select end date",
+      "errorStartAfterEnd": "Start date cannot be after end date"
+    },
     "addIncome": "Add Income",
     "addExpense": "Add Expense",
     "addTransfer": "Add Transfer",
