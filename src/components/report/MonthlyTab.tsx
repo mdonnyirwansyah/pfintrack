@@ -15,6 +15,7 @@ import { NetWorthChart } from "./NetWorthChart";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
+import { useAppStore } from "@/lib/stores/useAppStore";
 
 const INITIAL_MONTHS = 6;
 const LOAD_MORE_MONTHS = 6;
@@ -31,6 +32,7 @@ export function MonthlyTab({
   balanceHistory,
 }: MonthlyTabProps) {
   const t = useTranslations("report");
+  const reportVisibility = useAppStore((s) => s.reportVisibility);
   const allMonths = useMemo(
     () => generateMonthList(transactions),
     [transactions]
@@ -81,15 +83,17 @@ export function MonthlyTab({
 
   return (
     <div className="space-y-4">
-      {/* A1-beta — 6-Month Overview Chart */}
-      <MonthlyOverviewChart transactions={transactions} />
+      {reportVisibility.showMonthlyOverviewChart && (
+        <MonthlyOverviewChart transactions={transactions} />
+      )}
 
-      {/* C2 — Net Worth Line Chart */}
-      <NetWorthChart
-        transactions={transactions}
-        loanEntries={loanEntries}
-        balanceHistory={balanceHistory}
-      />
+      {reportVisibility.showNetWorthChart && (
+        <NetWorthChart
+          transactions={transactions}
+          loanEntries={loanEntries}
+          balanceHistory={balanceHistory}
+        />
+      )}
 
       {visibleMonths.map(({ start, end }) => {
         const summary = calculateMonthlySummary(

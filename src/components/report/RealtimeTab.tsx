@@ -40,7 +40,7 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
   const t = useTranslations("report");
   const tc = useTranslations("common");
   const locale = useLocale();
-  const { reportVisibility } = useAppStore((s) => ({ reportVisibility: s.reportVisibility }));
+  const reportVisibility = useAppStore((s) => s.reportVisibility);
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
   const start = currentMonthStart();
   const end = currentMonthEnd();

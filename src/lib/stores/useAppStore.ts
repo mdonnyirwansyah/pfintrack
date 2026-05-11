@@ -8,6 +8,8 @@ interface ReportVisibility {
   showDonutChart: boolean;
   showLoanRow: boolean;
   showBalanceCorrectionRow: boolean;
+  showMonthlyOverviewChart: boolean;
+  showNetWorthChart: boolean;
 }
 
 interface AppState {
@@ -39,6 +41,8 @@ export const useAppStore = create<AppStore>()(
         showDonutChart: true,
         showLoanRow: true,
         showBalanceCorrectionRow: true,
+        showMonthlyOverviewChart: true,
+        showNetWorthChart: true,
       },
 
       setAnonId: (id) => set({ anonId: id }),
@@ -55,6 +59,14 @@ export const useAppStore = create<AppStore>()(
         showDecimals: state.showDecimals,
         reportVisibility: state.reportVisibility,
       }),
+      merge: (persisted, current) => {
+        const p = persisted as Partial<AppStore>;
+        return {
+          ...current,
+          ...p,
+          reportVisibility: { ...current.reportVisibility, ...p.reportVisibility },
+        };
+      },
     }
   )
 );

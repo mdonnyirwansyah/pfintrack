@@ -34,7 +34,7 @@ function SummaryRow({ label, value, color }: SummaryRowProps) {
 
 export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
   const t = useTranslations("report.summary");
-  const { reportVisibility } = useAppStore((s) => ({ reportVisibility: s.reportVisibility }));
+  const reportVisibility = useAppStore((s) => s.reportVisibility);
 
   const balanceColor =
     summary.balance > 0
@@ -90,7 +90,7 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
         />
       )}
       {/* Saving Rate row */}
-      {(() => {
+      {reportVisibility.showSavingRateCard && (() => {
         if (summary.income === 0) {
           return (
             <SummaryRow

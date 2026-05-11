@@ -96,7 +96,10 @@
       "showDonutChart": "Category chart",
       "showDonutChartHint": "Also hides daily summary and category list",
       "showLoanRow": "Loan row in summary",
-      "showBalanceCorrectionRow": "Balance correction row"
+      "showBalanceCorrectionRow": "Balance correction row",
+      "showMonthlyOverviewChart": "Monthly overview chart",
+      "showNetWorthChart": "Net worth chart",
+      "visibilitySettings": "Section visibility"
     }
   },
   "wallet": {

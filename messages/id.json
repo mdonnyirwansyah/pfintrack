@@ -96,7 +96,10 @@
       "showDonutChart": "Grafik kategori",
       "showDonutChartHint": "Juga menyembunyikan ringkasan harian dan daftar kategori",
       "showLoanRow": "Baris pinjaman di ringkasan",
-      "showBalanceCorrectionRow": "Baris koreksi saldo"
+      "showBalanceCorrectionRow": "Baris koreksi saldo",
+      "showMonthlyOverviewChart": "Grafik ringkasan bulanan",
+      "showNetWorthChart": "Grafik kekayaan bersih",
+      "visibilitySettings": "Visibilitas seksi"
     }
   },
   "wallet": {
