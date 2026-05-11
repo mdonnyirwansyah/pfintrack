@@ -58,7 +58,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-14 rounded-[12px] animate-pulse"
+              className="h-16 rounded-[12px] animate-pulse"
               style={{ background: "var(--bg-secondary)" }}
             />
           ))}

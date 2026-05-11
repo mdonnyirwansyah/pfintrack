@@ -140,7 +140,7 @@ export default function WalletPage() {
         {isLoading && (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-[52px] w-full rounded-[16px]" />
+              <Skeleton key={i} className="h-[56px] w-full rounded-[16px]" />
             ))}
           </div>
         )}

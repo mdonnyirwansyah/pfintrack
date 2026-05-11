@@ -4,7 +4,7 @@ export default function LoanLoading() {
   return (
     <div className="px-4 py-4">
       {/* LoanSummaryBar: 3-column totals */}
-      <div className="glass rounded-[16px] overflow-hidden mb-4">
+      <div className="glass rounded-[16px] overflow-hidden mb-4" style={{ minHeight: 64 }}>
         <div className="flex">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex-1 flex flex-col items-center py-3 px-1 gap-1.5">

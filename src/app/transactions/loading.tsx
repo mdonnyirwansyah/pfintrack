@@ -5,14 +5,14 @@ export default function TransactionsLoading() {
     <div className="pb-4">
       {/* SummaryBar */}
       <div className="mx-4 mt-4 mb-3">
-        <Skeleton className="h-[70px] w-full rounded-[16px]" />
+        <Skeleton className="h-[59px] w-full rounded-[16px]" />
       </div>
 
       {/* DateNavigator header */}
-      <div className="mx-4 mb-2 flex items-center justify-between">
-        <Skeleton className="h-8 w-8 rounded-[8px]" />
+      <div className="mx-4 mb-2 py-2 flex items-center justify-between">
+        <Skeleton className="h-11 w-11 rounded-full" />
         <Skeleton className="h-5 w-32 rounded-lg" />
-        <Skeleton className="h-8 w-8 rounded-[8px]" />
+        <Skeleton className="h-11 w-11 rounded-full" />
       </div>
 
       {/* Transaction items */}

@@ -112,8 +112,8 @@ export function MonthlyTab({
 
       {isLoadingMore && (
         <div className="space-y-4">
-          <Skeleton className="h-32 w-full rounded-[16px]" />
-          <Skeleton className="h-32 w-full rounded-[16px]" />
+          <Skeleton className="h-[220px] w-full rounded-[16px]" />
+          <Skeleton className="h-[220px] w-full rounded-[16px]" />
         </div>
       )}
     </div>

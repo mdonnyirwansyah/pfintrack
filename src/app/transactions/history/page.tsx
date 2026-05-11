@@ -328,7 +328,7 @@ export default function TransactionHistoryPage() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-16 rounded-[16px] animate-pulse"
+              className="h-[52px] rounded-[16px] animate-pulse"
               style={{ background: "var(--bg-secondary)" }}
             />
           ))}

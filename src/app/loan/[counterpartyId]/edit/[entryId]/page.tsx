@@ -49,7 +49,7 @@ export default function EditLoanEntryPage({
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="h-12 rounded-[12px] animate-pulse"
+            className="h-16 rounded-[12px] animate-pulse"
             style={{ background: "var(--bg-secondary)" }}
           />
         ))}

@@ -103,10 +103,10 @@ export default function EditWalletPage({
       <>
         <AppHeader title={t("editTitle")} showBack />
         <div className="px-4 py-4 space-y-4">
-          <Skeleton className="h-[52px] w-full rounded-[12px]" />
-          <Skeleton className="h-[52px] w-full rounded-[12px]" />
-          <Skeleton className="h-[52px] w-full rounded-[12px]" />
-          <Skeleton className="h-[52px] w-full rounded-[12px]" />
+          <Skeleton className="h-[64px] w-full rounded-[12px]" />
+          <Skeleton className="h-[64px] w-full rounded-[12px]" />
+          <Skeleton className="h-[64px] w-full rounded-[12px]" />
+          <Skeleton className="h-[64px] w-full rounded-[12px]" />
         </div>
       </>
     );
