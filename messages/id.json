@@ -99,7 +99,9 @@
       "showBalanceCorrectionRow": "Baris koreksi saldo",
       "showMonthlyOverviewChart": "Grafik ringkasan bulanan",
       "showNetWorthChart": "Grafik kekayaan bersih",
-      "visibilitySettings": "Visibilitas seksi"
+      "visibilitySettings": "Visibilitas seksi",
+      "showAll": "Tampilkan semua",
+      "hideAll": "Sembunyikan semua"
     }
   },
   "wallet": {

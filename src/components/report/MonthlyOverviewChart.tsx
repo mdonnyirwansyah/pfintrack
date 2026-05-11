@@ -6,10 +6,17 @@ import {
   BarChart,
   Bar,
   XAxis,
+  YAxis,
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { useRouter } from "next/navigation";
+
+function fmtY(v: number): string {
+  if (v >= 1_000_000_000) return `${+(v / 1_000_000_000).toFixed(1)}G`;
+  if (v >= 1_000_000) return `${+(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000) return `${+(v / 1_000).toFixed(1)}k`;
+  return `${v}`;
+}
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { id as idLocale, enUS } from "date-fns/locale";
 import type { Transaction } from "@/lib/types/transaction";
@@ -64,7 +71,6 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps) {
   const t = useTranslations("report");
   const locale = useLocale();
-  const router = useRouter();
   const mounted = useMounted();
 
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
@@ -86,9 +92,6 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
     return months;
   }, [transactions, dateFnsLocale]);
 
-  const handleBarClick = (data: MonthData) => {
-    router.push(`/report/detail?start=${data.start}&end=${data.end}`);
-  };
 
   return (
     <div className="glass rounded-[16px] px-4 pt-3 pb-4 space-y-3">
@@ -107,6 +110,14 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
           barCategoryGap="25%"
           margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
         >
+          <YAxis
+            tickFormatter={fmtY}
+            tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
+            axisLine={false}
+            tickLine={false}
+            width={32}
+            tickCount={4}
+          />
           <XAxis
             dataKey="label"
             tick={{ fontSize: 10, fill: "var(--text-tertiary)" }}
@@ -122,9 +133,6 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
             name="income"
             radius={[3, 3, 0, 0]}
             maxBarSize={20}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClick={(data: any) => handleBarClick(data as MonthData)}
-            style={{ cursor: "pointer" }}
             fill="var(--color-positive)"
           />
           <Bar
@@ -132,9 +140,6 @@ export function MonthlyOverviewChart({ transactions }: MonthlyOverviewChartProps
             name="expenses"
             radius={[3, 3, 0, 0]}
             maxBarSize={20}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClick={(data: any) => handleBarClick(data as MonthData)}
-            style={{ cursor: "pointer" }}
             fill="var(--color-negative)"
           />
         </BarChart>

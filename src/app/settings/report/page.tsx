@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ChartPie, HandCoins, Lightbulb, ArrowRightLeft, Pencil, BarChart3, TrendingUp } from "lucide-react";
+import { ChartPie, HandCoins, Lightbulb, ArrowRightLeft, Pencil, BarChart3, TrendingUp, Eye, EyeOff } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useAppStore } from "@/lib/stores/useAppStore";
 
@@ -9,6 +9,7 @@ export default function ReportSettingsPage() {
   const t = useTranslations("settings");
   const reportVisibility = useAppStore((s) => s.reportVisibility);
   const setReportVisibility = useAppStore((s) => s.setReportVisibility);
+  const setAllReportVisibility = useAppStore((s) => s.setAllReportVisibility);
 
   const rowClass = "flex items-center justify-between px-4 py-3.5 transition-opacity active:opacity-70";
   const sectionClass = "glass rounded-[16px] overflow-hidden mb-4";
@@ -58,11 +59,28 @@ export default function ReportSettingsPage() {
     },
   ];
 
+  const allOn = items.every(({ key }) => reportVisibility[key]);
+
   return (
     <>
       <AppHeader title={t("report.title")} showBack />
 
       <div className="px-4 py-4">
+        <div className="flex justify-end mb-3">
+          <button
+            onClick={() => setAllReportVisibility(!allOn)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all active:scale-[0.96]"
+            style={{
+              background: allOn ? "var(--bg-secondary)" : "var(--color-brand)",
+              color: allOn ? "var(--text-secondary)" : "var(--text-on-primary)",
+              border: "1px solid var(--border-default)",
+            }}
+          >
+            {allOn ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            {allOn ? t("report.hideAll") : t("report.showAll")}
+          </button>
+        </div>
+
         <div className={sectionClass}>
           {items.map(({ key, label, hint, icon: Icon }, idx) => {
             const isOn = reportVisibility[key];

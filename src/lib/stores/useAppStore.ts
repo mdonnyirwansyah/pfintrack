@@ -24,6 +24,7 @@ interface AppActions {
   setHydrated: (hydrated: boolean) => void;
   setShowDecimals: (v: boolean) => void;
   setReportVisibility: (key: keyof ReportVisibility, value: boolean) => void;
+  setAllReportVisibility: (value: boolean) => void;
 }
 
 type AppStore = AppState & AppActions;
@@ -50,6 +51,12 @@ export const useAppStore = create<AppStore>()(
       setShowDecimals: (v) => set({ showDecimals: v }),
       setReportVisibility: (key, value) =>
         set((s) => ({ reportVisibility: { ...s.reportVisibility, [key]: value } })),
+      setAllReportVisibility: (value) =>
+        set((s) => ({
+          reportVisibility: Object.fromEntries(
+            Object.keys(s.reportVisibility).map((k) => [k, value])
+          ) as ReportVisibility,
+        })),
     }),
     {
       name: "app_state",

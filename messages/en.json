@@ -99,7 +99,9 @@
       "showBalanceCorrectionRow": "Balance correction row",
       "showMonthlyOverviewChart": "Monthly overview chart",
       "showNetWorthChart": "Net worth chart",
-      "visibilitySettings": "Section visibility"
+      "visibilitySettings": "Section visibility",
+      "showAll": "Show all",
+      "hideAll": "Hide all"
     }
   },
   "wallet": {

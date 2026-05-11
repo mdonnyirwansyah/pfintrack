@@ -11,9 +11,17 @@ import {
   BarChart,
   Bar,
   XAxis,
+  YAxis,
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+
+function fmtY(v: number): string {
+  if (v >= 1_000_000_000) return `${+(v / 1_000_000_000).toFixed(1)}G`;
+  if (v >= 1_000_000) return `${+(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000) return `${+(v / 1_000).toFixed(1)}k`;
+  return `${v}`;
+}
 import {
   format,
   parseISO,
@@ -306,6 +314,14 @@ export function DailySummarySection({
               barCategoryGap="20%"
               margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
             >
+              <YAxis
+                tickFormatter={fmtY}
+                tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
+                axisLine={false}
+                tickLine={false}
+                width={30}
+                tickCount={4}
+              />
               <XAxis
                 dataKey="label"
                 tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
