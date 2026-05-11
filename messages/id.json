@@ -77,6 +77,16 @@
       "confirmDesc": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
       "confirmAction": "Ya, Hapus Semua",
       "confirmCancel": "Batal"
+    },
+    "report": {
+      "title": "Laporan",
+      "showSavingRateCard": "Kartu Saving Rate",
+      "showLoanOutstanding": "Seksi pinjaman",
+      "showInsightCard": "Insight pengeluaran",
+      "showDonutChart": "Grafik kategori",
+      "showDonutChartHint": "Juga menyembunyikan ringkasan harian dan daftar kategori",
+      "showLoanRow": "Baris pinjaman di ringkasan",
+      "showBalanceCorrectionRow": "Baris koreksi saldo"
     }
   },
   "wallet": {
