@@ -44,6 +44,11 @@
     },
     "showDecimals": "Show Decimals",
     "showDecimalsDesc": "Display cents in all currency values",
+    "accentColor": {
+      "label": "Accent Color",
+      "blue": "Blue",
+      "pink": "Pink"
+    },
     "data": {
       "sectionTitle": "Data & Storage",
       "persistTitle": "Protected Storage",
