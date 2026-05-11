@@ -9,6 +9,7 @@ import "./globals.css";
 import { AppProviders } from "@/components/shared/AppProviders";
 import { BottomNav } from "@/components/shared/BottomNav";
 import { DemoBanner } from "@/components/shared/DemoBanner";
+import { ColorThemeProvider } from "@/components/shared/ColorThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -68,12 +69,18 @@ export default async function RootLayout({
           fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif",
         }}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('pfintrack_color_theme');document.documentElement.setAttribute('data-color-theme',t==='pink'?'pink':'blue');})();`,
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <ColorThemeProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AppProviders>
               <main
@@ -94,6 +101,7 @@ export default async function RootLayout({
               <BottomNav />
             </AppProviders>
           </NextIntlClientProvider>
+          </ColorThemeProvider>
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

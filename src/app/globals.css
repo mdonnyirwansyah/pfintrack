@@ -294,3 +294,23 @@
     @apply font-sans;
   }
 }
+
+/* ========================================
+   COLOR THEME — Pink/Petal (light mode)
+   ======================================== */
+[data-color-theme="pink"] {
+  --color-brand: #D95B7B;
+  --color-brand-soft: rgba(217, 91, 123, 0.12);
+  --color-brand-hover: #C44A6A;
+  --shadow-fab: 0 4px 16px rgba(217, 91, 123, 0.30);
+}
+
+/* ========================================
+   COLOR THEME — Pink/Petal (dark mode)
+   ======================================== */
+.dark [data-color-theme="pink"] {
+  --color-brand: #F08FAA;
+  --color-brand-soft: rgba(240, 143, 170, 0.15);
+  --color-brand-hover: #E07A96;
+  --shadow-fab: 0 4px 16px rgba(240, 143, 170, 0.35);
+}

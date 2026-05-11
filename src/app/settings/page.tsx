@@ -3,6 +3,8 @@
 import { useTransition, useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff } from "lucide-react";
+import { useColorTheme } from "@/hooks/useColorTheme";
+import type { ColorTheme } from "@/hooks/useColorTheme";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useMounted } from "@/hooks/useMounted";
 import { useTranslations, useLocale } from "next-intl";
@@ -19,6 +21,7 @@ type ThemeOption = "light" | "dark" | "system";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { colorTheme, setColorTheme } = useColorTheme();
   const mounted = useMounted();
   const t = useTranslations("settings");
   const locale = useLocale();
@@ -50,6 +53,11 @@ export default function SettingsPage() {
     { value: "light", label: t("theme.light"), icon: Sun },
     { value: "dark", label: t("theme.dark"), icon: Moon },
     { value: "system", label: t("theme.system"), icon: Monitor },
+  ];
+
+  const COLOR_THEME_OPTIONS: { value: ColorTheme; label: string; dot: string }[] = [
+    { value: "blue", label: t("accentColor.blue"), dot: "#5B8DEF" },
+    { value: "pink", label: t("accentColor.pink"), dot: "#E8799A" },
   ];
 
   const LANGUAGE_OPTIONS = [
@@ -147,6 +155,38 @@ export default function SettingsPage() {
               </div>
             );
           })}
+
+          {/* Color Theme Swatch Row */}
+          <div style={dividerStyle} />
+          <div className={rowClass}>
+            <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+              {t("accentColor.label")}
+            </span>
+            <div className="flex items-center gap-3">
+              {COLOR_THEME_OPTIONS.map(({ value, label, dot }) => {
+                const isActive = mounted ? colorTheme === value : value === "blue";
+                return (
+                  <button
+                    key={value}
+                    aria-label={label}
+                    aria-pressed={isActive}
+                    onClick={() => setColorTheme(value)}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      backgroundColor: dot,
+                      outline: isActive
+                        ? `2px solid ${dot}`
+                        : "2px solid transparent",
+                      outlineOffset: 2,
+                      padding: 6,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* ── Language ── */}

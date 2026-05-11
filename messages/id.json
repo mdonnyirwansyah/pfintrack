@@ -44,6 +44,11 @@
     },
     "showDecimals": "Tampilkan Desimal",
     "showDecimalsDesc": "Tampilkan sen pada semua nilai mata uang",
+    "accentColor": {
+      "label": "Warna Aksen",
+      "blue": "Biru",
+      "pink": "Merah Muda"
+    },
     "data": {
       "sectionTitle": "Data & Penyimpanan",
       "persistTitle": "Penyimpanan Terlindungi",
