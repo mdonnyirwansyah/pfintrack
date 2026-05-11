@@ -2,7 +2,9 @@
 
 import { useTransition, useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff } from "lucide-react";
+import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff, ChartPie, HandCoins, Lightbulb, ArrowRightLeft, Pencil } from "lucide-react";
+import { useColorTheme } from "@/hooks/useColorTheme";
+import type { ColorTheme } from "@/hooks/useColorTheme";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useMounted } from "@/hooks/useMounted";
 import { useTranslations, useLocale } from "next-intl";
@@ -19,6 +21,7 @@ type ThemeOption = "light" | "dark" | "system";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { colorTheme, setColorTheme } = useColorTheme();
   const mounted = useMounted();
   const t = useTranslations("settings");
   const locale = useLocale();
@@ -26,6 +29,8 @@ export default function SettingsPage() {
   const [isPending, startTransition] = useTransition();
   const showDecimals = useAppStore((s) => s.showDecimals);
   const setShowDecimals = useAppStore((s) => s.setShowDecimals);
+  const reportVisibility = useAppStore((s) => s.reportVisibility);
+  const setReportVisibility = useAppStore((s) => s.setReportVisibility);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
   const [importConfirmOpen, setImportConfirmOpen] = useState(false);
@@ -50,6 +55,11 @@ export default function SettingsPage() {
     { value: "light", label: t("theme.light"), icon: Sun },
     { value: "dark", label: t("theme.dark"), icon: Moon },
     { value: "system", label: t("theme.system"), icon: Monitor },
+  ];
+
+  const COLOR_THEME_OPTIONS: { value: ColorTheme; label: string; dot: string }[] = [
+    { value: "blue", label: t("accentColor.blue"), dot: "#5B8DEF" },
+    { value: "pink", label: t("accentColor.pink"), dot: "#E8799A" },
   ];
 
   const LANGUAGE_OPTIONS = [
@@ -147,6 +157,38 @@ export default function SettingsPage() {
               </div>
             );
           })}
+
+          {/* Color Theme Swatch Row */}
+          <div style={dividerStyle} />
+          <div className={rowClass}>
+            <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+              {t("accentColor.label")}
+            </span>
+            <div className="flex items-center gap-3">
+              {COLOR_THEME_OPTIONS.map(({ value, label, dot }) => {
+                const isActive = mounted ? colorTheme === value : value === "blue";
+                return (
+                  <button
+                    key={value}
+                    aria-label={label}
+                    aria-pressed={isActive}
+                    onClick={() => setColorTheme(value)}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      backgroundColor: dot,
+                      outline: isActive
+                        ? `2px solid ${dot}`
+                        : "2px solid transparent",
+                      outlineOffset: 2,
+                      padding: 6,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* ── Language ── */}
@@ -267,6 +309,199 @@ export default function SettingsPage() {
                   backgroundColor: "white",
                   transform: showDecimals ? "translateX(20px)" : "translateX(2px)",
                 }}
+              />
+            </div>
+          </button>
+        </div>
+
+        {/* ── Report ── */}
+        <p
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          {t("report.title")}
+        </p>
+
+        <div className={sectionClass}>
+          {/* Saving Rate Card */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setReportVisibility("showSavingRateCard", !reportVisibility.showSavingRateCard)}
+            aria-pressed={reportVisibility.showSavingRateCard}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <ChartPie className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                {t("report.showSavingRateCard")}
+              </span>
+            </div>
+            <div
+              className="relative w-11 h-6 rounded-full transition-colors shrink-0"
+              style={{ backgroundColor: reportVisibility.showSavingRateCard ? "var(--color-brand)" : "var(--border-default)" }}
+            >
+              <div
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-transform"
+                style={{ backgroundColor: "white", transform: reportVisibility.showSavingRateCard ? "translateX(20px)" : "translateX(2px)" }}
+              />
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Loan Outstanding Section */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setReportVisibility("showLoanOutstanding", !reportVisibility.showLoanOutstanding)}
+            aria-pressed={reportVisibility.showLoanOutstanding}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <HandCoins className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                {t("report.showLoanOutstanding")}
+              </span>
+            </div>
+            <div
+              className="relative w-11 h-6 rounded-full transition-colors shrink-0"
+              style={{ backgroundColor: reportVisibility.showLoanOutstanding ? "var(--color-brand)" : "var(--border-default)" }}
+            >
+              <div
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-transform"
+                style={{ backgroundColor: "white", transform: reportVisibility.showLoanOutstanding ? "translateX(20px)" : "translateX(2px)" }}
+              />
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Spending Insight Card */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setReportVisibility("showInsightCard", !reportVisibility.showInsightCard)}
+            aria-pressed={reportVisibility.showInsightCard}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <Lightbulb className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                {t("report.showInsightCard")}
+              </span>
+            </div>
+            <div
+              className="relative w-11 h-6 rounded-full transition-colors shrink-0"
+              style={{ backgroundColor: reportVisibility.showInsightCard ? "var(--color-brand)" : "var(--border-default)" }}
+            >
+              <div
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-transform"
+                style={{ backgroundColor: "white", transform: reportVisibility.showInsightCard ? "translateX(20px)" : "translateX(2px)" }}
+              />
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Category Chart (Donut) */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setReportVisibility("showDonutChart", !reportVisibility.showDonutChart)}
+            aria-pressed={reportVisibility.showDonutChart}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <ChartPie className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                  {t("report.showDonutChart")}
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                  {t("report.showDonutChartHint")}
+                </p>
+              </div>
+            </div>
+            <div
+              className="relative w-11 h-6 rounded-full transition-colors shrink-0"
+              style={{ backgroundColor: reportVisibility.showDonutChart ? "var(--color-brand)" : "var(--border-default)" }}
+            >
+              <div
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-transform"
+                style={{ backgroundColor: "white", transform: reportVisibility.showDonutChart ? "translateX(20px)" : "translateX(2px)" }}
+              />
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Loan Row in Summary */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setReportVisibility("showLoanRow", !reportVisibility.showLoanRow)}
+            aria-pressed={reportVisibility.showLoanRow}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <ArrowRightLeft className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                {t("report.showLoanRow")}
+              </span>
+            </div>
+            <div
+              className="relative w-11 h-6 rounded-full transition-colors shrink-0"
+              style={{ backgroundColor: reportVisibility.showLoanRow ? "var(--color-brand)" : "var(--border-default)" }}
+            >
+              <div
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-transform"
+                style={{ backgroundColor: "white", transform: reportVisibility.showLoanRow ? "translateX(20px)" : "translateX(2px)" }}
+              />
+            </div>
+          </button>
+
+          <div style={dividerStyle} />
+
+          {/* Balance Correction Row */}
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => setReportVisibility("showBalanceCorrectionRow", !reportVisibility.showBalanceCorrectionRow)}
+            aria-pressed={reportVisibility.showBalanceCorrectionRow}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <Pencil className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                {t("report.showBalanceCorrectionRow")}
+              </span>
+            </div>
+            <div
+              className="relative w-11 h-6 rounded-full transition-colors shrink-0"
+              style={{ backgroundColor: reportVisibility.showBalanceCorrectionRow ? "var(--color-brand)" : "var(--border-default)" }}
+            >
+              <div
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-transform"
+                style={{ backgroundColor: "white", transform: reportVisibility.showBalanceCorrectionRow ? "translateX(20px)" : "translateX(2px)" }}
               />
             </div>
           </button>

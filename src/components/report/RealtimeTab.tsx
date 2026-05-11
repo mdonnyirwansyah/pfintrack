@@ -26,6 +26,7 @@ import { formatIDR } from "@/lib/format/number";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/lib/stores/useAppStore";
 
 type DonutMode = "expense" | "income";
 
@@ -39,6 +40,7 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
   const t = useTranslations("report");
   const tc = useTranslations("common");
   const locale = useLocale();
+  const { reportVisibility } = useAppStore((s) => ({ reportVisibility: s.reportVisibility }));
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
   const start = currentMonthStart();
   const end = currentMonthEnd();
@@ -211,137 +213,145 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
       </div>
 
       {/* B1 — Saving Rate Card (always shown, not conditional on income > 0 — component handles N/A) */}
-      <SavingRateCard income={income} expenses={expenses} />
+      {reportVisibility.showSavingRateCard && (
+        <SavingRateCard income={income} expenses={expenses} />
+      )}
 
       {/* D1 — Loan Outstanding Section (conditional, below SavingRateCard) */}
-      <LoanOutstandingSection
-        loanCounterparties={loanCounterparties}
-        loanEntries={loanEntries}
-      />
+      {reportVisibility.showLoanOutstanding && (
+        <LoanOutstandingSection
+          loanCounterparties={loanCounterparties}
+          loanEntries={loanEntries}
+        />
+      )}
 
       {/* B2 — Insight Card (conditional, dismissible) */}
-      {insight && !insightDismissed && (
+      {reportVisibility.showInsightCard && insight && !insightDismissed && (
         <InsightCard insight={insight} onDismiss={handleDismissInsight} />
       )}
 
-      {/* C1 — Donut mode toggle pill */}
-      <div
-        className="flex items-center rounded-full p-1 gap-1"
-        style={{
-          background: "var(--bg-secondary)",
-          boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), inset 0 0.5px 1px rgba(0,0,0,0.04)",
-        }}
-      >
-        {(["expense", "income"] as DonutMode[]).map((mode) => (
-          <button
-            key={mode}
-            className={cn(
-              "flex-1 rounded-full text-[12px] font-semibold transition-all",
-              "flex items-center justify-center"
-            )}
-            style={{
-              minHeight: "var(--tap-target-min)",
-              backgroundColor:
-                donutMode === mode ? "var(--color-brand)" : "transparent",
-              color:
-                donutMode === mode
-                  ? "var(--text-on-primary)"
-                  : "var(--color-brand)",
-              boxShadow:
-                donutMode === mode
-                  ? "0 2px 8px rgba(91,141,239,0.35), 0 1px 3px rgba(0,0,0,0.12)"
-                  : "none",
-            }}
-            onClick={() => handleDonutModeChange(mode)}
-          >
-            {mode === "expense" ? t("donut.expense") : t("donut.income")}
-          </button>
-        ))}
-      </div>
-
-      {breakdown.length === 0 ? (
-        <EmptyState
-          icon={PackageOpen}
-          title={isIncomeMode ? t("realtime.noIncome") : t("realtime.noExpenses")}
-          description={isIncomeMode ? t("realtime.noIncomeDesc") : t("realtime.noExpensesDesc")}
-        />
-      ) : (
+      {/* C1 — Donut chart section: toggle pill, chart, daily summary, category list */}
+      {reportVisibility.showDonutChart && (
         <>
-          <DonutChart
-            data={breakdown}
-            onCategorySelect={handleCategorySelect}
-            selectedCategory={selectedCategory}
-            centerLabel={isIncomeMode ? t("donut.income") : undefined}
-          />
-
-          {/* Daily summary (list/calendar toggle) — only in expense mode to stay backward compatible */}
-          {!isIncomeMode && (
-            <DailySummarySection
-              transactions={transactions}
-              start={start}
-              end={end}
-              selectedCategory={selectedCategory}
-            />
-          )}
-
-          {/* Transaction list */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-                {listTitle}
-              </h2>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                  {tc("items", { count: filteredTransactions.length })}
-                </span>
-                <SortPill value={sortKey} onChange={setSortKey} />
-              </div>
-            </div>
-
-            {filteredTransactions.length === 0 ? (
-              <EmptyState
-                icon={PackageOpen}
-                title={t("detail.noTransactions")}
-                description={t("detail.noTransactionsDesc", { category: selectedCategory ?? "" })}
-              />
-            ) : (
-              <div className="glass rounded-[16px] overflow-hidden">
-                {filteredTransactions.map((tx, idx) => (
-                  <div key={tx.id}>
-                    {idx > 0 && (
-                      <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
-                    )}
-                    <div className="flex items-center justify-between px-4 py-3">
-                      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                        <span
-                          className="text-[13px] font-medium truncate"
-                          style={{ color: "var(--text-primary)" }}
-                        >
-                          {tx.title ?? tx.category ?? (isIncomeMode ? t("detail.filterIncome") : t("detail.filterExpense"))}
-                        </span>
-                        <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
-                          {tx.category && (
-                            <span style={{ color: "var(--text-tertiary)" }}>{tx.category} · </span>
-                          )}
-                          {formatDisplayDate(tx.transaction_date, locale)}
-                        </span>
-                      </div>
-                      <span
-                        className="text-[13px] font-semibold tabular-nums ml-3 flex-shrink-0"
-                        style={{
-                          color: isIncomeMode
-                            ? "var(--color-positive)"
-                            : "var(--color-negative)",
-                        }}
-                      >
-                        {isIncomeMode ? "+" : "-"}{formatIDR(tx.amount)}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div
+            className="flex items-center rounded-full p-1 gap-1"
+            style={{
+              background: "var(--bg-secondary)",
+              boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), inset 0 0.5px 1px rgba(0,0,0,0.04)",
+            }}
+          >
+            {(["expense", "income"] as DonutMode[]).map((mode) => (
+              <button
+                key={mode}
+                className={cn(
+                  "flex-1 rounded-full text-[12px] font-semibold transition-all",
+                  "flex items-center justify-center"
+                )}
+                style={{
+                  minHeight: "var(--tap-target-min)",
+                  backgroundColor:
+                    donutMode === mode ? "var(--color-brand)" : "transparent",
+                  color:
+                    donutMode === mode
+                      ? "var(--text-on-primary)"
+                      : "var(--color-brand)",
+                  boxShadow:
+                    donutMode === mode
+                      ? "0 2px 8px rgba(91,141,239,0.35), 0 1px 3px rgba(0,0,0,0.12)"
+                      : "none",
+                }}
+                onClick={() => handleDonutModeChange(mode)}
+              >
+                {mode === "expense" ? t("donut.expense") : t("donut.income")}
+              </button>
+            ))}
           </div>
+
+          {breakdown.length === 0 ? (
+            <EmptyState
+              icon={PackageOpen}
+              title={isIncomeMode ? t("realtime.noIncome") : t("realtime.noExpenses")}
+              description={isIncomeMode ? t("realtime.noIncomeDesc") : t("realtime.noExpensesDesc")}
+            />
+          ) : (
+            <>
+              <DonutChart
+                data={breakdown}
+                onCategorySelect={handleCategorySelect}
+                selectedCategory={selectedCategory}
+                centerLabel={isIncomeMode ? t("donut.income") : undefined}
+              />
+
+              {/* Daily summary (list/calendar toggle) — only in expense mode to stay backward compatible */}
+              {!isIncomeMode && (
+                <DailySummarySection
+                  transactions={transactions}
+                  start={start}
+                  end={end}
+                  selectedCategory={selectedCategory}
+                />
+              )}
+
+              {/* Transaction list */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-1">
+                  <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                    {listTitle}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                      {tc("items", { count: filteredTransactions.length })}
+                    </span>
+                    <SortPill value={sortKey} onChange={setSortKey} />
+                  </div>
+                </div>
+
+                {filteredTransactions.length === 0 ? (
+                  <EmptyState
+                    icon={PackageOpen}
+                    title={t("detail.noTransactions")}
+                    description={t("detail.noTransactionsDesc", { category: selectedCategory ?? "" })}
+                  />
+                ) : (
+                  <div className="glass rounded-[16px] overflow-hidden">
+                    {filteredTransactions.map((tx, idx) => (
+                      <div key={tx.id}>
+                        {idx > 0 && (
+                          <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
+                        )}
+                        <div className="flex items-center justify-between px-4 py-3">
+                          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                            <span
+                              className="text-[13px] font-medium truncate"
+                              style={{ color: "var(--text-primary)" }}
+                            >
+                              {tx.title ?? tx.category ?? (isIncomeMode ? t("detail.filterIncome") : t("detail.filterExpense"))}
+                            </span>
+                            <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
+                              {tx.category && (
+                                <span style={{ color: "var(--text-tertiary)" }}>{tx.category} · </span>
+                              )}
+                              {formatDisplayDate(tx.transaction_date, locale)}
+                            </span>
+                          </div>
+                          <span
+                            className="text-[13px] font-semibold tabular-nums ml-3 flex-shrink-0"
+                            style={{
+                              color: isIncomeMode
+                                ? "var(--color-positive)"
+                                : "var(--color-negative)",
+                            }}
+                          >
+                            {isIncomeMode ? "+" : "-"}{formatIDR(tx.amount)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

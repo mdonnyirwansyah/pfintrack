@@ -77,6 +77,21 @@
       "confirmDesc": "All sample data (wallets, transactions, and loans) will be permanently deleted. This action cannot be undone.",
       "confirmAction": "Yes, Delete All",
       "confirmCancel": "Cancel"
+    },
+    "accentColor": {
+      "label": "Accent Color",
+      "blue": "Blue",
+      "pink": "Pink"
+    },
+    "report": {
+      "title": "Report",
+      "showSavingRateCard": "Saving Rate card",
+      "showLoanOutstanding": "Loan section",
+      "showInsightCard": "Spending insight",
+      "showDonutChart": "Category chart",
+      "showDonutChartHint": "Also hides daily summary and category list",
+      "showLoanRow": "Loan row in summary",
+      "showBalanceCorrectionRow": "Balance correction row"
     }
   },
   "wallet": {

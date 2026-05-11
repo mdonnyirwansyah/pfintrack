@@ -3,6 +3,7 @@
 import type { PeriodSummary } from "@/lib/report/calculations";
 import { formatIDR, formatIDRSigned } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
+import { useAppStore } from "@/lib/stores/useAppStore";
 
 interface PeriodSummaryRowsProps {
   summary: PeriodSummary;
@@ -33,6 +34,7 @@ function SummaryRow({ label, value, color }: SummaryRowProps) {
 
 export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
   const t = useTranslations("report.summary");
+  const { reportVisibility } = useAppStore((s) => ({ reportVisibility: s.reportVisibility }));
 
   const balanceColor =
     summary.balance > 0
@@ -73,14 +75,14 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
         value={summary.balance === 0 ? formatIDR(0) : formatIDRSigned(summary.balance)}
         color={balanceColor}
       />
-      {summary.loan !== null && (
+      {summary.loan !== null && reportVisibility.showLoanRow && (
         <SummaryRow
           label={t("loan")}
           value={formatIDRSigned(summary.loan)}
           color={loanColor}
         />
       )}
-      {summary.balanceCorrection !== null && (
+      {summary.balanceCorrection !== null && reportVisibility.showBalanceCorrectionRow && (
         <SummaryRow
           label={t("balanceCorrection")}
           value={formatIDRSigned(summary.balanceCorrection)}
