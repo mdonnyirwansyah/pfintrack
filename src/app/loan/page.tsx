@@ -123,7 +123,7 @@ export default function LoanPage() {
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="h-16 rounded-[16px] animate-pulse"
+                className="h-[56px] rounded-[16px] animate-pulse"
                 style={{ background: "var(--bg-secondary)" }}
               />
             ))}
