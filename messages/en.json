@@ -129,6 +129,16 @@
       "digital_asset": "Digital Asset",
       "other": "Other"
     },
+    "sort": {
+      "default": "Default",
+      "balanceDesc": "Largest",
+      "balanceAsc": "Smallest",
+      "nameAsc": "A–Z",
+      "nameDesc": "Z–A"
+    },
+    "filterType": {
+      "all": "All types"
+    },
     "validation": {
       "nameRequired": "Wallet name is required",
       "nameTooShort": "Name must be at least 2 characters",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   Drawer,
   DrawerContent,
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/drawer";
 import type { Wallet } from "@/lib/types/wallet";
 import { useTranslations } from "next-intl";
+import { useTransactionStore } from "@/lib/stores/useTransactionStore";
 
 interface WalletPickerProps {
   open: boolean;
@@ -25,7 +27,20 @@ export function WalletPicker({
   selectedWalletId,
   onSelect,
 }: WalletPickerProps) {
-  const activeWallets = wallets.filter((w) => w.is_active);
+  const transactions = useTransactionStore((s) => s.transactions);
+
+  const activeWallets = useMemo(() => {
+    const usageCount: Record<string, number> = {};
+    for (const tx of transactions) {
+      usageCount[tx.wallet_id] = (usageCount[tx.wallet_id] ?? 0) + 1;
+      if (tx.destination_wallet_id) {
+        usageCount[tx.destination_wallet_id] = (usageCount[tx.destination_wallet_id] ?? 0) + 1;
+      }
+    }
+    return wallets
+      .filter((w) => w.is_active)
+      .sort((a, b) => (usageCount[b.id] ?? 0) - (usageCount[a.id] ?? 0) || a.sort_order - b.sort_order);
+  }, [wallets, transactions]);
   const t = useTranslations("walletPicker");
 
   return (

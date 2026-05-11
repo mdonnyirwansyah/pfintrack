@@ -129,6 +129,16 @@
       "digital_asset": "Aset Digital",
       "other": "Lainnya"
     },
+    "sort": {
+      "default": "Default",
+      "balanceDesc": "Terbesar",
+      "balanceAsc": "Terkecil",
+      "nameAsc": "A–Z",
+      "nameDesc": "Z–A"
+    },
+    "filterType": {
+      "all": "Semua jenis"
+    },
     "validation": {
       "nameRequired": "Nama dompet tidak boleh kosong",
       "nameTooShort": "Nama minimal 2 karakter",
