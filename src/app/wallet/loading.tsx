@@ -11,8 +11,8 @@ export default function WalletLoading() {
 
       {/* Wallet cards */}
       <div className="space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={`skeleton-${i}`} className="glass rounded-[16px] px-4 py-2.5 flex items-center gap-2.5">
+        {["wlt-a", "wlt-b", "wlt-c", "wlt-d"].map((id) => (
+          <div key={id} className="glass rounded-[16px] px-4 py-2.5 flex items-center gap-2.5">
             <Skeleton className="flex-shrink-0 w-9 h-9 rounded-[10px]" />
             <div className="flex-1 space-y-1.5">
               <Skeleton className="h-3 w-24 rounded" />

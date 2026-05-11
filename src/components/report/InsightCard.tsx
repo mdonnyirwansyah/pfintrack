@@ -69,14 +69,16 @@ export function InsightCard({ insight, onDismiss }: InsightCardProps) {
       break;
   }
 
-  const accentColor =
-    insight.type === "expenseDown"
-      ? "var(--color-positive)"
-      : insight.type === "noIncome"
-        ? "var(--text-tertiary)"
-        : insight.type === "categoryDominant"
-          ? "var(--color-accent)"
-          : "var(--color-negative)";
+  let accentColor: string;
+  if (insight.type === "expenseDown") {
+    accentColor = "var(--color-positive)";
+  } else if (insight.type === "noIncome") {
+    accentColor = "var(--text-tertiary)";
+  } else if (insight.type === "categoryDominant") {
+    accentColor = "var(--color-accent)";
+  } else {
+    accentColor = "var(--color-negative)";
+  }
 
   return (
     <div

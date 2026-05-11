@@ -32,11 +32,11 @@ export function SplashScreen() {
         gap: 16,
         background: "var(--bg-primary)",
         opacity: phase === "out" ? 0 : 1,
-        transition: phase === "in"
-          ? "opacity 0.4s ease-out"
-          : phase === "out"
-          ? "opacity 0.45s ease-in"
-          : "none",
+        transition: (() => {
+          if (phase === "in") return "opacity 0.4s ease-out";
+          if (phase === "out") return "opacity 0.45s ease-in";
+          return "none";
+        })(),
         zIndex: 9999,
       }}
     >
@@ -117,7 +117,7 @@ export function SplashScreen() {
       >
         {[0, 1, 2].map((i) => (
           <span
-            key={i}
+            key={`dot-${i}`}
             style={{
               display: "inline-block",
               width: 6,

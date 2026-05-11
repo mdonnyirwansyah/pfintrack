@@ -78,28 +78,36 @@ export function CounterpartyListItem({
 
       {/* Outstanding / Paid off */}
       <div className="flex items-center gap-1 shrink-0">
-        {isPaidOff ? (
-          <span
-            className="text-[9px] font-medium"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            {t("paidOff")}
-          </span>
-        ) : outstanding > 0 ? (
-          <span
-            className="text-[10px] font-semibold tabular-nums"
-            style={{ color: "var(--color-negative)" }}
-          >
-            - {formatIDR(outstanding)}
-          </span>
-        ) : (
-          <span
-            className="text-[10px] font-semibold tabular-nums"
-            style={{ color: "var(--color-positive)" }}
-          >
-            + {formatIDR(Math.abs(outstanding))}
-          </span>
-        )}
+        {(() => {
+          if (isPaidOff) {
+            return (
+              <span
+                className="text-[9px] font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {t("paidOff")}
+              </span>
+            );
+          }
+          if (outstanding > 0) {
+            return (
+              <span
+                className="text-[10px] font-semibold tabular-nums"
+                style={{ color: "var(--color-negative)" }}
+              >
+                - {formatIDR(outstanding)}
+              </span>
+            );
+          }
+          return (
+            <span
+              className="text-[10px] font-semibold tabular-nums"
+              style={{ color: "var(--color-positive)" }}
+            >
+              + {formatIDR(Math.abs(outstanding))}
+            </span>
+          );
+        })()}
         <ChevronRight
           className="w-3.5 h-3.5"
           style={{ color: "var(--text-tertiary)" }}

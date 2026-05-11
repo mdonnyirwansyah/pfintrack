@@ -14,13 +14,18 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
   // Income: "+" only if > 0
   const incomePrefix = income > 0 ? "+ " : "";
   const expensesPrefix = expenses > 0 ? "- " : "";
-  const balancePrefix = balance > 0 ? "+ " : balance < 0 ? "- " : "";
-  const balanceColor =
-    balance > 0
-      ? "var(--color-positive)"
-      : balance < 0
-      ? "var(--color-negative)"
-      : "var(--text-secondary)";
+  let balancePrefix: string;
+  let balanceColor: string;
+  if (balance > 0) {
+    balancePrefix = "+ ";
+    balanceColor = "var(--color-positive)";
+  } else if (balance < 0) {
+    balancePrefix = "- ";
+    balanceColor = "var(--color-negative)";
+  } else {
+    balancePrefix = "";
+    balanceColor = "var(--text-secondary)";
+  }
 
   return (
     <div

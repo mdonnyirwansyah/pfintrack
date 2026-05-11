@@ -10,9 +10,9 @@ export function TitleSuggestionChips({ suggestions, onSelect }: TitleChipsProps)
 
   return (
     <div className="flex flex-wrap gap-1.5 mt-2">
-      {suggestions.map((s, i) => (
+      {suggestions.map((s) => (
         <button
-          key={i}
+          key={`title-${s.title}`}
           type="button"
           onClick={() => onSelect(s.title, s.category)}
           className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium active:opacity-70 transition-opacity"
@@ -39,9 +39,9 @@ export function CategorySuggestionChips({ suggestions, onSelect }: CategoryChips
 
   return (
     <div className="flex flex-wrap gap-1.5 mt-2">
-      {suggestions.map((cat, i) => (
+      {suggestions.map((cat) => (
         <button
-          key={i}
+          key={`cat-${cat}`}
           type="button"
           onClick={() => onSelect(cat)}
           className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium active:opacity-70 transition-opacity"

@@ -55,9 +55,9 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
       <>
         <AppHeader title={tc("edit")} showBack />
         <div className="px-4 py-4 space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
+          {["f-a", "f-b", "f-c", "f-d", "f-e"].map((id) => (
             <div
-              key={i}
+              key={id}
               className="h-16 rounded-[12px] animate-pulse"
               style={{ background: "var(--bg-secondary)" }}
             />
@@ -68,7 +68,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
   }
 
   // Not found or deleted
-  if (transaction === null || !transaction.is_active) {
+  if (!transaction?.is_active) {
     return (
       <>
         <AppHeader title={tc("edit")} showBack />
@@ -81,14 +81,16 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     );
   }
 
-  const typeLabel =
-    transaction.category === "Balance Correction"
-      ? t("editBalanceCorrection")
-      : transaction.type === "income"
-      ? t("editIncome")
-      : transaction.type === "expense"
-      ? t("editExpense")
-      : t("editTransfer");
+  let typeLabel: string;
+  if (transaction.category === "Balance Correction") {
+    typeLabel = t("editBalanceCorrection");
+  } else if (transaction.type === "income") {
+    typeLabel = t("editIncome");
+  } else if (transaction.type === "expense") {
+    typeLabel = t("editExpense");
+  } else {
+    typeLabel = t("editTransfer");
+  }
 
   const handleDeleteConfirm = () => {
     softDeleteTransaction(transaction.id);

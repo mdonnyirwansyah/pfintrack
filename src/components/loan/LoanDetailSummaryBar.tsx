@@ -25,13 +25,18 @@ export function LoanDetailSummaryBar({
   const t = useTranslations("loan.summary");
   const getPrefix = totalGet > 0 ? "+ " : "";
   const givePrefix = totalGive > 0 ? "- " : "";
-  const balancePrefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : "";
-  const balanceColor =
-    outstanding === 0
-      ? "var(--text-secondary)"
-      : outstanding > 0
-        ? "var(--color-negative)"
-        : "var(--color-positive)";
+  let balancePrefix: string;
+  let balanceColor: string;
+  if (outstanding < 0) {
+    balancePrefix = "+ ";
+    balanceColor = "var(--color-positive)";
+  } else if (outstanding > 0) {
+    balancePrefix = "- ";
+    balanceColor = "var(--color-negative)";
+  } else {
+    balancePrefix = "";
+    balanceColor = "var(--text-secondary)";
+  }
 
   return (
     <div

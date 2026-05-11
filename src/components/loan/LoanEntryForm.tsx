@@ -481,18 +481,20 @@ export function LoanEntryForm({
               minHeight: "var(--tap-target-min)",
             }}
           >
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <span
-                  className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
-                />
-                {tc("saving")}
-              </span>
-            ) : isEditMode ? (
-              tc("saveChanges")
-            ) : (
-              tc("save")
-            )}
+            {(() => {
+              if (isSubmitting) {
+                return (
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
+                    />
+                    {tc("saving")}
+                  </span>
+                );
+              }
+              if (isEditMode) return tc("saveChanges");
+              return tc("save");
+            })()}
           </button>
         </div>
       </form>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { Calculator, AlertTriangle } from "lucide-react";
 import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
@@ -37,7 +36,6 @@ export function TransferForm({
   onSubmit,
   footerActions,
 }: TransferFormProps) {
-  const router = useRouter();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
   const resolvedSubmitLabel = isEditMode ? tc("saveChanges") : tc("save");

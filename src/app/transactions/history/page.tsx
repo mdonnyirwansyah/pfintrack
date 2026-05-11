@@ -14,10 +14,31 @@ import { useTranslations, useLocale } from "next-intl";
 import { formatDisplayDate } from "@/lib/format/date";
 import type { DateRange } from "react-day-picker";
 import { ChevronRight } from "lucide-react";
+import type { Transaction } from "@/lib/types/transaction";
 
 type FilterType = "all" | "income" | "expense" | "transfer" | "balanceCorrection";
 
 const FILTERS: FilterType[] = ["all", "income", "expense", "transfer", "balanceCorrection"];
+
+function matchesTypeFilter(tx: Transaction, activeFilter: FilterType): boolean {
+  if (activeFilter === "all") return true;
+  if (activeFilter === "balanceCorrection") return tx.category === "Balance Correction";
+  return tx.type === activeFilter && tx.category !== "Balance Correction";
+}
+
+function matchesSearch(tx: Transaction, q: string, walletMap: Map<string, string>): boolean {
+  const walletName = walletMap.get(tx.wallet_id) ?? "";
+  const destWalletName = tx.destination_wallet_id
+    ? (walletMap.get(tx.destination_wallet_id) ?? "")
+    : "";
+  return (
+    (tx.title?.toLowerCase().includes(q) ?? false) ||
+    (tx.category?.toLowerCase().includes(q) ?? false) ||
+    (tx.description?.toLowerCase().includes(q) ?? false) ||
+    walletName.toLowerCase().includes(q) ||
+    destWalletName.toLowerCase().includes(q)
+  );
+}
 
 function todayDate(): Date {
   const d = new Date();
@@ -42,6 +63,152 @@ function firstOfMonth(): Date {
   return d;
 }
 
+function buildDateRangeLabel(
+  dateRange: { start: string; end: string } | null,
+  locale: string
+): string | null {
+  if (!dateRange) return null;
+  if (dateRange.start === dateRange.end) return formatDisplayDate(dateRange.start, locale);
+  return `${formatDisplayDate(dateRange.start, locale)} – ${formatDisplayDate(dateRange.end, locale)}`;
+}
+
+function applyFilters(
+  transactions: Transaction[],
+  activeFilter: FilterType,
+  dateRange: { start: string; end: string } | null,
+  activeWalletId: string | null,
+  searchQuery: string,
+  walletMap: Map<string, string>,
+  sortKey: SortKey
+): Transaction[] {
+  let base = transactions.filter((tx) => matchesTypeFilter(tx, activeFilter));
+
+  if (dateRange) {
+    base = base.filter(
+      (tx) => tx.transaction_date >= dateRange.start && tx.transaction_date <= dateRange.end
+    );
+  }
+
+  if (activeWalletId !== null) {
+    base = base.filter(
+      (tx) => tx.wallet_id === activeWalletId || tx.destination_wallet_id === activeWalletId
+    );
+  }
+
+  if (searchQuery.trim()) {
+    const q = searchQuery.trim().toLowerCase();
+    base = base.filter((tx) => matchesSearch(tx, q, walletMap));
+  }
+
+  return applySortKey(base, sortKey);
+}
+
+interface DatePickerState {
+  isOpen: boolean;
+  activeField: "from" | "to";
+  draftFromStr: string;
+  draftToStr: string;
+  rangeError: string;
+  calendarMonth: Date;
+  draftFromDate: Date | undefined;
+  draftToDate: Date | undefined;
+  calendarSelected: DateRange | undefined;
+  canApply: boolean;
+}
+
+interface DatePickerActions {
+  open: (dateRange: { start: string; end: string } | null) => void;
+  setActiveField: (f: "from" | "to") => void;
+  setCalendarMonth: (d: Date) => void;
+  handleFromInput: (val: string, errorMsg: string) => void;
+  handleToInput: (val: string, errorMsg: string) => void;
+  handleCalendarSelect: (range: DateRange | undefined) => void;
+  applyDraftRange: (setDateRange: (r: { start: string; end: string } | null) => void) => void;
+  clearDateRange: (setDateRange: (r: { start: string; end: string } | null) => void) => void;
+}
+
+function useDateRangePicker(): DatePickerState & DatePickerActions {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeField, setActiveField] = useState<"from" | "to">("from");
+  const [draftFromStr, setDraftFromStr] = useState("");
+  const [draftToStr, setDraftToStr] = useState("");
+  const [rangeError, setRangeError] = useState("");
+  const [calendarMonth, setCalendarMonth] = useState<Date>(firstOfMonth());
+
+  const draftFromDate = draftFromStr ? toDateObj(draftFromStr) : undefined;
+  const draftToDate = draftToStr ? toDateObj(draftToStr) : undefined;
+  const calendarSelected: DateRange | undefined = draftFromDate
+    ? { from: draftFromDate, to: draftToDate }
+    : undefined;
+  const canApply = !!draftFromStr && !rangeError;
+
+  function open(dateRange: { start: string; end: string } | null) {
+    setDraftFromStr(dateRange?.start ?? "");
+    setDraftToStr(dateRange?.end ?? "");
+    setActiveField("from");
+    setRangeError("");
+    setCalendarMonth(dateRange ? toDateObj(dateRange.start) : firstOfMonth());
+    setIsOpen(true);
+  }
+
+  function handleFromInput(val: string, errorMsg: string) {
+    setDraftFromStr(val);
+    setActiveField("from");
+    setRangeError(val && draftToStr && val > draftToStr ? errorMsg : "");
+    if (val) setCalendarMonth(toDateObj(val));
+  }
+
+  function handleToInput(val: string, errorMsg: string) {
+    setDraftToStr(val);
+    setActiveField("to");
+    setRangeError(draftFromStr && val && draftFromStr > val ? errorMsg : "");
+    if (val) setCalendarMonth(toDateObj(val));
+  }
+
+  function handleCalendarSelect(range: DateRange | undefined) {
+    const newFrom = range?.from ? toDateStr(range.from) : "";
+    const newTo = range?.to ? toDateStr(range.to) : "";
+    setDraftFromStr(newFrom);
+    setDraftToStr(newTo);
+    setRangeError("");
+    if (newFrom && !newTo) setActiveField("to");
+    else if (!newFrom) setActiveField("from");
+  }
+
+  function applyDraftRange(setDateRange: (r: { start: string; end: string } | null) => void) {
+    if (!draftFromStr) return;
+    const end = draftToStr || draftFromStr;
+    setDateRange({ start: draftFromStr, end });
+    setIsOpen(false);
+  }
+
+  function clearDateRange(setDateRange: (r: { start: string; end: string } | null) => void) {
+    setDateRange(null);
+    setIsOpen(false);
+  }
+
+  return {
+    isOpen,
+    activeField,
+    draftFromStr,
+    draftToStr,
+    rangeError,
+    calendarMonth,
+    draftFromDate,
+    draftToDate,
+    calendarSelected,
+    canApply,
+    open,
+    setActiveField,
+    setCalendarMonth,
+    handleFromInput,
+    handleToInput,
+    handleCalendarSelect,
+    applyDraftRange,
+    clearDateRange,
+  };
+}
+
 export default function TransactionHistoryPage() {
   const { transactions, isLoading, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
@@ -53,19 +220,12 @@ export default function TransactionHistoryPage() {
   const tc = useTranslations("common");
   const locale = useLocale();
 
-  // Applied date range (null = all time); default 1st of current month to today
   const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(() => ({
     start: toDateStr(firstOfMonth()),
     end: toDateStr(todayDate()),
   }));
 
-  // Picker state
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [activeField, setActiveField] = useState<"from" | "to">("from");
-  const [draftFromStr, setDraftFromStr] = useState(""); // YYYY-MM-DD
-  const [draftToStr, setDraftToStr] = useState("");     // YYYY-MM-DD
-  const [rangeError, setRangeError] = useState("");
-  const [calendarMonth, setCalendarMonth] = useState<Date>(firstOfMonth());
+  const picker = useDateRangePicker();
 
   useEffect(() => {
     loadTransactions();
@@ -90,115 +250,13 @@ export default function TransactionHistoryPage() {
     searchQuery.trim() !== "" ||
     dateRange !== null;
 
-  const filtered = useMemo(() => {
-    let base = transactions;
+  const filtered = useMemo(
+    () => applyFilters(transactions, activeFilter, dateRange, activeWalletId, searchQuery, walletMap, sortKey),
+    [transactions, activeFilter, dateRange, activeWalletId, searchQuery, walletMap, sortKey]
+  );
 
-    if (activeFilter !== "all") {
-      base = base.filter((tx) =>
-        activeFilter === "balanceCorrection"
-          ? tx.category === "Balance Correction"
-          : tx.type === activeFilter && tx.category !== "Balance Correction"
-      );
-    }
-
-    if (dateRange) {
-      base = base.filter(
-        (tx) => tx.transaction_date >= dateRange.start && tx.transaction_date <= dateRange.end
-      );
-    }
-
-    if (activeWalletId !== null) {
-      base = base.filter(
-        (tx) => tx.wallet_id === activeWalletId || tx.destination_wallet_id === activeWalletId
-      );
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase();
-      base = base.filter((tx) => {
-        const walletName = walletMap.get(tx.wallet_id) ?? "";
-        const destWalletName = tx.destination_wallet_id
-          ? (walletMap.get(tx.destination_wallet_id) ?? "")
-          : "";
-        return (
-          tx.title?.toLowerCase().includes(q) ||
-          tx.category?.toLowerCase().includes(q) ||
-          tx.description?.toLowerCase().includes(q) ||
-          walletName.toLowerCase().includes(q) ||
-          destWalletName.toLowerCase().includes(q)
-        );
-      });
-    }
-
-    return applySortKey(base, sortKey);
-  }, [transactions, activeFilter, activeWalletId, searchQuery, walletMap, sortKey, dateRange]);
-
-  function openDatePicker() {
-    setDraftFromStr(dateRange?.start ?? "");
-    setDraftToStr(dateRange?.end ?? "");
-    setActiveField("from");
-    setRangeError("");
-    setCalendarMonth(dateRange ? toDateObj(dateRange.start) : firstOfMonth());
-    setIsDatePickerOpen(true);
-  }
-
-  function handleFromInput(val: string) {
-    setDraftFromStr(val);
-    setActiveField("from");
-    if (val && draftToStr && val > draftToStr) {
-      setRangeError(t("history.errorStartAfterEnd"));
-    } else {
-      setRangeError("");
-    }
-    if (val) setCalendarMonth(toDateObj(val));
-  }
-
-  function handleToInput(val: string) {
-    setDraftToStr(val);
-    setActiveField("to");
-    if (draftFromStr && val && draftFromStr > val) {
-      setRangeError(t("history.errorStartAfterEnd"));
-    } else {
-      setRangeError("");
-    }
-    if (val) setCalendarMonth(toDateObj(val));
-  }
-
-  function handleCalendarSelect(range: DateRange | undefined) {
-    const newFrom = range?.from ? toDateStr(range.from) : "";
-    const newTo = range?.to ? toDateStr(range.to) : "";
-    setDraftFromStr(newFrom);
-    setDraftToStr(newTo);
-    setRangeError("");
-    if (newFrom && !newTo) setActiveField("to");
-    else if (!newFrom) setActiveField("from");
-  }
-
-  function applyDraftRange() {
-    if (!draftFromStr) return;
-    const end = draftToStr || draftFromStr;
-    setDateRange({ start: draftFromStr, end });
-    setIsDatePickerOpen(false);
-  }
-
-  function clearDateRange() {
-    setDateRange(null);
-    setIsDatePickerOpen(false);
-  }
-
-  const draftFromDate = draftFromStr ? toDateObj(draftFromStr) : undefined;
-  const draftToDate = draftToStr ? toDateObj(draftToStr) : undefined;
-  const calendarSelected: DateRange | undefined = draftFromDate
-    ? { from: draftFromDate, to: draftToDate }
-    : undefined;
-
-  const canApply = !!draftFromStr && !rangeError;
-
-  const dateRangeLabel = dateRange
-    ? dateRange.start === dateRange.end
-      ? formatDisplayDate(dateRange.start, locale)
-      : `${formatDisplayDate(dateRange.start, locale)} – ${formatDisplayDate(dateRange.end, locale)}`
-    : null;
+  const dateRangeLabel = buildDateRangeLabel(dateRange, locale);
+  const errorMsg = t("history.errorStartAfterEnd");
 
   return (
     <>
@@ -300,7 +358,7 @@ export default function TransactionHistoryPage() {
             </span>
             <div className="flex items-center gap-2">
               <button
-                onClick={openDatePicker}
+                onClick={() => picker.open(dateRange)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
                 style={{
                   background: dateRange ? "var(--color-brand-soft)" : "var(--bg-secondary)",
@@ -323,43 +381,51 @@ export default function TransactionHistoryPage() {
       </div>
 
       {/* Content */}
-      {isLoading ? (
-        <div className="px-4 space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-[52px] rounded-[16px] animate-pulse"
-              style={{ background: "var(--bg-secondary)" }}
+      {(() => {
+        if (isLoading) {
+          return (
+            <div className="px-4 space-y-3">
+              {["tx-a", "tx-b", "tx-c", "tx-d", "tx-e"].map((id) => (
+                <div
+                  key={id}
+                  className="h-[52px] rounded-[16px] animate-pulse"
+                  style={{ background: "var(--bg-secondary)" }}
+                />
+              ))}
+            </div>
+          );
+        }
+        if (filtered.length === 0) {
+          return (
+            <EmptyState
+              icon={FileSearch}
+              title={hasFilters ? t("noResults") : t("noHistory")}
+              description={hasFilters ? t("noResultsDesc") : t("noHistoryDesc")}
             />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={FileSearch}
-          title={hasFilters ? t("noResults") : t("noHistory")}
-          description={hasFilters ? t("noResultsDesc") : t("noHistoryDesc")}
-        />
-      ) : (
-        <div className="px-4">
-          <div className="glass rounded-[16px] overflow-hidden">
-            {filtered.map((tx, idx) => (
-              <div key={tx.id}>
-                {idx > 0 && (
-                  <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
-                )}
-                <TransactionItem transaction={tx} wallets={wallets} showDate />
-              </div>
-            ))}
+          );
+        }
+        return (
+          <div className="px-4">
+            <div className="glass rounded-[16px] overflow-hidden">
+              {filtered.map((tx, idx) => (
+                <div key={tx.id}>
+                  {idx > 0 && (
+                    <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
+                  )}
+                  <TransactionItem transaction={tx} wallets={wallets} showDate />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Date range picker bottom sheet */}
-      {isDatePickerOpen && (
+      {picker.isOpen && (
         <>
           <div
             className="fixed inset-0 z-40 bg-black/40"
-            onClick={() => setIsDatePickerOpen(false)}
+            onClick={() => picker.clearDateRange(setDateRange)}
             aria-hidden="true"
           />
           {/* Sheet — full-width on mobile, max-width centered on desktop */}
@@ -382,40 +448,30 @@ export default function TransactionHistoryPage() {
                 className="flex-1 flex flex-col gap-1 px-3 pt-2 pb-2.5 rounded-[12px] cursor-pointer"
                 style={{
                   background: "var(--bg-secondary)",
-                  border: `1.5px solid ${activeField === "from" ? "var(--color-brand)" : "var(--border-default)"}`,
-                }}
-                onClick={() => {
-                  setActiveField("from");
-                  if (draftFromDate) setCalendarMonth(draftFromDate);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    setActiveField("from");
-                    if (draftFromDate) setCalendarMonth(draftFromDate);
-                  }
+                  border: `1.5px solid ${picker.activeField === "from" ? "var(--color-brand)" : "var(--border-default)"}`,
                 }}
               >
                 <span
                   className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"
-                  style={{ color: activeField === "from" ? "var(--color-brand)" : "var(--text-tertiary)" }}
+                  style={{ color: picker.activeField === "from" ? "var(--color-brand)" : "var(--text-tertiary)" }}
                 >
-                  {activeField === "from" && (
+                  {picker.activeField === "from" && (
                     <ChevronRight className="w-3 h-3 flex-shrink-0" />
                   )}
                   {t("history.from")}
                 </span>
                 <input
                   type="date"
-                  value={draftFromStr}
-                  max={draftToStr || toDateStr(todayDate())}
+                  value={picker.draftFromStr}
+                  max={picker.draftToStr || toDateStr(todayDate())}
                   onFocus={() => {
-                    setActiveField("from");
-                    if (draftFromDate) setCalendarMonth(draftFromDate);
+                    picker.setActiveField("from");
+                    if (picker.draftFromDate) picker.setCalendarMonth(picker.draftFromDate);
                   }}
-                  onChange={(e) => handleFromInput(e.target.value)}
+                  onChange={(e) => picker.handleFromInput(e.target.value, errorMsg)}
                   className="bg-transparent outline-none text-[13px] font-semibold w-full"
                   style={{
-                    color: draftFromStr ? "var(--text-primary)" : "var(--text-tertiary)",
+                    color: picker.draftFromStr ? "var(--text-primary)" : "var(--text-tertiary)",
                     colorScheme: "normal",
                   }}
                 />
@@ -426,41 +482,31 @@ export default function TransactionHistoryPage() {
                 className="flex-1 flex flex-col gap-1 px-3 pt-2 pb-2.5 rounded-[12px] cursor-pointer"
                 style={{
                   background: "var(--bg-secondary)",
-                  border: `1.5px solid ${activeField === "to" ? "var(--color-brand)" : "var(--border-default)"}`,
-                }}
-                onClick={() => {
-                  setActiveField("to");
-                  if (draftToDate) setCalendarMonth(draftToDate);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    setActiveField("to");
-                    if (draftToDate) setCalendarMonth(draftToDate);
-                  }
+                  border: `1.5px solid ${picker.activeField === "to" ? "var(--color-brand)" : "var(--border-default)"}`,
                 }}
               >
                 <span
                   className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"
-                  style={{ color: activeField === "to" ? "var(--color-brand)" : "var(--text-tertiary)" }}
+                  style={{ color: picker.activeField === "to" ? "var(--color-brand)" : "var(--text-tertiary)" }}
                 >
-                  {activeField === "to" && (
+                  {picker.activeField === "to" && (
                     <ChevronRight className="w-3 h-3 flex-shrink-0" />
                   )}
                   {t("history.to")}
                 </span>
                 <input
                   type="date"
-                  value={draftToStr}
-                  min={draftFromStr}
+                  value={picker.draftToStr}
+                  min={picker.draftFromStr}
                   max={toDateStr(todayDate())}
                   onFocus={() => {
-                    setActiveField("to");
-                    if (draftToDate) setCalendarMonth(draftToDate);
+                    picker.setActiveField("to");
+                    if (picker.draftToDate) picker.setCalendarMonth(picker.draftToDate);
                   }}
-                  onChange={(e) => handleToInput(e.target.value)}
+                  onChange={(e) => picker.handleToInput(e.target.value, errorMsg)}
                   className="bg-transparent outline-none text-[13px] font-semibold w-full"
                   style={{
-                    color: draftToStr ? "var(--text-primary)" : "var(--text-tertiary)",
+                    color: picker.draftToStr ? "var(--text-primary)" : "var(--text-tertiary)",
                     colorScheme: "normal",
                   }}
                 />
@@ -469,13 +515,13 @@ export default function TransactionHistoryPage() {
 
             {/* Validation error or step hint */}
             <div className="px-4 min-h-[20px] flex-shrink-0">
-              {rangeError ? (
+              {picker.rangeError ? (
                 <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
-                  {rangeError}
+                  {picker.rangeError}
                 </p>
               ) : (
                 <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                  {activeField === "from"
+                  {picker.activeField === "from"
                     ? t("history.pickStart")
                     : t("history.pickEnd")}
                 </p>
@@ -487,10 +533,10 @@ export default function TransactionHistoryPage() {
               <div className="w-full max-w-[360px]">
                 <Calendar
                   mode="range"
-                  selected={calendarSelected}
-                  onSelect={handleCalendarSelect}
-                  month={calendarMonth}
-                  onMonthChange={setCalendarMonth}
+                  selected={picker.calendarSelected}
+                  onSelect={picker.handleCalendarSelect}
+                  month={picker.calendarMonth}
+                  onMonthChange={picker.setCalendarMonth}
                   disabled={{ after: todayDate() }}
                   className="w-full [--cell-size:--spacing(8)]"
                 />
@@ -503,7 +549,7 @@ export default function TransactionHistoryPage() {
               style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
             >
               <button
-                onClick={clearDateRange}
+                onClick={() => picker.clearDateRange(setDateRange)}
                 className="flex-1 rounded-[12px] text-[13px] font-medium transition-opacity active:opacity-70"
                 style={{
                   minHeight: "var(--tap-target-min)",
@@ -515,8 +561,8 @@ export default function TransactionHistoryPage() {
                 {t("history.allTime")}
               </button>
               <button
-                onClick={applyDraftRange}
-                disabled={!canApply}
+                onClick={() => picker.applyDraftRange(setDateRange)}
+                disabled={!picker.canApply}
                 className="flex-[2] rounded-[12px] text-[14px] font-semibold transition-opacity active:opacity-70 disabled:opacity-40"
                 style={{
                   minHeight: "var(--tap-target-min)",

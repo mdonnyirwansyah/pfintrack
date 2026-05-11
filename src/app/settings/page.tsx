@@ -395,7 +395,7 @@ export default function SettingsPage() {
           {/* Persistent storage */}
           <button
             className={rowClass + " w-full"}
-            disabled={!storageSupported || storagePersisted === true}
+            disabled={!storageSupported || !!storagePersisted}
             onClick={async () => {
               if (!navigator.storage?.persist) return;
               const granted = await navigator.storage.persist();
@@ -422,11 +422,11 @@ export default function SettingsPage() {
                   {td("persistTitle")}
                 </p>
                 <p className="text-[11px] mt-0.5" style={{ color: storagePersisted ? "var(--color-positive)" : "var(--text-tertiary)" }}>
-                  {!storageSupported
-                    ? td("persistUnsupported")
-                    : storagePersisted
-                      ? td("persistDesc")
-                      : td("persistNotGranted")}
+                  {(() => {
+                    if (!storageSupported) return td("persistUnsupported");
+                    if (storagePersisted) return td("persistDesc");
+                    return td("persistNotGranted");
+                  })()}
                 </p>
               </div>
             </div>

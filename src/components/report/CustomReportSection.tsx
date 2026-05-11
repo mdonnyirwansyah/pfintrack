@@ -33,12 +33,14 @@ export function CustomReportSection({
     router.push(`/report/custom/${report.id}/edit`);
   };
 
-  const endBalanceColor =
-    summary.endBalance > 0
-      ? "var(--color-positive)"
-      : summary.endBalance < 0
-        ? "var(--color-negative)"
-        : "var(--text-primary)";
+  let endBalanceColor: string;
+  if (summary.endBalance > 0) {
+    endBalanceColor = "var(--color-positive)";
+  } else if (summary.endBalance < 0) {
+    endBalanceColor = "var(--color-negative)";
+  } else {
+    endBalanceColor = "var(--text-primary)";
+  }
 
   return (
     <div className="glass rounded-[16px] p-4">

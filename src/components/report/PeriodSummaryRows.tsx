@@ -36,26 +36,32 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
   const t = useTranslations("report.summary");
   const reportVisibility = useAppStore((s) => s.reportVisibility);
 
-  const balanceColor =
-    summary.balance > 0
-      ? "var(--color-positive)"
-      : summary.balance < 0
-        ? "var(--color-negative)"
-        : "var(--text-primary)";
+  let balanceColor: string;
+  if (summary.balance > 0) {
+    balanceColor = "var(--color-positive)";
+  } else if (summary.balance < 0) {
+    balanceColor = "var(--color-negative)";
+  } else {
+    balanceColor = "var(--text-primary)";
+  }
 
-  const loanColor =
-    summary.loan !== null && summary.loan > 0
-      ? "var(--color-positive)"
-      : summary.loan !== null && summary.loan < 0
-        ? "var(--color-negative)"
-        : "var(--text-primary)";
+  let loanColor: string;
+  if (summary.loan !== null && summary.loan > 0) {
+    loanColor = "var(--color-positive)";
+  } else if (summary.loan !== null && summary.loan < 0) {
+    loanColor = "var(--color-negative)";
+  } else {
+    loanColor = "var(--text-primary)";
+  }
 
-  const correctionColor =
-    summary.balanceCorrection !== null && summary.balanceCorrection > 0
-      ? "var(--color-positive)"
-      : summary.balanceCorrection !== null && summary.balanceCorrection < 0
-        ? "var(--color-negative)"
-        : "var(--text-primary)";
+  let correctionColor: string;
+  if (summary.balanceCorrection !== null && summary.balanceCorrection > 0) {
+    correctionColor = "var(--color-positive)";
+  } else if (summary.balanceCorrection !== null && summary.balanceCorrection < 0) {
+    correctionColor = "var(--color-negative)";
+  } else {
+    correctionColor = "var(--text-primary)";
+  }
 
   return (
     <div className="space-y-0.5">
@@ -101,12 +107,10 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
           );
         }
         const rate = ((summary.income - summary.expenses) / summary.income) * 100;
-        const rateColor =
-          rate >= 20
-            ? "var(--color-positive)"
-            : rate >= 10
-              ? "var(--color-accent)"
-              : "var(--color-negative)";
+        let rateColor: string;
+        if (rate >= 20) rateColor = "var(--color-positive)";
+        else if (rate >= 10) rateColor = "var(--color-accent)";
+        else rateColor = "var(--color-negative)";
         return (
           <SummaryRow
             label={t("savingRate")}

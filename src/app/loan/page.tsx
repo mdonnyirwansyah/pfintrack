@@ -118,34 +118,42 @@ export default function LoanPage() {
         <LoanSummaryBar totalGet={summaryGet} totalGive={summaryGive} />
 
         {/* List */}
-        {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[56px] rounded-[16px] animate-pulse"
-                style={{ background: "var(--bg-secondary)" }}
+        {(() => {
+          if (isLoading) {
+            return (
+              <div className="space-y-3">
+                {["cp-a", "cp-b", "cp-c"].map((id) => (
+                  <div
+                    key={id}
+                    className="h-[56px] rounded-[16px] animate-pulse"
+                    style={{ background: "var(--bg-secondary)" }}
+                  />
+                ))}
+              </div>
+            );
+          }
+          if (sorted.length === 0) {
+            return (
+              <EmptyState
+                icon={Users}
+                title={t("noCounterparties")}
+                description={t("noCounterpartiesDesc")}
               />
-            ))}
-          </div>
-        ) : sorted.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            title={t("noCounterparties")}
-            description={t("noCounterpartiesDesc")}
-          />
-        ) : (
-          <div className="space-y-3">
-            {sorted.map((cp) => (
-              <CounterpartyListItem
-                key={cp.id}
-                counterparty={cp}
-                entries={entriesByCounterparty[cp.id] ?? []}
-                onClick={() => router.push(`/loan/${cp.id}`)}
-              />
-            ))}
-          </div>
-        )}
+            );
+          }
+          return (
+            <div className="space-y-3">
+              {sorted.map((cp) => (
+                <CounterpartyListItem
+                  key={cp.id}
+                  counterparty={cp}
+                  entries={entriesByCounterparty[cp.id] ?? []}
+                  onClick={() => router.push(`/loan/${cp.id}`)}
+                />
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       <FABExpandable actions={fabActions} />

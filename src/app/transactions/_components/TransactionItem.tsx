@@ -76,13 +76,23 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
   const isTransfer = transaction.type === "transfer";
   const isBalanceCorrection = transaction.category === "Balance Correction";
 
-  const amountColor = isIncome
-    ? "var(--color-positive)"
-    : isExpense
-    ? "var(--color-negative)"
-    : "var(--text-primary)";
+  let amountColor: string;
+  if (isIncome) {
+    amountColor = "var(--color-positive)";
+  } else if (isExpense) {
+    amountColor = "var(--color-negative)";
+  } else {
+    amountColor = "var(--text-primary)";
+  }
 
-  const amountPrefix = isIncome ? "+ " : isExpense ? "- " : "";
+  let amountPrefix: string;
+  if (isIncome) {
+    amountPrefix = "+ ";
+  } else if (isExpense) {
+    amountPrefix = "- ";
+  } else {
+    amountPrefix = "";
+  }
 
   const iconBg = getIconBackground(isIncome, isExpense);
   const iconBorder = isTransfer ? "1px solid var(--border-default)" : "none";

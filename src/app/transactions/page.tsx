@@ -270,39 +270,47 @@ function TransactionsContent() {
         )}
 
         {/* Transaction list */}
-        {isLoading ? (
-          <div className="px-4 space-y-3 mt-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[52px] rounded-[16px] animate-pulse"
-                style={{ background: "var(--bg-secondary)" }}
-              />
-            ))}
-          </div>
-        ) : dailyTransactions.length === 0 ? (
-          <EmptyState
-            icon={FileText}
-            title={t("noData")}
-            description={t("noDataDesc")}
-          />
-        ) : (
-          <div
-            className="mx-4 glass rounded-[16px] overflow-hidden"
-          >
-            {dailyTransactions.map((tx, idx) => (
-              <div key={tx.id}>
-                {idx > 0 && (
+        {(() => {
+          if (isLoading) {
+            return (
+              <div className="px-4 space-y-3 mt-2">
+                {["sk-a", "sk-b", "sk-c", "sk-d"].map((id) => (
                   <div
-                    className="mx-4"
-                    style={{ height: "1px", background: "var(--divider)" }}
+                    key={id}
+                    className="h-[52px] rounded-[16px] animate-pulse"
+                    style={{ background: "var(--bg-secondary)" }}
                   />
-                )}
-                <TransactionItem transaction={tx} wallets={wallets} onConfirmDelete={handleConfirmDelete} />
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            );
+          }
+          if (dailyTransactions.length === 0) {
+            return (
+              <EmptyState
+                icon={FileText}
+                title={t("noData")}
+                description={t("noDataDesc")}
+              />
+            );
+          }
+          return (
+            <div
+              className="mx-4 glass rounded-[16px] overflow-hidden"
+            >
+              {dailyTransactions.map((tx, idx) => (
+                <div key={tx.id}>
+                  {idx > 0 && (
+                    <div
+                      className="mx-4"
+                      style={{ height: "1px", background: "var(--divider)" }}
+                    />
+                  )}
+                  <TransactionItem transaction={tx} wallets={wallets} onConfirmDelete={handleConfirmDelete} />
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       <FABExpandable actions={fabActions} />

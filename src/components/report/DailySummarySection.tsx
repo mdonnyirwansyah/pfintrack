@@ -42,6 +42,36 @@ interface DaySummary {
   expenses: number;
 }
 
+function isTransactionIncluded(
+  tx: Transaction,
+  start: string,
+  end: string,
+  selectedCategory?: string | null
+): boolean {
+  if (!tx.is_active) return false;
+  if (tx.transaction_date < start || tx.transaction_date > end) return false;
+  if (tx.type === "transfer") return false;
+  if (selectedCategory) {
+    if (tx.type !== "expense") return false;
+    if ((tx.category ?? "Other") !== selectedCategory) return false;
+  }
+  return true;
+}
+
+function accumulateDay(
+  map: Map<string, DaySummary>,
+  tx: Transaction
+): void {
+  const existing = map.get(tx.transaction_date) ?? {
+    date: tx.transaction_date,
+    income: 0,
+    expenses: 0,
+  };
+  if (tx.type === "income") existing.income += tx.amount;
+  else if (tx.type === "expense") existing.expenses += tx.amount;
+  map.set(tx.transaction_date, existing);
+}
+
 function buildDailySummaries(
   transactions: Transaction[],
   start: string,
@@ -49,29 +79,11 @@ function buildDailySummaries(
   selectedCategory?: string | null
 ): DaySummary[] {
   const map = new Map<string, DaySummary>();
-
   for (const tx of transactions) {
-    if (!tx.is_active) continue;
-    if (tx.transaction_date < start || tx.transaction_date > end) continue;
-    if (tx.type === "transfer") continue;
-
-    // If category filter is active, only include matching expense transactions
-    if (selectedCategory) {
-      if (tx.type !== "expense") continue;
-      const txCat = tx.category ?? "Other";
-      if (txCat !== selectedCategory) continue;
+    if (isTransactionIncluded(tx, start, end, selectedCategory)) {
+      accumulateDay(map, tx);
     }
-
-    const existing = map.get(tx.transaction_date) ?? {
-      date: tx.transaction_date,
-      income: 0,
-      expenses: 0,
-    };
-    if (tx.type === "income") existing.income += tx.amount;
-    else if (tx.type === "expense") existing.expenses += tx.amount;
-    map.set(tx.transaction_date, existing);
   }
-
   return Array.from(map.values());
 }
 

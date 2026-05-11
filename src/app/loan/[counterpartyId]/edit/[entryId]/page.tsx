@@ -46,9 +46,9 @@ export default function EditLoanEntryPage({
     <>
       <AppHeader title={t("editEntry")} showBack />
       <div className="px-4 py-8 space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {["f-a", "f-b", "f-c", "f-d"].map((id) => (
           <div
-            key={i}
+            key={id}
             className="h-16 rounded-[12px] animate-pulse"
             style={{ background: "var(--bg-secondary)" }}
           />

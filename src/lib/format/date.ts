@@ -25,23 +25,12 @@ export function formatDateRange(from: string | Date, to: string | Date, locale =
   return `${format(fromDate, "dd MMM yyyy", { locale: dateFnsLocale(locale) })} - ${format(toDate, "dd MMM yyyy", { locale: dateFnsLocale(locale) })}`;
 }
 
-/**
- * Format a date with locale awareness: "Fri, 01 May 2026" (en) / "Jum, 01 Mei 2026" (id)
- */
 export function formatDisplayDateLocale(date: string | Date, locale: string): string {
-  const d = typeof date === "string" ? parseISO(date) : date;
-  if (!isValid(d)) return "";
-  return format(d, "EEE, dd MMM yyyy", { locale: dateFnsLocale(locale) });
+  return formatDisplayDate(date, locale);
 }
 
-/**
- * Format a date range with locale awareness
- */
 export function formatDateRangeLocale(from: string | Date, to: string | Date, locale: string): string {
-  const fromDate = typeof from === "string" ? parseISO(from) : from;
-  const toDate = typeof to === "string" ? parseISO(to) : to;
-  if (!isValid(fromDate) || !isValid(toDate)) return "";
-  return `${format(fromDate, "dd MMM yyyy", { locale: dateFnsLocale(locale) })} - ${format(toDate, "dd MMM yyyy", { locale: dateFnsLocale(locale) })}`;
+  return formatDateRange(from, to, locale);
 }
 
 /**

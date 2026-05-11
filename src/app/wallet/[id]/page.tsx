@@ -7,7 +7,6 @@ import { AppHeader } from "@/components/shared/AppHeader";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { WalletForm } from "@/features/wallet/components/WalletForm";
 import { useWalletActions } from "@/features/wallet/hooks/useWalletActions";
-import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { walletsRepo } from "@/lib/storage/wallets";
 import { formatIDR } from "@/lib/format/number";
 import type { Wallet } from "@/lib/types/wallet";
@@ -34,14 +33,13 @@ export default function EditWalletPage({
   const [isInUse, setIsInUse] = useState(false);
 
   const { handleUpdate, handleDelete, isNameTaken, loadWallets } = useWalletActions();
-  const loadWalletsFromStore = useWalletStore((s) => s.loadWallets);
   const t = useTranslations("wallet");
 
   useEffect(() => {
     async function init() {
       await loadWallets();
       const found = await walletsRepo.getById(id);
-      if (!found || !found.is_active) {
+      if (!found?.is_active) {
         setNotFound(true);
       } else {
         setWallet(found);

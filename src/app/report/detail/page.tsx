@@ -199,11 +199,14 @@ function ReportDetailContent() {
     setSelectedCategory(null);
   };
 
-  const headerTitle = nameParam
-    ? nameParam
-    : start && end
-      ? formatDateRange(start, end, locale)
-      : t("detail.title");
+  let headerTitle: string;
+  if (nameParam) {
+    headerTitle = nameParam;
+  } else if (start && end) {
+    headerTitle = formatDateRange(start, end, locale);
+  } else {
+    headerTitle = t("detail.title");
+  }
 
   const isIncomeMode = donutMode === "income";
 
@@ -505,12 +508,18 @@ function ReportDetailContent() {
                   prevTx?.transaction_date !== tx.transaction_date;
                 const isIncome = tx.type === "income";
                 const isTransfer = tx.type === "transfer";
-                const amountColor = isIncome
-                  ? "var(--color-positive)"
-                  : isTransfer
-                    ? "var(--text-secondary)"
-                    : "var(--color-negative)";
-                const prefix = isIncome ? "+" : isTransfer ? "" : "-";
+                let amountColor: string;
+                let prefix: string;
+                if (isIncome) {
+                  amountColor = "var(--color-positive)";
+                  prefix = "+";
+                } else if (isTransfer) {
+                  amountColor = "var(--text-secondary)";
+                  prefix = "";
+                } else {
+                  amountColor = "var(--color-negative)";
+                  prefix = "-";
+                }
 
                 return (
                   <div

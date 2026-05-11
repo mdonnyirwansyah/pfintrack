@@ -149,8 +149,8 @@ export default function WalletPage() {
         {/* Loading skeletons — card list */}
         {isLoading && (
           <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={`skeleton-${i}`} className="h-[56px] w-full rounded-[16px]" />
+            {["wlt-a", "wlt-b", "wlt-c", "wlt-d"].map((id) => (
+              <Skeleton key={id} className="h-[56px] w-full rounded-[16px]" />
             ))}
           </div>
         )}

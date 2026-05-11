@@ -309,19 +309,21 @@ export function WalletForm({
           color: "var(--text-on-primary)",
         }}
       >
-        {isSubmitting ? (
-          <>
-            <span
-              className="inline-block w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
-              aria-hidden="true"
-            />
-            {tc("saving")}
-          </>
-        ) : isAddMode ? (
-          tc("save")
-        ) : (
-          tc("saveChanges")
-        )}
+        {(() => {
+          if (isSubmitting) {
+            return (
+              <>
+                <span
+                  className="inline-block w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
+                  aria-hidden="true"
+                />
+                {tc("saving")}
+              </>
+            );
+          }
+          if (isAddMode) return tc("save");
+          return tc("saveChanges");
+        })()}
       </button>
 
       {/* Delete slot — only in edit mode */}

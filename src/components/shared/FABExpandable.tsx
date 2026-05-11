@@ -43,7 +43,7 @@ export function FABExpandable({ actions, className }: FABExpandableProps) {
         {open &&
           actions.map((action, i) => (
             <div
-              key={i}
+              key={`action-${action.label}`}
               className="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2"
               style={{ animationDelay: `${i * 40}ms` }}
             >

@@ -42,7 +42,7 @@ export default function EditCustomReportPage() {
     void (async () => {
       loadCustomReports();
       const report = await customReportsRepo.getById(id);
-      if (!report || !report.is_active) {
+      if (!report?.is_active) {
         setNotFound(true);
         return;
       }

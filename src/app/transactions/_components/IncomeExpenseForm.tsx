@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { Calculator, Wallet as WalletIcon, AlertTriangle } from "lucide-react";
 import type { TransactionType } from "@/lib/types/transaction";
 import type { Wallet } from "@/lib/types/wallet";
@@ -50,7 +49,6 @@ export function IncomeExpenseForm({
   onSubmit,
   footerActions,
 }: IncomeExpenseFormProps) {
-  const router = useRouter();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
   const resolvedSubmitLabel = isEditMode ? tc("saveChanges") : tc("save");

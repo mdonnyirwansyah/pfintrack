@@ -105,6 +105,11 @@ export function NetWorthChart({
   const lineColor =
     currentBalance >= 0 ? "var(--color-brand)" : "var(--color-negative)";
 
+  let deltaColor: string;
+  if (delta > 0) deltaColor = "var(--color-positive)";
+  else if (delta < 0) deltaColor = "var(--color-negative)";
+  else deltaColor = "var(--text-secondary)";
+
   return (
     <div className="glass rounded-[16px] px-4 pt-3 pb-4 space-y-3">
       <h3
@@ -156,14 +161,7 @@ export function NetWorthChart({
         </span>
         <span
           className="text-[11px] tabular-nums font-semibold"
-          style={{
-            color:
-              delta > 0
-                ? "var(--color-positive)"
-                : delta < 0
-                  ? "var(--color-negative)"
-                  : "var(--text-secondary)",
-          }}
+          style={{ color: deltaColor }}
           suppressHydrationWarning
         >
           {delta >= 0 ? "+" : ""}

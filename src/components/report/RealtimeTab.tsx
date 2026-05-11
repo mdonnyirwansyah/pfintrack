@@ -30,6 +30,51 @@ import { useAppStore } from "@/lib/stores/useAppStore";
 
 type DonutMode = "expense" | "income";
 
+type CategoryBreakdownItem = ReturnType<typeof calcCategoryBreakdown>[number];
+
+function findCategoryUpInsight(
+  currentBreakdown: CategoryBreakdownItem[],
+  lastBreakdown: CategoryBreakdownItem[],
+  lastExpenses: number,
+  lastMonthLabel: string
+): InsightData | null {
+  if (lastExpenses <= 0 || currentBreakdown.length === 0 || lastBreakdown.length === 0) return null;
+  for (const curr of currentBreakdown) {
+    const prev = lastBreakdown.find((b) => b.category === curr.category);
+    if (prev && prev.total > 0) {
+      const rise = ((curr.total - prev.total) / prev.total) * 100;
+      if (rise >= 30) {
+        return { type: "categoryUp", category: curr.category, percent: Math.round(rise), month: lastMonthLabel };
+      }
+    }
+  }
+  return null;
+}
+
+function findLowSavingRateInsight(income: number, expenses: number): InsightData | null {
+  if (income <= 0 || expenses <= 0) return null;
+  const rate = ((income - expenses) / income) * 100;
+  return rate < 10 ? { type: "lowSavingRate" } : null;
+}
+
+function findCategoryDominantInsight(
+  currentBreakdown: CategoryBreakdownItem[],
+  expenses: number
+): InsightData | null {
+  if (currentBreakdown.length === 0 || expenses <= 0) return null;
+  const top = currentBreakdown[0];
+  if (top && top.percentage > 50) {
+    return { type: "categoryDominant", category: top.category, percent: Math.round(top.percentage) };
+  }
+  return null;
+}
+
+function findExpenseDownInsight(lastExpenses: number, expenses: number): InsightData | null {
+  if (lastExpenses <= 0 || expenses <= 0 || expenses >= lastExpenses) return null;
+  const drop = ((lastExpenses - expenses) / lastExpenses) * 100;
+  return { type: "expenseDown", percent: Math.round(drop) };
+}
+
 interface RealtimeTabProps {
   transactions: Transaction[];
   loanEntries: LoanEntry[];
@@ -72,67 +117,21 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
     [transactions, start, end]
   );
 
-  // B2 — Insight generation (computed from current + last month)
   const insight = useMemo<InsightData | null>(() => {
     const lastMonthDate = subMonths(new Date(start), 1);
     const lastStart = format(startOfMonth(lastMonthDate), "yyyy-MM-dd");
     const lastEnd = format(endOfMonth(lastMonthDate), "yyyy-MM-dd");
     const lastMonthLabel = format(lastMonthDate, "MMM", { locale: dateFnsLocale });
-
     const lastExpenses = calcExpenses(transactions, lastStart, lastEnd);
     const currentBreakdown = calcCategoryBreakdown(transactions, start, end, "expense");
     const lastBreakdown = calcCategoryBreakdown(transactions, lastStart, lastEnd, "expense");
-
-    // Priority 1: a category rose >= 30% vs last month
-    if (lastExpenses > 0 && currentBreakdown.length > 0 && lastBreakdown.length > 0) {
-      for (const curr of currentBreakdown) {
-        const prev = lastBreakdown.find((b) => b.category === curr.category);
-        if (prev && prev.total > 0) {
-          const rise = ((curr.total - prev.total) / prev.total) * 100;
-          if (rise >= 30) {
-            return {
-              type: "categoryUp",
-              category: curr.category,
-              percent: Math.round(rise),
-              month: lastMonthLabel,
-            };
-          }
-        }
-      }
-    }
-
-    // Priority 2: saving rate < 10% (income > 0)
-    if (income > 0 && expenses > 0) {
-      const rate = ((income - expenses) / income) * 100;
-      if (rate < 10) {
-        return { type: "lowSavingRate" };
-      }
-    }
-
-    // Priority 3: one category > 50% total expense
-    if (currentBreakdown.length > 0 && expenses > 0) {
-      const top = currentBreakdown[0];
-      if (top && top.percentage > 50) {
-        return {
-          type: "categoryDominant",
-          category: top.category,
-          percent: Math.round(top.percentage),
-        };
-      }
-    }
-
-    // Priority 4: expense bulan ini < bulan lalu
-    if (lastExpenses > 0 && expenses > 0 && expenses < lastExpenses) {
-      const drop = ((lastExpenses - expenses) / lastExpenses) * 100;
-      return { type: "expenseDown", percent: Math.round(drop) };
-    }
-
-    // Priority 5: tidak ada income
-    if (income === 0) {
-      return { type: "noIncome" };
-    }
-
-    return null;
+    return (
+      findCategoryUpInsight(currentBreakdown, lastBreakdown, lastExpenses, lastMonthLabel) ??
+      findLowSavingRateInsight(income, expenses) ??
+      findCategoryDominantInsight(currentBreakdown, expenses) ??
+      findExpenseDownInsight(lastExpenses, expenses) ??
+      (income === 0 ? { type: "noIncome" } : null)
+    );
   }, [transactions, start, end, income, expenses, dateFnsLocale]);
 
   const handleDismissInsight = () => {

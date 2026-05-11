@@ -187,7 +187,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
               <div className="grid grid-cols-7 mb-1">
                 {weekdays.map((d, i) => (
                   <div
-                    key={i}
+                    key={["su","mo","tu","we","th","fr","sa"][i]}
                     className="text-center text-[10px] font-medium py-1"
                     style={{ color: "var(--text-tertiary)" }}
                   >
@@ -214,13 +214,12 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
                         background: isSelected
                           ? "var(--color-primary)"
                           : "transparent",
-                        color: isSelected
-                          ? "#fff"
-                          : !isCurrentMonth
-                          ? "var(--text-tertiary)"
-                          : isTodayDate
-                          ? "var(--color-primary)"
-                          : "var(--text-primary)",
+                        color: (() => {
+                          if (isSelected) return "#fff";
+                          if (!isCurrentMonth) return "var(--text-tertiary)";
+                          if (isTodayDate) return "var(--color-primary)";
+                          return "var(--text-primary)";
+                        })(),
                         fontWeight: isTodayDate && !isSelected ? 700 : undefined,
                         outline: isTodayDate && !isSelected
                           ? "1.5px solid var(--color-primary)"
