@@ -18,7 +18,7 @@ export default function TransactionsLoading() {
       {/* Transaction items */}
       <div className="space-y-px mt-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="px-4 py-2 flex items-center gap-2.5">
+          <div key={`skeleton-${i}`} className="px-4 py-2 flex items-center gap-2.5">
             <Skeleton className="flex-shrink-0 w-9 h-9 rounded-[10px]" />
             <div className="flex-1 space-y-1.5">
               <div className="flex justify-between gap-4">

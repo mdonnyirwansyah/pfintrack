@@ -193,6 +193,220 @@ export function DailySummarySection({
     });
   }, [rawSummaries]);
 
+  function renderListView() {
+    return (
+      <div className="glass rounded-[16px] overflow-hidden">
+        {summaries.map((day, idx) => (
+          <div key={day.date}>
+            {idx > 0 && (
+              <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
+            )}
+            <div className="flex items-center justify-between px-4 py-2.5">
+              <span
+                className="text-[11px] font-medium"
+                style={{ color: "var(--text-primary)" }}
+                suppressHydrationWarning
+              >
+                {formatDisplayDateLocale(day.date, locale)}
+              </span>
+              <div className="flex items-center gap-3">
+                {day.income > 0 && (
+                  <span
+                    className="text-[10px] font-semibold tabular-nums"
+                    style={{ color: "var(--color-positive)" }}
+                    suppressHydrationWarning
+                  >
+                    +{formatIDR(day.income)}
+                  </span>
+                )}
+                {day.expenses > 0 && (
+                  <span
+                    className="text-[10px] font-semibold tabular-nums"
+                    style={{ color: "var(--color-negative)" }}
+                    suppressHydrationWarning
+                  >
+                    -{formatIDR(day.expenses)}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function renderChartView() {
+    return (
+      <div className="glass rounded-[16px] px-2 pt-3 pb-4">
+        <div style={{ width: "100%", height: 160, minWidth: 0 }}>
+        {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
+          <BarChart
+            data={chartData}
+            barGap={2}
+            barCategoryGap="20%"
+            margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
+          >
+            <YAxis
+              tickFormatter={fmtY}
+              tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
+              axisLine={false}
+              tickLine={false}
+              width={30}
+              tickCount={4}
+            />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              content={<DailyBarTooltip />}
+              cursor={{ fill: "rgba(0,0,0,0.04)" }}
+            />
+            <Bar
+              dataKey="income"
+              name="income"
+              radius={[2, 2, 0, 0]}
+              maxBarSize={14}
+              fill="var(--color-positive)"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onClick={(data: any) => {
+                const dateStr = (data as { date: string }).date;
+                const el = document.getElementById(`day-${dateStr}`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              style={{ cursor: "pointer" }}
+            />
+            <Bar
+              dataKey="expenses"
+              name="expenses"
+              radius={[2, 2, 0, 0]}
+              maxBarSize={14}
+              fill="var(--color-negative)"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onClick={(data: any) => {
+                const dateStr = (data as { date: string }).date;
+                const el = document.getElementById(`day-${dateStr}`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              style={{ cursor: "pointer" }}
+            />
+          </BarChart>
+        </ResponsiveContainer> : null}
+        </div>
+      </div>
+    );
+  }
+
+  function renderCalendarView() {
+    return (
+      <div className="glass rounded-[16px] p-3">
+        {/* Month navigator */}
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
+            disabled={!canPrev}
+            className="flex items-center justify-center w-7 h-7 rounded-full transition-opacity active:opacity-60 disabled:opacity-20"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <p
+            className="text-[11px] font-semibold"
+            style={{ color: "var(--text-secondary)" }}
+            suppressHydrationWarning
+          >
+            {formatMonthLabelLocale(currentMonth, locale)}
+          </p>
+          <button
+            onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
+            disabled={!canNext}
+            className="flex items-center justify-center w-7 h-7 rounded-full transition-opacity active:opacity-60 disabled:opacity-20"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Weekday headers — i18n */}
+        <div className="grid grid-cols-7 mb-1">
+          {WEEKDAY_KEYS.map((key) => (
+            <div
+              key={key}
+              className="text-center text-[9px] font-medium py-0.5"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              {t(`daily.weekdays.${key}`)}
+            </div>
+          ))}
+        </div>
+
+        {/* Day cells */}
+        <div className="grid grid-cols-7 gap-x-0.5 gap-y-1">
+          {calDays.map((day) => {
+            const dateStr = format(day, "yyyy-MM-dd");
+            const inMonth = isSameMonth(day, currentMonth);
+            const summary = summaryMap.get(dateStr);
+
+            return (
+              <div
+                key={dateStr}
+                className="flex flex-col p-1 rounded-[4px]"
+                style={{
+                  minHeight: 44,
+                  opacity: inMonth ? 1 : 0.2,
+                  background: summary ? "var(--bg-secondary)" : "transparent",
+                }}
+              >
+                <span
+                  className="text-[9px] font-semibold leading-none mb-0.5"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {format(day, "d")}
+                </span>
+
+                {summary && summary.income > 0 && (
+                  <span
+                    className="text-[9px] font-medium leading-tight tabular-nums"
+                    style={{ color: "var(--color-positive)" }}
+                    suppressHydrationWarning
+                  >
+                    +{abbr(summary.income)}
+                  </span>
+                )}
+
+                {summary && summary.expenses > 0 && (
+                  <span
+                    className="text-[9px] font-medium leading-tight tabular-nums"
+                    style={{ color: "var(--color-negative)" }}
+                    suppressHydrationWarning
+                  >
+                    -{abbr(summary.expenses)}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  function renderViewContent() {
+    if (summaries.length === 0) {
+      return (
+        <p className="text-[11px] text-center py-4" style={{ color: "var(--text-tertiary)" }}>
+          {t("daily.noData")}
+        </p>
+      );
+    }
+    if (view === "list") return renderListView();
+    if (view === "chart") return renderChartView();
+    return renderCalendarView();
+  }
+
   return (
     <div className="space-y-3">
       {/* Header + controls */}
@@ -259,206 +473,7 @@ export function DailySummarySection({
         </div>
       </div>
 
-      {summaries.length === 0 ? (
-        <p className="text-[11px] text-center py-4" style={{ color: "var(--text-tertiary)" }}>
-          {t("daily.noData")}
-        </p>
-      ) : view === "list" ? (
-        /* ── List View ── */
-        <div className="glass rounded-[16px] overflow-hidden">
-          {summaries.map((day, idx) => (
-            <div key={day.date}>
-              {idx > 0 && (
-                <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
-              )}
-              <div className="flex items-center justify-between px-4 py-2.5">
-                <span
-                  className="text-[11px] font-medium"
-                  style={{ color: "var(--text-primary)" }}
-                  suppressHydrationWarning
-                >
-                  {formatDisplayDateLocale(day.date, locale)}
-                </span>
-                <div className="flex items-center gap-3">
-                  {day.income > 0 && (
-                    <span
-                      className="text-[10px] font-semibold tabular-nums"
-                      style={{ color: "var(--color-positive)" }}
-                      suppressHydrationWarning
-                    >
-                      +{formatIDR(day.income)}
-                    </span>
-                  )}
-                  {day.expenses > 0 && (
-                    <span
-                      className="text-[10px] font-semibold tabular-nums"
-                      style={{ color: "var(--color-negative)" }}
-                      suppressHydrationWarning
-                    >
-                      -{formatIDR(day.expenses)}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : view === "chart" ? (
-        /* ── Chart View (E1) ── */
-        <div className="glass rounded-[16px] px-2 pt-3 pb-4">
-          <div style={{ width: "100%", height: 160, minWidth: 0 }}>
-          {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
-            <BarChart
-              data={chartData}
-              barGap={2}
-              barCategoryGap="20%"
-              margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
-            >
-              <YAxis
-                tickFormatter={fmtY}
-                tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
-                axisLine={false}
-                tickLine={false}
-                width={30}
-                tickCount={4}
-              />
-              <XAxis
-                dataKey="label"
-                tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip
-                content={<DailyBarTooltip />}
-                cursor={{ fill: "rgba(0,0,0,0.04)" }}
-              />
-              <Bar
-                dataKey="income"
-                name="income"
-                radius={[2, 2, 0, 0]}
-                maxBarSize={14}
-                fill="var(--color-positive)"
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onClick={(data: any) => {
-                  const dateStr = (data as { date: string }).date;
-                  const el = document.getElementById(`day-${dateStr}`);
-                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                style={{ cursor: "pointer" }}
-              />
-              <Bar
-                dataKey="expenses"
-                name="expenses"
-                radius={[2, 2, 0, 0]}
-                maxBarSize={14}
-                fill="var(--color-negative)"
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onClick={(data: any) => {
-                  const dateStr = (data as { date: string }).date;
-                  const el = document.getElementById(`day-${dateStr}`);
-                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                style={{ cursor: "pointer" }}
-              />
-            </BarChart>
-          </ResponsiveContainer> : null}
-          </div>
-        </div>
-      ) : (
-        /* ── Calendar View ── */
-        <div className="glass rounded-[16px] p-3">
-          {/* Month navigator */}
-          <div className="flex items-center justify-between mb-2">
-            <button
-              onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
-              disabled={!canPrev}
-              className="flex items-center justify-center w-7 h-7 rounded-full transition-opacity active:opacity-60 disabled:opacity-20"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <p
-              className="text-[11px] font-semibold"
-              style={{ color: "var(--text-secondary)" }}
-              suppressHydrationWarning
-            >
-              {formatMonthLabelLocale(currentMonth, locale)}
-            </p>
-            <button
-              onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
-              disabled={!canNext}
-              className="flex items-center justify-center w-7 h-7 rounded-full transition-opacity active:opacity-60 disabled:opacity-20"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Weekday headers — i18n */}
-          <div className="grid grid-cols-7 mb-1">
-            {WEEKDAY_KEYS.map((key) => (
-              <div
-                key={key}
-                className="text-center text-[9px] font-medium py-0.5"
-                style={{ color: "var(--text-tertiary)" }}
-              >
-                {t(`daily.weekdays.${key}`)}
-              </div>
-            ))}
-          </div>
-
-          {/* Day cells */}
-          <div className="grid grid-cols-7 gap-x-0.5 gap-y-1">
-            {calDays.map((day) => {
-              const dateStr = format(day, "yyyy-MM-dd");
-              const inMonth = isSameMonth(day, currentMonth);
-              const summary = summaryMap.get(dateStr);
-
-              return (
-                <div
-                  key={dateStr}
-                  className="flex flex-col p-1 rounded-[4px]"
-                  style={{
-                    minHeight: 44,
-                    opacity: inMonth ? 1 : 0.2,
-                    background: summary ? "var(--bg-secondary)" : "transparent",
-                  }}
-                >
-                  {/* Date number — top left */}
-                  <span
-                    className="text-[9px] font-semibold leading-none mb-0.5"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {format(day, "d")}
-                  </span>
-
-                  {/* Income */}
-                  {summary && summary.income > 0 && (
-                    <span
-                      className="text-[9px] font-medium leading-tight tabular-nums"
-                      style={{ color: "var(--color-positive)" }}
-                      suppressHydrationWarning
-                    >
-                      +{abbr(summary.income)}
-                    </span>
-                  )}
-
-                  {/* Expense */}
-                  {summary && summary.expenses > 0 && (
-                    <span
-                      className="text-[9px] font-medium leading-tight tabular-nums"
-                      style={{ color: "var(--color-negative)" }}
-                      suppressHydrationWarning
-                    >
-                      -{abbr(summary.expenses)}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {renderViewContent()}
     </div>
   );
 }

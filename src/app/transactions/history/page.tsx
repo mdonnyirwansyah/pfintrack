@@ -388,6 +388,12 @@ export default function TransactionHistoryPage() {
                   setActiveField("from");
                   if (draftFromDate) setCalendarMonth(draftFromDate);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setActiveField("from");
+                    if (draftFromDate) setCalendarMonth(draftFromDate);
+                  }
+                }}
               >
                 <span
                   className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"
@@ -425,6 +431,12 @@ export default function TransactionHistoryPage() {
                 onClick={() => {
                   setActiveField("to");
                   if (draftToDate) setCalendarMonth(draftToDate);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setActiveField("to");
+                    if (draftToDate) setCalendarMonth(draftToDate);
+                  }
                 }}
               >
                 <span

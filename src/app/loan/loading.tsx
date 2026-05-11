@@ -7,7 +7,7 @@ export default function LoanLoading() {
       <div className="glass rounded-[16px] overflow-hidden mb-4" style={{ minHeight: 64 }}>
         <div className="flex">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center py-3 px-1 gap-1.5">
+            <div key={`skeleton-${i}`} className="flex-1 flex flex-col items-center py-3 px-1 gap-1.5">
               <Skeleton className="h-2.5 w-12 rounded" />
               <Skeleton className="h-3.5 w-16 rounded" />
             </div>
@@ -18,7 +18,7 @@ export default function LoanLoading() {
       {/* Counterparty list items */}
       <div className="space-y-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="glass rounded-[16px] px-4 flex items-center gap-2.5" style={{ minHeight: 56 }}>
+          <div key={`skeleton-${i}`} className="glass rounded-[16px] px-4 flex items-center gap-2.5" style={{ minHeight: 56 }}>
             <Skeleton className="flex-shrink-0 w-9 h-9 rounded-[10px]" />
             <div className="flex-1 space-y-1.5">
               <Skeleton className="h-3 w-24 rounded" />

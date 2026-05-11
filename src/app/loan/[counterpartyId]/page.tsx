@@ -304,8 +304,14 @@ export default function LoanDetailPage({
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.5)" }}
+          role="button"
+          tabIndex={0}
+          aria-label="Close dialog"
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsEditNameOpen(false);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setIsEditNameOpen(false);
           }}
         >
           <div

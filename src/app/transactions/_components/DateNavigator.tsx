@@ -126,7 +126,11 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
             {/* Backdrop */}
             <div
               className="fixed inset-0 z-40"
+              role="button"
+              tabIndex={0}
+              aria-label="Close calendar"
               onClick={() => setIsOpen(false)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsOpen(false); }}
             />
 
             {/* Popup */}
@@ -181,9 +185,9 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
 
               {/* Weekday headers */}
               <div className="grid grid-cols-7 mb-1">
-                {weekdays.map((d) => (
+                {weekdays.map((d, i) => (
                   <div
-                    key={d}
+                    key={i}
                     className="text-center text-[10px] font-medium py-1"
                     style={{ color: "var(--text-tertiary)" }}
                   >

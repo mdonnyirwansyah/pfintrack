@@ -73,7 +73,7 @@ function ReportDetailContent() {
 
   // Transaction type filter — follows donut mode default
   const [txFilter, setTxFilter] = useState<TxFilter>(
-    categoryParam ? "expense" : "expense"
+    categoryParam ? "expense" : "all"
   );
 
   // Category breakdown — respects donutMode

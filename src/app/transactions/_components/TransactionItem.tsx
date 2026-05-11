@@ -18,6 +18,45 @@ interface TransactionItemProps {
   onConfirmDelete?: (id: string) => void;
 }
 
+function getIconBackground(isIncome: boolean, isExpense: boolean): string {
+  if (isIncome) return "var(--color-positive-soft)";
+  if (isExpense) return "var(--color-negative-soft)";
+  return "var(--bg-secondary)";
+}
+
+function getTitle(
+  isTransfer: boolean,
+  isBalanceCorrection: boolean,
+  walletName: string | undefined,
+  destWalletName: string | undefined,
+  title: string | null | undefined,
+  category: string | null | undefined,
+  balanceCorrectionLabel: string
+): string {
+  if (isTransfer) return `${walletName ?? "?"} → ${destWalletName ?? "?"}`;
+  if (isBalanceCorrection) return balanceCorrectionLabel;
+  return title ?? category ?? "-";
+}
+
+function getSubtitle(
+  isTransfer: boolean,
+  description: string | null | undefined,
+  category: string | null | undefined
+): string {
+  if (isTransfer) return description ?? "Transfer";
+  return (category ?? "") + (description ? ` • ${description}` : "");
+}
+
+function getDateTimeLabel(
+  showDate: boolean,
+  date: string,
+  time: string,
+  locale: string
+): string {
+  if (showDate) return `${formatDisplayDate(date, locale)} · ${time}`;
+  return time;
+}
+
 export const TransactionItem = memo(function TransactionItem({ transaction, wallets, showDate = false, onConfirmDelete }: TransactionItemProps) {
   const router = useRouter();
   const t = useTranslations("transactions");
@@ -45,6 +84,22 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
 
   const amountPrefix = isIncome ? "+ " : isExpense ? "- " : "";
 
+  const iconBg = getIconBackground(isIncome, isExpense);
+  const iconBorder = isTransfer ? "1px solid var(--border-default)" : "none";
+
+  const titleLabel = getTitle(
+    isTransfer,
+    isBalanceCorrection,
+    wallet?.name,
+    destWallet?.name,
+    transaction.title,
+    transaction.category,
+    t("filter.balanceCorrection")
+  );
+
+  const subtitleLabel = getSubtitle(isTransfer, transaction.description, transaction.category);
+  const dateTimeLabel = getDateTimeLabel(showDate, transaction.transaction_date, transaction.transaction_time, locale);
+
   const longPressHandlers = useLongPress({
     onLongPress: () => {
       if (onConfirmDelete) setShowDeleteDialog(true);
@@ -62,14 +117,7 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
         {/* Icon */}
         <div
           className="flex-shrink-0 w-9 h-9 rounded-[10px] flex items-center justify-center"
-          style={{
-            background: isIncome
-              ? "var(--color-positive-soft)"
-              : isExpense
-              ? "var(--color-negative-soft)"
-              : "var(--bg-secondary)",
-            border: isTransfer ? "1px solid var(--border-default)" : "none",
-          }}
+          style={{ background: iconBg, border: iconBorder }}
         >
           {isTransfer ? (
             <ArrowRightLeft
@@ -90,11 +138,7 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
               className="text-[10px] font-semibold truncate"
               style={{ color: "var(--text-primary)" }}
             >
-              {isTransfer
-                ? `${wallet?.name ?? "?"} → ${destWallet?.name ?? "?"}`
-                : isBalanceCorrection
-                  ? t("filter.balanceCorrection")
-                  : (transaction.title ?? transaction.category ?? "-")}
+              {titleLabel}
             </span>
             <span
               className="text-[10px] font-semibold flex-shrink-0 tabular-nums"
@@ -123,9 +167,7 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
                 className="text-[9px] flex-shrink-0"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                {showDate
-                  ? `${formatDisplayDate(transaction.transaction_date, locale)} · ${transaction.transaction_time}`
-                  : transaction.transaction_time}
+                {dateTimeLabel}
               </span>
             </div>
           ) : (
@@ -135,17 +177,13 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
                   className="text-[9px] truncate"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  {isTransfer
-                    ? (transaction.description ?? "Transfer")
-                    : (transaction.category ?? "") + (transaction.description ? ` • ${transaction.description}` : "")}
+                  {subtitleLabel}
                 </span>
                 <span
                   className="text-[9px] flex-shrink-0"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  {showDate
-                    ? `${formatDisplayDate(transaction.transaction_date, locale)} · ${transaction.transaction_time}`
-                    : transaction.transaction_time}
+                  {dateTimeLabel}
                 </span>
               </div>
               {!isTransfer && wallet && (

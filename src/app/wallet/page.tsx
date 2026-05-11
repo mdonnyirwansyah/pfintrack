@@ -64,6 +64,63 @@ export default function WalletPage() {
 
   const activeWallets = wallets.filter((w) => w.is_active);
 
+  function renderSortFilterBar() {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-between mb-3">
+          <Skeleton className="h-[29px] w-28 rounded-full" />
+          <Skeleton className="h-[29px] w-28 rounded-full" />
+        </div>
+      );
+    }
+    if (activeWallets.length > 0) {
+      return (
+        <div className="flex items-center justify-between mb-3">
+          {/* Filter type — left */}
+          <div className="relative flex items-center">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value as WalletType | "all")}
+              style={selectStyle}
+            >
+              <option value="all">{t("filterType.all")}</option>
+              {WALLET_TYPES.map((type) => (
+                <option key={type} value={type}>{t(`types.${type}`)}</option>
+              ))}
+            </select>
+            <ChevronDown
+              className="absolute right-2 w-3 h-3 pointer-events-none"
+              style={{ color: "var(--text-secondary)" }}
+            />
+          </div>
+
+          {/* Sort — right */}
+          <div className="relative flex items-center">
+            <ArrowUpDown
+              className="absolute left-2.5 w-3 h-3 pointer-events-none"
+              style={{ color: "var(--text-secondary)" }}
+            />
+            <select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as SortKey)}
+              style={{ ...selectStyle, paddingLeft: 24 }}
+            >
+              <option value="name_asc">{t("sort.nameAsc")}</option>
+              <option value="name_desc">{t("sort.nameDesc")}</option>
+              <option value="balance_desc">{t("sort.balanceDesc")}</option>
+              <option value="balance_asc">{t("sort.balanceAsc")}</option>
+            </select>
+            <ChevronDown
+              className="absolute right-2 w-3 h-3 pointer-events-none"
+              style={{ color: "var(--text-secondary)" }}
+            />
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
+
   return (
     <>
       <AppHeader title={t("title")} />
@@ -87,60 +144,13 @@ export default function WalletPage() {
         </div>
 
         {/* Sort + Filter bar */}
-        {isLoading ? (
-          <div className="flex items-center justify-between mb-3">
-            <Skeleton className="h-[29px] w-28 rounded-full" />
-            <Skeleton className="h-[29px] w-28 rounded-full" />
-          </div>
-        ) : activeWallets.length > 0 ? (
-          <div className="flex items-center justify-between mb-3">
-            {/* Filter type — left */}
-            <div className="relative flex items-center">
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as WalletType | "all")}
-                style={selectStyle}
-              >
-                <option value="all">{t("filterType.all")}</option>
-                {WALLET_TYPES.map((type) => (
-                  <option key={type} value={type}>{t(`types.${type}`)}</option>
-                ))}
-              </select>
-              <ChevronDown
-                className="absolute right-2 w-3 h-3 pointer-events-none"
-                style={{ color: "var(--text-secondary)" }}
-              />
-            </div>
-
-            {/* Sort — right */}
-            <div className="relative flex items-center">
-              <ArrowUpDown
-                className="absolute left-2.5 w-3 h-3 pointer-events-none"
-                style={{ color: "var(--text-secondary)" }}
-              />
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as SortKey)}
-                style={{ ...selectStyle, paddingLeft: 24 }}
-              >
-                <option value="name_asc">{t("sort.nameAsc")}</option>
-                <option value="name_desc">{t("sort.nameDesc")}</option>
-                <option value="balance_desc">{t("sort.balanceDesc")}</option>
-                <option value="balance_asc">{t("sort.balanceAsc")}</option>
-              </select>
-              <ChevronDown
-                className="absolute right-2 w-3 h-3 pointer-events-none"
-                style={{ color: "var(--text-secondary)" }}
-              />
-            </div>
-          </div>
-        ) : null}
+        {renderSortFilterBar()}
 
         {/* Loading skeletons — card list */}
         {isLoading && (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-[56px] w-full rounded-[16px]" />
+              <Skeleton key={`skeleton-${i}`} className="h-[56px] w-full rounded-[16px]" />
             ))}
           </div>
         )}

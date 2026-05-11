@@ -11,7 +11,7 @@ export function ColorThemeProvider({ children }: ColorThemeProviderProps): React
   const { colorTheme } = useColorTheme();
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-color-theme", colorTheme);
+    document.documentElement.dataset.colorTheme = colorTheme;
   }, [colorTheme]);
 
   return <>{children}</>;

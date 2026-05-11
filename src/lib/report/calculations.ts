@@ -239,7 +239,7 @@ export function generateMonthList(
   const active = transactions.filter((t) => t.is_active);
   if (active.length === 0) return [];
 
-  const dates = active.map((t) => t.transaction_date).sort();
+  const dates = active.map((t) => t.transaction_date).sort((a, b) => a.localeCompare(b));
   const minDate = dates[0];
   const maxDate = dates[dates.length - 1];
 

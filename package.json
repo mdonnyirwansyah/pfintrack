@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sonar": "sonar-scanner"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -42,6 +43,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "sonarqube-scanner": "^4.3.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

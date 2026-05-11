@@ -22,7 +22,7 @@ export function useColorTheme(): {
   const setColorTheme = useCallback((theme: ColorTheme) => {
     localStorage.setItem(STORAGE_KEY, theme);
     setColorThemeState(theme);
-    document.documentElement.setAttribute("data-color-theme", theme);
+    document.documentElement.dataset.colorTheme = theme;
   }, []);
 
   return { colorTheme, setColorTheme };
