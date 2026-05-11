@@ -71,6 +71,7 @@ implementasi MVP-nya sesuai roadmap di section 8."
 |---|---|---|---|---|---|
 | [PROP-0001](./PROP-0001-migration-localstorage-to-indexeddb.md) | Migrate Storage Layer: localStorage → IndexedDB | Draft | Cross-cutting | L | 2026-05-06 |
 | [PROP-0002](./PROP-0002-report-module-enhancements.md) | Report Module Enhancements — Analisa Keuangan Lebih Dalam | Draft | Report | L | 2026-05-07 |
+| [PROP-0003](./PROP-0003-report-visibility-settings.md) | Report Visibility Settings | Draft | Report, Settings | S | 2026-05-11 |
 
 > Saat agent membuat proposal baru, **wajib update tabel ini** sebagai bagian dari output.
 

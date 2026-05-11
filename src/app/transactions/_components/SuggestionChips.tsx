@@ -9,13 +9,13 @@ export function TitleSuggestionChips({ suggestions, onSelect }: TitleChipsProps)
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2 mt-2">
+    <div className="flex flex-wrap gap-1.5 mt-2">
       {suggestions.map((s, i) => (
         <button
           key={i}
           type="button"
           onClick={() => onSelect(s.title, s.category)}
-          className="px-3 py-1.5 min-h-[44px] rounded-full text-[11px] font-medium active:opacity-70 transition-opacity"
+          className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium active:opacity-70 transition-opacity"
           style={{
             background: "var(--color-brand-soft)",
             color: "var(--color-brand)",
@@ -38,13 +38,13 @@ export function CategorySuggestionChips({ suggestions, onSelect }: CategoryChips
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2 mt-2">
+    <div className="flex flex-wrap gap-1.5 mt-2">
       {suggestions.map((cat, i) => (
         <button
           key={i}
           type="button"
           onClick={() => onSelect(cat)}
-          className="px-3 py-1.5 min-h-[44px] rounded-full text-[11px] font-medium active:opacity-70 transition-opacity"
+          className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium active:opacity-70 transition-opacity"
           style={{
             background: "var(--color-brand-soft)",
             color: "var(--color-brand)",

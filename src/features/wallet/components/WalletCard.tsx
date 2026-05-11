@@ -38,7 +38,7 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
     >
       {/* Icon */}
       <div
-        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+        className="flex-shrink-0 w-9 h-9 rounded-[10px] flex items-center justify-center"
         style={{ backgroundColor: "var(--color-brand-soft)" }}
       >
         <Icon className="w-4 h-4" style={{ color: "var(--color-brand)" }} strokeWidth={1.5} />

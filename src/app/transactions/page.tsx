@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback, useMemo } from "react";
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -58,11 +58,12 @@ function TransactionsContent() {
     void loadWallets();
   }, [loadTransactions, loadWallets]);
 
-  const rawDailyTransactions = selectByDate(transactions, activeDate)
-    .filter((tx) => !pendingDeletes.has(tx.id));
-  const summary = computeDailySummary(rawDailyTransactions);
-
-  const dailyTransactions = applySortKey(rawDailyTransactions, sortKey);
+  const rawDailyTransactions = useMemo(
+    () => selectByDate(transactions, activeDate).filter((tx) => !pendingDeletes.has(tx.id)),
+    [transactions, activeDate, pendingDeletes],
+  );
+  const summary = useMemo(() => computeDailySummary(rawDailyTransactions), [rawDailyTransactions]);
+  const dailyTransactions = useMemo(() => applySortKey(rawDailyTransactions, sortKey), [rawDailyTransactions, sortKey]);
 
   const handleConfirmDelete = useCallback((id: string) => {
     // Hide immediately from UI

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Calculator } from "lucide-react";
+import { Calculator, AlertTriangle } from "lucide-react";
 import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
@@ -76,6 +76,12 @@ export function TransferForm({
 
   const sourceWallet = wallets.find((w) => w.id === form.source_wallet_id) ?? null;
   const destWallet = wallets.find((w) => w.id === form.destination_wallet_id) ?? null;
+  const parsedAmount = parseIDR(form.amount) || 0;
+  const originalAmount = isEditMode ? (parseIDR(initialValues?.amount ?? "0") || 0) : 0;
+  const insufficientBalance =
+    sourceWallet !== null &&
+    parsedAmount > 0 &&
+    parsedAmount > sourceWallet.balance + originalAmount;
 
   // Filter wallets to exclude the other selection
   const sourceWallets = wallets.filter(
@@ -201,12 +207,12 @@ export function TransferForm({
           <span style={{ color: sourceWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
             {sourceWallet ? sourceWallet.name : t("form.selectSourceWallet")}
           </span>
-          {sourceWallet && (
-            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-              {formatIDR(sourceWallet.balance)}
-            </span>
-          )}
         </button>
+        {sourceWallet && (
+          <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+            {t("form.balance")}: {formatIDR(sourceWallet.balance)}
+          </p>
+        )}
         {errors.source_wallet_id && (
           <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.source_wallet_id}
@@ -231,12 +237,12 @@ export function TransferForm({
           <span style={{ color: destWallet ? "var(--text-primary)" : "var(--text-tertiary)" }}>
             {destWallet ? destWallet.name : t("form.selectDestWallet")}
           </span>
-          {destWallet && (
-            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-              {formatIDR(destWallet.balance)}
-            </span>
-          )}
         </button>
+        {destWallet && (
+          <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+            {t("form.balance")}: {formatIDR(destWallet.balance)}
+          </p>
+        )}
         {errors.destination_wallet_id && (
           <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.destination_wallet_id}
@@ -304,9 +310,8 @@ export function TransferForm({
                   set("amount", newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
                 }
               }}
-              className="px-3 rounded-full text-[11px] font-semibold transition-opacity active:opacity-60"
+              className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"
               style={{
-                minHeight: 28,
                 background: "var(--bg-secondary)",
                 color: "var(--text-secondary)",
                 border: "1px solid var(--border-default)",
@@ -316,6 +321,14 @@ export function TransferForm({
             </button>
           ))}
         </div>
+        {insufficientBalance && !errors.amount && (
+          <div className="flex items-center gap-1.5 mt-1">
+            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--color-accent-warm)" }} />
+            <p className="text-[11px]" style={{ color: "var(--color-accent-warm)" }}>
+              {t("form.insufficientBalance")}
+            </p>
+          </div>
+        )}
         {errors.amount && (
           <p className="mt-1 text-[11px]" style={{ color: "var(--color-negative)" }}>
             {errors.amount}

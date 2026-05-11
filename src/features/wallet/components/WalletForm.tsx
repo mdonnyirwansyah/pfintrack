@@ -271,9 +271,8 @@ export function WalletForm({
                   setBalance(newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
                 }
               }}
-              className="px-3 rounded-full text-[11px] font-semibold transition-opacity active:opacity-60"
+              className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"
               style={{
-                minHeight: 28,
                 background: "var(--bg-secondary)",
                 color: "var(--text-secondary)",
                 border: "1px solid var(--border-default)",

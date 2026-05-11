@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Transaction } from "@/lib/types/transaction";
 import type { Wallet } from "@/lib/types/wallet";
@@ -18,7 +18,7 @@ interface TransactionItemProps {
   onConfirmDelete?: (id: string) => void;
 }
 
-export function TransactionItem({ transaction, wallets, showDate = false, onConfirmDelete }: TransactionItemProps) {
+export const TransactionItem = memo(function TransactionItem({ transaction, wallets, showDate = false, onConfirmDelete }: TransactionItemProps) {
   const router = useRouter();
   const t = useTranslations("transactions");
   const tc = useTranslations("common");
@@ -61,7 +61,7 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
       >
         {/* Icon */}
         <div
-          className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+          className="flex-shrink-0 w-9 h-9 rounded-[10px] flex items-center justify-center"
           style={{
             background: isIncome
               ? "var(--color-positive-soft)"
@@ -110,7 +110,7 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
             <div className="flex items-center justify-between gap-2 mt-0.5">
               {wallet ? (
                 <span
-                  className="text-[10px] px-2 py-0.5 rounded-full"
+                  className="text-[10px] px-2 py-0.5 rounded-[6px]"
                   style={{
                     background: "var(--color-brand-soft)",
                     color: "var(--color-brand)",
@@ -151,7 +151,7 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
               {!isTransfer && wallet && (
                 <div className="mt-0.5">
                   <span
-                    className="text-[10px] px-2 py-0.5 rounded-full"
+                    className="text-[10px] px-2 py-0.5 rounded-[6px]"
                     style={{
                       background: "var(--color-brand-soft)",
                       color: "var(--color-brand)",
@@ -181,4 +181,4 @@ export function TransactionItem({ transaction, wallets, showDate = false, onConf
       />
     </>
   );
-}
+});
