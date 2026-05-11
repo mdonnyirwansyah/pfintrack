@@ -55,7 +55,7 @@ export const useAppStore = create<AppStore>()(
         set((s) => ({
           reportVisibility: Object.fromEntries(
             Object.keys(s.reportVisibility).map((k) => [k, value])
-          ) as ReportVisibility,
+          ) as unknown as ReportVisibility,
         })),
     }),
     {
