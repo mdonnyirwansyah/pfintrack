@@ -74,6 +74,7 @@ export default function ReportPage() {
             background: "var(--bg-secondary)",
             boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), inset 0 0.5px 1px rgba(0,0,0,0.04)",
           }}
+          data-tour="report-period-tabs"
         >
           {TABS.map(({ id, label }) => (
             <button

@@ -7,9 +7,10 @@ interface FABProps {
   onClick: () => void;
   className?: string;
   "aria-label"?: string;
+  "data-tour"?: string;
 }
 
-export function FAB({ onClick, className, "aria-label": ariaLabel = "Add" }: FABProps) {
+export function FAB({ onClick, className, "aria-label": ariaLabel = "Add", "data-tour": dataTour }: FABProps) {
   return (
     <button
       onClick={onClick}
@@ -26,6 +27,7 @@ export function FAB({ onClick, className, "aria-label": ariaLabel = "Add" }: FAB
         boxShadow: "var(--shadow-fab)",
       }}
       aria-label={ariaLabel}
+      {...(dataTour ? { "data-tour": dataTour } : {})}
     >
       <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
     </button>

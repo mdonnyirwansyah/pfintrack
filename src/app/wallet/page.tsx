@@ -77,7 +77,7 @@ export default function WalletPage() {
       return (
         <div className="flex items-center justify-between mb-3">
           {/* Filter type — left */}
-          <div className="relative flex items-center">
+          <div data-tour="wl-filter-type" className="relative flex items-center">
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as WalletType | "all")}
@@ -95,7 +95,7 @@ export default function WalletPage() {
           </div>
 
           {/* Sort — right */}
-          <div className="relative flex items-center">
+          <div data-tour="wl-sort" className="relative flex items-center">
             <ArrowUpDown
               className="absolute left-2.5 w-3 h-3 pointer-events-none"
               style={{ color: "var(--text-secondary)" }}
@@ -128,6 +128,7 @@ export default function WalletPage() {
       <div className="px-4 py-4">
         {/* Total Balance row */}
         <div
+          data-tour="wl-total-balance"
           className="glass rounded-[16px] px-4 mb-4 flex items-center justify-between"
           style={{ minHeight: 64 }}
         >
@@ -176,12 +177,13 @@ export default function WalletPage() {
         {/* Wallet list */}
         {!isLoading && displayedWallets.length > 0 && (
           <div className="space-y-3">
-            {displayedWallets.map((wallet) => (
-              <WalletCard
-                key={wallet.id}
-                wallet={wallet}
-                onPress={() => router.push(`/wallet/${wallet.id}`)}
-              />
+            {displayedWallets.map((wallet, idx) => (
+              <div key={wallet.id} {...(idx === 0 ? { "data-tour": "wallet-first-card" } : {})}>
+                <WalletCard
+                  wallet={wallet}
+                  onPress={() => router.push(`/wallet/${wallet.id}`)}
+                />
+              </div>
             ))}
           </div>
         )}
@@ -190,6 +192,7 @@ export default function WalletPage() {
       <FAB
         onClick={() => router.push("/wallet/add")}
         aria-label="Add wallet"
+        data-tour="fab-wallet"
       />
     </>
   );

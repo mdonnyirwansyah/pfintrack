@@ -14,9 +14,10 @@ export interface FABSubAction {
 interface FABExpandableProps {
   actions: FABSubAction[];
   className?: string;
+  "data-tour"?: string;
 }
 
-export function FABExpandable({ actions, className }: FABExpandableProps) {
+export function FABExpandable({ actions, className, "data-tour": dataTour }: FABExpandableProps) {
   const [open, setOpen] = useState(false);
 
   const toggle = () => setOpen((prev) => !prev);
@@ -88,6 +89,7 @@ export function FABExpandable({ actions, className }: FABExpandableProps) {
         }}
         aria-label={open ? "Close actions" : "Add"}
         aria-expanded={open}
+        {...(dataTour ? { "data-tour": dataTour } : {})}
       >
         {open ? (
           <X className="w-6 h-6 text-white" strokeWidth={2.5} />

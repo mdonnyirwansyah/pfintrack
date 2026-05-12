@@ -13,11 +13,11 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 const NAV_TAB_DEFS = [
-  { key: "transactions" as const, href: "/transactions", icon: BookOpen, prefix: "/transactions" },
-  { key: "wallet" as const, href: "/wallet", icon: CreditCard, prefix: "/wallet" },
-  { key: "loan" as const, href: "/loan", icon: LayoutDashboard, prefix: "/loan" },
-  { key: "report" as const, href: "/report", icon: BarChart2, prefix: "/report" },
-  { key: "settings" as const, href: "/settings", icon: Settings, prefix: "/settings" },
+  { key: "transactions" as const, href: "/transactions", icon: BookOpen, prefix: "/transactions", tourAttr: "nav-tab-transactions" },
+  { key: "wallet" as const, href: "/wallet", icon: CreditCard, prefix: "/wallet", tourAttr: "nav-tab-wallet" },
+  { key: "loan" as const, href: "/loan", icon: LayoutDashboard, prefix: "/loan", tourAttr: "nav-tab-loan" },
+  { key: "report" as const, href: "/report", icon: BarChart2, prefix: "/report", tourAttr: "nav-tab-report" },
+  { key: "settings" as const, href: "/settings", icon: Settings, prefix: "/settings", tourAttr: undefined },
 ];
 
 export function BottomNav() {
@@ -34,7 +34,7 @@ export function BottomNav() {
       }}
     >
       <div className="flex items-center justify-around h-[var(--bottom-nav-height)]">
-        {NAV_TAB_DEFS.map(({ key, href, icon: Icon, prefix }) => {
+        {NAV_TAB_DEFS.map(({ key, href, icon: Icon, prefix, tourAttr }) => {
           const isActive = pathname.startsWith(prefix);
           const label = t(key);
 
@@ -48,6 +48,7 @@ export function BottomNav() {
               )}
               style={{ touchAction: "manipulation" }}
               aria-label={label}
+              {...(tourAttr ? { "data-tour": tourAttr } : {})}
             >
               <Icon
                 className="w-5 h-5"

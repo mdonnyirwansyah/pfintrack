@@ -10,6 +10,8 @@ import { AppProviders } from "@/components/shared/AppProviders";
 import { BottomNav } from "@/components/shared/BottomNav";
 import { DemoBanner } from "@/components/shared/DemoBanner";
 import { ColorThemeProvider } from "@/components/shared/ColorThemeProvider";
+import { ProductTour } from "@/components/shared/ProductTour";
+import { TourInitializer } from "@/components/shared/TourInitializer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -99,6 +101,8 @@ export default async function RootLayout({
                 {children}
               </main>
               <BottomNav />
+              <ProductTour />
+              <TourInitializer />
             </AppProviders>
           </NextIntlClientProvider>
           </ColorThemeProvider>

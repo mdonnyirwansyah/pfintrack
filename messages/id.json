@@ -83,11 +83,6 @@
       "confirmAction": "Ya, Hapus Semua",
       "confirmCancel": "Batal"
     },
-    "accentColor": {
-      "label": "Warna Aksen",
-      "blue": "Biru",
-      "pink": "Merah Muda"
-    },
     "report": {
       "title": "Laporan",
       "showSavingRateCard": "Kartu Saving Rate",
@@ -494,6 +489,40 @@
       "description": "Mulai catat keuanganmu dari nol, atau jelajahi fitur aplikasi dengan data sampel realistis terlebih dahulu.",
       "exploreButton": "Eksplorasi dengan Data Sampel",
       "startFreshButton": "Mulai dari Nol"
+    }
+  },
+  "tour": {
+    "skip": "Lewati",
+    "back": "Kembali",
+    "next": "Berikutnya",
+    "finish": "Selesai",
+    "skipTitle": "Lewati bagian {module}?",
+    "skipDescription": "Kamu belum membuka tab {module}. Lewati bagian ini dan lanjut ke modul berikutnya?",
+    "confirmSkip": "Ya, Lewati",
+    "backToTour": "Kembali ke Tour",
+    "steps": {
+      "tx1": "Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar wallet. Tap tab ini untuk memulai.",
+      "tx2": "Geser kiri/kanan atau tap panah untuk pindah tanggal. Tap tanggal untuk membuka kalender.",
+      "tx3": "Total pemasukan, pengeluaran, dan saldo hari ini ditampilkan di sini.",
+      "tx4": "Tap untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer.",
+      "tx5": "Tap tombol ini untuk mengubah urutan tampilan — berdasarkan tanggal atau nominal transaksi.",
+      "tx6": "Tap untuk mengekspor semua transaksi ke file Excel.",
+      "tx7": "Tap untuk melihat riwayat semua transaksi di semua tanggal.",
+      "wl1": "Wallet adalah rekening atau dompetmu. Semua transaksi terhubung ke wallet. Tap tab ini untuk melanjutkan.",
+      "wl2": "Kartu ini menampilkan total saldo dari semua walletmu.",
+      "wl3": "Filter wallet berdasarkan tipe — bank, e-wallet, tabungan, dan lainnya.",
+      "ln1": "Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Tap tab ini untuk melanjutkan.",
+      "ln2": "'Masuk': kamu berhutang ke orang atau orang melunasi piutangnya ke kamu. 'Keluar': kamu meminjamkan uang ke orang atau kamu melunasi hutangmu.",
+      "ln3": "Setiap orang atau entitas dikelompokkan di sini. Tap untuk melihat histori pinjaman mereka.",
+      "rp1": "Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Tap tab ini untuk melanjutkan.",
+      "rp2": "Lihat laporan per periode: realtime hari ini, bulanan, atau rentang tanggal kustom.",
+      "rp3": "Beralih antara tampilan Pengeluaran dan Pemasukan untuk melihat grafik breakdown masing-masing.",
+      "end": "Selesai! Kamu sudah mengenal fitur utama PFinTrack. Mulai catat keuanganmu sekarang.",
+      "wl5": "Tap untuk menambah wallet baru — rekening bank, tunai, GoPay, dan lainnya.",
+      "wl6": "Tap kartu wallet untuk melihat detail, edit saldo, atau riwayat transaksinya.",
+      "wl4": "Urutkan wallet berdasarkan nama atau saldo agar mudah ditemukan.",
+      "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Tap potongan untuk memfilter daftar di bawah.",
+      "rp5": "Tap untuk membuat laporan kustom dengan rentang tanggal tertentu."
     }
   }
 }

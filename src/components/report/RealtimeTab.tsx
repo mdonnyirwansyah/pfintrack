@@ -233,6 +233,7 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
       {reportVisibility.showDonutChart && (
         <>
           <div
+            data-tour="report-donut-mode"
             className="flex items-center rounded-full p-1 gap-1"
             style={{
               background: "var(--bg-secondary)",
@@ -274,12 +275,14 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
             />
           ) : (
             <>
+              <div data-tour="report-donut-chart">
               <DonutChart
                 data={breakdown}
                 onCategorySelect={handleCategorySelect}
                 selectedCategory={selectedCategory}
                 centerLabel={isIncomeMode ? t("donut.income") : undefined}
               />
+              </div>
 
               {/* Daily summary (list/calendar toggle) — only in expense mode to stay backward compatible */}
               {!isIncomeMode && (

@@ -20,6 +20,7 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   variant?: "destructive" | "default";
   onConfirm: () => void;
+  contentClassName?: string;
 }
 
 export function ConfirmDialog({
@@ -31,11 +32,12 @@ export function ConfirmDialog({
   cancelLabel = "Cancel",
   variant = "default",
   onConfirm,
+  contentClassName,
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
-        className="glass-strong rounded-[20px] w-[calc(100vw-2rem)]"
+        className={`glass-strong rounded-[20px] w-[calc(100vw-2rem)] ${contentClassName ?? ""}`}
         style={{ maxWidth: "340px" }}
       >
         <AlertDialogHeader>

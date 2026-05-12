@@ -172,6 +172,7 @@ function TransactionsContent() {
         actions={
           <div className="flex items-center gap-1">
             <button
+              data-tour="tx-export"
               onClick={handleExport}
               disabled={isExporting}
               className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity disabled:opacity-40"
@@ -185,6 +186,7 @@ function TransactionsContent() {
               <Download className="w-5 h-5" />
             </button>
             <button
+              data-tour="tx-history"
               onClick={() => router.push("/transactions/history")}
               className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
               style={{
@@ -202,19 +204,25 @@ function TransactionsContent() {
 
       <div className="pt-2 pb-24" {...swipeHandlers}>
         {/* Date navigator */}
-        <DateNavigator activeDate={activeDate} onDateChange={handleDateChange} />
+        <div data-tour="tx-date-nav">
+          <DateNavigator activeDate={activeDate} onDateChange={handleDateChange} />
+        </div>
 
         {/* Summary bar */}
-        <SummaryBar
-          income={summary.income}
-          expenses={summary.expenses}
-          balance={summary.balance}
-        />
+        <div data-tour="tx-summary">
+          <SummaryBar
+            income={summary.income}
+            expenses={summary.expenses}
+            balance={summary.balance}
+          />
+        </div>
 
         {/* Sort bar — only show when there are transactions */}
         {!isLoading && dailyTransactions.length > 0 && (
           <div className="px-4 mb-2 flex items-center justify-end">
-            <SortPill value={sortKey} onChange={setSortKey} />
+            <span data-tour="transactions-filter-bar">
+              <SortPill value={sortKey} onChange={setSortKey} />
+            </span>
           </div>
         )}
 
@@ -313,7 +321,7 @@ function TransactionsContent() {
         })()}
       </div>
 
-      <FABExpandable actions={fabActions} />
+      <FABExpandable actions={fabActions} data-tour="fab-transactions" />
     </>
   );
 }

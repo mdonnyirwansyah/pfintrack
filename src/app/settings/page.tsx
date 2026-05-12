@@ -2,7 +2,7 @@
 
 import { useTransition, useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff, ChartPie, ChevronRight, Palette } from "lucide-react";
+import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff, ChartPie, ChevronRight, Palette, BookOpen } from "lucide-react";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import type { ColorTheme } from "@/hooks/useColorTheme";
 import { AppHeader } from "@/components/shared/AppHeader";
@@ -11,6 +11,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setLocale } from "@/actions/setLocale";
 import { useAppStore } from "@/lib/stores/useAppStore";
+import { useTourStore } from "@/lib/stores/useTourStore";
 import { clearDemoData } from "@/lib/demo-data";
 import { exportBackup, importBackup, deleteAllData } from "@/lib/storage/backup";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
@@ -29,6 +30,7 @@ export default function SettingsPage() {
   const [isPending, startTransition] = useTransition();
   const showDecimals = useAppStore((s) => s.showDecimals);
   const setShowDecimals = useAppStore((s) => s.setShowDecimals);
+  const resetTour = useTourStore((s) => s.resetTour);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
   const [importConfirmOpen, setImportConfirmOpen] = useState(false);
@@ -524,6 +526,34 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
+          </button>
+        </div>
+
+        {/* ── Bantuan ── */}
+        <p
+          className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          Bantuan
+        </p>
+
+        <div className={sectionClass}>
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => resetTour()}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
+                style={{ background: "var(--bg-icon)" }}
+              >
+                <BookOpen className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                Lihat Tutorial
+              </span>
+            </div>
+            <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
           </button>
         </div>
 

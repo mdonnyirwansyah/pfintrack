@@ -142,7 +142,7 @@ export default function LoanPage() {
             );
           }
           return (
-            <div className="space-y-3">
+            <div className="space-y-3" data-tour="loan-counterparty-list">
               {sorted.map((cp) => (
                 <CounterpartyListItem
                   key={cp.id}
@@ -156,7 +156,7 @@ export default function LoanPage() {
         })()}
       </div>
 
-      <FABExpandable actions={fabActions} />
+      <FABExpandable actions={fabActions} data-tour="fab-loan" />
     </>
   );
 }

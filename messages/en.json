@@ -83,11 +83,6 @@
       "confirmAction": "Yes, Delete All",
       "confirmCancel": "Cancel"
     },
-    "accentColor": {
-      "label": "Accent Color",
-      "blue": "Blue",
-      "pink": "Pink"
-    },
     "report": {
       "title": "Report",
       "showSavingRateCard": "Saving Rate card",
@@ -494,6 +489,40 @@
       "description": "Start tracking your finances from scratch, or explore the app features with realistic sample data first.",
       "exploreButton": "Explore with Sample Data",
       "startFreshButton": "Start from Scratch"
+    }
+  },
+  "tour": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "skipTitle": "Skip {module} section?",
+    "skipDescription": "You haven't opened the {module} tab yet. Skip this section and continue to the next module?",
+    "confirmSkip": "Yes, Skip",
+    "backToTour": "Back to Tour",
+    "steps": {
+      "tx1": "All your financial records are here — income, expenses, and transfers between wallets. Tap this tab to get started.",
+      "tx2": "Swipe left/right or tap the arrows to navigate between dates. Tap the date to open the calendar.",
+      "tx3": "Today's total income, expenses, and balance are shown here.",
+      "tx4": "Tap to add a new transaction — choose Income, Expense, or Transfer.",
+      "tx5": "Tap to change the sort order — by date or transaction amount.",
+      "tx6": "Tap to export all transactions to an Excel file.",
+      "tx7": "Tap to view the full transaction history across all dates.",
+      "wl1": "Wallet is your account or cash wallet. All transactions are linked to a wallet. Tap this tab to continue.",
+      "wl2": "This card shows the total balance across all your wallets.",
+      "wl3": "Filter wallets by type — bank, e-wallet, savings, and more.",
+      "ln1": "Record your debts and receivables here — who owes you, or who you owe. Tap this tab to continue.",
+      "ln2": "'Get': you borrow from someone or someone repays their debt to you. 'Give': you lend money to someone or you pay off your debt.",
+      "ln3": "Every person or entity is grouped here. Tap to view their loan history.",
+      "rp1": "Your financial report is here — income, expenses, and balance summary. Tap this tab to continue.",
+      "rp2": "View reports by period: today realtime, monthly, or custom date range.",
+      "rp3": "Switch between Expense and Income view to see the breakdown chart for each.",
+      "end": "Done! You now know the main features of PFinTrack. Start recording your finances now.",
+      "wl5": "Tap to add a new wallet — bank account, cash, GoPay, and more.",
+      "wl6": "Tap a wallet card to view details, edit balance, or see its transaction history.",
+      "wl4": "Sort wallets by name or balance to find them quickly.",
+      "rp4": "This chart shows the distribution of your expenses or income by category. Tap a slice to filter the list below.",
+      "rp5": "Tap to create a custom report for a specific date range."
     }
   }
 }
