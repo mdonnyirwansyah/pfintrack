@@ -2,8 +2,8 @@
 ## Module: Wallet
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 5.1
-**Tanggal:** 2026-05-05
+**Versi Dokumen:** 5.2
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -25,7 +25,8 @@
 | **4.0** | **2026-05-01** | **Penambahan key `wallet_balance_history` untuk merekam perubahan balance wallet (mendukung fitur Balance Correction di Module Report). Dokumentasi flow Edit Wallet diperjelas: perbedaan antara perubahan via transaksi (otomatis) vs perubahan manual via edit form (memicu pencatatan history).** |
 | **4.1** | **2026-05-03** | **Update: Add Wallet dengan initial balance > 0 WAJIB dicatat ke `wallet_balance_history` (previous=0, new=balance). Ini memungkinkan Module Report menghitung Balance Correction sejak wallet pertama kali dibuat. Asumsi 10 & 11 direvisi.** |
 | **5.0** | **2026-05-04** | **Balance Correction Transaction Pattern: Add Wallet dengan initial balance > 0 kini membuat wallet dengan balance=0 terlebih dahulu, kemudian `applyTransactionToWallet` dari income transaction "Balance Correction" yang menetapkan balance aktual. Edit Wallet dengan balance berubah juga tidak lagi langsung menulis balance — melainkan membuat income/expense transaction "Balance Correction" yang menggeser balance via side-effect. Kedua kondisi tetap menulis ke `wallet_balance_history`. Transaction Balance Correction muncul di Transaction list seperti transaksi reguler dan dapat dihapus (rollback via `rollbackTransactionFromWallet`). Rename app ke PFinTrack.** |
-| **5.1** | **2026-05-05** | **Sync dengan implementasi: (1) `wallet_balance_history` schema ditambah `created_at` & `updated_at`. (2) `wallet_type` selector tersedia di Add & Edit (bukan hanya Edit). (3) Hapus Wallet diblokir jika wallet punya transaksi/loan aktif. (4) WalletCard layout diperbarui (card + icon + type label). (5) Edit Wallet screen sudah fully implemented. (6) Bottom Navigation 4 tab (tanpa Settings). (7) Pencatatan history dilakukan HANYA via `useWalletActions`, bukan via `useWalletStore`. (8) Dead code documented: `useWalletHistoryStore` & `WALLET_TYPES` constant tidak digunakan.** |
+| **5.1** | **2026-05-05** | **Sync dengan implementasi: (1) `wallet_balance_history` schema ditambah `created_at` & `updated_at`. (2) `wallet_type` selector tersedia di Add & Edit (bukan hanya Edit). (3) Hapus Wallet diblokir jika wallet punya transaksi/loan aktif. (4) WalletCard layout diperbarui (card + icon + type label). (5) Edit Wallet screen sudah fully implemented. (6) Bottom Navigation 5 tab (termasuk Settings). (7) Pencatatan history dilakukan HANYA via `useWalletActions`, bukan via `useWalletStore`. (8) Dead code documented: `useWalletHistoryStore` & `WALLET_TYPES` constant tidak digunakan.** |
+| **5.2** | **2026-05-13** | **Koreksi riwayat revisi v5.1: Bottom Navigation adalah 5 tab (termasuk Settings), bukan 4 tab — sesuai implementasi aktual `src/components/shared/BottomNav.tsx`. Tidak ada perubahan lain di modul ini.** |
 
 ---
 
@@ -599,5 +600,5 @@ Hasil:
 
 ---
 
-*— End of Technical Specification: Module Wallet (v5.1) —*
+*— End of Technical Specification: Module Wallet (v5.2) —*
 *Dokumen terkait: Module Transactions · Module Loan · Module Report · Global Architecture · Module Settings*

@@ -2,8 +2,8 @@
 ## Module: Report
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 2.0
-**Tanggal:** 2026-05-07
+**Versi Dokumen:** 2.1
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -13,7 +13,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **2.0** | **2026-05-07** | **Formalisasi PROP-0002: Gelombang 1 (B1 Saving Rate, C1 Income Donut Toggle, A1-beta 6-Month Bar Chart), Gelombang 2 (E1 Daily Bar Chart, C2 Net Worth Line Chart, B2 Insight Card), Gelombang 3 (A2 Category Trend, D1 Loan Aging). Tambah §11 Fitur Analitik Baru, update §1 Tab Realtime dan §2 flow, update §4 kalkulasi (calcCategoryBreakdown signature, savingRate, calcCategoryBreakdownIncome), update §6 route map, update §8 Catatan Developer. Tidak ada perubahan skema data atau localStorage key.** |
+| **2.1** | **2026-05-13** | **Sinkronisasi: (1) Asumsi #5 diperbarui: ikon ⚙️ di header Report sudah diimplementasikan — navigasi ke `/settings/report` (bukan "tidak diimplementasikan"). (2) Tidak ada perubahan skema data.** |
+| 2.0 | 2026-05-07 | Formalisasi PROP-0002: Gelombang 1 (B1 Saving Rate, C1 Income Donut Toggle, A1-beta 6-Month Bar Chart), Gelombang 2 (E1 Daily Bar Chart, C2 Net Worth Line Chart, B2 Insight Card), Gelombang 3 (A2 Category Trend, D1 Loan Aging). Tambah §11 Fitur Analitik Baru, update §1 Tab Realtime dan §2 flow, update §4 kalkulasi (calcCategoryBreakdown signature, savingRate, calcCategoryBreakdownIncome), update §6 route map, update §8 Catatan Developer. Tidak ada perubahan skema data atau localStorage key. |
 | 1.4 | 2026-05-05 | Tambah Known Implementation Issues (Bug 1: locale di Add Custom Report, Bug 2: hardcoded string di CustomReportSection). Sinkronisasi DailySummarySection: default mode Calendar, multi-month navigation, Sort pill hanya di mode List. |
 
 ---
@@ -1029,7 +1030,7 @@ Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows`
 | 2 | Donut chart max kategori | ✅ **Limit 8 + "Lainnya"** |
 | 3 | Tap kategori di legend | ✅ **In-place** — list transaksi diperbarui di bawah chart tanpa navigasi ke halaman lain |
 | 4 | Edit Custom Report + tombol Delete | ✅ Tombol Delete merah di bawah form, confirmation dialog |
-| 5 | Ikon ⚙️ di header Report | ⚠️ **Tidak diimplementasikan** — header Report hanya menampilkan judul tanpa ikon settings. Out of scope Fase 1. |
+| 5 | Ikon ⚙️ di header Report | ✅ **Diimplementasikan** — ikon ⚙️ di kanan header Report menavigasi ke `/settings/report` (halaman visibilitas komponen Report). Implementasi sesuai spec §1 Screen 1. |
 | 6 | Custom Report nama unik per anon_id | ✅ Case-insensitive unique |
 | 7 | Balance Correction dari edit balance wallet | ✅ Dari `wallet_balance_history`, key sudah didefinisikan di Module Wallet v4.0 |
 | 8 | Periode Realtime | ✅ **Bulan penuh** (1 - akhir bulan). Data natural hanya sampai hari ini |
@@ -1252,6 +1253,6 @@ Developer wajib menambahkan semua keys berikut ke `src/i18n/messages/en.json` da
 
 ---
 
-*— End of Technical Specification: Module Report (v2.0) —*
+*— End of Technical Specification: Module Report (v2.1) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Module Loan · Global Architecture · Module Settings*
 *PROP-0002 status: Formalized into spec on 2026-05-07, see §11 of tech-spec-module-report.md*

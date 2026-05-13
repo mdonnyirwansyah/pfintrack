@@ -2,10 +2,19 @@
 ## Module: Loan
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.3
-**Tanggal:** 2026-05-05
+**Versi Dokumen:** 1.4
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
+
+---
+
+## Riwayat Revisi
+
+| Versi | Tanggal | Perubahan Utama |
+|-------|---------|----------------|
+| **1.4** | **2026-05-13** | **Sinkronisasi codebase: (1) Tambah tabel Riwayat Revisi (sebelumnya tidak ada). (2) Tidak ada perubahan logika atau skema — modul Loan sudah konsisten dengan implementasi.** |
+| 1.3 | 2026-05-05 | Versi yang terdokumentasi terakhir. Mencakup Known Implementation Issues (Bug 1 Summary Bar terbalik, Bug 2 & 3 sudah FIXED). Terminologi Give/Get, Asumsi Wallet Wajib, Note Character Counter. |
 
 ---
 
@@ -749,5 +758,5 @@ const balanceColor =
 
 ---
 
-*— End of Technical Specification: Module Loan (v1.3) —*
+*— End of Technical Specification: Module Loan (v1.4) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Global Architecture · Module Report · Module Settings*

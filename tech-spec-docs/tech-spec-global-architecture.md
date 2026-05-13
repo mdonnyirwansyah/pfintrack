@@ -2,8 +2,8 @@
 ## Global Architecture
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.4
-**Tanggal:** 2026-05-07
+**Versi Dokumen:** 1.5
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -13,7 +13,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.4** | **2026-05-07** | **Tambah route `/report/category` di §2.2 Route Map sebagai bagian formalisasi PROP-0002 (Module Report v2.0).** |
+| **1.5** | **2026-05-13** | **Sinkronisasi codebase: (1) Tambah route `/settings/report` dan `/~offline` di §2.2. (2) Inventaris localStorage diperbarui: tambah key `pfintrack_color_theme`, `tour_completed`, `storage_version`; klarifikasi status `isDemoMode` sudah tidak di-persist via `app_state`. (3) §11 Settings diperbarui: tambah section Accent Color, Report Visibility, Data & Storage (backup/export/import/delete), Help (Lihat Tutorial). (4) §3 shared components diperbarui: tambah `SplashScreen`, `ColorThemeProvider`, `TourInitializer`, `ThemeToggle`, `TypeToConfirmDialog`. (5) §12 Daftar Dokumen diperbarui: tambah tech-spec-feature-product-tour.md dan tech-spec-migration-indexeddb.md.** |
+| 1.4 | 2026-05-07 | Tambah route `/report/category` di §2.2 Route Map sebagai bagian formalisasi PROP-0002 (Module Report v2.0). |
 | 1.3 | 2026-05-04 | Versi awal yang didokumentasikan. |
 
 ---
@@ -93,6 +94,9 @@
 | `/loan/add/give` | Loan | Form tambah Give |
 | `/loan/add/get` | Loan | Form tambah Get |
 | `/loan/[counterpartyId]/edit/[entryId]` | Loan | Edit single loan entry |
+| `/settings` | Settings | Pengaturan app (tab ke-5 Bottom Nav) |
+| **`/settings/report`** | **Settings** | **Halaman visibilitas komponen Report — toggle show/hide per komponen analitik (BARU di v1.5)** |
+| **`/~offline`** | **Global** | **Halaman offline fallback (PWA service worker) — tampil saat pengguna tidak ada koneksi dan request ke route yang tidak ter-cache (BARU di v1.5)** |
 
 ---
 
@@ -244,7 +248,7 @@ Fitur untuk pengguna baru yang ingin menjelajahi aplikasi tanpa harus input data
 | `clearDemoData()` | `src/lib/demo-data.ts` | Menghapus seluruh data finansial dari 6 key localStorage + reset flag + `window.location.reload()`. |
 | Settings action | `src/app/settings/page.tsx` | Section "Data Sampel" merah, hanya muncul saat `isDemoMode = true`. Tombol "Hapus Data Sampel" dengan confirm dialog. |
 
-**State:** `isDemoMode: boolean` disimpan di `useAppStore` (Zustand), di-persist ke `app_state` localStorage key.
+**State:** `isDemoMode` **tidak** di-persist via `useAppStore`. Status demo mode dibaca langsung dari key `pfintrack_demo_mode` di localStorage (`localStorage.getItem("pfintrack_demo_mode") === "true"`). `injectDemoData()` menulis key ini; `clearDemoData()` menghapusnya. Tidak ada Zustand store untuk isDemoMode.
 
 **Alur:**
 ```
@@ -255,13 +259,27 @@ App dibuka pertama kali (wallets=[], transactions=[])
 "Eksplorasi Data Sampel"   "Mulai dari Nol"
         ↓                      ↓
 injectDemoData()           Dismiss card
-setIsDemoMode(true)
+localStorage.setItem("pfintrack_demo_mode", "true")
 window.location.reload()
         ↓
 DemoBanner muncul di semua halaman
 ```
 
 **Clear demo data:** Bisa via DemoBanner → "Hapus & Mulai" atau Settings → "Hapus Data Sampel".
+
+---
+
+### 3.11 Komponen Shared Tambahan **(BARU di v1.5)**
+
+Komponen-komponen berikut ada di `src/components/shared/` namun belum terdokumentasi di spec sebelumnya:
+
+| Komponen | File | Deskripsi |
+|----------|------|-----------|
+| `SplashScreen` | `src/components/shared/SplashScreen.tsx` | Screen animasi splash yang dirender oleh `/` (root redirect) dan `/not-found`. Menampilkan logo/nama app sebelum redirect ke `/transactions`. |
+| `ColorThemeProvider` | `src/components/shared/ColorThemeProvider.tsx` | Provider yang membaca `colorTheme` dari `useColorTheme` hook dan menulis ke `document.documentElement.dataset.colorTheme`. Dipasang di `app/layout.tsx` membungkus seluruh app. |
+| `TourInitializer` | `src/components/shared/TourInitializer.tsx` | Client component yang memeriksa `localStorage['tour_completed']` saat mount — jika tidak ada, memanggil `useTourStore.startTour()`. Ini adalah trigger otomatis tur pertama kali. |
+| `ThemeToggle` | `src/components/shared/ThemeToggle.tsx` | Komponen helper untuk toggle light/dark theme. Digunakan di Settings. |
+| `TypeToConfirmDialog` | `src/components/shared/TypeToConfirmDialog.tsx` | Dialog konfirmasi destruktif yang mengharuskan user mengetik frasa tertentu sebelum aksi dikonfirmasi (pola "type to confirm"). Digunakan di Settings → Delete All Data. |
 
 ---
 
@@ -363,6 +381,17 @@ Field nominal di semua form (Transactions, Loan, Wallet) menggunakan `type="text
 **Alias (valid tapi deprecated — gunakan canonical di atas):**
 - `--color-accent-warm` → alias ke `--color-accent`
 - `--color-accent-warm-soft` → alias ke `--color-accent-soft`
+
+**Color Theme (Accent Color) — BARU di v1.5:**
+
+PFinTrack mendukung dua pilihan tema aksen (warna brand) yang dapat diubah user di Settings → Appearance → Accent Color. Tema aktif di-apply via atribut `data-color-theme` pada `document.documentElement`:
+
+| Tema | `data-color-theme` | `--color-brand` (Light) | `--color-brand` (Dark) | Key localStorage |
+|------|-------------------|------------------------|------------------------|------------------|
+| Biru (default) | `"blue"` | `#5B8DEF` | `#7BA4F7` | `pfintrack_color_theme = "blue"` |
+| Pink | `"pink"` | `#D95B7B` | `#F08FAA` | `pfintrack_color_theme = "pink"` |
+
+Hanya `--color-brand` dan `--color-brand-soft` yang berubah antar tema. Token lain (`--color-positive`, `--color-negative`, `--color-accent`, dll.) tetap sama di semua tema. Preferensi disimpan ke localStorage via key `pfintrack_color_theme` (key state aplikasi, bukan data finansial).
 
 ### 4.4 Tipografi
 
@@ -594,24 +623,38 @@ Transaksi ini tampil normal di Transaction list. Menghapus transaksi Balance Cor
 
 ## 7. Inventaris Lengkap Key di localStorage
 
-| Key | Pemilik | Deskripsi | Versi Dokumen |
-|-----|---------|-----------|---------------|
-| `anon_id` | Global | UUID v4 sebagai penanda anonymous user | Global Architecture |
+> **Catatan storage backend (v1.5):** Data finansial (7 key di bawah) sekarang disimpan di **IndexedDB** via library `idb`, bukan localStorage, sesuai migrasi PROP-0001. Key-key di tabel ini adalah nama **object store** di IndexedDB, bukan key localStorage. Key state aplikasi (`app_state`, `pfintrack_demo_mode`, dll.) tetap di localStorage. Lihat `tech-spec-migration-indexeddb.md` untuk detail skema IDB.
+
+**7 Key Data Finansial (IndexedDB object stores):**
+
+| Key / Store | Pemilik | Deskripsi | Versi Dokumen |
+|-------------|---------|-----------|---------------|
 | `wallets` | Wallet | Array daftar wallet user | Module Wallet |
 | `wallet_balance_history` | Wallet | Array riwayat koreksi balance (add wallet + edit manual) | Module Wallet |
 | `transactions` | Transactions | Array transaksi (income, expense, transfer) | Module Transactions |
 | `loan_counterparties` | Loan | Array daftar orang (counterparty loan) | Module Loan |
 | `loan_entries` | Loan | Array transaksi loan (give, get) | Module Loan |
 | `custom_reports` | Report | Array custom report buatan user | Module Report |
-| `app_state` | Global | State Zustand ter-persist: `anonId`, `showDecimals`, `isDemoMode` | Global Architecture |
-| `pfintrack_demo_mode` | Global | Flag sederhana (`"true"`) untuk demo mode — dipakai bersama `isDemoMode` di `app_state` | Global Architecture |
 
-**Total: 7 key data finansial + 2 key state aplikasi = 9 key di localStorage.**
+**Key State Aplikasi (localStorage — bukan data finansial):**
 
-Setiap key (kecuali `anon_id`) berisi array of objects dengan field umum yang konsisten:
+| Key | Pemilik | Deskripsi |
+|-----|---------|-----------|
+| `anon_id` | Global | UUID v4 sebagai penanda anonymous user |
+| `app_state` | Global | State Zustand ter-persist: `anonId`, `showDecimals`, `reportVisibility`. **Catatan:** `isDemoMode` sudah tidak disimpan di sini (v1.5) |
+| `pfintrack_demo_mode` | Global | Flag sederhana (`"true"`) untuk demo mode — ditulis langsung oleh `injectDemoData()` dan dihapus oleh `clearDemoData()` |
+| `pfintrack_color_theme` | Global | Preferensi tema aksen: `"blue"` (default) atau `"pink"`. Dikelola oleh `useColorTheme` hook **(BARU di v1.5)** |
+| `tour_completed` | Global | Timestamp ISO 8601 saat tur onboarding selesai atau di-skip. Kosong/tidak ada = tur belum pernah dijalankan **(BARU di v1.5)** |
+| `storage_version` | Global | Versi migrasi storage (integer). Dipakai oleh `migrate-from-localstorage.ts` sebagai guard agar migrasi localStorage→IDB hanya berjalan satu kali **(BARU di v1.5)** |
+
+**Total: 6 object store data finansial (IndexedDB) + 6 key state aplikasi (localStorage) = 12 key total.**
+
+> ⚠️ **Invariant 7-key:** Constraint "7 localStorage keys only" yang disebutkan di CLAUDE.md dan `Hard Invariants` merujuk pada **7 key data finansial**. Implementasi IndexedDB menggunakan 6 object store (anon_id tidak perlu store sendiri karena disimpan di localStorage). Key state aplikasi tidak dihitung dalam constraint ini karena tidak berisi data finansial dan tidak perlu dimigrasi ke Fase 2.
+
+Setiap record di 6 object store data finansial memiliki field umum:
 - `id` — UUID v4
 - `anon_id` — referensi ke `localStorage['anon_id']`
-- `is_active` — soft delete flag (kecuali `anon_id` & `wallet_balance_history` yang juga punya `is_active`)
+- `is_active` — soft delete flag
 - `created_at` & `updated_at` — ISO 8601 timestamp
 
 ---
@@ -692,7 +735,7 @@ Berlaku di seluruh modul.
 
 ## 11. Module Settings (`/settings`)
 
-Route tunggal, tab ke-5 di Bottom Navigation (paling kanan).
+Route utama adalah `/settings` (tab ke-5 di Bottom Navigation), dengan satu sub-route: `/settings/report`.
 
 ### 11.1 Screens
 
@@ -701,10 +744,34 @@ Route tunggal, tab ke-5 di Bottom Navigation (paling kanan).
 | Section | Komponen | Deskripsi |
 |---------|----------|-----------|
 | **Appearance** | Theme selector | 3 opsi: **Light** · **Dark** · **System** (mengikuti OS). Opsi aktif ditandai checkmark + warna primary. Menggunakan `next-themes` `setTheme()`. |
+| **Appearance** | Accent Color picker | **Dua swatch warna** berdampingan: **Blue** (default, `#5B8DEF`) dan **Pink** (`#D95B7B`). Swatch aktif memiliki outline ring. Tap swatch → `useColorTheme().setColorTheme()` → ganti token `--color-brand`. Preferensi disimpan ke `pfintrack_color_theme` di localStorage. **(BARU di v1.5)** |
 | **Language** | Language selector | 2 opsi: **English** · **Indonesia**. Implementasi via `next-intl` server action `setLocale()`. Preference disimpan di cookie. |
 | **Display** | Show Decimals toggle | Toggle switch untuk mengaktifkan/menonaktifkan tampilan 2 desimal pada semua angka IDR. Default: off. Preview langsung di bawah label toggle: `100.000` (off) atau `100.000,00` (on). State di-persist via `useAppStore.showDecimals`. |
-| **Data Sampel** *(conditional)* | Delete action | Section merah, **hanya muncul saat `isDemoMode = true`**. Tombol "Hapus Data Sampel" dengan konfirmasi dialog destructive. Menjalankan `clearDemoData()` → hapus semua data + reload. |
+| **Report** | Report visibility shortcut | Row dengan ikon ChartPie → tap navigasi ke `/settings/report`. **(BARU di v1.5)** |
+| **Data Sampel** *(conditional)* | Delete action | Section merah, **hanya muncul saat `pfintrack_demo_mode === "true"`**. Tombol "Hapus Data Sampel" dengan konfirmasi dialog destructive. Menjalankan `clearDemoData()` → hapus semua data + reload. |
+| **Data & Storage** | Persistent Storage | Row informasi status IndexedDB persistent storage. Tombol aktif jika storage belum di-persist → memanggil `navigator.storage.persist()`. Ikon `ShieldCheck` (hijau, jika granted) atau `ShieldOff` (abu). **(BARU di v1.5)** |
+| **Data & Storage** | Export backup | Row → tap trigger `exportBackup()` → download file `.json` atau `.gz`. **(BARU di v1.5)** |
+| **Data & Storage** | Import backup | Row → tap membuka file picker (`.json`, `.gz`) → konfirmasi dialog → `importBackup(file)` → reload. **(BARU di v1.5)** |
+| **Data & Storage** | Delete All Data | Row merah → tap membuka `TypeToConfirmDialog` (user harus ketik frasa konfirmasi) → `deleteAllData()` → reload. **(BARU di v1.5)** |
+| **Help** | Lihat Tutorial | Row → tap memanggil `useTourStore.resetTour()` → tur onboarding dimulai ulang dari step 1. **(BARU di v1.5)** |
 | **About** | Info row | Nama app `pfintrack` + versi `v0.1.0`. |
+
+**Screen: Report Visibility (`/settings/report`) — BARU di v1.5**
+
+Halaman ini mengatur visibilitas komponen analitik di tab Report. Setiap item adalah toggle on/off yang menulis ke `useAppStore.reportVisibility` (di-persist ke `app_state`).
+
+| Toggle | Field | Default |
+|--------|-------|---------|
+| Saving Rate Card | `showSavingRateCard` | `true` |
+| Loan Outstanding | `showLoanOutstanding` | `true` |
+| Insight Card | `showInsightCard` | `true` |
+| Donut Chart | `showDonutChart` | `true` |
+| Loan Row (di summary) | `showLoanRow` | `true` |
+| Balance Correction Row | `showBalanceCorrectionRow` | `true` |
+| Monthly Overview Chart | `showMonthlyOverviewChart` | `true` |
+| Net Worth Chart | `showNetWorthChart` | `true` |
+
+Terdapat juga tombol "Tampilkan Semua" / "Sembunyikan Semua" untuk toggle massal via `useAppStore.setAllReportVisibility()`.
 
 ### 11.2 i18n — Implementasi (via `next-intl`)
 
@@ -728,7 +795,7 @@ UI text menggunakan bahasa **sesuai locale aktif** via `next-intl`. Pesan dalam 
 
 ## 12. Daftar Dokumen Spesifikasi
 
-Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
+Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 
 | # | Dokumen | File |
 |---|---------|------|
@@ -737,6 +804,8 @@ Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
 | 3 | Module Transactions | `tech-spec-module-transactions.md` |
 | 4 | Module Loan | `tech-spec-module-loan.md` |
 | 5 | Module Report | `tech-spec-module-report.md` |
+| 6 | **Migrasi Storage: localStorage → IndexedDB** | `tech-spec-migration-indexeddb.md` |
+| 7 | **Feature: Product Tour (Onboarding)** | `tech-spec-feature-product-tour.md` |
 
 **Urutan baca yang disarankan untuk developer baru:**
 1. Global Architecture (dokumen ini) — pahami konteks, stack, dan komponen shared
@@ -744,7 +813,9 @@ Aplikasi ini didokumentasikan dalam **5 dokumen** yang saling melengkapi:
 3. Module Transactions — pencatatan utama keuangan
 4. Module Loan — utang-piutang
 5. Module Report — agregat dari ketiga modul di atas
+6. Migrasi Storage — memahami lapisan penyimpanan IndexedDB
+7. Feature Product Tour — onboarding interaktif
 
 ---
 
-*— End of Technical Specification: Global Architecture (v1.4) —*
+*— End of Technical Specification: Global Architecture (v1.5) —*

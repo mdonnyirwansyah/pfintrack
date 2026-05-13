@@ -2,8 +2,8 @@
 ## Migrasi Storage Layer: localStorage → IndexedDB
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.0
-**Tanggal:** 2026-05-06
+**Versi Dokumen:** 1.1
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Scope:** Cross-cutting — Wallet, Transactions, Loan, Report
 **Proposal Asal:** `tech-spec-docs/proposals/PROP-0001-migration-localstorage-to-indexeddb.md`
@@ -27,7 +27,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.0** | **2026-05-06** | **Dokumen awal. Dibuat berdasarkan PROP-0001 (Accepted). Mencakup skema IDB, API contract, 8 langkah migrasi, protokol data migration, feature flag, dan invariant lintas-cutting.** |
+| **1.1** | **2026-05-13** | **Sinkronisasi status implementasi: migrasi localStorage→IndexedDB sudah diimplementasikan di codebase. Storage backend dikontrol via env var `NEXT_PUBLIC_STORAGE_BACKEND` (default: `"idb"`). Migrate-once guard via `storage_version` key di localStorage sudah ada di `src/lib/storage/migrate-from-localstorage.ts`. Tidak ada perubahan skema.** |
+| 1.0 | 2026-05-06 | Dokumen awal. Dibuat berdasarkan PROP-0001 (Accepted). Mencakup skema IDB, API contract, 8 langkah migrasi, protokol data migration, feature flag, dan invariant lintas-cutting. |
 
 ---
 
@@ -1030,4 +1031,4 @@ Setiap IDB object store memetakan langsung ke tabel SQL. Setiap IDB index menjad
 
 ---
 
-*— End of Technical Specification: Migrasi Storage Layer localStorage → IndexedDB (v1.0) —*
+*— End of Technical Specification: Migrasi Storage Layer localStorage → IndexedDB (v1.1) —*

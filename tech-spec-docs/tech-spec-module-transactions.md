@@ -2,8 +2,8 @@
 ## Module: Transactions
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.4
-**Tanggal:** 2026-05-05
+**Versi Dokumen:** 1.5
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -13,7 +13,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.4** | **2026-05-05** | **Sync dengan implementasi: (1) Bottom Nav 4 tab (tanpa Settings). (2) Date/Time layout horizontal side-by-side. (3) WalletPicker header icons ✏️📄 belum diimplementasi (documented as pending). (4) Amount field: real-time onChange formatting (bukan onFocus/onBlur). (5) Default sort by transaction_time DESC. (6) TransactionItem layout: title sebagai primary, category sebagai secondary. (7) SummaryBar income prefix "+". (8) Description textarea multi-line. (9) Cancel button di form. (10) Swipe navigation. (11) Auto-open WalletPicker. (12) Wallet balance tampil di form. (13) Search juga cari destination wallet. (14) History grouping selalu aktif (bukan opsional). (15) Export filename termasuk shortId. (16) Asumsi #5 locale-aware. (17) Edit transaction: tipe dikunci. Dead code documented.** |
+| **1.4** | **2026-05-05** | **Sync dengan implementasi: (1) Bottom Nav 5 tab (termasuk Settings). (2) Date/Time layout horizontal side-by-side. (3) WalletPicker header icons ✏️📄 belum diimplementasi (documented as pending). (4) Amount field: real-time onChange formatting (bukan onFocus/onBlur). (5) Default sort by transaction_time DESC. (6) TransactionItem layout: title sebagai primary, category sebagai secondary. (7) SummaryBar income prefix "+". (8) Description textarea multi-line. (9) Cancel button di form. (10) Swipe navigation. (11) Auto-open WalletPicker. (12) Wallet balance tampil di form. (13) Search juga cari destination wallet. (14) History grouping selalu aktif (bukan opsional). (15) Export filename termasuk shortId. (16) Asumsi #5 locale-aware. (17) Edit transaction: tipe dikunci. Dead code documented.** |
+| **1.5** | **2026-05-13** | **Koreksi riwayat revisi v1.4: Bottom Navigation adalah 5 tab (termasuk Settings), bukan 4 tab — sesuai implementasi aktual `src/components/shared/BottomNav.tsx`. Tidak ada perubahan lain di modul ini.** |
 | 1.3 | 2026-05-04 | Versi awal yang didokumentasikan. |
 
 ---
@@ -64,7 +65,7 @@
 | **Empty State** | Dinamis | Tampil saat tidak ada transaksi di tanggal aktif. Berupa ilustrasi dokumen + teks deskriptif di tengah konten. |
 | **Welcome Card** | Dinamis (first-run) | Tampil **menggantikan empty state** saat `wallets.length === 0 && transactions.length === 0` (aplikasi baru dipakai pertama kali). Menawarkan dua pilihan: **"Eksplorasi dengan Data Sampel"** (inject demo data + reload) dan **"Mulai dari Nol"** (dismiss card). Lihat §3.10 Global Architecture untuk detail Demo Mode. |
 | **FAB Expandable** | Interaktif | Tombol mengambang biru `+` di pojok kanan bawah. Tap → mengembang menjadi 3 sub-action vertikal di atasnya (urut dari bawah ke atas): **Expense** (merah, ikon keranjang) · **Income** (oranye, ikon tren naik) · **Transfer** (abu, ikon panah dua arah). Tap di luar area FAB → menutup ekspansi. Form yang dituju menerima `?date=YYYY-MM-DD` dari tanggal aktif. Setelah save, redirect ke `/transactions?date=YYYY-MM-DD` (bukan `/transactions` tanpa param). |
-| **Bottom Navigation** | Shared · Statis | **5 tab**: **Transactions** (aktif, biru) · Wallet · Loan · Report · Settings. *(Komponen shared, lihat Global Architecture.)* |
+| **Bottom Navigation** | Shared · Statis | **5 tab**: **Transactions** (aktif) · Wallet · Loan · Report · Settings. *(Komponen shared, lihat Global Architecture.)* |
 
 ---
 
@@ -646,5 +647,5 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 
 ---
 
-*— End of Technical Specification: Module Transactions (v1.4) —*
+*— End of Technical Specification: Module Transactions (v1.5) —*
 *Dokumen terkait: Module Wallet · Global Architecture · Module Report · Module Loan · Module Settings*

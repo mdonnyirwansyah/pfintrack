@@ -2,8 +2,8 @@
 ## Feature: Product Tour (Onboarding)
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.2
-**Tanggal:** 2026-05-12
+**Versi Dokumen:** 1.3
+**Tanggal:** 2026-05-13
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -29,7 +29,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.2** | **2026-05-12** | **Sinkronisasi §8.2 dengan §4 — §4 ditetapkan sebagai sumber kanonik string tooltip. String WL-1, LN-1, dan RP-1 di §8.2 diperbarui: ditambahkan kalimat instruksi eksplisit "Tap tab ini untuk melanjutkan." di akhir konten, sesuai dengan string yang tercantum di §4.** |
+| **1.3** | **2026-05-13** | **Sinkronisasi dengan implementasi aktual: (1) Total step diperbarui dari 13 menjadi 22 step (index 0–21) — rincian per grup: Transactions 7 step, Wallet 6 step, Loan 3 step, Report 5 step, dan 1 step END. (2) Struktur Zustand store diperbarui: hanya field `run: boolean` yang ada (bukan `isTourRunning`/`currentStepIndex`/`tourSteps` seperti spec sebelumnya). (3) Path file store diperbarui: `src/lib/stores/useTourStore.ts` (bukan `lib/store/tour.ts`). (4) Asumsi 2 dan 7 diperbarui.** |
+| 1.2 | 2026-05-12 | Sinkronisasi §8.2 dengan §4 — §4 ditetapkan sebagai sumber kanonik string tooltip. String WL-1, LN-1, dan RP-1 di §8.2 diperbarui: ditambahkan kalimat instruksi eksplisit "Tap tab ini untuk melanjutkan." di akhir konten, sesuai dengan string yang tercantum di §4. |
 | 1.1 | 2026-05-12 | Keputusan arsitektur navigasi tur: navigasi antar tab bersifat manual (user tap tab sendiri). Open Question #1 di §11 ditutup sebagai RESOLVED. §3 diperbarui dengan catatan instruksi eksplisit di tooltip dan mekanisme pendeteksian elemen oleh Joyride. §4 diperbarui: step WL-1, LN-1, RP-1 ditandai sebagai step transisi tab. §10 diperbarui dengan catatan implementasi terkait konfigurasi Joyride untuk manual navigation. |
 | 1.0 | 2026-05-12 | Dokumen awal. Formalisasi user stories US-01 s.d. US-09 ke dalam spesifikasi teknis. Mencakup katalog 13 step tur, kontrak `data-tour`, localStorage contract, styling spec, dan acceptance criteria. |
 
@@ -40,12 +41,12 @@
 | # | Asumsi |
 |---|--------|
 | 1 | Library tur: **`react-joyride` v4**. Dipilih karena dukungan spotlight overlay, placement otomatis, dan locale prop bawaan. |
-| 2 | State management tur menggunakan **Zustand** (`lib/store/tour.ts`) agar konsisten dengan pola state aplikasi lainnya (`useAppStore`). State tur **tidak** di-persist ke Zustand persist middleware — persistensi hanya via key `tour_completed` di `localStorage`. |
+| 2 | State management tur menggunakan **Zustand** (`src/lib/stores/useTourStore.ts`) agar konsisten dengan pola state aplikasi lainnya (`useAppStore`). State tur **tidak** di-persist ke Zustand persist middleware — persistensi hanya via key `tour_completed` di `localStorage`. **(DIPERBARUI di v1.3 — path file dikoreksi)** |
 | 3 | Komponen `ProductTour` adalah **Client Component** dengan guard `useEffect` untuk mencegah render di server (SSR). `react-joyride` memerlukan akses ke DOM dan `window`. |
 | 4 | Tur dimulai dari route `/transactions` karena ini adalah tab default dan landing page aplikasi (sesuai §2.2 Global Architecture). |
 | 5 | Key `tour_completed` adalah **key tambahan di luar 7 key data finansial utama**. Key ini merupakan UI state murni — tidak berisi data finansial dan tidak perlu dimigrasi ke Fase 2. |
 | 6 | Step tur menggunakan atribut `data-tour="<nama>"` sebagai selector target. Pendekatan ini dipilih agar tidak bergantung pada class CSS atau struktur DOM yang dapat berubah saat refactor. |
-| 7 | Total step: **13 step** tersebar di 4 modul. Urutan tur dimulai dari Transactions (modul default), diikuti Wallet, Loan, kemudian Report. |
+| 7 | Total step: **22 step** (index 0–21) tersebar di 4 modul + 1 step END. Pembagian per grup: Transactions (7 step, index 0–6), Wallet (6 step, index 7–12), Loan (3 step, index 13–15), Report (5 step, index 16–20), dan 1 step END (index 21). Urutan tur dimulai dari Transactions (modul default), diikuti Wallet, Loan, kemudian Report. **(DIPERBARUI di v1.3 — jumlah step dikoreksi dari 13 ke 22)** |
 | 8 | Semua string teks tooltip dan tombol navigasi tur ditulis dalam **Bahasa Indonesia** via `locale` prop `react-joyride`. |
 | 9 | Tap di luar area spotlight (overlay gelap) **tidak** menutup tur untuk mencegah penutupan tidak disengaja. Konfigurasi ini diatur via `disableOverlayClose: true` pada Joyride. |
 | 10 | Modul Settings menyediakan aksi "Lihat Tutorial" untuk memulai ulang tur secara manual. Ini adalah satu-satunya entry point manual selain trigger otomatis. |
@@ -89,20 +90,24 @@ Product Tour memandu pengguna baru memahami empat modul utama PFinTrack melalui 
 
 ## 2. Arsitektur
 
-### 2.1 Pohon Komponen
+### 2.1 Pohon Komponen **(DIPERBARUI di v1.3)**
 
 ```
 src/
 ├── components/
 │   └── shared/
-│       └── ProductTour.tsx          ← Client Component utama (mount guard SSR)
+│       ├── ProductTour.tsx          ← Client Component utama (mount guard SSR, berisi STEP_TARGETS)
+│       ├── TourInitializer.tsx      ← Client Component trigger otomatis (cek tour_completed saat mount)
+│       ├── TourTooltip.tsx          ← Custom tooltip component untuk Joyride
+│       └── TourBeacon.tsx           ← Custom beacon component untuk Joyride
 ├── lib/
-│   └── store/
-│       └── tour.ts                  ← Zustand store (state tur, tidak di-persist)
+│   └── stores/
+│       ├── useTourStore.ts          ← Zustand store (hanya field `run: boolean`, tidak di-persist)
+│       └── tourInterceptContext.ts  ← Context untuk intercept navigasi saat tur berjalan
 └── app/
-    ├── layout.tsx                   ← ProductTour dimount di sini (global)
+    ├── layout.tsx                   ← ProductTour dan TourInitializer dimount di sini (global)
     └── settings/
-        └── page.tsx                 ← Tambah item "Lihat Tutorial" → dispatch resetTour()
+        └── page.tsx                 ← Item "Lihat Tutorial" → dispatch resetTour()
 ```
 
 ### 2.2 Komponen: `ProductTour.tsx`
@@ -126,23 +131,25 @@ ProductTour mount (useEffect)
    (pernah selesai/skip)  di useTourStore
 ```
 
-### 2.3 Zustand Store: `lib/store/tour.ts`
+### 2.3 Zustand Store: `src/lib/stores/useTourStore.ts` **(DIPERBARUI di v1.3)**
+
+Store minimalis — semua state navigasi step dikelola secara internal oleh `react-joyride`. Zustand hanya mengontrol apakah Joyride aktif atau tidak.
 
 | State | Tipe | Nilai Awal | Keterangan |
 |-------|------|------------|-----------|
-| `isTourRunning` | `boolean` | `false` | Mengontrol apakah Joyride sedang aktif |
-| `currentStepIndex` | `number` | `0` | Index step yang sedang ditampilkan |
-| `tourSteps` | `Step[]` | Array 13 step | Definisi lengkap semua step tur (lihat §4) |
+| `run` | `boolean` | `false` | Mengontrol apakah Joyride sedang aktif (`run` prop Joyride) |
+
+> **Catatan implementasi (v1.3):** Berbeda dengan spec awal yang merancang `isTourRunning`, `currentStepIndex`, dan `tourSteps` di store — implementasi aktual hanya menggunakan satu field `run`. Step definitions (`STEP_TARGETS`, `TRANSITION_STEPS`, `SKIP_TARGETS`) didefinisikan sebagai konstanta di dalam file `ProductTour.tsx`, bukan di store. Ini adalah pilihan implementasi yang valid karena state navigasi step dikontrol oleh `react-joyride` secara internal.
 
 | Action | Perilaku |
 |--------|---------|
-| `startTour()` | Set `isTourRunning = true`, `currentStepIndex = 0` |
-| `stopTour()` | Set `isTourRunning = false` |
-| `resetTour()` | Hapus `localStorage['tour_completed']`, lalu panggil `startTour()` |
-| `completeTour()` | Simpan `localStorage['tour_completed'] = new Date().toISOString()`, panggil `stopTour()` |
-| `skipTour()` | Simpan `localStorage['tour_completed'] = new Date().toISOString()`, panggil `stopTour()` |
+| `startTour()` | Set `run = true` |
+| `stopTour()` | Set `run = false` |
+| `resetTour()` | Hapus `localStorage['tour_completed']`, set `run = true` (efek instan) |
+| `completeTour()` | Simpan `localStorage['tour_completed'] = new Date().toISOString()`, set `run = false` |
+| `skipTour()` | Simpan `localStorage['tour_completed'] = new Date().toISOString()`, set `run = false` |
 
-> **Catatan:** `resetTour()` dipakai oleh Settings → "Lihat Tutorial". Menghapus key `tour_completed` memungkinkan trigger otomatis berjalan kembali jika user membuka halaman baru, atau langsung memanggil `startTour()` untuk efek instan.
+> **Catatan:** `resetTour()` dipakai oleh Settings → "Lihat Tutorial". Menghapus key `tour_completed` dan langsung memanggil `startTour()` membuat tur dimulai ulang dari awal secara instan tanpa perlu reload halaman.
 
 ### 2.4 Integrasi di `app/layout.tsx`
 
@@ -234,82 +241,92 @@ User navigasi ke /settings
 
 ---
 
-## 4. Katalog Step Tur
+## 4. Katalog Step Tur **(DIPERBARUI di v1.3)**
 
-Total: **13 step**, dibagi menjadi 4 grup modul. Step dieksekusi secara linear.
+Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup. Step dieksekusi secara linear.
 
-> **Catatan placement:** Semua step menggunakan `placement: 'auto'` sehingga react-joyride menentukan posisi tooltip secara otomatis berdasarkan posisi elemen target di viewport. Pengecualian dicatat per step jika ada preferensi arah tertentu.
+> **Catatan placement:** Setiap step memiliki placement eksplisit. Implementasi menggunakan placement hardcoded per step (bukan `'auto'`), karena posisi bottom nav di bawah memerlukan `'top'` yang konsisten untuk step transisi tab.
 
-### 4.1 Grup: Transactions (Step 1–3, US-04)
+> **Catatan TRANSITION_STEPS:** Step dengan index 0, 7, 13, dan 16 adalah step transisi tab — menyorot tombol tab di bottom nav dan menginstruksikan user untuk tap tab tersebut. Setelah user tap tab, elemen di halaman tujuan menjadi tersedia di DOM, dan user tap "Berikutnya" untuk lanjut ke step konten.
 
-| Step | # Global | Target (`data-tour`) | Konten Tooltip | Placement |
-|------|---------|---------------------|----------------|-----------|
-| TX-1 | 1 | `"nav-tab-transactions"` | *"Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar wallet."* | `'top'` (di atas bottom nav) |
-| TX-2 | 2 | `"fab-transactions"` | *"Tap untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer."* | `'top-end'` |
-| TX-3 | 3 | `"transactions-filter-bar"` | *"Gunakan filter ini untuk mencari transaksi berdasarkan tanggal atau kategori."* | `'bottom'` |
+> **Catatan SKIP_TARGETS:** Skip per grup tersedia: dari TX (index 0) → WL (index 7), dari WL (index 7) → LN (index 13), dari LN (index 13) → RP (index 16), dari RP (index 16) → END (index 21).
 
-### 4.2 Grup: Wallet (Step 4–6, US-03)
+### 4.1 Grup: Transactions (Index 0–6) **(DIPERBARUI di v1.3)**
 
-| Step | # Global | Target (`data-tour`) | Konten Tooltip | Placement |
-|------|---------|---------------------|----------------|-----------|
-| **WL-1** | **4** | **`"nav-tab-wallet"`** | **_"Wallet adalah rekening atau dompetmu. Semua transaksi terhubung ke wallet. Tap tab ini untuk melanjutkan."_** | `'top'` |
-| WL-2 | 5 | `"fab-wallet"` | *"Tap di sini untuk menambah wallet pertamamu — misalnya BCA, Tunai, atau GoPay."* | `'top-end'` |
-| WL-3 | 6 | `"wallet-first-card"` | *"Saldo wallet diperbarui otomatis setiap kali kamu catat transaksi."* | `'bottom'` |
+| Index | Key | Target (`data-tour`) | Placement | Catatan |
+|-------|-----|---------------------|-----------|---------|
+| 0 | `tx1` | `"nav-tab-transactions"` | `'top'` | **Transisi tab** — step pertama tur, menyorot tab Transactions |
+| 1 | `tx2` | `"tx-date-nav"` | `'bottom'` | Date navigator di header Transaction List |
+| 2 | `tx3` | `"tx-summary"` | `'bottom'` | Summary bar (Income/Expenses/Balance) |
+| 3 | `tx4` | `"fab-transactions"` | `'top'` | FAB expandable di Transaction List |
+| 4 | `tx5` | `"transactions-filter-bar"` | `'left'` | Filter/sort control |
+| 5 | `tx6` | `"tx-export"` | `'bottom'` | Ikon export Excel di header |
+| 6 | `tx7` | `"tx-history"` | `'bottom'` | Ikon navigasi ke History screen |
 
-> **Catatan WL-1 (BARU di v1.1):** Step ini adalah **step transisi tab**. Elemen target `"nav-tab-wallet"` adalah tombol tab Wallet di bottom nav — elemen ini selalu ada di DOM di semua halaman. Dengan men-tap tab Wallet sebagai respons terhadap instruksi di tooltip, user secara natural berpindah ke halaman `/wallet`, sehingga elemen target step WL-2 dan WL-3 menjadi tersedia di DOM. Tur tidak melakukan `router.push()` — navigasi sepenuhnya diinisiasi oleh user.
+### 4.2 Grup: Wallet (Index 7–12) **(DIPERBARUI di v1.3)**
 
-> **Catatan WL-3:** Target `"wallet-first-card"` merujuk ke kartu wallet pertama dalam daftar. Jika daftar wallet kosong (belum ada wallet), step ini **dilewati secara programatik** (skip step jika elemen target tidak ditemukan di DOM). Implementasi: tambahkan pengecekan ketersediaan elemen sebelum Joyride render step ini, atau gunakan `disableBeacon: true` dan fallback target ke container list.
+| Index | Key | Target (`data-tour`) | Placement | Catatan |
+|-------|-----|---------------------|-----------|---------|
+| 7 | `wl1` | `"nav-tab-wallet"` | `'top'` | **Transisi tab** — instruksikan user tap ke Wallet |
+| 8 | `wl2` | `"wl-total-balance"` | `'bottom'` | Card Total Balance di Wallet List |
+| 9 | `wl3` | `"wl-filter-type"` | `'bottom'` | Filter tipe wallet |
+| 10 | `wl4` | `"wl-sort"` | `'bottom'` | Sort control wallet |
+| 11 | `wl5` | `"fab-wallet"` | `'top'` | FAB tambah wallet baru |
+| 12 | `wl6` | `"wallet-first-card"` | `'bottom'` | Kartu wallet pertama. Jika list kosong: step dilewati secara diam (Joyride melewati step jika elemen tidak ditemukan di DOM) |
 
-### 4.3 Grup: Loan (Step 7–9, US-05)
+### 4.3 Grup: Loan (Index 13–15) **(DIPERBARUI di v1.3)**
 
-| Step | # Global | Target (`data-tour`) | Konten Tooltip | Placement |
-|------|---------|---------------------|----------------|-----------|
-| **LN-1** | **7** | **`"nav-tab-loan"`** | **_"Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Tap tab ini untuk melanjutkan."_** | `'top'` |
-| LN-2 | 8 | `"fab-loan"` | *"Tap untuk mencatat. 'Dipinjamkan' = kamu memberi pinjaman. 'Dipinjam' = kamu yang pinjam."* | `'top-end'` |
-| LN-3 | 9 | `"loan-counterparty-list"` | *"Setiap orang atau entitas dikelompokkan di sini. Tap untuk melihat histori pinjaman mereka."* | `'bottom'` |
+| Index | Key | Target (`data-tour`) | Placement | Catatan |
+|-------|-----|---------------------|-----------|---------|
+| 13 | `ln1` | `"nav-tab-loan"` | `'top'` | **Transisi tab** — instruksikan user tap ke Loan |
+| 14 | `ln2` | `"fab-loan"` | `'top'` | FAB expandable di Loan List |
+| 15 | `ln3` | `"loan-counterparty-list"` | `'bottom'` | Container list counterparty. Jika kosong: step tetap valid (highlight area kosong) |
 
-> **Catatan LN-1 (BARU di v1.1):** Step ini adalah **step transisi tab**. Elemen target `"nav-tab-loan"` adalah tombol tab Loan di bottom nav — selalu ada di DOM di semua halaman. Dengan men-tap tab tersebut, user berpindah ke `/loan` dan elemen target step LN-2 dan LN-3 menjadi tersedia. Tur tidak melakukan `router.push()`.
+### 4.4 Grup: Report (Index 16–20) **(DIPERBARUI di v1.3)**
 
-> **Catatan LN-3:** Jika daftar counterparty kosong, berlaku pola yang sama dengan WL-3 — step dilewati atau fallback ke container list kosong. Empty state tetap merupakan area yang valid untuk di-highlight.
+| Index | Key | Target (`data-tour`) | Placement | Catatan |
+|-------|-----|---------------------|-----------|---------|
+| 16 | `rp1` | `"nav-tab-report"` | `'top'` | **Transisi tab** — instruksikan user tap ke Report |
+| 17 | `rp2` | `"report-period-tabs"` | `'bottom'` | Tab Realtime/Monthly/Custom |
+| 18 | `rp3` | `"report-donut-mode"` | `'bottom'` | Toggle mode Expense/Income di atas donut chart |
+| 19 | `rp4` | `"report-donut-chart"` | `'bottom'` | Donut chart |
+| 20 | `rp5` | `"report-custom-fab"` | `'top'` | FAB di tab Custom. Dilewati secara diam jika user tidak berada di tab Custom saat step ini ditampilkan |
 
-### 4.4 Grup: Report (Step 10–12, US-06)
+### 4.5 Step Penutup (Index 21) **(DIPERBARUI di v1.3)**
 
-| Step | # Global | Target (`data-tour`) | Konten Tooltip | Placement |
-|------|---------|---------------------|----------------|-----------|
-| **RP-1** | **10** | **`"nav-tab-report"`** | **_"Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Tap tab ini untuk melanjutkan."_** | `'top'` |
-| RP-2 | 11 | `"report-period-tabs"` | *"Lihat laporan per periode: realtime hari ini, bulanan, atau rentang tanggal kustom."* | `'bottom'` |
-| RP-3 | 12 | `"report-donut-chart"` | *"Grafik ini menunjukkan distribusi pengeluaranmu per kategori."* | `'bottom'` |
-
-> **Catatan RP-1 (BARU di v1.1):** Step ini adalah **step transisi tab**. Elemen target `"nav-tab-report"` adalah tombol tab Report di bottom nav — selalu ada di DOM di semua halaman. Dengan men-tap tab tersebut, user berpindah ke `/report` dan elemen target step RP-2 dan RP-3 menjadi tersedia. Tur tidak melakukan `router.push()`.
-
-### 4.5 Step Penutup (Step 13)
-
-| Step | # Global | Target (`data-tour`) | Konten Tooltip | Placement |
-|------|---------|---------------------|----------------|-----------|
-| END | 13 | `"nav-tab-transactions"` | *"Selesai! Kamu sudah mengenal fitur utama PFinTrack. Mulai catat keuanganmu sekarang."* | `'top'` |
-
-> Step terakhir kembali menyorot tab Transactions sebagai call-to-action. Tombol "Selesai" di step ini memanggil `completeTour()`.
+| Index | Key | Target (`data-tour`) | Placement | Catatan |
+|-------|-----|---------------------|-----------|---------|
+| 21 | `end` | `"nav-tab-transactions"` | `'top'` | Step penutup, menyorot kembali tab Transactions. Tombol "Selesai" → `completeTour()` |
 
 ---
 
-## 5. Kontrak Atribut `data-tour`
+## 5. Kontrak Atribut `data-tour` **(DIPERBARUI di v1.3)**
 
-Seluruh atribut berikut **wajib** ditambahkan ke komponen yang sudah ada. Ini adalah kontrak antara spesifikasi tur dan implementasi komponen.
+Seluruh atribut berikut **wajib** ada di komponen terkait. Ini adalah kontrak antara spesifikasi tur dan implementasi komponen.
 
-| Atribut `data-tour` | Komponen Target | File Komponen (perkiraan) | Catatan |
-|--------------------|----------------|--------------------------|---------|
-| `"nav-tab-transactions"` | Tab Transactions di BottomNav | `components/shared/BottomNav.tsx` | Tambahkan ke elemen `<button>` atau `<a>` tab Transactions |
-| `"nav-tab-wallet"` | Tab Wallet di BottomNav | `components/shared/BottomNav.tsx` | Tambahkan ke elemen tab Wallet |
-| `"nav-tab-loan"` | Tab Loan di BottomNav | `components/shared/BottomNav.tsx` | Tambahkan ke elemen tab Loan |
-| `"nav-tab-report"` | Tab Report di BottomNav | `components/shared/BottomNav.tsx` | Tambahkan ke elemen tab Report |
-| `"fab-transactions"` | FAB di `/transactions` | `components/transactions/TransactionsFAB.tsx` atau sejenisnya | FAB expandable — tambahkan ke container FAB utama (tombol `+`), bukan sub-action |
-| `"fab-wallet"` | FAB di `/wallet` | `app/wallet/page.tsx` atau komponen FAB Wallet | FAB non-expandable — satu tombol |
-| `"fab-loan"` | FAB di `/loan` | `components/loan/LoanFAB.tsx` atau sejenisnya | FAB expandable — tambahkan ke tombol `+` utama |
-| `"transactions-filter-bar"` | Filter/sort bar di `/transactions` | `components/transactions/FilterSortBar.tsx` atau sejenisnya | Tambahkan ke container filter/sort |
-| `"wallet-first-card"` | Kartu wallet pertama | `components/wallet/WalletCard.tsx` | Hanya item pertama dalam list (`index === 0`). Jika list kosong, step dilewati |
-| `"loan-counterparty-list"` | Container list counterparty | `app/loan/page.tsx` atau `components/loan/CounterpartyList.tsx` | Tambahkan ke elemen container list, bukan per-item |
-| `"report-period-tabs"` | Tab Realtime/Bulanan/Custom | `components/report/PeriodTabs.tsx` atau sejenisnya | Tambahkan ke container tab selector |
-| `"report-donut-chart"` | Donut chart | `components/report/DonutChart.tsx` atau sejenisnya | Tambahkan ke container/wrapper chart |
+| Atribut `data-tour` | Komponen Target | Catatan |
+|--------------------|----------------|---------|
+| `"nav-tab-transactions"` | Tab Transactions di BottomNav | Digunakan pada step index 0 dan 21 |
+| `"nav-tab-wallet"` | Tab Wallet di BottomNav | Step transisi index 7 |
+| `"nav-tab-loan"` | Tab Loan di BottomNav | Step transisi index 13 |
+| `"nav-tab-report"` | Tab Report di BottomNav | Step transisi index 16 |
+| `"tx-date-nav"` | Date Navigator di header Transaction List | Step index 1 |
+| `"tx-summary"` | Summary bar (Income/Expenses/Balance) | Step index 2 |
+| `"fab-transactions"` | FAB expandable di `/transactions` | FAB utama (tombol `+`), bukan sub-action. Step index 3 |
+| `"transactions-filter-bar"` | Sort/filter control di Transaction List | Step index 4 |
+| `"tx-export"` | Ikon export di header Transaction List | Step index 5 |
+| `"tx-history"` | Ikon navigasi ke History | Step index 6 |
+| `"wl-total-balance"` | Card Total Balance di Wallet List | Step index 8 |
+| `"wl-filter-type"` | Filter tipe wallet | Step index 9 |
+| `"wl-sort"` | Sort control di Wallet List | Step index 10 |
+| `"fab-wallet"` | FAB di `/wallet` | Step index 11 |
+| `"wallet-first-card"` | Kartu wallet pertama dalam list | Hanya `index === 0`. Jika kosong: step dilewati. Step index 12 |
+| `"fab-loan"` | FAB expandable di `/loan` | FAB utama. Step index 14 |
+| `"loan-counterparty-list"` | Container list counterparty | Bukan per-item. Step index 15 |
+| `"report-period-tabs"` | Tab Realtime/Monthly/Custom | Step index 17 |
+| `"report-donut-mode"` | Toggle Expense/Income di atas donut | Step index 18 |
+| `"report-donut-chart"` | Donut chart container | Step index 19 |
+| `"report-custom-fab"` | FAB di tab Custom Report | Dilewati jika tidak di tab Custom. Step index 20 |
 
 > **Aturan penerapan:** Atribut `data-tour` hanya berfungsi sebagai selector — tidak memiliki efek visual atau logika. Penambahan atribut ini tidak boleh mengubah perilaku atau tampilan komponen yang sudah ada.
 
@@ -558,4 +575,4 @@ if (!isMounted) return null
 
 ---
 
-*— End of Technical Specification: Feature Product Tour (v1.2) —*
+*— End of Technical Specification: Feature Product Tour (v1.3) —*
