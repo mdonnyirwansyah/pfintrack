@@ -191,7 +191,7 @@ export default function WalletPage() {
 
       <FAB
         onClick={() => router.push("/wallet/add")}
-        aria-label="Add wallet"
+        aria-label={t("addAriaLabel")}
         data-tour="fab-wallet"
       />
     </>

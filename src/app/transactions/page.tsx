@@ -181,7 +181,7 @@ function TransactionsContent() {
                 minHeight: "var(--tap-target-min)",
                 color: "var(--text-primary)",
               }}
-              aria-label="Export to Excel"
+              aria-label={t("exportAriaLabel")}
             >
               <Download className="w-5 h-5" />
             </button>
@@ -194,7 +194,7 @@ function TransactionsContent() {
                 minHeight: "var(--tap-target-min)",
                 color: "var(--text-primary)",
               }}
-              aria-label="Transaction history"
+              aria-label={t("historyAriaLabel")}
             >
               <FileText className="w-5 h-5" />
             </button>

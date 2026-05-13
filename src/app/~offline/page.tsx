@@ -4,11 +4,11 @@ import { WifiOff, RefreshCw, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const MODULES = [
-  { href: "/transactions", label: "Transactions" },
-  { href: "/wallet",       label: "Wallet"       },
-  { href: "/loan",         label: "Loan"          },
-  { href: "/report",       label: "Report"        },
-  { href: "/settings",     label: "Settings"      },
+  { href: "/transactions", label: "Transaksi" },
+  { href: "/wallet",       label: "Dompet"    },
+  { href: "/loan",         label: "Pinjaman"  },
+  { href: "/report",       label: "Laporan"   },
+  { href: "/settings",     label: "Pengaturan"},
 ];
 
 export default function OfflinePage() {
@@ -26,10 +26,10 @@ export default function OfflinePage() {
             className="text-[15px] font-bold"
             style={{ color: "var(--text-primary)" }}
           >
-            You're offline
+            Kamu sedang offline
           </h2>
           <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
-            Cached pages are still accessible below.
+            Halaman yang tersimpan masih bisa dibuka.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export default function OfflinePage() {
           }}
         >
           <RefreshCw className="w-4 h-4" />
-          Retry
+          Coba Lagi
         </button>
 
       </div>

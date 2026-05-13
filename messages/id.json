@@ -33,6 +33,8 @@
     "language": "Bahasa",
     "display": "Tampilkan",
     "about": "Tentang",
+    "help": "Bantuan",
+    "viewTutorial": "Lihat Tutorial",
     "theme": {
       "light": "Terang",
       "dark": "Gelap",
@@ -51,33 +53,33 @@
     },
     "data": {
       "sectionTitle": "Data & Penyimpanan",
-      "persistTitle": "Penyimpanan Terlindungi",
-      "persistDesc": "Data terlindungi dari pembersihan otomatis browser",
-      "persistNotGranted": "Belum terlindungi — ketuk untuk meminta izin",
+      "persistTitle": "Data Terlindungi",
+      "persistDesc": "Data kamu aman dari pembersihan otomatis browser.",
+      "persistNotGranted": "Belum aktif. Ketuk untuk mengaktifkan.",
       "persistUnsupported": "Tidak didukung di browser ini",
       "exportTitle": "Ekspor Backup",
       "exportDesc": "Unduh semua data sebagai file JSON",
       "importTitle": "Pulihkan Backup",
       "importDesc": "Ganti semua data dari file backup",
       "importConfirmTitle": "Ganti Semua Data?",
-      "importConfirmDesc": "Semua data saat ini akan diganti permanen dengan isi file backup. Tindakan ini tidak bisa dibatalkan.",
+      "importConfirmDesc": "Data kamu sekarang akan diganti total dengan isi file backup. Tidak bisa dibatalkan.",
       "importConfirmAction": "Ya, Pulihkan",
       "importConfirmCancel": "Batal",
-      "importSuccess": "Data berhasil dipulihkan",
-      "importError": "Gagal memulihkan: file tidak valid atau tidak didukung",
+      "importSuccess": "Data berhasil dipulihkan.",
+      "importError": "Gagal. File tidak valid atau tidak didukung.",
       "deleteAllTitle": "Hapus Semua Data",
-      "deleteAllDesc": "Ini akan menghapus permanen semua dompet, transaksi, pinjaman, dan laporan. Tindakan ini tidak bisa dibatalkan.",
+      "deleteAllDesc": "Semua dompet, transaksi, pinjaman, dan laporan akan dihapus permanen. Tidak bisa dibatalkan.",
       "deleteAllPhrase": "HAPUS SEMUA DATA",
       "deleteAllInputLabel": "Ketik frasa berikut untuk konfirmasi:",
       "deleteAllInputPlaceholder": "Ketik di sini secara manual",
       "deleteAllConfirm": "Hapus Semua",
       "deleteAllCancel": "Batal",
-      "deleteAllSuccess": "Semua data telah dihapus"
+      "deleteAllSuccess": "Semua data sudah dihapus."
     },
     "demo": {
       "sectionTitle": "Data Sampel",
       "clearButton": "Hapus Data Sampel",
-      "clearDesc": "Hapus semua data demo dan mulai dari nol",
+      "clearDesc": "Hapus data contoh dan mulai dari awal.",
       "confirmTitle": "Hapus Data Sampel?",
       "confirmDesc": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
       "confirmAction": "Ya, Hapus Semua",
@@ -85,16 +87,18 @@
     },
     "report": {
       "title": "Laporan",
-      "showSavingRateCard": "Kartu Saving Rate",
-      "showLoanOutstanding": "Seksi pinjaman",
-      "showInsightCard": "Insight pengeluaran",
+      "showSavingRateCard": "Kartu Tingkat Tabungan",
+      "showLoanOutstanding": "Bagian pinjaman aktif",
+      "showInsightCard": "Kartu insight pengeluaran",
       "showDonutChart": "Grafik kategori",
       "showDonutChartHint": "Juga menyembunyikan ringkasan harian dan daftar kategori",
       "showLoanRow": "Baris pinjaman di ringkasan",
       "showBalanceCorrectionRow": "Baris koreksi saldo",
       "showMonthlyOverviewChart": "Grafik ringkasan bulanan",
       "showNetWorthChart": "Grafik kekayaan bersih",
-      "visibilitySettings": "Visibilitas seksi",
+      "visibilitySettings": "Tampilkan atau sembunyikan bagian",
+      "help": "Bantuan",
+      "viewTutorial": "Lihat Tutorial",
       "showAll": "Tampilkan semua",
       "hideAll": "Sembunyikan semua"
     }
@@ -106,16 +110,17 @@
     "totalBalance": "Total Saldo",
     "currentBalance": "Saldo Saat Ini",
     "noWallets": "Belum ada dompet",
-    "noWalletsDesc": "Tambah dompet pertama Anda menggunakan tombol +.",
+    "noWalletsDesc": "Ketuk + buat bikin dompet pertama kamu.",
+    "addAriaLabel": "Tambah dompet",
     "notFound": "Dompet tidak ditemukan",
     "backToList": "Kembali ke daftar dompet",
     "form": {
       "name": "Nama Dompet",
-      "namePlaceholder": "Masukkan nama",
+      "namePlaceholder": "Misal: BCA, Cash, GoPay",
       "type": "Jenis Dompet",
       "balance": "Saldo",
       "initialBalance": "Saldo Awal",
-      "balancePlaceholder": "Masukkan saldo"
+      "balancePlaceholder": "0"
     },
     "types": {
       "bank": "Bank",
@@ -137,21 +142,21 @@
       "all": "Semua jenis"
     },
     "validation": {
-      "nameRequired": "Nama dompet tidak boleh kosong",
+      "nameRequired": "Nama dompet belum diisi.",
       "nameTooShort": "Nama minimal 2 karakter",
       "nameTooLong": "Nama maksimal 50 karakter",
-      "nameTaken": "Nama dompet sudah digunakan",
+      "nameTaken": "Nama ini sudah ada, coba nama lain.",
       "balanceRequired": "Saldo tidak boleh kosong",
-      "balanceInvalid": "Saldo harus berupa angka positif",
-      "balanceExceeds": "Saldo melebihi batas maksimum"
+      "balanceInvalid": "Saldo harus angka positif ya.",
+      "balanceExceeds": "Nominal terlalu besar."
     },
     "deleteConfirm": {
       "title": "Hapus Dompet?",
-      "description": "Dompet {name} akan dihapus. Tindakan ini tidak dapat dibatalkan.",
+      "description": "Hapus dompet \"{name}\"? Data transaksinya tetap tersimpan, tapi dompetnya tidak bisa dipulihkan.",
       "confirm": "Hapus",
       "cancel": "Batal"
     },
-    "cannotDeleteInUse": "Dompet sedang digunakan dalam transaksi/pinjaman dan tidak dapat dihapus."
+    "cannotDeleteInUse": "Dompet ini masih dipakai di transaksi atau pinjaman, jadi belum bisa dihapus."
   },
   "transactions": {
     "title": "Transaksi",
@@ -173,13 +178,15 @@
     "editExpense": "Edit Pengeluaran",
     "editTransfer": "Edit Transfer",
     "editBalanceCorrection": "Edit Koreksi Saldo",
-    "noData": "Tidak ada data",
-    "noDataDesc": "Belum ada transaksi hari ini. Ketuk + untuk menambah.",
+    "noData": "Belum ada transaksi hari ini",
+    "noDataDesc": "Ketuk + buat catat yang pertama.",
     "searchPlaceholder": "Cari transaksi...",
-    "noResults": "Tidak ditemukan",
-    "noResultsDesc": "Tidak ada transaksi yang sesuai pencarian.",
-    "noHistory": "Belum ada transaksi",
-    "noHistoryDesc": "Tambah transaksi pertama Anda menggunakan tombol +.",
+    "noResults": "Hasil pencarian kosong",
+    "noResultsDesc": "Coba kata kunci lain atau ubah filter.",
+    "noHistory": "Riwayat masih kosong",
+    "noHistoryDesc": "Transaksi yang kamu catat akan muncul di sini.",
+    "exportAriaLabel": "Ekspor ke Excel",
+    "historyAriaLabel": "Riwayat transaksi",
     "filter": {
       "all": "Semua",
       "income": "Pemasukan",
@@ -210,10 +217,10 @@
       "amount": "Nominal",
       "amountPlaceholder": "Masukkan nominal",
       "title": "Judul",
-      "titlePlaceholder": "Masukkan judul (opsional)",
+      "titlePlaceholder": "Nama singkat, misal: Makan siang",
       "category": "Kategori",
       "description": "Deskripsi",
-      "descriptionPlaceholder": "Masukkan deskripsi (opsional)",
+      "descriptionPlaceholder": "Catatan tambahan (opsional)",
       "date": "Tanggal",
       "time": "Waktu",
       "wallet": "Dompet",
@@ -222,19 +229,19 @@
       "selectWallet": "Pilih Dompet",
       "selectSourceWallet": "Pilih dompet asal",
       "selectDestWallet": "Pilih dompet tujuan",
-      "categoryPlaceholder": "Ketik kategori baru",
+      "categoryPlaceholder": "Misal: Makan, Transport, Hiburan",
       "balance": "Saldo",
-      "insufficientBalance": "Saldo dompet tidak mencukupi"
+      "insufficientBalance": "Saldo tidak cukup untuk transfer ini."
     },
     "validation": {
       "dateRequired": "Tanggal harus dipilih",
       "timeRequired": "Waktu harus dipilih",
-      "walletRequired": "Pilih dompet terlebih dahulu",
+      "walletRequired": "Dompet belum dipilih nih.",
       "sourceWalletRequired": "Pilih dompet asal",
       "destWalletRequired": "Pilih dompet tujuan",
-      "sameWallet": "Dompet asal dan tujuan tidak boleh sama",
+      "sameWallet": "Dompet asal dan tujuan harus berbeda.",
       "amountRequired": "Nominal tidak boleh kosong",
-      "amountInvalid": "Nominal harus lebih dari 0",
+      "amountInvalid": "Nominal harus lebih dari Rp 0.",
       "amountExceeds": "Nominal melebihi batas maksimum",
       "titleRequired": "Judul tidak boleh kosong",
       "titleTooLong": "Judul maksimal 100 karakter",
@@ -244,46 +251,47 @@
     },
     "deleteConfirm": {
       "title": "Hapus Transaksi?",
-      "description": "Transaksi ini akan dihapus dan saldo dompet akan disesuaikan.",
+      "description": "Saldo dompet kamu juga akan ikut dikoreksi.",
       "confirm": "Hapus",
       "cancel": "Batal"
     },
     "deleteUndo": {
-      "message": "Transaksi dihapus",
+      "message": "Transaksi dihapus.",
       "undo": "Batalkan"
     }
   },
   "loan": {
     "title": "Pinjaman",
     "insufficientBalance": "Saldo dompet tidak mencukupi",
-    "addGive": "Tambah Pinjam Keluar",
-    "addGet": "Tambah Pinjam Masuk",
+    "addGive": "Memberi",
+    "addGet": "Menerima",
     "editEntry": "Edit Entri",
-    "noCounterparties": "Belum ada rekanan",
-    "noCounterpartiesDesc": "Ketuk + untuk mencatat pinjam keluar atau masuk",
+    "noCounterparties": "Belum ada catatan pinjam",
+    "noCounterpartiesDesc": "Ketuk + untuk catat pinjaman atau utangmu.",
     "noEntries": "Belum ada entri",
-    "noEntriesDesc": "Ketuk + untuk mencatat pinjam keluar atau masuk",
+    "noEntriesDesc": "Ketuk + untuk catat pinjaman atau utangmu.",
     "paidOff": "Lunas",
     "notPaidOff": "Belum lunas",
     "markPaidOff": "Tandai Lunas",
     "markPaidOffTitle": "Tandai {name} sebagai lunas?",
-    "editGive": "Edit Pinjam Keluar",
-    "editGet": "Edit Pinjam Masuk",
+    "editGive": "Edit Memberi",
+    "editGet": "Edit Menerima",
     "entryNotFound": "Entri tidak ditemukan",
     "entryNotFoundDesc": "Entri ini mungkin telah dihapus.",
-    "markPaidOffDesc": "Ini akan menutup semua catatan pinjaman yang belum diselesaikan dengan orang ini. Anda tetap bisa menambah transaksi baru kapan saja.",
+    "markPaidOffDesc": "Semua catatan pinjaman yang belum lunas dengan orang ini akan ditutup. Kamu tetap bisa tambah catatan baru nanti.",
     "unmarkPaidOff": "Batal Tandai Lunas",
-    "withoutExplanation": "Tanpa keterangan",
-    "counterpartyNotFound": "Rekanan tidak ditemukan",
-    "counterpartyNotFoundDesc": "Orang ini mungkin telah dihapus.",
+    "withoutExplanation": "Tidak ada catatan",
+    "counterpartyNotFound": "Orang ini tidak ditemukan",
+    "counterpartyNotFoundDesc": "Mungkin sudah dihapus sebelumnya.",
+    "deleteEntry": "Hapus Catatan Ini",
     "summary": {
-      "get": "Masuk",
-      "give": "Keluar",
+      "get": "Menerima",
+      "give": "Memberi",
       "balance": "Saldo"
     },
     "fab": {
-      "give": "Keluar",
-      "get": "Masuk"
+      "give": "Memberi",
+      "get": "Menerima"
     },
     "form": {
       "date": "Tanggal",
@@ -295,12 +303,13 @@
       "selectWallet": "Pilih Dompet",
       "noteOptional": "Catatan (opsional)",
       "notePlaceholder": "Catatan (opsional)",
-      "clearWallet": "Hapus",
-      "saveGive": "Simpan Keluar",
-      "saveGet": "Simpan Masuk"
+      "clearWallet": "Batal pilih",
+      "saveGive": "Simpan Pinjaman",
+      "saveGet": "Simpan Utang",
+      "currentBalance": "Saldo:"
     },
     "rename": {
-      "title": "Ubah Nama",
+      "title": "Ganti Nama",
       "namePlaceholder": "Masukkan nama baru"
     },
     "deleteEntryConfirm": {
@@ -310,8 +319,8 @@
       "cancel": "Batal"
     },
     "deleteCounterpartyConfirm": {
-      "title": "Hapus Rekanan?",
-      "description": "Semua entri pinjaman untuk {name} juga akan dihapus.",
+      "title": "Hapus orang ini?",
+      "description": "Semua catatan pinjaman dengan {name} ikut terhapus.",
       "confirm": "Hapus",
       "cancel": "Batal"
     },
@@ -324,24 +333,24 @@
       "nameRequired": "Nama tidak boleh kosong",
       "nameTooShort": "Nama minimal 2 karakter",
       "nameTooLong": "Nama maksimal 50 karakter",
-      "walletRequired": "Pilih dompet terlebih dahulu",
+      "walletRequired": "Pilih dompet dulu ya.",
       "noteTooLong": "Catatan maksimal 255 karakter",
       "renameRequired": "Nama tidak boleh kosong",
-      "renameTaken": "Nama sudah dipakai"
+      "renameTaken": "Nama ini sudah ada."
     }
   },
   "report": {
     "title": "Laporan",
     "notFound": "Laporan tidak ditemukan.",
     "tabs": {
-      "realtime": "Realtime",
+      "realtime": "Sekarang",
       "monthly": "Bulanan",
       "custom": "Kustom"
     },
     "realtime": {
-      "noExpenses": "Tidak ada pengeluaran bulan ini",
-      "noExpensesDesc": "Transaksi yang ditandai sebagai pengeluaran akan muncul di sini.",
-      "noIncome": "Tidak ada pemasukan periode ini",
+      "noExpenses": "Belum ada pengeluaran bulan ini",
+      "noExpensesDesc": "Transaksi pengeluaran kamu akan tampil di sini.",
+      "noIncome": "Belum ada pemasukan periode ini",
       "noIncomeDesc": "Transaksi yang ditandai sebagai pemasukan akan muncul di sini."
     },
     "daily": {
@@ -361,22 +370,22 @@
     },
     "monthly": {
       "noTransactions": "Belum ada transaksi",
-      "noTransactionsDesc": "Tambah transaksi pertama Anda untuk melihat laporan bulanan."
+      "noTransactionsDesc": "Catat transaksimu dulu, laporan bulanan akan muncul sendiri."
     },
     "custom": {
-      "noReports": "Belum ada laporan kustom",
-      "noReportsDesc": "Ketuk + untuk membuat laporan untuk rentang tanggal apa pun."
+      "noReports": "Belum ada laporan buatanmu",
+      "noReportsDesc": "Ketuk + buat laporan dengan rentang tanggal sendiri."
     },
     "detail": {
       "noExpenses": "Tidak ada pengeluaran pada periode ini",
       "noExpensesDesc": "Tidak ada transaksi pengeluaran untuk rentang tanggal yang dipilih.",
       "noTransactions": "Tidak ada transaksi",
-      "noTransactionsDesc": "Tidak ada transaksi pengeluaran untuk \"{category}\".",
+      "noTransactionsDesc": "Belum ada pengeluaran di kategori \"{category}\".",
       "title": "Detail Laporan",
       "summaryTitle": "Ringkasan Periode",
       "loanTitle": "Pinjaman Periode Ini",
-      "loanGive": "Pinjam Keluar",
-      "loanGet": "Pinjam Masuk",
+      "loanGive": "Memberi",
+      "loanGet": "Menerima",
       "filterAll": "Semua",
       "filterExpense": "Pengeluaran",
       "filterIncome": "Pemasukan",
@@ -417,7 +426,7 @@
     },
     "savingRate": {
       "title": "Tingkat Menabung",
-      "benchmark": "Target sehat: ≥ 20%",
+      "benchmark": "Target ideal: tabung ≥ 20% penghasilan",
       "na": "N/A",
       "income": "Pemasukan",
       "saved": "Tersimpan"
@@ -433,20 +442,20 @@
       "title": "Tren Kekayaan Bersih",
       "now": "Sekarang: {value}",
       "from": "dari {month}",
-      "insufficient": "Butuh minimal 2 bulan data"
+      "insufficient": "Perlu minimal 2 bulan data untuk tampil."
     },
     "insight": {
       "categoryUp": "Pengeluaran {category} naik {percent}% dari {month}",
-      "lowSavingRate": "Pengeluaran bulan ini melebihi 90% penghasilan",
+      "lowSavingRate": "Pengeluaranmu sudah di atas 90% pemasukan bulan ini.",
       "categoryDominant": "{category} mendominasi {percent}% pengeluaranmu",
-      "expenseDown": "Pengeluaran turun {percent}% — lebih hemat dari bulan lalu",
-      "noIncome": "Belum ada pemasukan bulan ini"
+      "expenseDown": "Pengeluaranmu turun {percent}% dari bulan lalu. Mantap!",
+      "noIncome": "Belum catat pemasukan bulan ini."
     },
     "loanSummary": {
-      "title": "Pinjaman Aktif",
+      "title": "Belum Lunas",
       "receivable": "Piutang",
       "payable": "Hutang",
-      "empty": "Tidak ada pinjaman aktif"
+      "empty": "Semua lunas!"
     },
     "categoryTrend": {
       "title": "Tren Kategori",
@@ -474,7 +483,7 @@
   },
   "demo": {
     "banner": {
-      "message": "Anda sedang mengeksplorasi data sampel.",
+      "message": "Kamu lagi lihat data contoh.",
       "clearButton": "Hapus & Mulai",
       "closeAriaLabel": "Tutup banner"
     },
@@ -486,9 +495,9 @@
     },
     "welcome": {
       "title": "Selamat datang di PFinTrack!",
-      "description": "Mulai catat keuanganmu dari nol, atau jelajahi fitur aplikasi dengan data sampel realistis terlebih dahulu.",
-      "exploreButton": "Eksplorasi dengan Data Sampel",
-      "startFreshButton": "Mulai dari Nol"
+      "description": "Mau langsung mulai atau lihat-lihat dulu dengan data contoh?",
+      "exploreButton": "Coba dengan Data Contoh",
+      "startFreshButton": "Mulai Sendiri"
     }
   },
   "tour": {
@@ -497,32 +506,32 @@
     "next": "Berikutnya",
     "finish": "Selesai",
     "skipTitle": "Lewati bagian {module}?",
-    "skipDescription": "Kamu belum membuka tab {module}. Lewati bagian ini dan lanjut ke modul berikutnya?",
+    "skipDescription": "Tab {module} belum dibuka. Mau langsung lanjut ke bagian berikutnya?",
     "confirmSkip": "Ya, Lewati",
     "backToTour": "Kembali ke Tour",
     "steps": {
-      "tx1": "Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar wallet. Tap tab ini untuk memulai.",
-      "tx2": "Geser kiri/kanan atau tap panah untuk pindah tanggal. Tap tanggal untuk membuka kalender.",
+      "tx1": "Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar dompet. Ketuk tab ini untuk memulai.",
+      "tx2": "Geser kiri/kanan atau ketuk panah untuk pindah tanggal. Ketuk tanggal untuk membuka kalender.",
       "tx3": "Total pemasukan, pengeluaran, dan saldo hari ini ditampilkan di sini.",
-      "tx4": "Tap untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer.",
-      "tx5": "Tap tombol ini untuk mengubah urutan tampilan — berdasarkan tanggal atau nominal transaksi.",
-      "tx6": "Tap untuk mengekspor semua transaksi ke file Excel.",
-      "tx7": "Tap untuk melihat riwayat semua transaksi di semua tanggal.",
-      "wl1": "Wallet adalah rekening atau dompetmu. Semua transaksi terhubung ke wallet. Tap tab ini untuk melanjutkan.",
-      "wl2": "Kartu ini menampilkan total saldo dari semua walletmu.",
-      "wl3": "Filter wallet berdasarkan tipe — bank, e-wallet, tabungan, dan lainnya.",
-      "ln1": "Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Tap tab ini untuk melanjutkan.",
-      "ln2": "'Masuk': kamu berhutang ke orang atau orang melunasi piutangnya ke kamu. 'Keluar': kamu meminjamkan uang ke orang atau kamu melunasi hutangmu.",
-      "ln3": "Setiap orang atau entitas dikelompokkan di sini. Tap untuk melihat histori pinjaman mereka.",
-      "rp1": "Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Tap tab ini untuk melanjutkan.",
+      "tx4": "Ketuk untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer.",
+      "tx5": "Ketuk tombol ini untuk mengubah urutan tampilan — berdasarkan tanggal atau nominal transaksi.",
+      "tx6": "Ketuk untuk mengekspor semua transaksi ke file Excel.",
+      "tx7": "Ketuk untuk melihat riwayat semua transaksi di semua tanggal.",
+      "wl1": "Dompet adalah rekening atau dompetmu. Semua transaksi terhubung ke dompet. Ketuk tab ini untuk melanjutkan.",
+      "wl2": "Kartu ini menampilkan total saldo dari semua dompetmu.",
+      "wl3": "Filter dompet berdasarkan tipe — bank, e-wallet, tabungan, dan lainnya.",
+      "ln1": "Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Ketuk tab ini untuk melanjutkan.",
+      "ln2": "'Catat Utang': kamu berhutang ke orang atau orang melunasi piutangnya ke kamu. 'Pinjamkan': kamu meminjamkan uang ke orang atau kamu melunasi utangmu.",
+      "ln3": "Setiap orang atau entitas dikelompokkan di sini. Ketuk untuk melihat histori pinjaman mereka.",
+      "rp1": "Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Ketuk tab ini untuk melanjutkan.",
       "rp2": "Lihat laporan per periode: realtime hari ini, bulanan, atau rentang tanggal kustom.",
       "rp3": "Beralih antara tampilan Pengeluaran dan Pemasukan untuk melihat grafik breakdown masing-masing.",
-      "end": "Selesai! Kamu sudah mengenal fitur utama PFinTrack. Mulai catat keuanganmu sekarang.",
-      "wl5": "Tap untuk menambah wallet baru — rekening bank, tunai, GoPay, dan lainnya.",
-      "wl6": "Tap kartu wallet untuk melihat detail, edit saldo, atau riwayat transaksinya.",
-      "wl4": "Urutkan wallet berdasarkan nama atau saldo agar mudah ditemukan.",
-      "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Tap potongan untuk memfilter daftar di bawah.",
-      "rp5": "Tap untuk membuat laporan kustom dengan rentang tanggal tertentu."
+      "end": "Selesai! Sekarang kamu udah kenal PFinTrack. Yuk mulai catat!",
+      "wl5": "Ketuk untuk menambah dompet baru — rekening bank, tunai, GoPay, dan lainnya.",
+      "wl6": "Ketuk kartu dompet untuk melihat detail, edit saldo, atau riwayat transaksinya.",
+      "wl4": "Urutkan dompet berdasarkan nama atau saldo agar mudah ditemukan.",
+      "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Ketuk potongan untuk memfilter daftar di bawah.",
+      "rp5": "Ketuk untuk membuat laporan kustom dengan rentang tanggal tertentu."
     }
   }
 }

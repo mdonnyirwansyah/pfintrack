@@ -33,6 +33,8 @@
     "language": "Language",
     "display": "Display",
     "about": "About",
+    "help": "Help",
+    "viewTutorial": "View Tutorial",
     "theme": {
       "light": "Light",
       "dark": "Dark",
@@ -86,15 +88,17 @@
     "report": {
       "title": "Report",
       "showSavingRateCard": "Saving Rate card",
-      "showLoanOutstanding": "Loan section",
-      "showInsightCard": "Spending insight",
+      "showLoanOutstanding": "Active loans section",
+      "showInsightCard": "Spending insight card",
       "showDonutChart": "Category chart",
       "showDonutChartHint": "Also hides daily summary and category list",
       "showLoanRow": "Loan row in summary",
       "showBalanceCorrectionRow": "Balance correction row",
       "showMonthlyOverviewChart": "Monthly overview chart",
       "showNetWorthChart": "Net worth chart",
-      "visibilitySettings": "Section visibility",
+      "visibilitySettings": "Show or hide sections",
+      "help": "Help",
+      "viewTutorial": "View Tutorial",
       "showAll": "Show all",
       "hideAll": "Hide all"
     }
@@ -106,7 +110,8 @@
     "totalBalance": "Total Balance",
     "currentBalance": "Current Balance",
     "noWallets": "No wallets yet",
-    "noWalletsDesc": "Add your first wallet using the + button.",
+    "noWalletsDesc": "Tap + to create your first wallet.",
+    "addAriaLabel": "Add wallet",
     "notFound": "Wallet not found",
     "backToList": "Back to wallet list",
     "form": {
@@ -173,13 +178,15 @@
     "editExpense": "Edit Expense",
     "editTransfer": "Edit Transfer",
     "editBalanceCorrection": "Edit Balance Correction",
-    "noData": "There is no data",
+    "noData": "Nothing here yet",
     "noDataDesc": "No transactions on this day. Tap + to add one.",
     "searchPlaceholder": "Search transactions...",
     "noResults": "No results found",
     "noResultsDesc": "No transactions match your search.",
     "noHistory": "No transactions yet",
-    "noHistoryDesc": "Add your first transaction using the + button.",
+    "noHistoryDesc": "Transactions you record will appear here.",
+    "exportAriaLabel": "Export to Excel",
+    "historyAriaLabel": "Transaction history",
     "filter": {
       "all": "All",
       "income": "Income",
@@ -256,34 +263,35 @@
   "loan": {
     "title": "Loan",
     "insufficientBalance": "Insufficient wallet balance",
-    "addGive": "Add Give",
-    "addGet": "Add Get",
+    "addGive": "Give",
+    "addGet": "Receive",
     "editEntry": "Edit Entry",
-    "noCounterparties": "No counterparties yet",
-    "noCounterpartiesDesc": "Tap + to record a Give or Get loan",
+    "noCounterparties": "No records yet",
+    "noCounterpartiesDesc": "Tap + to record a loan or debt.",
     "noEntries": "No entries yet",
-    "noEntriesDesc": "Tap + to record a Give or Get loan",
+    "noEntriesDesc": "Tap + to record a loan or debt.",
     "paidOff": "Paid off",
     "notPaidOff": "Not paid off",
     "markPaidOff": "Mark as Paid Off",
     "markPaidOffTitle": "Mark {name} as paid off?",
     "editGive": "Edit Give",
-    "editGet": "Edit Get",
+    "editGet": "Edit Receive",
     "entryNotFound": "Entry not found",
     "entryNotFoundDesc": "This entry may have been deleted.",
-    "markPaidOffDesc": "This will close all outstanding loan records with this person. You can still add new transactions at any time.",
+    "markPaidOffDesc": "All outstanding loan records with this person will be closed. You can still add new records later.",
     "unmarkPaidOff": "Unmark Paid Off",
-    "withoutExplanation": "Without explanation",
-    "counterpartyNotFound": "Counterparty not found",
+    "withoutExplanation": "No notes",
+    "counterpartyNotFound": "Person not found",
     "counterpartyNotFoundDesc": "This person may have been deleted.",
+    "deleteEntry": "Delete This Entry",
     "summary": {
-      "get": "Get",
-      "give": "Give",
+      "get": "Received",
+      "give": "Given",
       "balance": "Balance"
     },
     "fab": {
       "give": "Give",
-      "get": "Get"
+      "get": "Receive"
     },
     "form": {
       "date": "Date",
@@ -295,9 +303,10 @@
       "selectWallet": "Select Wallet",
       "noteOptional": "Note (optional)",
       "notePlaceholder": "Note (optional)",
-      "clearWallet": "Clear",
-      "saveGive": "Save Give",
-      "saveGet": "Save Get"
+      "clearWallet": "Clear selection",
+      "saveGive": "Save Loan",
+      "saveGet": "Save Debt",
+      "currentBalance": "Balance:"
     },
     "rename": {
       "title": "Rename",
@@ -310,8 +319,8 @@
       "cancel": "Cancel"
     },
     "deleteCounterpartyConfirm": {
-      "title": "Delete Counterparty?",
-      "description": "All loan entries for {name} will also be deleted.",
+      "title": "Delete this person?",
+      "description": "All loan records with {name} will also be deleted.",
       "confirm": "Delete",
       "cancel": "Cancel"
     },
@@ -324,17 +333,17 @@
       "nameRequired": "Name is required",
       "nameTooShort": "Name must be at least 2 characters",
       "nameTooLong": "Name must be 50 characters or less",
-      "walletRequired": "Please select a wallet",
+      "walletRequired": "Please select a wallet.",
       "noteTooLong": "Note must be 255 characters or less",
       "renameRequired": "Name is required",
-      "renameTaken": "Name is already taken"
+      "renameTaken": "This name already exists."
     }
   },
   "report": {
     "title": "Report",
     "notFound": "Report not found.",
     "tabs": {
-      "realtime": "Realtime",
+      "realtime": "Live",
       "monthly": "Monthly",
       "custom": "Custom"
     },
@@ -375,7 +384,7 @@
       "title": "Report Detail",
       "summaryTitle": "Period Summary",
       "loanTitle": "Loans This Period",
-      "loanGive": "Lent Out",
+      "loanGive": "Given",
       "loanGet": "Received",
       "filterAll": "All",
       "filterExpense": "Expenses",
@@ -443,10 +452,10 @@
       "noIncome": "No income recorded this month"
     },
     "loanSummary": {
-      "title": "Active Loans",
-      "receivable": "Receivable",
-      "payable": "Payable",
-      "empty": "No active loans"
+      "title": "Outstanding",
+      "receivable": "They owe you",
+      "payable": "You owe them",
+      "empty": "All settled!"
     },
     "categoryTrend": {
       "title": "Category Trend",
@@ -474,7 +483,7 @@
   },
   "demo": {
     "banner": {
-      "message": "You are exploring sample data.",
+      "message": "You're viewing sample data.",
       "clearButton": "Clear & Start",
       "closeAriaLabel": "Close banner"
     },

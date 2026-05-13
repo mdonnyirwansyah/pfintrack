@@ -265,7 +265,7 @@ export function LoanEntryForm({
           </button>
           {selectedWallet && (
             <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-              Balance: {formatIDR(selectedWallet.balance)}
+              {t("form.currentBalance")} {formatIDR(selectedWallet.balance)}
             </p>
           )}
           {errors.wallet_id && (
@@ -465,7 +465,7 @@ export function LoanEntryForm({
             }}
           >
             <Trash2 className="w-4 h-4" />
-            <span className="text-[14px] font-medium">{t("deleteEntryConfirm.confirm")} Entry</span>
+            <span className="text-[14px] font-medium">{t("deleteEntry")}</span>
           </button>
         )}
 

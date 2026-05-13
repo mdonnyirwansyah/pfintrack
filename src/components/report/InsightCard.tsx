@@ -42,6 +42,7 @@ function InsightIcon({ type }: { type: InsightType }) {
 
 export function InsightCard({ insight, onDismiss }: InsightCardProps) {
   const t = useTranslations("report.insight");
+  const tc = useTranslations("common");
 
   let message = "";
   switch (insight.type) {
@@ -99,7 +100,7 @@ export function InsightCard({ insight, onDismiss }: InsightCardProps) {
           onClick={onDismiss}
           className="flex items-center justify-center w-6 h-6 rounded-full flex-shrink-0 transition-opacity active:opacity-60"
           style={{ color: "var(--text-tertiary)" }}
-          aria-label="Dismiss"
+          aria-label={tc("close")}
         >
           <X className="w-3.5 h-3.5" />
         </button>

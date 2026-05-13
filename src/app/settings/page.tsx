@@ -534,7 +534,7 @@ export default function SettingsPage() {
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
-          Bantuan
+          {t("help")}
         </p>
 
         <div className={sectionClass}>
@@ -550,7 +550,7 @@ export default function SettingsPage() {
                 <BookOpen className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
               </div>
               <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
-                Lihat Tutorial
+                {t("viewTutorial")}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />

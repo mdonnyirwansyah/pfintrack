@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -28,12 +29,16 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "default",
   onConfirm,
   contentClassName,
 }: ConfirmDialogProps) {
+  const t = useTranslations("common");
+  const resolvedConfirmLabel = confirmLabel ?? t("confirm");
+  const resolvedCancelLabel = cancelLabel ?? t("cancel");
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
@@ -63,7 +68,7 @@ export function ConfirmDialog({
               minHeight: "var(--tap-target-min)",
             }}
           >
-            {cancelLabel}
+            {resolvedCancelLabel}
           </AlertDialogCancel>
           <AlertDialogAction
             className="flex-1 rounded-[12px] border-0 font-semibold"
@@ -77,7 +82,7 @@ export function ConfirmDialog({
             }}
             onClick={onConfirm}
           >
-            {confirmLabel}
+            {resolvedConfirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

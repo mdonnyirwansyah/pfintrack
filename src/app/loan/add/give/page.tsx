@@ -23,12 +23,16 @@ function AddGiveContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lockedCounterparty, setLockedCounterparty] = useState<LoanCounterparty | null>(null);
+  const [counterpartyFetched, setCounterpartyFetched] = useState(!counterpartyIdParam);
   const t = useTranslations("loan");
 
   useEffect(() => {
     void loadWallets();
     if (counterpartyIdParam) {
-      void loanCounterpartiesRepo.getById(counterpartyIdParam).then(setLockedCounterparty);
+      void loanCounterpartiesRepo.getById(counterpartyIdParam).then((cp) => {
+        setLockedCounterparty(cp);
+        setCounterpartyFetched(true);
+      });
     }
   }, [loadWallets, counterpartyIdParam]);
 
@@ -39,9 +43,11 @@ function AddGiveContent() {
   async function handleSubmit(values: LoanEntryFormValues) {
     setIsSubmitting(true);
     try {
-      const counterparty = await findOrCreateCounterparty(values.name);
+      const counterpartyId = lockedCounterparty
+        ? lockedCounterparty.id
+        : (await findOrCreateCounterparty(values.name)).id;
       await createEntry({
-        counterpartyId: counterparty.id,
+        counterpartyId,
         type: "give",
         amount: parseIDR(values.amount),
         wallet_id: values.wallet_id,
@@ -58,14 +64,16 @@ function AddGiveContent() {
   return (
     <>
       <AppHeader title={t("addGive")} showBack />
-      <LoanEntryForm
-        type="give"
-        initialValues={initialValues}
-        isNameLocked={!!lockedCounterparty}
-        wallets={wallets}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-      />
+      {counterpartyFetched && (
+        <LoanEntryForm
+          type="give"
+          initialValues={initialValues}
+          isNameLocked={!!lockedCounterparty}
+          wallets={wallets}
+          isSubmitting={isSubmitting}
+          onSubmit={handleSubmit}
+        />
+      )}
     </>
   );
 }
