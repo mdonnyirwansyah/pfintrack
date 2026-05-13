@@ -6,7 +6,6 @@ import { getOrCreateAnonId } from "@/lib/bootstrap/anon-id";
 import { useAppStore } from "@/lib/stores/useAppStore";
 import { setFormatDecimals } from "@/lib/format/number";
 import { runStorageMigration, isMigrationDone } from "@/lib/storage/migrate-from-localstorage";
-import { DemoBanner } from "./DemoBanner";
 
 interface AppProvidersProps {
   children: React.ReactNode;

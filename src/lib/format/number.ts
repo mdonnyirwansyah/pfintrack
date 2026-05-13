@@ -44,6 +44,6 @@ export function formatIDRSigned(amount: number): string {
  */
 export function parseIDR(formatted: string): number {
   // Remove thousand separators (dots) and replace decimal comma with dot
-  const cleaned = formatted.replace(/\./g, "").replace(",", ".");
-  return parseFloat(cleaned);
+  const cleaned = formatted.replaceAll(".", "").replace(",", ".");
+  return Number.parseFloat(cleaned);
 }

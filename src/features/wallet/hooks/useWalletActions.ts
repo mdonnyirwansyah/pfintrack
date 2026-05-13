@@ -18,7 +18,7 @@ export function useWalletActions() {
 
   async function handleCreate(values: WalletFormValues) {
     const balance = parseIDR(values.balance.trim());
-    const actualBalance = isNaN(balance) ? 0 : balance;
+    const actualBalance = Number.isNaN(balance) ? 0 : balance;
 
     // Create wallet with 0 balance — balance will be applied via Balance Correction transaction
     const wallet = await createWallet({
@@ -52,7 +52,7 @@ export function useWalletActions() {
 
   async function handleUpdate(id: string, values: WalletFormValues, previousBalance: number) {
     const newBalanceParsed = parseIDR(values.balance.trim());
-    const actualNewBalance = isNaN(newBalanceParsed) ? previousBalance : newBalanceParsed;
+    const actualNewBalance = Number.isNaN(newBalanceParsed) ? previousBalance : newBalanceParsed;
     const delta = actualNewBalance - previousBalance;
 
     // Update name and type only — balance is handled via transaction below

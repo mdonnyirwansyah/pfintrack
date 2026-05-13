@@ -209,6 +209,134 @@ function useDateRangePicker(): DatePickerState & DatePickerActions {
   };
 }
 
+function DateFieldLabel({ isActive, label, value, min, max, onFocus, onChange }: Readonly<{
+  isActive: boolean;
+  label: string;
+  value: string;
+  min?: string;
+  max?: string;
+  onFocus: () => void;
+  onChange: (val: string) => void;
+}>) {
+  return (
+    <label className="flex-1 flex flex-col gap-1 px-3 pt-2 pb-2.5 rounded-[12px] cursor-pointer" style={{ background: "var(--bg-secondary)", border: `1.5px solid ${isActive ? "var(--color-brand)" : "var(--border-default)"}` }}>
+      <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide" style={{ color: isActive ? "var(--color-brand)" : "var(--text-tertiary)" }}>
+        {isActive && <ChevronRight className="w-3 h-3 flex-shrink-0" />}
+        {label}
+      </span>
+      <input type="date" value={value} min={min} max={max} onFocus={onFocus} onChange={(e) => onChange(e.target.value)} className="bg-transparent outline-none text-[13px] font-semibold w-full" style={{ color: value ? "var(--text-primary)" : "var(--text-tertiary)", colorScheme: "normal" }} />
+    </label>
+  );
+}
+
+function DateRangePickerSheet({
+  picker,
+  setDateRange,
+  errorMsg,
+  labelFrom,
+  labelTo,
+  labelAllTime,
+  labelApply,
+  labelPickStart,
+  labelPickEnd,
+}: Readonly<{
+  picker: DatePickerState & DatePickerActions;
+  setDateRange: (r: { start: string; end: string } | null) => void;
+  errorMsg: string;
+  labelFrom: string;
+  labelTo: string;
+  labelAllTime: string;
+  labelApply: string;
+  labelPickStart: string;
+  labelPickEnd: string;
+}>) {
+  const hint = picker.activeField === "from" ? labelPickStart : labelPickEnd;
+  const todayMax = toDateStr(todayDate());
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/40" onClick={() => picker.clearDateRange(setDateRange)} aria-hidden="true" />
+      <div className="fixed bottom-0 inset-x-0 mx-auto z-50 w-full max-w-md rounded-t-[24px] flex flex-col" style={{ background: "var(--bg-primary)", boxShadow: "0 -4px 32px rgba(0,0,0,0.18)" }}>
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full" style={{ background: "var(--border-default)" }} />
+        </div>
+        <div className="px-4 pt-3 pb-1 flex gap-3 flex-shrink-0">
+          <DateFieldLabel
+            isActive={picker.activeField === "from"}
+            label={labelFrom}
+            value={picker.draftFromStr}
+            max={picker.draftToStr || todayMax}
+            onFocus={() => { picker.setActiveField("from"); if (picker.draftFromDate) picker.setCalendarMonth(picker.draftFromDate); }}
+            onChange={(val) => picker.handleFromInput(val, errorMsg)}
+          />
+          <DateFieldLabel
+            isActive={picker.activeField === "to"}
+            label={labelTo}
+            value={picker.draftToStr}
+            min={picker.draftFromStr}
+            max={todayMax}
+            onFocus={() => { picker.setActiveField("to"); if (picker.draftToDate) picker.setCalendarMonth(picker.draftToDate); }}
+            onChange={(val) => picker.handleToInput(val, errorMsg)}
+          />
+        </div>
+        <div className="px-4 min-h-[20px] flex-shrink-0">
+          {picker.rangeError
+            ? <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>{picker.rangeError}</p>
+            : <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{hint}</p>
+          }
+        </div>
+        <div className="flex justify-center px-2 flex-shrink-0 overflow-hidden">
+          <div className="w-full max-w-[360px]">
+            <Calendar mode="range" selected={picker.calendarSelected} onSelect={picker.handleCalendarSelect} month={picker.calendarMonth} onMonthChange={picker.setCalendarMonth} disabled={{ after: todayDate() }} className="w-full [--cell-size:--spacing(8)]" />
+          </div>
+        </div>
+        <div className="px-4 pt-2 flex gap-3 flex-shrink-0" style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}>
+          <button onClick={() => picker.clearDateRange(setDateRange)} className="flex-1 rounded-[12px] text-[13px] font-medium transition-opacity active:opacity-70" style={{ minHeight: "var(--tap-target-min)", background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "1px solid var(--border-default)" }}>{labelAllTime}</button>
+          <button onClick={() => picker.applyDraftRange(setDateRange)} disabled={!picker.canApply} className="flex-[2] rounded-[12px] text-[14px] font-semibold transition-opacity active:opacity-70 disabled:opacity-40" style={{ minHeight: "var(--tap-target-min)", background: "var(--color-brand)", color: "var(--text-on-primary)" }}>{labelApply}</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function HistoryContent({
+  isLoading,
+  filtered,
+  wallets,
+  noResultsTitle,
+  noResultsDesc,
+}: Readonly<{
+  isLoading: boolean;
+  filtered: Transaction[];
+  wallets: import("@/lib/types/wallet").Wallet[];
+  noResultsTitle: string;
+  noResultsDesc: string;
+}>) {
+  if (isLoading) {
+    return (
+      <div className="px-4 space-y-3">
+        {["tx-a", "tx-b", "tx-c", "tx-d", "tx-e"].map((id) => (
+          <div key={id} className="h-[52px] rounded-[16px] animate-pulse" style={{ background: "var(--bg-secondary)" }} />
+        ))}
+      </div>
+    );
+  }
+  if (filtered.length === 0) {
+    return <EmptyState icon={FileSearch} title={noResultsTitle} description={noResultsDesc} />;
+  }
+  return (
+    <div className="px-4">
+      <div className="glass rounded-[16px] overflow-hidden">
+        {filtered.map((tx, idx) => (
+          <div key={tx.id}>
+            {idx > 0 && <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />}
+            <TransactionItem transaction={tx} wallets={wallets} showDate />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function TransactionHistoryPage() {
   const { transactions, isLoading, loadTransactions } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
@@ -381,200 +509,26 @@ export default function TransactionHistoryPage() {
       </div>
 
       {/* Content */}
-      {(() => {
-        if (isLoading) {
-          return (
-            <div className="px-4 space-y-3">
-              {["tx-a", "tx-b", "tx-c", "tx-d", "tx-e"].map((id) => (
-                <div
-                  key={id}
-                  className="h-[52px] rounded-[16px] animate-pulse"
-                  style={{ background: "var(--bg-secondary)" }}
-                />
-              ))}
-            </div>
-          );
-        }
-        if (filtered.length === 0) {
-          return (
-            <EmptyState
-              icon={FileSearch}
-              title={hasFilters ? t("noResults") : t("noHistory")}
-              description={hasFilters ? t("noResultsDesc") : t("noHistoryDesc")}
-            />
-          );
-        }
-        return (
-          <div className="px-4">
-            <div className="glass rounded-[16px] overflow-hidden">
-              {filtered.map((tx, idx) => (
-                <div key={tx.id}>
-                  {idx > 0 && (
-                    <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
-                  )}
-                  <TransactionItem transaction={tx} wallets={wallets} showDate />
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
+      <HistoryContent
+        isLoading={isLoading}
+        filtered={filtered}
+        wallets={wallets}
+        noResultsTitle={hasFilters ? t("noResults") : t("noHistory")}
+        noResultsDesc={hasFilters ? t("noResultsDesc") : t("noHistoryDesc")}
+      />
 
-      {/* Date range picker bottom sheet */}
       {picker.isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/40"
-            onClick={() => picker.clearDateRange(setDateRange)}
-            aria-hidden="true"
-          />
-          {/* Sheet — full-width on mobile, max-width centered on desktop */}
-          <div
-            className="fixed bottom-0 inset-x-0 mx-auto z-50 w-full max-w-md rounded-t-[24px] flex flex-col"
-            style={{
-              background: "var(--bg-primary)",
-              boxShadow: "0 -4px 32px rgba(0,0,0,0.18)",
-            }}
-          >
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full" style={{ background: "var(--border-default)" }} />
-            </div>
-
-            {/* From / To fields with typed input */}
-            <div className="px-4 pt-3 pb-1 flex gap-3 flex-shrink-0">
-              {/* Dari */}
-              <label
-                className="flex-1 flex flex-col gap-1 px-3 pt-2 pb-2.5 rounded-[12px] cursor-pointer"
-                style={{
-                  background: "var(--bg-secondary)",
-                  border: `1.5px solid ${picker.activeField === "from" ? "var(--color-brand)" : "var(--border-default)"}`,
-                }}
-              >
-                <span
-                  className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"
-                  style={{ color: picker.activeField === "from" ? "var(--color-brand)" : "var(--text-tertiary)" }}
-                >
-                  {picker.activeField === "from" && (
-                    <ChevronRight className="w-3 h-3 flex-shrink-0" />
-                  )}
-                  {t("history.from")}
-                </span>
-                <input
-                  type="date"
-                  value={picker.draftFromStr}
-                  max={picker.draftToStr || toDateStr(todayDate())}
-                  onFocus={() => {
-                    picker.setActiveField("from");
-                    if (picker.draftFromDate) picker.setCalendarMonth(picker.draftFromDate);
-                  }}
-                  onChange={(e) => picker.handleFromInput(e.target.value, errorMsg)}
-                  className="bg-transparent outline-none text-[13px] font-semibold w-full"
-                  style={{
-                    color: picker.draftFromStr ? "var(--text-primary)" : "var(--text-tertiary)",
-                    colorScheme: "normal",
-                  }}
-                />
-              </label>
-
-              {/* Hingga */}
-              <label
-                className="flex-1 flex flex-col gap-1 px-3 pt-2 pb-2.5 rounded-[12px] cursor-pointer"
-                style={{
-                  background: "var(--bg-secondary)",
-                  border: `1.5px solid ${picker.activeField === "to" ? "var(--color-brand)" : "var(--border-default)"}`,
-                }}
-              >
-                <span
-                  className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"
-                  style={{ color: picker.activeField === "to" ? "var(--color-brand)" : "var(--text-tertiary)" }}
-                >
-                  {picker.activeField === "to" && (
-                    <ChevronRight className="w-3 h-3 flex-shrink-0" />
-                  )}
-                  {t("history.to")}
-                </span>
-                <input
-                  type="date"
-                  value={picker.draftToStr}
-                  min={picker.draftFromStr}
-                  max={toDateStr(todayDate())}
-                  onFocus={() => {
-                    picker.setActiveField("to");
-                    if (picker.draftToDate) picker.setCalendarMonth(picker.draftToDate);
-                  }}
-                  onChange={(e) => picker.handleToInput(e.target.value, errorMsg)}
-                  className="bg-transparent outline-none text-[13px] font-semibold w-full"
-                  style={{
-                    color: picker.draftToStr ? "var(--text-primary)" : "var(--text-tertiary)",
-                    colorScheme: "normal",
-                  }}
-                />
-              </label>
-            </div>
-
-            {/* Validation error or step hint */}
-            <div className="px-4 min-h-[20px] flex-shrink-0">
-              {picker.rangeError ? (
-                <p className="text-[11px]" style={{ color: "var(--color-negative)" }}>
-                  {picker.rangeError}
-                </p>
-              ) : (
-                <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                  {picker.activeField === "from"
-                    ? t("history.pickStart")
-                    : t("history.pickEnd")}
-                </p>
-              )}
-            </div>
-
-            {/* Calendar — constrained width so it's not zoomed on desktop */}
-            <div className="flex justify-center px-2 flex-shrink-0 overflow-hidden">
-              <div className="w-full max-w-[360px]">
-                <Calendar
-                  mode="range"
-                  selected={picker.calendarSelected}
-                  onSelect={picker.handleCalendarSelect}
-                  month={picker.calendarMonth}
-                  onMonthChange={picker.setCalendarMonth}
-                  disabled={{ after: todayDate() }}
-                  className="w-full [--cell-size:--spacing(8)]"
-                />
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div
-              className="px-4 pt-2 flex gap-3 flex-shrink-0"
-              style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
-            >
-              <button
-                onClick={() => picker.clearDateRange(setDateRange)}
-                className="flex-1 rounded-[12px] text-[13px] font-medium transition-opacity active:opacity-70"
-                style={{
-                  minHeight: "var(--tap-target-min)",
-                  background: "var(--bg-secondary)",
-                  color: "var(--text-secondary)",
-                  border: "1px solid var(--border-default)",
-                }}
-              >
-                {t("history.allTime")}
-              </button>
-              <button
-                onClick={() => picker.applyDraftRange(setDateRange)}
-                disabled={!picker.canApply}
-                className="flex-[2] rounded-[12px] text-[14px] font-semibold transition-opacity active:opacity-70 disabled:opacity-40"
-                style={{
-                  minHeight: "var(--tap-target-min)",
-                  background: "var(--color-brand)",
-                  color: "var(--text-on-primary)",
-                }}
-              >
-                {t("history.apply")}
-              </button>
-            </div>
-          </div>
-        </>
+        <DateRangePickerSheet
+          picker={picker}
+          setDateRange={setDateRange}
+          errorMsg={errorMsg}
+          labelFrom={t("history.from")}
+          labelTo={t("history.to")}
+          labelAllTime={t("history.allTime")}
+          labelApply={t("history.apply")}
+          labelPickStart={t("history.pickStart")}
+          labelPickEnd={t("history.pickEnd")}
+        />
       )}
     </>
   );

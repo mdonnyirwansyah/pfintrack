@@ -166,5 +166,28 @@ When adding new UI text, add entries to BOTH `src/i18n/messages/en.json` and `sr
 
 ---
 
+## Code Standards Wajib (ESLint + SonarQube)
+
+Terapkan setiap kali menulis atau mengubah kode agar lulus quality gate:
+
+| Dilarang | Wajib |
+|---|---|
+| `isNaN(x)` | `Number.isNaN(x)` |
+| `parseInt(x, 10)` | `Number.parseInt(x, 10)` |
+| `parseFloat(x)` | `Number.parseFloat(x)` |
+| `.replace(/r/g, y)` | `.replaceAll(/r/g, y)` |
+| Props `{ a: string }` | `Readonly<{ a: string }>` |
+| `<div role="button" onClick>` | `<button type="button" onClick>` |
+| `value={{ fn }}` di Context | `useMemo(() => ({ fn }), [fn])` |
+| `ref.current` saat render | Simpan ke state, update saat ref di-set |
+| Hooks setelah `return null` | Pindahkan semua hooks ke atas early return |
+| Array `key={i}` | `key={\`prefix-${i}\`}` atau ID stabil |
+
+**Cognitive complexity ≤ 15**: jika function terlalu panjang/bercabang, extract sub-component atau helper.
+
+**Form amount handler baru**: jika tambah file dengan pola formatting IDR yang sama, tambahkan ke `sonar.cpd.exclusions` di `sonar-project.properties`.
+
+---
+
 ## Demo Data
 Demo data lives in `src/lib/demo-data.ts`. Wallets are created via `createWalletWithBalance()` helper which applies the Balance Correction transaction pattern. Loan entries all have `wallet_id` assigned.

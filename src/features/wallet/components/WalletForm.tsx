@@ -43,7 +43,7 @@ export function WalletForm({
     const init = initialValues?.balance;
     if (!init) return "";
     const parsed = parseIDR(init);
-    return !isNaN(parsed) ? formatIDR(parsed) : init;
+    return !Number.isNaN(parsed) ? formatIDR(parsed) : init;
   });
   const [walletType, setWalletType] = useState<WalletType>(
     initialValues?.wallet_type ?? "bank"
@@ -85,7 +85,7 @@ export function WalletForm({
       errs.balance = t("validation.balanceRequired");
     } else {
       const parsed = parseIDR(balanceStr);
-      if (isNaN(parsed) || parsed < 0) {
+      if (Number.isNaN(parsed) || parsed < 0) {
         errs.balance = t("validation.balanceInvalid");
       } else if (parsed > MAX_BALANCE) {
         errs.balance = t("validation.balanceExceeds");
@@ -215,7 +215,7 @@ export function WalletForm({
             value={balance}
             onChange={(e) => {
               let val = e.target.value;
-              val = val.replace(/[^0-9,]/g, "");
+              val = val.replaceAll(/[^0-9,]/g, "");
               if (!val) {
                 setBalance("");
                 return;
@@ -224,9 +224,9 @@ export function WalletForm({
               let integerPart = parts[0];
               const decimalPart = parts.length > 1 ? "," + parts[1] : "";
               if (integerPart) {
-                const parsed = parseInt(integerPart, 10);
-                if (!isNaN(parsed)) {
-                  integerPart = parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                const parsed = Number.parseInt(integerPart, 10);
+                if (!Number.isNaN(parsed)) {
+                  integerPart = parsed.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".");
                 } else {
                   integerPart = "";
                 }
@@ -263,12 +263,12 @@ export function WalletForm({
               key={zeros}
               type="button"
               onClick={() => {
-                const intPart = (balance || "0").replace(/\./g, "").split(",")[0];
-                const num = parseInt(intPart || "0", 10);
+                const intPart = (balance || "0").replaceAll(".", "").split(",")[0];
+                const num = Number.parseInt(intPart || "0", 10);
                 const factor = zeros === "000" ? 1000 : 100;
                 const newNum = num * factor;
                 if (newNum <= 999_999_999_999) {
-                  setBalance(newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                  setBalance(newNum.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, "."));
                 }
               }}
               className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"

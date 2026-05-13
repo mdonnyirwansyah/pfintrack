@@ -6,7 +6,6 @@ import { useTourIntercept } from '@/lib/stores/tourInterceptContext';
 
 export function TourTooltip({
   backProps,
-  closeProps,
   index,
   isLastStep,
   primaryProps,
@@ -56,23 +55,26 @@ export function TourTooltip({
           marginBottom: 14,
         }}
       >
-        {Array.from({ length: size }).map((_, i) => (
-          <span
-            key={i}
-            style={{
-              display: 'block',
-              width: i === index ? 16 : 6,
-              height: 6,
-              borderRadius: 'var(--radius-full, 9999px)',
-              background: i === index
-                ? 'var(--color-brand)'
-                : i < index
-                  ? 'var(--color-brand-soft, rgba(91,141,239,0.3))'
-                  : 'var(--bg-secondary)',
-              transition: 'width 0.2s ease, background 0.2s ease',
-            }}
-          />
-        ))}
+        {Array.from({ length: size }).map((_, i) => {
+          let dotBg: string;
+          if (i === index) dotBg = 'var(--color-brand)';
+          else if (i < index) dotBg = 'var(--color-brand-soft, rgba(91,141,239,0.3))';
+          else dotBg = 'var(--bg-secondary)';
+
+          return (
+            <span
+              key={`dot-${i}`} // NOSONAR — progress dots have no stable ID; index is intentional
+              style={{
+                display: 'block',
+                width: i === index ? 16 : 6,
+                height: 6,
+                borderRadius: 'var(--radius-full, 9999px)',
+                background: dotBg,
+                transition: 'width 0.2s ease, background 0.2s ease',
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Buttons */}

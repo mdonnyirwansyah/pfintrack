@@ -35,13 +35,11 @@ export function SortPill({ value, onChange }: SortPillProps) {
 
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
+            className="fixed inset-0 z-40 cursor-default"
             aria-label="Close sort menu"
             onClick={() => setOpen(false)}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setOpen(false); }}
           />
           <div
             className="absolute right-0 top-full mt-1 z-50 rounded-[12px] overflow-hidden py-1 min-w-[130px]"

@@ -11,6 +11,7 @@ const STYLES = `
   .tb-dot  { animation: tbd 1.4s ease-in-out infinite; }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function TourBeacon(_props: BeaconRenderProps) {
   return (
     <span

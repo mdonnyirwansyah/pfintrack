@@ -55,7 +55,7 @@ function getDefaults(initial?: Partial<LoanEntryFormValues>): LoanEntryFormValue
 
   if (initial?.amount) {
     const parsed = parseIDR(initial.amount);
-    if (!isNaN(parsed)) {
+    if (!Number.isNaN(parsed)) {
       defaults.amount = formatIDR(parsed);
     }
   }
@@ -127,7 +127,7 @@ export function LoanEntryForm({
     }
     if (!values.amount.trim()) {
       errs.amount = t("validation.amountRequired");
-    } else if (isNaN(amountNum) || amountNum <= 0) {
+    } else if (Number.isNaN(amountNum) || amountNum <= 0) {
       errs.amount = t("validation.amountInvalid");
     } else if (amountNum > MAX_AMOUNT) {
       errs.amount = t("validation.amountExceeds");
@@ -299,7 +299,7 @@ export function LoanEntryForm({
               value={values.amount}
               onChange={(e) => {
                 let val = e.target.value;
-                val = val.replace(/[^0-9,]/g, "");
+                val = val.replaceAll(/[^0-9,]/g, "");
                 if (!val) {
                   set("amount", "");
                   return;
@@ -308,9 +308,9 @@ export function LoanEntryForm({
                 let integerPart = parts[0];
                 const decimalPart = parts.length > 1 ? "," + parts[1] : "";
                 if (integerPart) {
-                  const parsed = parseInt(integerPart, 10);
-                  if (!isNaN(parsed)) {
-                    integerPart = parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                  const parsed = Number.parseInt(integerPart, 10);
+                  if (!Number.isNaN(parsed)) {
+                    integerPart = parsed.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".");
                   } else {
                     integerPart = "";
                   }
@@ -337,12 +337,12 @@ export function LoanEntryForm({
                 key={zeros}
                 type="button"
                 onClick={() => {
-                  const intPart = (values.amount || "0").replace(/\./g, "").split(",")[0];
-                  const num = parseInt(intPart || "0", 10);
+                  const intPart = (values.amount || "0").replaceAll(".", "").split(",")[0];
+                  const num = Number.parseInt(intPart || "0", 10);
                   const factor = zeros === "000" ? 1000 : 100;
                   const newNum = num * factor;
                   if (newNum <= 999_999_999_999) {
-                    set("amount", newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                    set("amount", newNum.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, "."));
                   }
                 }}
                 className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"

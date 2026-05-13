@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Joyride, ACTIONS, EVENTS, STATUS, type EventData, type Controls } from 'react-joyride';
+import { Joyride, ACTIONS, EVENTS, STATUS, type EventData } from 'react-joyride';
 import { useTranslations } from 'next-intl';
 import { useTourStore } from '@/lib/stores/useTourStore';
 import { TourTooltip } from '@/components/shared/TourTooltip';
@@ -77,7 +77,6 @@ function TourSkipConfirm({
   if (!open) return null;
 
   return (
-    // Plain div overlay — no Radix portal, no focus trap, no aria-hidden side-effects
     <div
       style={{
         position: 'fixed',
@@ -88,10 +87,18 @@ function TourSkipConfirm({
         justifyContent: 'center',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
-      onClick={onCancel}
     >
+      {/* Backdrop */}
+      <button
+        type="button"
+        aria-label="Cancel"
+        onClick={onCancel}
+        style={{ position: 'absolute', inset: 0, cursor: 'default', background: 'transparent', border: 'none' }}
+      />
       <div
         style={{
+          position: 'relative',
+          zIndex: 1,
           width: '100%',
           maxWidth: 480,
           background: 'var(--bg-secondary)',
@@ -102,7 +109,6 @@ function TourSkipConfirm({
           padding: '20px 20px 24px',
           fontFamily: 'var(--font-sans, system-ui, sans-serif)',
         }}
-        onClick={(e) => e.stopPropagation()}
       >
         <p
           style={{
@@ -187,21 +193,17 @@ export function ProductTour() {
     content: t(`steps.${key}` as Parameters<typeof t>[0]),
   }));
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setIsMounted(true); }, []);
 
   // When tour is requested: reset step + navigate if needed, but don't start Joyride yet
   useEffect(() => {
     if (run) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStepIndex(0);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJoyrideRun(false);
       if (!pathname.startsWith('/transactions')) {
         router.push('/transactions');
       }
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJoyrideRun(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,15 +212,12 @@ export function ProductTour() {
   // Only activate Joyride once we are actually on /transactions
   useEffect(() => {
     if (run && pathname.startsWith('/transactions')) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJoyrideRun(true);
     }
   }, [run, pathname]);
 
-  if (!isMounted) return null;
-
-  const handleEvent = (data: EventData, _controls: Controls) => {
-    const { action, index, status, type } = data;
+  const handleEvent = (data: EventData) => {
+    const { action, status, type } = data;
 
     if (status === STATUS.FINISHED) { completeTour(); return; }
     if (status === STATUS.SKIPPED)  { skipTour(); return; }
@@ -238,7 +237,7 @@ export function ProductTour() {
     }
   };
 
-  const shouldIntercept = (index: number): boolean => {
+  const shouldIntercept = useCallback((index: number): boolean => {
     const expectedPath = TRANSITION_STEPS[index];
     if (expectedPath && !pathname.startsWith(expectedPath)) {
       pendingStepRef.current = index;
@@ -247,7 +246,7 @@ export function ProductTour() {
       return true;
     }
     return false;
-  };
+  }, [pathname]);
 
   const handleConfirmSkip = () => {
     setStepIndex(SKIP_TARGETS[pendingStepRef.current]);
@@ -258,8 +257,12 @@ export function ProductTour() {
     setConfirmSkip(false);
   };
 
+  const contextValue = useMemo(() => ({ shouldIntercept }), [shouldIntercept]);
+
+  if (!isMounted) return null;
+
   return (
-    <TourInterceptContext.Provider value={{ shouldIntercept }}>
+    <TourInterceptContext.Provider value={contextValue}>
       <Joyride
         steps={tourSteps}
         run={joyrideRun}

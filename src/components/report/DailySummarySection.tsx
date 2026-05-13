@@ -193,8 +193,8 @@ export function DailySummarySection({
     const sorted = [...rawSummaries].sort((a, b) => a.date.localeCompare(b.date));
     // If > 20 days, only show every 5th label to avoid crowding
     const total = sorted.length;
-    return sorted.map((s, idx) => {
-      const dayNum = parseInt(s.date.slice(8, 10), 10);
+    return sorted.map((s) => {
+      const dayNum = Number.parseInt(s.date.slice(8, 10), 10);
       const showLabel = total <= 20 || (dayNum % 5 === 1 || dayNum === 1);
       return {
         date: s.date,

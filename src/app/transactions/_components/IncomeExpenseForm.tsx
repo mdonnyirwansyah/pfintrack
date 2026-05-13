@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Calculator, Wallet as WalletIcon, AlertTriangle } from "lucide-react";
-import type { TransactionType } from "@/lib/types/transaction";
 import type { Wallet } from "@/lib/types/wallet";
 import { WalletPicker } from "@/components/shared/WalletPicker";
 import { TitleSuggestionChips, CategorySuggestionChips } from "./SuggestionChips";
@@ -66,7 +65,7 @@ export function IncomeExpenseForm({
 
   if (initialValues?.amount) {
     const parsed = parseIDR(initialValues.amount);
-    if (!isNaN(parsed)) {
+    if (!Number.isNaN(parsed)) {
       defaults.amount = formatIDR(parsed);
     }
   }
@@ -111,7 +110,7 @@ export function IncomeExpenseForm({
     if (!form.transaction_time) e.transaction_time = t("validation.timeRequired");
     if (!form.wallet_id) e.wallet_id = t("validation.walletRequired");
     if (!form.amount) e.amount = t("validation.amountRequired");
-    else if (isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
+    else if (Number.isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
     else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
     if (!hideMetaFields) {
       if (!form.title.trim()) e.title = t("validation.titleRequired");
@@ -248,7 +247,7 @@ export function IncomeExpenseForm({
             value={form.amount}
             onChange={(e) => {
               let val = e.target.value;
-              val = val.replace(/[^0-9,]/g, "");
+              val = val.replaceAll(/[^0-9,]/g, "");
               if (!val) {
                 set("amount", "");
                 return;
@@ -257,9 +256,9 @@ export function IncomeExpenseForm({
               let integerPart = parts[0];
               const decimalPart = parts.length > 1 ? "," + parts[1] : "";
               if (integerPart) {
-                const parsed = parseInt(integerPart, 10);
-                if (!isNaN(parsed)) {
-                  integerPart = parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                const parsed = Number.parseInt(integerPart, 10);
+                if (!Number.isNaN(parsed)) {
+                  integerPart = parsed.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".");
                 } else {
                   integerPart = "";
                 }
@@ -286,12 +285,12 @@ export function IncomeExpenseForm({
               key={zeros}
               type="button"
               onClick={() => {
-                const intPart = (form.amount || "0").replace(/\./g, "").split(",")[0];
-                const num = parseInt(intPart || "0", 10);
+                const intPart = (form.amount || "0").replaceAll(".", "").split(",")[0];
+                const num = Number.parseInt(intPart || "0", 10);
                 const factor = zeros === "000" ? 1000 : 100;
                 const newNum = num * factor;
                 if (newNum <= 999_999_999_999) {
-                  set("amount", newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                  set("amount", newNum.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, "."));
                 }
               }}
               className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"

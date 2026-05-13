@@ -2,14 +2,9 @@
 
 import { create } from "zustand";
 import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
-import {
-  loanCounterpartiesRepo,
-  type CreateLoanCounterpartyInput,
-  type UpdateLoanCounterpartyInput,
-} from "@/lib/storage/loan-counterparties";
+import { loanCounterpartiesRepo } from "@/lib/storage/loan-counterparties";
 import {
   loanEntriesRepo,
-  type CreateLoanEntryInput,
   type UpdateLoanEntryInput,
 } from "@/lib/storage/loan-entries";
 import {

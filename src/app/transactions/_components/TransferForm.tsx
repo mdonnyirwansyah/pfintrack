@@ -52,7 +52,7 @@ export function TransferForm({
 
   if (initialValues?.amount) {
     const parsed = parseIDR(initialValues.amount);
-    if (!isNaN(parsed)) {
+    if (!Number.isNaN(parsed)) {
       defaults.amount = formatIDR(parsed);
     }
   }
@@ -113,7 +113,7 @@ export function TransferForm({
       e.destination_wallet_id = t("validation.sameWallet");
     }
     if (!form.amount) e.amount = t("validation.amountRequired");
-    else if (isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
+    else if (Number.isNaN(amount) || amount <= 0) e.amount = t("validation.amountInvalid");
     else if (amount > 999_999_999_999.99) e.amount = t("validation.amountExceeds");
     if (form.description.trim().length > 255)
       e.description = t("validation.descriptionTooLong");
@@ -262,7 +262,7 @@ export function TransferForm({
             value={form.amount}
             onChange={(e) => {
               let val = e.target.value;
-              val = val.replace(/[^0-9,]/g, "");
+              val = val.replaceAll(/[^0-9,]/g, "");
               if (!val) {
                 set("amount", "");
                 return;
@@ -271,9 +271,9 @@ export function TransferForm({
               let integerPart = parts[0];
               const decimalPart = parts.length > 1 ? "," + parts[1] : "";
               if (integerPart) {
-                const parsed = parseInt(integerPart, 10);
-                if (!isNaN(parsed)) {
-                  integerPart = parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                const parsed = Number.parseInt(integerPart, 10);
+                if (!Number.isNaN(parsed)) {
+                  integerPart = parsed.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".");
                 } else {
                   integerPart = "";
                 }
@@ -300,12 +300,12 @@ export function TransferForm({
               key={zeros}
               type="button"
               onClick={() => {
-                const intPart = (form.amount || "0").replace(/\./g, "").split(",")[0];
-                const num = parseInt(intPart || "0", 10);
+                const intPart = (form.amount || "0").replaceAll(".", "").split(",")[0];
+                const num = Number.parseInt(intPart || "0", 10);
                 const factor = zeros === "000" ? 1000 : 100;
                 const newNum = num * factor;
                 if (newNum <= 999_999_999_999) {
-                  set("amount", newNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                  set("amount", newNum.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, "."));
                 }
               }}
               className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"

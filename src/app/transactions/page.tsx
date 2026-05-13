@@ -134,7 +134,7 @@ function TransactionsContent() {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Transactions");
 
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      const dateStr = new Date().toISOString().slice(0, 10).replaceAll("-", "");
       const shortId = anonId.slice(0, 8);
       XLSX.writeFile(wb, `transactions_${shortId}_${dateStr}.xlsx`);
     } catch (err) {

@@ -5,6 +5,20 @@ argument-hint: <wallet|transactions|loan|report>
 
 You are running the **module development pipeline** for module: **$ARGUMENTS**
 
+## Code Standards Wajib
+
+Setiap kode baru atau perubahan **harus** mengikuti standar ini agar lulus TypeScript, ESLint, dan SonarQube quality gate:
+
+1. **`Number.*` & `replaceAll`** — Gunakan `Number.isNaN`, `Number.parseInt`, `Number.parseFloat`, dan `.replaceAll()`. Dilarang: `isNaN()`, `parseInt()`, `parseFloat()`, `.replace(/regex/g,)`.
+2. **Props `Readonly`** — Semua inline props type wajib `Readonly<{...}>`.
+3. **Hooks sebelum early return** — `useMemo`, `useCallback`, `useState`, dll tidak boleh setelah `if (...) return null`.
+4. **Jangan akses `ref.current` saat render** — Simpan ke state, update bersamaan saat ref di-set.
+5. **Backdrop/overlay interaktif** — Gunakan `<button type="button">`, bukan `<div role="button">`.
+6. **Context value** — Wajib `useMemo` agar object tidak berubah tiap render.
+7. **Cognitive complexity ≤ 15** — Extract sub-component atau helper jika function terlalu panjang/bercabang.
+8. **Array key** — Jangan pakai index mentah. Gunakan prefix (`key={\`item-${i}\`}`) atau ID stabil. Tambah `// NOSONAR` jika tidak ada pilihan lain.
+9. **Form amount handler baru** — Jika ada pola amount formatting serupa, tambahkan file ke `sonar.cpd.exclusions` di `sonar-project.properties`.
+
 ## Pre-flight
 1. Verify scaffold exists (`/components/shared/`, `/lib/storage/`). If not, run `scaffold-architect` and `storage-layer-engineer` agents first.
 2. Confirm with user: "About to run pipeline for **$ARGUMENTS**. Proceed?"

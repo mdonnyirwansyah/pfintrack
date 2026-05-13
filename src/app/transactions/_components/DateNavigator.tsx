@@ -124,13 +124,11 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
         {isOpen && (
           <>
             {/* Backdrop */}
-            <div
-              className="fixed inset-0 z-40"
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              className="fixed inset-0 z-40 cursor-default"
               aria-label="Close calendar"
               onClick={() => setIsOpen(false)}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsOpen(false); }}
             />
 
             {/* Popup */}

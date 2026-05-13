@@ -138,7 +138,7 @@ async function runTests() {
 
       // ---- Check 4: Tab buttons on /report ----
       if (route.path === "/report") {
-        const tabButtons = page.locator('button[style*="brand"]').or(
+        page.locator('button[style*="brand"]').or(
           page.locator('.rounded-full button, div > button')
         );
         // Check specific tab text
