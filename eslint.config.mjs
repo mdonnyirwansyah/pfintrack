@@ -10,7 +10,16 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "public/sw.js",
+    "public/sw.js.map",
+    "tests/*.js",
   ]),
+  {
+    rules: {
+      // setState in useEffect is a valid pattern for SSR hydration and state machines
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

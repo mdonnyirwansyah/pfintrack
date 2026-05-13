@@ -14,6 +14,7 @@ interface DonutChartProps {
 }
 
 // Active segment — slightly expanded with glow shadow
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderActiveShape = (props: any) => {
   const {
     cx, cy, innerRadius, outerRadius,

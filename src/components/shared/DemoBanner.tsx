@@ -13,6 +13,8 @@ export function DemoBanner() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
+    // localStorage only available client-side — required pattern for SSR hydration
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDemoMode(window.localStorage.getItem("pfintrack_demo_mode") === "true");
   }, []);
 

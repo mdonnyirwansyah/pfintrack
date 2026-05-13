@@ -170,6 +170,7 @@ export function ProductTour() {
   const [stepIndex, setStepIndex] = useState(0);
   const [joyrideRun, setJoyrideRun] = useState(false);
   const [confirmSkip, setConfirmSkip] = useState(false);
+  const [pendingModuleName, setPendingModuleName] = useState('');
   const pendingStepRef = useRef<number>(0);
   const pathname = usePathname();
   const router = useRouter();
@@ -186,17 +187,21 @@ export function ProductTour() {
     content: t(`steps.${key}` as Parameters<typeof t>[0]),
   }));
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setIsMounted(true); }, []);
 
   // When tour is requested: reset step + navigate if needed, but don't start Joyride yet
   useEffect(() => {
     if (run) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStepIndex(0);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJoyrideRun(false);
       if (!pathname.startsWith('/transactions')) {
         router.push('/transactions');
       }
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJoyrideRun(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -205,6 +210,7 @@ export function ProductTour() {
   // Only activate Joyride once we are actually on /transactions
   useEffect(() => {
     if (run && pathname.startsWith('/transactions')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJoyrideRun(true);
     }
   }, [run, pathname]);
@@ -236,6 +242,7 @@ export function ProductTour() {
     const expectedPath = TRANSITION_STEPS[index];
     if (expectedPath && !pathname.startsWith(expectedPath)) {
       pendingStepRef.current = index;
+      setPendingModuleName(MODULE_NAMES[index] ?? '');
       setConfirmSkip(true);
       return true;
     }
@@ -276,7 +283,7 @@ export function ProductTour() {
 
       <TourSkipConfirm
         open={confirmSkip}
-        moduleName={MODULE_NAMES[pendingStepRef.current] ?? ''}
+        moduleName={pendingModuleName}
         onConfirm={handleConfirmSkip}
         onCancel={handleCancelSkip}
       />
