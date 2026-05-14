@@ -20,12 +20,12 @@ export function EmptyState({
         style={{ color: "var(--text-tertiary)" }}
         strokeWidth={1.5}
       />
-      <h3
+      <h2
         className="text-[16px] font-semibold mb-1"
         style={{ color: "var(--text-primary)" }}
       >
         {title}
-      </h3>
+      </h2>
       {description && (
         <p
           className="text-[14px] mb-6"

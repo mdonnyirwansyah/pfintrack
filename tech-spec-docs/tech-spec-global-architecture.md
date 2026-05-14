@@ -2,7 +2,7 @@
 ## Global Architecture
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.0.0
+**Versi Dokumen:** 1.1.1
 **Tanggal:** 2026-05-14
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
@@ -13,6 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.1.1** | **2026-05-14** | **Fix aksesibilitas heading skip-level: `<h3>` di `EmptyState` dan `CategoryTrendChart` diubah ke `<h2>` karena keduanya muncul langsung di bawah `<h1>` tanpa `<h2>` di antaranya. §12.2 diperbarui dengan aturan eksplisit untuk `EmptyState` dan komponen chart.** |
 | **1.1.0** | **2026-05-14** | **Semantic HTML audit & fix. Ditambahkan §12 Konvensi Semantic HTML. Perubahan kode: list transaksi/wallet/loan pakai `<ul>`+`<li>`; Settings section labels `<p>` → `<h2>`; chart wrappers `<div>` → `<figure>`+`<figcaption>`; DemoBanner `<div>` → `<aside>`; SummaryBar `<div>` → `<section aria-label>`; DonutChart chart area diberi `role="img" aria-label`; rename dialog di loan detail ditambah `role="dialog" aria-modal aria-labelledby`; overlay backdrop history picker `<div onClick>` → `<button type="button">`; `transactions.summary.ariaLabel` ditambah ke en.json & id.json.** |
 | **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya menjadi versi rilis pertama. Mencakup: arsitektur Next.js App Router, 22 route (termasuk `/settings/report` dan `/~offline`), 5 tab Bottom Navigation, inventaris lengkap key state aplikasi (termasuk `pfintrack_color_theme`, `tour_completed`, `storage_version`), shared components (`SplashScreen`, `ColorThemeProvider`, `TourInitializer`, `ThemeToggle`, `TypeToConfirmDialog`), Settings module (`/settings` dan `/settings/report`), demo mode, color theme (blue/pink), producer-consumer contract, dan migrasi IndexedDB (PROP-0001).** |
 
@@ -814,9 +815,11 @@ Seluruh halaman dan komponen PFinTrack mengikuti standar semantic HTML berikut u
 | `<h1>` | Judul halaman di `AppHeader` (satu per halaman, di-render sebagai `<h1>`) |
 | `<h2>` | Section label di halaman Settings (`Appearance`, `Language`, `Display`, dll.) |
 | `<h2>` | Heading di komponen card: `LoanOutstandingSection`, rename dialog di Loan Detail |
-| `<h3>` | Sub-heading dalam card (digunakan di `MonthlySection`, dll.) |
+| `<h2>` | Judul di `EmptyState` (`title` prop) — tampil langsung di bawah `<h1>` tanpa section di antaranya |
+| `<h2>` | Label chart di `CategoryTrendChart` ("6-month trend") — section pertama di halaman category, langsung di bawah `<h1>` |
+| `<h3>` | Sub-heading yang berada di dalam section `<h2>` (bukan langsung setelah `<h1>`) |
 
-Aturan: jangan lewati level heading (tidak boleh langsung `h1` → `h3`).
+Aturan: jangan lewati level heading (tidak boleh langsung `h1` → `h3`). `EmptyState` dan komponen yang tampil sebagai konten utama halaman (tanpa `<h2>` di atasnya) wajib menggunakan `<h2>`.
 
 ### 12.3 List Elements
 
