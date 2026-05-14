@@ -79,39 +79,38 @@ const customReportsLsRepo = {
 // ---------------------------------------------------------------------------
 
 export const customReportsRepo = {
-  getAll(): Promise<CustomReport[]> {
+  async getAll(): Promise<CustomReport[]> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getAll();
-    return Promise.resolve(customReportsLsRepo.getAll());
+    return customReportsLsRepo.getAll();
   },
 
-  getAllIncludingInactive(): Promise<CustomReport[]> {
+  async getAllIncludingInactive(): Promise<CustomReport[]> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getAllIncludingInactive();
-    return Promise.resolve(customReportsLsRepo.getAllIncludingInactive());
+    return customReportsLsRepo.getAllIncludingInactive();
   },
 
-  getById(id: string): Promise<CustomReport | null> {
+  async getById(id: string): Promise<CustomReport | null> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getById(id);
-    return Promise.resolve(customReportsLsRepo.getById(id));
+    return customReportsLsRepo.getById(id);
   },
 
-  findByName(name: string): Promise<CustomReport | null> {
+  async findByName(name: string): Promise<CustomReport | null> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.findByName(name);
-    return Promise.resolve(customReportsLsRepo.findByName(name));
+    return customReportsLsRepo.findByName(name);
   },
 
-  create(input: CreateCustomReportInput): Promise<CustomReport> {
+  async create(input: CreateCustomReportInput): Promise<CustomReport> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.create(input);
-    return Promise.resolve(customReportsLsRepo.create(input));
+    return customReportsLsRepo.create(input);
   },
 
-  update(id: string, patch: UpdateCustomReportInput): Promise<CustomReport> {
+  async update(id: string, patch: UpdateCustomReportInput): Promise<CustomReport> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.update(id, patch);
-    return Promise.resolve(customReportsLsRepo.update(id, patch));
+    return customReportsLsRepo.update(id, patch);
   },
 
-  softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.softDelete(id);
     customReportsLsRepo.softDelete(id);
-    return Promise.resolve();
   },
 };

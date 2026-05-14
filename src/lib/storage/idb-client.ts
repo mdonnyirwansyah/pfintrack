@@ -78,7 +78,7 @@ const DB_VERSION = 2;
 let dbPromise: Promise<IDBPDatabase<PFinTrackDB>> | null = null;
 
 export function getDB(): Promise<IDBPDatabase<PFinTrackDB>> {
-  if (typeof window === "undefined") {
+  if (globalThis.window === undefined) {
     throw new Error("IDB not available in SSR");
   }
 
@@ -155,11 +155,10 @@ export function getDB(): Promise<IDBPDatabase<PFinTrackDB>> {
 // All helpers cast through `any` because the idb overloads are resolved
 // against concrete store names; the generic `StoreName` union doesn't
 // narrow well enough for TypeScript to pick the right overload.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyDB = any;
 
 export async function idbGetAll<T>(storeName: StoreName): Promise<T[]> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   return db.getAll(storeName) as Promise<T[]>;
 }
 
@@ -168,7 +167,8 @@ export async function idbGetAllByIndex<T>(
   indexName: string,
   value: IDBValidKey,
 ): Promise<T[]> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   return db.getAllFromIndex(storeName, indexName, value) as Promise<T[]>;
 }
 
@@ -176,7 +176,8 @@ export async function idbGet<T>(
   storeName: StoreName,
   id: string,
 ): Promise<T | undefined> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   return db.get(storeName, id) as Promise<T | undefined>;
 }
 
@@ -184,7 +185,8 @@ export async function idbPut<T>(
   storeName: StoreName,
   record: T,
 ): Promise<void> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   await db.put(storeName, record);
 }
 
@@ -192,7 +194,8 @@ export async function idbDelete(
   storeName: StoreName,
   id: string,
 ): Promise<void> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   await db.delete(storeName, id);
 }
 
@@ -200,12 +203,14 @@ export async function idbPutAll<T>(
   storeName: StoreName,
   records: T[],
 ): Promise<void> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   const tx = db.transaction(storeName, "readwrite");
   await Promise.all([...records.map((r: T) => tx.store.put(r)), tx.done]);
 }
 
 export async function idbClearStore(storeName: StoreName): Promise<void> {
-  const db: AnyDB = await getDB();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
   await db.clear(storeName);
 }

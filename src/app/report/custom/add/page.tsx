@@ -83,7 +83,7 @@ export default function AddCustomReportPage() {
     return errs;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {

@@ -4,9 +4,9 @@
  */
 
 export function readKey<T>(key: string): T[] {
-  if (typeof window === "undefined") return [];
+  if (globalThis.window === undefined) return [];
 
-  const raw = window.localStorage.getItem(key);
+  const raw = globalThis.localStorage.getItem(key);
   if (raw === null) return [];
 
   try {
@@ -23,6 +23,6 @@ export function readKey<T>(key: string): T[] {
 }
 
 export function writeKey<T>(key: string, value: T[]): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(value));
+  if (globalThis.window === undefined) return;
+  globalThis.localStorage.setItem(key, JSON.stringify(value));
 }

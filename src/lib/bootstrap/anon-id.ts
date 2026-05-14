@@ -6,16 +6,16 @@ const ANON_ID_KEY = "anon_id";
  * Safe to call multiple times; only generates once per browser.
  */
 export function getOrCreateAnonId(): string {
-  if (typeof window === "undefined") {
+  if (globalThis.window === undefined) {
     // SSR: return placeholder (never persisted)
     return "ssr-placeholder";
   }
 
-  const existing = localStorage.getItem(ANON_ID_KEY);
+  const existing = globalThis.localStorage.getItem(ANON_ID_KEY);
   if (existing) return existing;
 
   const newId = crypto.randomUUID();
-  localStorage.setItem(ANON_ID_KEY, newId);
+  globalThis.localStorage.setItem(ANON_ID_KEY, newId);
   return newId;
 }
 
@@ -24,6 +24,6 @@ export function getOrCreateAnonId(): string {
  * Returns null if not yet initialized.
  */
 export function readAnonId(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(ANON_ID_KEY);
+  if (globalThis.window === undefined) return null;
+  return globalThis.localStorage.getItem(ANON_ID_KEY);
 }

@@ -15,68 +15,68 @@ const STORAGE_VERSION_VALUE = "idb_v1";
 
 /** Synchronous check — safe to call during React lazy state init. */
 export function isMigrationDone(): boolean {
-  if (typeof window === "undefined") return true;
-  return localStorage.getItem(STORAGE_VERSION_KEY) === STORAGE_VERSION_VALUE;
+  if (globalThis.window === undefined) return true;
+  return globalThis.localStorage.getItem(STORAGE_VERSION_KEY) === STORAGE_VERSION_VALUE;
 }
 
 async function migrateWallets(): Promise<void> {
-  const raw = localStorage.getItem("wallets");
+  const raw = globalThis.localStorage.getItem("wallets");
   if (!raw) return;
   const records: Wallet[] = JSON.parse(raw) as Wallet[];
   if (Array.isArray(records) && records.length > 0) {
     await walletsIdbRepo.putAll(records);
   }
-  localStorage.removeItem("wallets");
+  globalThis.localStorage.removeItem("wallets");
 }
 
 async function migrateWalletBalanceHistory(): Promise<void> {
-  const raw = localStorage.getItem("wallet_balance_history");
+  const raw = globalThis.localStorage.getItem("wallet_balance_history");
   if (!raw) return;
   const records: WalletBalanceHistory[] = JSON.parse(raw) as WalletBalanceHistory[];
   if (Array.isArray(records) && records.length > 0) {
     await walletBalanceHistoryIdbRepo.putAll(records);
   }
-  localStorage.removeItem("wallet_balance_history");
+  globalThis.localStorage.removeItem("wallet_balance_history");
 }
 
 async function migrateTransactions(): Promise<void> {
-  const raw = localStorage.getItem("transactions");
+  const raw = globalThis.localStorage.getItem("transactions");
   if (!raw) return;
   const records: Transaction[] = JSON.parse(raw) as Transaction[];
   if (Array.isArray(records) && records.length > 0) {
     await transactionsIdbRepo.putAll(records);
   }
-  localStorage.removeItem("transactions");
+  globalThis.localStorage.removeItem("transactions");
 }
 
 async function migrateLoanCounterparties(): Promise<void> {
-  const raw = localStorage.getItem("loan_counterparties");
+  const raw = globalThis.localStorage.getItem("loan_counterparties");
   if (!raw) return;
   const records: LoanCounterparty[] = JSON.parse(raw) as LoanCounterparty[];
   if (Array.isArray(records) && records.length > 0) {
     await loanCounterpartiesIdbRepo.putAll(records);
   }
-  localStorage.removeItem("loan_counterparties");
+  globalThis.localStorage.removeItem("loan_counterparties");
 }
 
 async function migrateLoanEntries(): Promise<void> {
-  const raw = localStorage.getItem("loan_entries");
+  const raw = globalThis.localStorage.getItem("loan_entries");
   if (!raw) return;
   const records: LoanEntry[] = JSON.parse(raw) as LoanEntry[];
   if (Array.isArray(records) && records.length > 0) {
     await loanEntriesIdbRepo.putAll(records);
   }
-  localStorage.removeItem("loan_entries");
+  globalThis.localStorage.removeItem("loan_entries");
 }
 
 async function migrateCustomReports(): Promise<void> {
-  const raw = localStorage.getItem("custom_reports");
+  const raw = globalThis.localStorage.getItem("custom_reports");
   if (!raw) return;
   const records: CustomReport[] = JSON.parse(raw) as CustomReport[];
   if (Array.isArray(records) && records.length > 0) {
     await customReportsIdbRepo.putAll(records);
   }
-  localStorage.removeItem("custom_reports");
+  globalThis.localStorage.removeItem("custom_reports");
 }
 
 /**
@@ -86,9 +86,9 @@ async function migrateCustomReports(): Promise<void> {
  * Each block migrates one key: read JSON from localStorage, putAll to IDB, remove from localStorage.
  */
 export async function runStorageMigration(): Promise<void> {
-  if (typeof window === "undefined") return;
+  if (globalThis.window === undefined) return;
 
-  const version = localStorage.getItem(STORAGE_VERSION_KEY);
+  const version = globalThis.localStorage.getItem(STORAGE_VERSION_KEY);
   if (version === STORAGE_VERSION_VALUE) return;
 
   try { await migrateWallets(); } catch (err) { console.warn("[migration] wallets migration failed:", err); }
@@ -99,5 +99,5 @@ export async function runStorageMigration(): Promise<void> {
   try { await migrateCustomReports(); } catch (err) { console.warn("[migration] custom_reports migration failed:", err); }
 
   // Mark migration complete (only after ALL blocks succeed)
-  localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION_VALUE);
+  globalThis.localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION_VALUE);
 }

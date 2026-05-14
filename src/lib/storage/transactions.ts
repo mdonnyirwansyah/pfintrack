@@ -120,44 +120,43 @@ const transactionsLsRepo = {
 // ---------------------------------------------------------------------------
 
 export const transactionsRepo = {
-  getAll(): Promise<Transaction[]> {
+  async getAll(): Promise<Transaction[]> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getAll();
-    return Promise.resolve(transactionsLsRepo.getAll());
+    return transactionsLsRepo.getAll();
   },
 
-  getAllIncludingInactive(): Promise<Transaction[]> {
+  async getAllIncludingInactive(): Promise<Transaction[]> {
     if (STORAGE_BACKEND === "idb") return idbGetAll<Transaction>("transactions");
-    return Promise.resolve(transactionsLsRepo.getAllIncludingInactive());
+    return transactionsLsRepo.getAllIncludingInactive();
   },
 
-  getById(id: string): Promise<Transaction | null> {
+  async getById(id: string): Promise<Transaction | null> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getById(id);
-    return Promise.resolve(transactionsLsRepo.getById(id));
+    return transactionsLsRepo.getById(id);
   },
 
-  getByDate(date: string): Promise<Transaction[]> {
+  async getByDate(date: string): Promise<Transaction[]> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getByDate(date);
-    return Promise.resolve(transactionsLsRepo.getByDate(date));
+    return transactionsLsRepo.getByDate(date);
   },
 
-  getByWalletId(walletId: string): Promise<Transaction[]> {
+  async getByWalletId(walletId: string): Promise<Transaction[]> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getByWalletId(walletId);
-    return Promise.resolve(transactionsLsRepo.getByWalletId(walletId));
+    return transactionsLsRepo.getByWalletId(walletId);
   },
 
-  create(input: CreateTransactionInput): Promise<Transaction> {
+  async create(input: CreateTransactionInput): Promise<Transaction> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.create(input);
-    return Promise.resolve(transactionsLsRepo.create(input));
+    return transactionsLsRepo.create(input);
   },
 
-  update(id: string, patch: UpdateTransactionInput): Promise<Transaction> {
+  async update(id: string, patch: UpdateTransactionInput): Promise<Transaction> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.update(id, patch);
-    return Promise.resolve(transactionsLsRepo.update(id, patch));
+    return transactionsLsRepo.update(id, patch);
   },
 
-  softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.softDelete(id);
     transactionsLsRepo.softDelete(id);
-    return Promise.resolve();
   },
 };

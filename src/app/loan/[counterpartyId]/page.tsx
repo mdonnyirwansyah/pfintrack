@@ -302,12 +302,12 @@ export default function LoanDetailPage({
 
       {/* Edit name dialog */}
       {isEditNameOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        <dialog
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 border-0 max-w-none max-h-none w-full h-full m-0 bg-transparent"
           style={{ background: "rgba(0,0,0,0.5)" }}
-          role="dialog"
           aria-modal="true"
           aria-labelledby="rename-dialog-title"
+          open
         >
           <div
             className="glass-strong w-full rounded-[20px] p-5"
@@ -379,7 +379,7 @@ export default function LoanDetailPage({
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </>
   );

@@ -13,7 +13,7 @@ export function DemoBanner() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
-    setIsDemoMode(window.localStorage.getItem("pfintrack_demo_mode") === "true");
+    setIsDemoMode(globalThis.localStorage.getItem("pfintrack_demo_mode") === "true");
   }, []);
 
   if (!isDemoMode || dismissed) return null;

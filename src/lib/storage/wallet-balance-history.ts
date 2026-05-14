@@ -111,36 +111,35 @@ const walletBalanceHistoryLsRepo = {
 // ---------------------------------------------------------------------------
 
 export const walletBalanceHistoryRepo = {
-  getAll(): Promise<WalletBalanceHistory[]> {
+  async getAll(): Promise<WalletBalanceHistory[]> {
     if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.getAll();
-    return Promise.resolve(walletBalanceHistoryLsRepo.getAll());
+    return walletBalanceHistoryLsRepo.getAll();
   },
 
-  getAllIncludingInactive(): Promise<WalletBalanceHistory[]> {
+  async getAllIncludingInactive(): Promise<WalletBalanceHistory[]> {
     if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.getAllIncludingInactive();
-    return Promise.resolve(walletBalanceHistoryLsRepo.getAllIncludingInactive());
+    return walletBalanceHistoryLsRepo.getAllIncludingInactive();
   },
 
-  getById(id: string): Promise<WalletBalanceHistory | null> {
+  async getById(id: string): Promise<WalletBalanceHistory | null> {
     if (STORAGE_BACKEND === "idb") {
       // IDB repo doesn't expose getById; scan getAll and find
-      return walletBalanceHistoryIdbRepo
-        .getAll()
-        .then((all) => all.find((r) => r.id === id) ?? null);
+      const all = await walletBalanceHistoryIdbRepo.getAll();
+      return all.find((r) => r.id === id) ?? null;
     }
-    return Promise.resolve(walletBalanceHistoryLsRepo.getById(id));
+    return walletBalanceHistoryLsRepo.getById(id);
   },
 
-  getByWalletId(walletId: string): Promise<WalletBalanceHistory[]> {
+  async getByWalletId(walletId: string): Promise<WalletBalanceHistory[]> {
     if (STORAGE_BACKEND === "idb")
       return walletBalanceHistoryIdbRepo.getByWalletId(walletId);
-    return Promise.resolve(walletBalanceHistoryLsRepo.getByWalletId(walletId));
+    return walletBalanceHistoryLsRepo.getByWalletId(walletId);
   },
 
-  create(input: CreateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
+  async create(input: CreateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
     if (STORAGE_BACKEND === "idb")
       return walletBalanceHistoryIdbRepo.create(input);
-    return Promise.resolve(walletBalanceHistoryLsRepo.create(input));
+    return walletBalanceHistoryLsRepo.create(input);
   },
 
   async update(id: string, patch: UpdateWalletBalanceHistoryInput): Promise<WalletBalanceHistory> {
@@ -156,12 +155,11 @@ export const walletBalanceHistoryRepo = {
       await idbPut<WalletBalanceHistory>("wallet_balance_history", updated);
       return updated;
     }
-    return Promise.resolve(walletBalanceHistoryLsRepo.update(id, patch));
+    return walletBalanceHistoryLsRepo.update(id, patch);
   },
 
-  softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.softDelete(id);
     walletBalanceHistoryLsRepo.softDelete(id);
-    return Promise.resolve();
   },
 };

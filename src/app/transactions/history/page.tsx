@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, X, CalendarDays } from "lucide-react";
+import { Search, X, CalendarDays, FileSearch, ChevronRight } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { SortPill, SortKey, applySortKey } from "@/components/shared/SortPill";
@@ -9,11 +9,9 @@ import { TransactionItem } from "../_components/TransactionItem";
 import { useTransactionStore } from "@/lib/stores/useTransactionStore";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { Calendar } from "@/components/ui/calendar";
-import { FileSearch } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { formatDisplayDate } from "@/lib/format/date";
 import type { DateRange } from "react-day-picker";
-import { ChevronRight } from "lucide-react";
 import type { Transaction } from "@/lib/types/transaction";
 
 type FilterType = "all" | "income" | "expense" | "transfer" | "balanceCorrection";

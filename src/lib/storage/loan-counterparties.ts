@@ -80,39 +80,38 @@ const loanCounterpartiesLsRepo = {
 // ---------------------------------------------------------------------------
 
 export const loanCounterpartiesRepo = {
-  getAll(): Promise<LoanCounterparty[]> {
+  async getAll(): Promise<LoanCounterparty[]> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.getAll();
-    return Promise.resolve(loanCounterpartiesLsRepo.getAll());
+    return loanCounterpartiesLsRepo.getAll();
   },
 
-  getAllIncludingInactive(): Promise<LoanCounterparty[]> {
+  async getAllIncludingInactive(): Promise<LoanCounterparty[]> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.getAllIncludingInactive();
-    return Promise.resolve(loanCounterpartiesLsRepo.getAllIncludingInactive());
+    return loanCounterpartiesLsRepo.getAllIncludingInactive();
   },
 
-  getById(id: string): Promise<LoanCounterparty | null> {
+  async getById(id: string): Promise<LoanCounterparty | null> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.getById(id);
-    return Promise.resolve(loanCounterpartiesLsRepo.getById(id));
+    return loanCounterpartiesLsRepo.getById(id);
   },
 
-  findByName(name: string): Promise<LoanCounterparty | null> {
+  async findByName(name: string): Promise<LoanCounterparty | null> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.findByName(name);
-    return Promise.resolve(loanCounterpartiesLsRepo.findByName(name));
+    return loanCounterpartiesLsRepo.findByName(name);
   },
 
-  create(input: CreateLoanCounterpartyInput): Promise<LoanCounterparty> {
+  async create(input: CreateLoanCounterpartyInput): Promise<LoanCounterparty> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.create(input);
-    return Promise.resolve(loanCounterpartiesLsRepo.create(input));
+    return loanCounterpartiesLsRepo.create(input);
   },
 
-  update(id: string, patch: UpdateLoanCounterpartyInput): Promise<LoanCounterparty> {
+  async update(id: string, patch: UpdateLoanCounterpartyInput): Promise<LoanCounterparty> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.update(id, patch);
-    return Promise.resolve(loanCounterpartiesLsRepo.update(id, patch));
+    return loanCounterpartiesLsRepo.update(id, patch);
   },
 
-  softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.softDelete(id);
     loanCounterpartiesLsRepo.softDelete(id);
-    return Promise.resolve();
   },
 };

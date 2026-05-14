@@ -58,7 +58,7 @@ export async function exportBackup(): Promise<void> {
   a.download = `pfintrack-backup-${new Date().toISOString().slice(0, 10)}.json.gz`;
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
+  a.remove();
   URL.revokeObjectURL(url);
 }
 

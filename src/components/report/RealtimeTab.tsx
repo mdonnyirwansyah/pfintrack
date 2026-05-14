@@ -171,8 +171,8 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
     if (!selectedCategory) {
       base = allModeTransactions;
     } else if (selectedCategory === "Lainnya") {
-      const top8 = breakdown.slice(0, 8).map((b) => b.category);
-      base = allModeTransactions.filter((tx) => !top8.includes(tx.category ?? "Other"));
+      const top8 = new Set(breakdown.slice(0, 8).map((b) => b.category));
+      base = allModeTransactions.filter((tx) => !top8.has(tx.category ?? "Other"));
     } else {
       base = getTransactionsForCategory(transactions, start, end, selectedCategory);
       // getTransactionsForCategory always filters type=expense; for income mode we need to redo

@@ -8,6 +8,9 @@ import {
   ArrowRightLeft,
   TrendingUp,
   ShoppingCart,
+  FileText,
+  Sparkles,
+  PlayCircle,
 } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { FABExpandable } from "@/components/shared/FABExpandable";
@@ -22,12 +25,10 @@ import { todayISO } from "@/lib/format/date";
 import { walletsRepo } from "@/lib/storage/wallets";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { getOrCreateAnonId } from "@/lib/storage/anon-id";
-import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSwipe } from "@/hooks/useSwipe";
 import { toast } from "sonner";
 import { injectDemoData } from "@/lib/demo-data";
-import { Sparkles, PlayCircle } from "lucide-react";
 
 function TransactionsContent() {
   const router = useRouter();
@@ -35,7 +36,7 @@ function TransactionsContent() {
   const { transactions, isLoading, loadTransactions, softDeleteTransaction } = useTransactionStore();
   const { wallets, loadWallets } = useWalletStore();
   const [dismissedWelcome, setDismissedWelcome] = useState(
-    () => typeof window !== "undefined" && !!window.localStorage.getItem("pfintrack_welcomed"),
+    () => globalThis.window !== undefined && !!globalThis.localStorage.getItem("pfintrack_welcomed"),
   );
   const t = useTranslations("transactions");
   const td = useTranslations("demo.welcome");
@@ -244,8 +245,8 @@ function TransactionsContent() {
               <div className="flex flex-col gap-2.5">
                 <button
                   onClick={() => {
-                    window.localStorage.setItem("pfintrack_welcomed", "true");
-                    void injectDemoData().then(() => window.location.reload());
+                    globalThis.localStorage.setItem("pfintrack_welcomed", "true");
+                    void injectDemoData().then(() => globalThis.location.reload());
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-semibold active:opacity-70 transition-opacity"
                   style={{
@@ -259,7 +260,7 @@ function TransactionsContent() {
                 </button>
                 <button
                   onClick={() => {
-                    window.localStorage.setItem("pfintrack_welcomed", "true");
+                    globalThis.localStorage.setItem("pfintrack_welcomed", "true");
                     setDismissedWelcome(true);
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-medium active:opacity-70 transition-opacity"

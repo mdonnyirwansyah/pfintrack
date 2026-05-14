@@ -42,7 +42,7 @@ export default function SettingsPage() {
   const td = useTranslations("settings.data");
 
   useEffect(() => {
-    setIsDemoMode(window.localStorage.getItem("pfintrack_demo_mode") === "true");
+    setIsDemoMode(globalThis.localStorage.getItem("pfintrack_demo_mode") === "true");
   }, []);
 
   useEffect(() => {
@@ -579,7 +579,7 @@ export default function SettingsPage() {
               </span>
             </div>
             <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-              v0.1.0
+              v1.0.0
             </span>
           </div>
         </div>
@@ -614,7 +614,7 @@ export default function SettingsPage() {
           try {
             await importBackup(pendingImportFile);
             toast.success(td("importSuccess"));
-            setTimeout(() => window.location.reload(), 800);
+            setTimeout(() => globalThis.location.reload(), 800);
           } catch {
             toast.error(td("importError"));
           } finally {
@@ -637,7 +637,7 @@ export default function SettingsPage() {
           try {
             await deleteAllData();
             toast.success(td("deleteAllSuccess"));
-            setTimeout(() => window.location.reload(), 800);
+            setTimeout(() => globalThis.location.reload(), 800);
           } catch {
             toast.error(td("importError"));
           }

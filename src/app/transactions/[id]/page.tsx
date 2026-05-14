@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -12,7 +12,6 @@ import { useTransactionStore, getTitleSuggestions, getCategorySuggestions } from
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import type { Transaction } from "@/lib/types/transaction";
-import { FileText } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 

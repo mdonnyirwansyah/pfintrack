@@ -13,6 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.1.2** | **2026-05-14** | **Replace `<div role="dialog">` dengan elemen semantik `<dialog open>` native HTML5 di rename dialog `/loan/[counterpartyId]`. §12.6 diperbarui: aturan `role="dialog"` dihapus (redundant), panduan penggunaan `<dialog>` native ditambahkan.** |
 | **1.1.1** | **2026-05-14** | **Fix aksesibilitas heading skip-level: `<h3>` di `EmptyState` dan `CategoryTrendChart` diubah ke `<h2>` karena keduanya muncul langsung di bawah `<h1>` tanpa `<h2>` di antaranya. §12.2 diperbarui dengan aturan eksplisit untuk `EmptyState` dan komponen chart.** |
 | **1.1.0** | **2026-05-14** | **Semantic HTML audit & fix. Ditambahkan §12 Konvensi Semantic HTML. Perubahan kode: list transaksi/wallet/loan pakai `<ul>`+`<li>`; Settings section labels `<p>` → `<h2>`; chart wrappers `<div>` → `<figure>`+`<figcaption>`; DemoBanner `<div>` → `<aside>`; SummaryBar `<div>` → `<section aria-label>`; DonutChart chart area diberi `role="img" aria-label`; rename dialog di loan detail ditambah `role="dialog" aria-modal aria-labelledby`; overlay backdrop history picker `<div onClick>` → `<button type="button">`; `transactions.summary.ariaLabel` ditambah ke en.json & id.json.** |
 | **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya menjadi versi rilis pertama. Mencakup: arsitektur Next.js App Router, 22 route (termasuk `/settings/report` dan `/~offline`), 5 tab Bottom Navigation, inventaris lengkap key state aplikasi (termasuk `pfintrack_color_theme`, `tour_completed`, `storage_version`), shared components (`SplashScreen`, `ColorThemeProvider`, `TourInitializer`, `ThemeToggle`, `TypeToConfirmDialog`), Settings module (`/settings` dan `/settings/report`), demo mode, color theme (blue/pink), producer-consumer contract, dan migrasi IndexedDB (PROP-0001).** |
@@ -245,7 +246,7 @@ Fitur untuk pengguna baru yang ingin menjelajahi aplikasi tanpa harus input data
 | `DemoBanner` | `src/components/shared/DemoBanner.tsx` | Banner biru sticky di bawah AppHeader. Hanya muncul saat `isDemoMode = true`. Berisi teks "Anda sedang mengeksplorasi data sampel." + tombol "Hapus & Mulai" + tombol × untuk dismiss sementara. |
 | Welcome Card | `src/app/transactions/page.tsx` | Card yang muncul di Transaction List saat app pertama kali dibuka (wallets & transactions kosong). Menawarkan dua pilihan: "Eksplorasi dengan Data Sampel" atau "Mulai dari Nol". |
 | `injectDemoData()` | `src/lib/demo-data.ts` | Mengisi 3 wallet (BCA, GoPay, Tunai), ±77 transaksi selama 1 bulan penuh, dan 3 loan counterparty dengan data realistis. |
-| `clearDemoData()` | `src/lib/demo-data.ts` | Menghapus seluruh data finansial dari 6 key localStorage + reset flag + `window.location.reload()`. |
+| `clearDemoData()` | `src/lib/demo-data.ts` | Menghapus seluruh data finansial dari 6 key localStorage + reset flag (`globalThis.localStorage.removeItem`) + `window.location.reload()`. |
 | Settings action | `src/app/settings/page.tsx` | Section "Data Sampel" merah, hanya muncul saat `isDemoMode = true`. Tombol "Hapus Data Sampel" dengan confirm dialog. |
 
 **State:** `isDemoMode` **tidak** di-persist via `useAppStore`. Status demo mode dibaca langsung dari key `pfintrack_demo_mode` di localStorage (`localStorage.getItem("pfintrack_demo_mode") === "true"`). `injectDemoData()` menulis key ini; `clearDemoData()` menghapusnya. Tidak ada Zustand store untuk isDemoMode.
@@ -259,7 +260,7 @@ App dibuka pertama kali (wallets=[], transactions=[])
 "Eksplorasi Data Sampel"   "Mulai dari Nol"
         ↓                      ↓
 injectDemoData()           Dismiss card
-localStorage.setItem("pfintrack_demo_mode", "true")
+globalThis.localStorage.setItem("pfintrack_demo_mode", "true")
 window.location.reload()
         ↓
 DemoBanner muncul di semua halaman
@@ -854,11 +855,13 @@ Tambahkan `list-none` di Tailwind untuk menghilangkan bullet bawaan browser.
 
 ### 12.6 Dialog Accessibility
 
-Modal yang dibuat dengan `<div>` (bukan komponen Radix/shadcn) harus memiliki:
-- `role="dialog"` dan `aria-modal="true"` di container
-- `aria-labelledby` yang menunjuk ke `id` elemen judul (`<h2>`)
+Modal yang dibuat secara custom (bukan komponen Radix/shadcn) harus menggunakan elemen semantik `<dialog>` HTML5 native:
+- Gunakan `<dialog open>` — elemen `<dialog>` sudah memiliki implicit role `dialog`, sehingga **tidak perlu** `role="dialog"`
+- Tetap sertakan `aria-modal="true"` dan `aria-labelledby` yang menunjuk ke `id` elemen judul (`<h2>`)
+- Styling overlay (backdrop) tetap menggunakan CSS inline atau className di elemen `<dialog>` itu sendiri
+- Jangan gunakan `.showModal()` / `.close()` Web API — gunakan React state (`open` boolean attribute) untuk mengontrol visibilitas
 
-Contoh: rename dialog di `/loan/[counterpartyId]`.
+Contoh: rename dialog di `/loan/[counterpartyId]` (✅ FIXED 2026-05-14 — diupgrade dari `<div role="dialog">` ke `<dialog open>`).
 
 ---
 

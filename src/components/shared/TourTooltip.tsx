@@ -4,6 +4,21 @@ import type { TooltipRenderProps } from 'react-joyride';
 import { useTranslations } from 'next-intl';
 import { useTourIntercept } from '@/lib/stores/tourInterceptContext';
 
+type JoyrideButtonProps = {
+  'aria-label': string;
+  'data-action': string;
+  onClick: React.MouseEventHandler<HTMLElement>;
+  role: string;
+  title: string;
+};
+
+type StrippedButtonProps = Omit<JoyrideButtonProps, 'title' | 'role'>;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function omitTitleRole({ title: _t, role: _r, ...rest }: JoyrideButtonProps): StrippedButtonProps {
+  return rest;
+}
+
 export function TourTooltip({
   backProps,
   index,
@@ -20,14 +35,9 @@ export function TourTooltip({
   // Strip joyride-injected `title` and `role` from button props.
   // `title` causes unwanted native browser tooltips on buttons that already
   // have visible text labels. `role` is redundant on a <button> element.
-  const { title: _skipTitle, role: _skipRole, ...skipRest } = skipProps;
-  const { title: _backTitle, role: _backRole, ...backRest } = backProps;
-  const {
-    title: _primaryTitle,
-    role: _primaryRole,
-    onClick: primaryOnClick,
-    ...primaryRest
-  } = primaryProps;
+  const skipRest = omitTitleRole(skipProps);
+  const backRest = omitTitleRole(backProps);
+  const { onClick: primaryOnClick, ...primaryRest } = omitTitleRole(primaryProps);
 
   return (
     <div

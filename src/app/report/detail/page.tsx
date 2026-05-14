@@ -142,9 +142,9 @@ function ReportDetailContent() {
   const drillBase = useMemo(() => {
     if (!selectedCategory) return allModeTransactions;
     if (selectedCategory === "Lainnya") {
-      const top8 = breakdown.slice(0, 8).map((b) => b.category);
+      const top8 = new Set(breakdown.slice(0, 8).map((b) => b.category));
       return allModeTransactions.filter(
-        (tx) => !top8.includes(tx.category ?? "Other")
+        (tx) => !top8.has(tx.category ?? "Other")
       );
     }
     if (donutMode === "expense") {

@@ -61,7 +61,7 @@ export default function OfflinePage() {
 
         {/* Retry button */}
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => globalThis.location.reload()}
           className="w-full flex items-center justify-center gap-2 py-3 rounded-[12px] text-[13px] font-semibold transition-opacity active:opacity-70"
           style={{
             background: "var(--color-brand)",

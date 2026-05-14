@@ -87,34 +87,33 @@ const walletsLsRepo = {
 // ---------------------------------------------------------------------------
 
 export const walletsRepo = {
-  getAll(): Promise<Wallet[]> {
+  async getAll(): Promise<Wallet[]> {
     if (STORAGE_BACKEND === "idb") return walletsIdbRepo.getAll();
-    return Promise.resolve(walletsLsRepo.getAll());
+    return walletsLsRepo.getAll();
   },
 
-  getAllIncludingInactive(): Promise<Wallet[]> {
+  async getAllIncludingInactive(): Promise<Wallet[]> {
     if (STORAGE_BACKEND === "idb") return walletsIdbRepo.getAllIncludingInactive();
-    return Promise.resolve(walletsLsRepo.getAllIncludingInactive());
+    return walletsLsRepo.getAllIncludingInactive();
   },
 
-  getById(id: string): Promise<Wallet | null> {
+  async getById(id: string): Promise<Wallet | null> {
     if (STORAGE_BACKEND === "idb") return walletsIdbRepo.getById(id);
-    return Promise.resolve(walletsLsRepo.getById(id));
+    return walletsLsRepo.getById(id);
   },
 
-  create(input: CreateWalletInput): Promise<Wallet> {
+  async create(input: CreateWalletInput): Promise<Wallet> {
     if (STORAGE_BACKEND === "idb") return walletsIdbRepo.create(input);
-    return Promise.resolve(walletsLsRepo.create(input));
+    return walletsLsRepo.create(input);
   },
 
-  update(id: string, patch: UpdateWalletInput): Promise<Wallet> {
+  async update(id: string, patch: UpdateWalletInput): Promise<Wallet> {
     if (STORAGE_BACKEND === "idb") return walletsIdbRepo.update(id, patch);
-    return Promise.resolve(walletsLsRepo.update(id, patch));
+    return walletsLsRepo.update(id, patch);
   },
 
-  softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     if (STORAGE_BACKEND === "idb") return walletsIdbRepo.softDelete(id);
     walletsLsRepo.softDelete(id);
-    return Promise.resolve();
   },
 };

@@ -270,13 +270,13 @@ export async function injectDemoData(): Promise<void> {
   await applyLoanEntryToWallet(andiloan1);
 
   // ── Set demo flag ─────────────────────────────────────────────────────────
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem("pfintrack_demo_mode", "true");
+  if (globalThis.window !== undefined) {
+    globalThis.localStorage.setItem("pfintrack_demo_mode", "true");
   }
 }
 
 export async function clearDemoData(): Promise<void> {
-  if (typeof window === "undefined") return;
+  if (globalThis.window === undefined) return;
 
   if (STORAGE_BACKEND === "idb") {
     await Promise.all([
@@ -296,6 +296,6 @@ export async function clearDemoData(): Promise<void> {
     writeKey("custom_reports", []);
   }
 
-  window.localStorage.removeItem("pfintrack_demo_mode");
-  window.location.reload();
+  globalThis.localStorage.removeItem("pfintrack_demo_mode");
+  globalThis.location.reload();
 }
