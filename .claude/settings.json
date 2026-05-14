@@ -43,6 +43,15 @@
         "hooks": [
           {
             "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"[PFINTRACK RULES] 1.SPEC SYNC: update tech-spec-docs/ setiap ada perubahan kode, di turn yang sama. 2.CODE STANDARDS: Number.isNaN/parseInt/parseFloat, replaceAll(), Readonly<> props, button bukan div, useMemo context, hooks sebelum return. 3.SOURCE OF TRUTH: codebase>spec. Follow CLAUDE.md.\"}}'",
+            "statusMessage": "Memuat aturan project..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "PROMPT=\"$CLAUDE_USER_PROMPT\"; if echo \"$PROMPT\" | grep -qiE '(deploy|production|release|ship)'; then echo '🚀 PRE-DEPLOY CHECKLIST: 1) /audit-spec  2) /check-migration-ready  3) typecheck+lint  4) lighthouse mobile  5) all 18 routes work  6) localStorage 7-key inventory intact'; fi"
           }
         ]
