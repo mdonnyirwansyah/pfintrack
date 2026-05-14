@@ -9,6 +9,9 @@
     "lint": "eslint",
     "sonar": "sonar-scanner",
     "test": "playwright test",
+    "test:unit": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run'",
+    "test:unit:watch": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest'",
+    "test:unit:coverage": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run --coverage'",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report"
@@ -46,10 +49,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^2.1.9",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "jsdom": "^29.1.1",
     "sonarqube-scanner": "^4.3.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.9"
   }
 }
