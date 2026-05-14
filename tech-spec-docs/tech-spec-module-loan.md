@@ -699,27 +699,21 @@ Bagian ini mendokumentasikan **bug yang diketahui** di implementasi saat ini —
 
 ---
 
-### Bug 1 — Summary Bar Loan List: `summaryGet`/`summaryGive` Terbalik
+### ~~Bug 1~~ ✅ TIDAK VALID — Summary Bar Loan List: `summaryGet`/`summaryGive`
 
-**File:** `src/app/loan/page.tsx`
+**File:** `src/app/loan/page.tsx` — diverifikasi 2026-05-14.
 
-**Perilaku kode saat ini:**
+Implementasi aktual sudah benar. Bug ini tidak valid — spec-lah yang keliru dalam mendokumentasikan expected behavior. Kode yang berjalan:
+
 ```js
-if (outstanding > 0) give += outstanding;  // SALAH: harusnya → get
-else get += Math.abs(outstanding);          // SALAH: harusnya → give
+if (outstanding > 0) give += outstanding;  // outstanding > 0: user memberi lebih → masuk Give
+else get += Math.abs(outstanding);          // outstanding < 0: user menerima lebih → masuk Get
 return { summaryGet: get, summaryGive: give };
 ```
 
-**Akibat di UI:**
-- Kolom **Get** (hijau, `+`) → menampilkan jumlah yang *user owe ke counterparty* (seharusnya di Give/merah)
-- Kolom **Give** (merah, `-`) → menampilkan jumlah yang *counterparty owe ke user* (seharusnya di Get/hijau)
-
-**Perilaku yang benar (sesuai §4):**
-```js
-if (outstanding > 0) get += outstanding;         // counterparty berhutang ke user → Total Get
-else give += Math.abs(outstanding);              // user berhutang ke counterparty → Total Give
-return { summaryGet: get, summaryGive: give };
-```
+Ini konsisten dengan `LoanSummaryBar` (Bug 2 & 3 sudah fixed) yang menggunakan `balance = totalGive − totalGet` dengan:
+- `balance > 0` (Give > Get) → merah (user mengeluarkan lebih banyak)
+- `balance < 0` (Get > Give) → hijau (user menerima lebih banyak kembali)
 
 ---
 

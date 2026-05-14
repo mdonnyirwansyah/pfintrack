@@ -1046,55 +1046,23 @@ Ada juga interface `PeriodSummary` (internal, digunakan oleh `PeriodSummaryRows`
 
 ## 10. Known Implementation Issues (v1.4 — 2026-05-05)
 
-Bagian ini mendokumentasikan **bug yang diketahui** di implementasi saat ini. Item di bawah perlu diperbaiki di kode.
+Bagian ini mendokumentasikan bug yang diketahui. Semua item di bawah sudah diperbaiki di kode per 2026-05-14.
 
 ---
 
-### Bug 1 — `formatDisplayDate` tanpa locale di Add Custom Report
+### ~~Bug 1~~ ✅ FIXED — `formatDisplayDate` tanpa locale di Add Custom Report
 
-**File:** `src/app/report/custom/add/page.tsx`
+**File:** `src/app/report/custom/add/page.tsx` — diperbaiki 2026-05-14.
 
-**Perilaku kode saat ini:**
-```js
-// Add page — locale TIDAK diteruskan:
-{formatDisplayDate(startDate)}
-{formatDisplayDate(endDate)}
-
-// Edit page — locale DITERUSKAN (benar):
-{formatDisplayDate(startDate, locale)}
-{formatDisplayDate(endDate, locale)}
-```
-
-**Akibat:** Di halaman Add, tanggal selalu ditampilkan dalam locale default (biasanya `en`), tidak mengikuti locale user. Halaman Edit sudah benar.
-
-**Perbaikan:**
-```js
-// Tambahkan useLocale() dan teruskan ke formatDisplayDate
-const locale = useLocale();
-{formatDisplayDate(startDate, locale)}
-```
+`useLocale()` sudah ditambahkan dan `locale` sudah diteruskan ke `formatDisplayDate(startDate, locale)` dan `formatDisplayDate(endDate, locale)` di halaman Add. Konsisten dengan halaman Edit.
 
 ---
 
-### Bug 2 — Hardcoded String "Start Balance" / "End Balance" di `CustomReportSection`
+### ~~Bug 2~~ ✅ FIXED — Hardcoded String "Start Balance" / "End Balance" di `CustomReportSection`
 
-**File:** `src/components/report/CustomReportSection.tsx`
+**File:** `src/components/report/CustomReportSection.tsx` — diperbaiki 2026-05-14.
 
-**Perilaku kode saat ini:**
-```jsx
-<span>Start Balance</span>  {/* hardcoded English */}
-<span>End Balance</span>    {/* hardcoded English */}
-```
-
-**`MonthlySection` yang benar:**
-```jsx
-<span>{t("startBalance")}</span>
-<span>{t("endBalance")}</span>
-```
-
-**Akibat:** Label "Start Balance" dan "End Balance" di Custom Report selalu dalam bahasa Inggris, tidak mengikuti locale, sehingga tidak konsisten dengan MonthlySection.
-
-**Perbaikan:** Gunakan `const t = useTranslations("report.summary")` dan ganti dengan key i18n.
+Sudah menggunakan `const t = useTranslations("report.summary")` dan `{t("startBalance")}` / `{t("endBalance")}`. Konsisten dengan `MonthlySection`.
 
 ---
 

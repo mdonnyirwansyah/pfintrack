@@ -428,23 +428,34 @@ Semua string berikut disetel via prop `locale` pada komponen `<Joyride>`.
 
 ### 8.2 Konten Tooltip per Step
 
-| Step # | Konten |
-|--------|--------|
-| 1 (TX-1) | *"Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar wallet."* |
-| 2 (TX-2) | *"Tap untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer."* |
-| 3 (TX-3) | *"Gunakan filter ini untuk mencari transaksi berdasarkan tanggal atau kategori."* |
-| 4 (WL-1) | *"Wallet adalah rekening atau dompetmu. Semua transaksi terhubung ke wallet. Tap tab ini untuk melanjutkan."* |
-| 5 (WL-2) | *"Tap di sini untuk menambah wallet pertamamu — misalnya BCA, Tunai, atau GoPay."* |
-| 6 (WL-3) | *"Saldo wallet diperbarui otomatis setiap kali kamu catat transaksi."* |
-| 7 (LN-1) | *"Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Tap tab ini untuk melanjutkan."* |
-| 8 (LN-2) | *"Tap untuk mencatat. 'Dipinjamkan' = kamu memberi pinjaman. 'Dipinjam' = kamu yang pinjam."* |
-| 9 (LN-3) | *"Setiap orang atau entitas dikelompokkan di sini. Tap untuk melihat histori pinjaman mereka."* |
-| 10 (RP-1) | *"Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Tap tab ini untuk melanjutkan."* |
-| 11 (RP-2) | *"Lihat laporan per periode: realtime hari ini, bulanan, atau rentang tanggal kustom."* |
-| 12 (RP-3) | *"Grafik ini menunjukkan distribusi pengeluaranmu per kategori."* |
-| 13 (END) | *"Selesai! Kamu sudah mengenal fitur utama PFinTrack. Mulai catat keuanganmu sekarang."* |
+String diambil dari `messages/id.json` namespace `tour.steps.<key>` via `useTranslations('tour')`. Sumber kebenaran adalah file i18n, bukan hardcode di komponen.
 
-> **Catatan i18n:** Di Fase 1 semua string tur hardcoded dalam Bahasa Indonesia. Jika aplikasi kelak mendukung multi-bahasa penuh via `next-intl`, string-string ini perlu dipindahkan ke `messages/id.json` dan `messages/en.json`. Namespace yang disarankan: `tour.steps.<stepId>.content`.
+| Index | Key | Konten (Bahasa Indonesia) |
+|-------|-----|--------------------------|
+| 0 | `tx1` | *"Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar dompet. Ketuk tab ini untuk memulai."* |
+| 1 | `tx2` | *"Geser kiri/kanan atau ketuk panah untuk pindah tanggal. Ketuk tanggal untuk membuka kalender."* |
+| 2 | `tx3` | *"Total pemasukan, pengeluaran, dan saldo hari ini ditampilkan di sini."* |
+| 3 | `tx4` | *"Ketuk untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer."* |
+| 4 | `tx5` | *"Ketuk tombol ini untuk mengubah urutan tampilan — berdasarkan tanggal atau nominal transaksi."* |
+| 5 | `tx6` | *"Ketuk untuk mengekspor semua transaksi ke file Excel."* |
+| 6 | `tx7` | *"Ketuk untuk melihat riwayat semua transaksi di semua tanggal."* |
+| 7 | `wl1` | *"Dompet adalah rekening atau dompetmu. Semua transaksi terhubung ke dompet. Ketuk tab ini untuk melanjutkan."* |
+| 8 | `wl2` | *"Kartu ini menampilkan total saldo dari semua dompetmu."* |
+| 9 | `wl3` | *"Filter dompet berdasarkan tipe — bank, e-wallet, tabungan, dan lainnya."* |
+| 10 | `wl4` | *"Urutkan dompet berdasarkan nama atau saldo agar mudah ditemukan."* |
+| 11 | `wl5` | *"Ketuk untuk menambah dompet baru — rekening bank, tunai, GoPay, dan lainnya."* |
+| 12 | `wl6` | *"Ketuk kartu dompet untuk melihat detail, edit saldo, atau riwayat transaksinya."* |
+| 13 | `ln1` | *"Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Ketuk tab ini untuk melanjutkan."* |
+| 14 | `ln2` | *"'Catat Utang': kamu berhutang ke orang atau orang melunasi piutangnya ke kamu. 'Pinjamkan': kamu meminjamkan uang ke orang atau kamu melunasi utangmu."* |
+| 15 | `ln3` | *"Setiap orang atau entitas dikelompokkan di sini. Ketuk untuk melihat histori pinjaman mereka."* |
+| 16 | `rp1` | *"Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Ketuk tab ini untuk melanjutkan."* |
+| 17 | `rp2` | *"Lihat laporan per periode: realtime hari ini, bulanan, atau rentang tanggal kustom."* |
+| 18 | `rp3` | *"Beralih antara tampilan Pengeluaran dan Pemasukan untuk melihat grafik breakdown masing-masing."* |
+| 19 | `rp4` | *"Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Ketuk potongan untuk memfilter daftar di bawah."* |
+| 20 | `rp5` | *"Ketuk untuk membuat laporan kustom dengan rentang tanggal tertentu."* |
+| 21 | `end` | *"Selesai! Sekarang kamu udah kenal PFinTrack. Yuk mulai catat!"* |
+
+> **Catatan i18n:** String tur disimpan di `messages/id.json` dan `messages/en.json` namespace `tour.steps`, diakses via `useTranslations('tour')`. Perubahan teks dilakukan di file i18n, bukan di komponen.
 
 ---
 
