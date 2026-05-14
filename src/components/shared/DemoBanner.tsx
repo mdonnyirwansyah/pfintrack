@@ -36,6 +36,7 @@ export function DemoBanner() {
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           <button
+            type="button"
             onClick={() => setConfirmOpen(true)}
             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold active:opacity-70 transition-opacity"
             style={{
@@ -46,6 +47,7 @@ export function DemoBanner() {
             {t("banner.clearButton")}
           </button>
           <button
+            type="button"
             onClick={() => setDismissed(true)}
             className="flex items-center justify-center w-6 h-6 rounded-full active:opacity-70 transition-opacity"
             style={{ background: "rgba(255,255,255,0.15)" }}
