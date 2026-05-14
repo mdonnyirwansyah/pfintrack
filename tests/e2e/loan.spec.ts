@@ -23,8 +23,8 @@ test.describe("Loan", () => {
       await seedWallets(page, [W1]);
       await seedCounterparties(page, [CP1, CP2]);
       await seedLoanEntries(page, [
-        { id: "e-001", counterparty_id: CP1.id, type: "give", amount: 500_000, entry_date: TODAY },
-        { id: "e-002", counterparty_id: CP2.id, type: "get", amount: 200_000, entry_date: TODAY },
+        { id: "e-001", counterparty_id: CP1.id, type: "give", amount: 500_000, transaction_date: TODAY },
+        { id: "e-002", counterparty_id: CP2.id, type: "get", amount: 200_000, transaction_date: TODAY },
       ]);
     });
     await expect(page.getByText("Budi Santoso")).toBeVisible();
@@ -35,7 +35,7 @@ test.describe("Loan", () => {
     await gotoWithSeed(page, "/loan", async () => {
       await seedCounterparties(page, [CP1]);
       await seedLoanEntries(page, [
-        { id: "e-give", counterparty_id: CP1.id, type: "give", amount: 1_000_000, entry_date: TODAY },
+        { id: "e-give", counterparty_id: CP1.id, type: "give", amount: 1_000_000, transaction_date: TODAY },
       ]);
     });
     await expect(page.getByText(/1\.000\.000/).first()).toBeVisible();
@@ -85,7 +85,7 @@ test.describe("Loan", () => {
       await seedCounterparties(page, [CP1]);
       await seedLoanEntries(page, [{
         id: "e-detail", counterparty_id: CP1.id, type: "give",
-        amount: 750_000, description: "Pinjaman motor", entry_date: TODAY,
+        amount: 750_000, note: "Pinjaman motor", transaction_date: TODAY,
       }]);
     });
     await expect(page.getByText("Budi Santoso")).toBeVisible();
@@ -96,8 +96,8 @@ test.describe("Loan", () => {
     await gotoWithSeed(page, `/loan/${CP1.id}`, async () => {
       await seedCounterparties(page, [CP1]);
       await seedLoanEntries(page, [
-        { id: "e-os-1", counterparty_id: CP1.id, type: "give", amount: 1_000_000, entry_date: TODAY },
-        { id: "e-os-2", counterparty_id: CP1.id, type: "give", amount: 500_000, entry_date: TODAY, is_paid_off: true },
+        { id: "e-os-1", counterparty_id: CP1.id, type: "give", amount: 1_000_000, transaction_date: TODAY },
+        { id: "e-os-2", counterparty_id: CP1.id, type: "give", amount: 500_000, transaction_date: TODAY },
       ]);
     });
     await expect(page.getByText(/1\.000\.000/)).toBeVisible();

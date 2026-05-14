@@ -28,6 +28,7 @@
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
 | **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya (v1.0–v1.1) menjadi versi rilis pertama. Mencakup: rasional migrasi localStorage→IndexedDB (PROP-0001), skema IDB `pfintrack_db` dengan 6 object store, kontrak API async per repo, 8 langkah migrasi berurutan, protokol migrasi data satu-kali (idempotent), feature flag `NEXT_PUBLIC_STORAGE_BACKEND`, mekanisme rollback, kontrak key `storage_version`, dan status implementasi (sudah diimplementasikan di codebase).** |
+| **1.1.0** | **2026-05-14** | **Field `currency` dan `sort_order` yang dihapus dari tipe `Wallet` bersifat dead data di IDB lama — tidak menyebabkan error dan didokumentasikan sebagai known behavior (§8.9).** |
 
 ---
 
@@ -950,6 +951,12 @@ IndexedDB tersedia di:
 - Chrome/Firefox desktop: semua versi modern
 
 PWA install flow sebaiknya memperingatkan user agar tidak menggunakan private mode (iOS Safari private mode memiliki quota IDB yang reset pada akhir sesi).
+
+### 8.9 Backward-Compatibility: Field Dihapus dari Skema
+
+#### Field `currency` dan `sort_order` (dihapus dari tipe `Wallet`)
+
+Field `currency` dan `sort_order` dihapus dari interface `Wallet` di TypeScript. Data lama di IDB yang masih memiliki field ini tidak menyebabkan error — IndexedDB menyimpan object JS as-is, dan field extra diabaikan oleh aplikasi. Field-field ini akan tetap tersimpan sebagai dead data sampai user mengedit wallet tersebut (saat itu `put()` akan menulis object baru tanpa field lama). Ini adalah behavior yang acceptable dan tidak memerlukan cleanup aktif.
 
 ---
 

@@ -23,9 +23,12 @@ const mockPut = vi.mocked(idbPut);
 
 function makeWallet(balance: number): Wallet {
   return {
-    id: "w1", anon_id: "test", name: "BCA",
-    wallet_type: "bank", balance, currency: "IDR",
-    sort_order: 0, is_active: true,
+    id: "w1",
+    anon_id: "test",
+    name: "BCA",
+    wallet_type: "bank",
+    balance,
+    is_active: true,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
   };
@@ -33,10 +36,16 @@ function makeWallet(balance: number): Wallet {
 
 function makeTx(overrides: Partial<Transaction> & { type: Transaction["type"] }): Transaction {
   return {
-    id: "tx1", anon_id: "test", wallet_id: "w1",
-    destination_wallet_id: null, amount: 100_000,
-    title: null, category: null, description: null,
-    transaction_date: "2026-05-10", transaction_time: "10:00",
+    id: "tx1",
+    anon_id: "test",
+    wallet_id: "w1",
+    destination_wallet_id: null,
+    amount: 100_000,
+    title: null,
+    category: null,
+    description: null,
+    transaction_date: "2026-05-10",
+    transaction_time: "10:00",
     is_active: true,
     created_at: "2026-05-10T10:00:00.000Z",
     updated_at: "2026-05-10T10:00:00.000Z",
@@ -46,10 +55,15 @@ function makeTx(overrides: Partial<Transaction> & { type: Transaction["type"] })
 
 function makeLoanEntry(overrides: Partial<LoanEntry> & { type: LoanEntry["type"] }): LoanEntry {
   return {
-    id: "e1", anon_id: "test", counterparty_id: "cp1",
-    wallet_id: "w1", amount: 200_000, note: null,
+    id: "e1",
+    anon_id: "test",
+    counterparty_id: "cp1",
+    wallet_id: "w1",
+    amount: 200_000,
+    note: null,
     transaction_date: "2026-05-10",
-    transaction_time: "10:00", is_active: true,
+    transaction_time: "10:00",
+    is_active: true,
     created_at: "2026-05-10T10:00:00.000Z",
     updated_at: "2026-05-10T10:00:00.000Z",
     ...overrides,

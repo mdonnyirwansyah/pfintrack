@@ -88,7 +88,7 @@ export function AppHeader({
       </div>
 
       {/* Right: action buttons */}
-      <div className="w-10 flex items-center justify-end">
+      <div className="min-w-[44px] flex items-center justify-end">
         {actions}
       </div>
     </header>

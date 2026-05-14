@@ -727,8 +727,8 @@ Berlaku di seluruh modul.
 |---|------|-----------|---------------|
 | 17 | Restore dari soft-delete | ⏭️ **Skip** — Fase 2 | Semua |
 | 18 | Backup/restore data (export JSON) | ⏭️ **Skip** — Fase 2 | Global |
-| 19 | Multi-currency support | ⏭️ **Skip** — IDR only, field `currency` sebagai placeholder | Global |
-| 20 | Drag-to-reorder wallet | ⏭️ **Skip** — field `sort_order` sudah ada, UI nanti | Wallet |
+| 19 | Multi-currency support | ⏭️ **Skip** — IDR only, hardcoded di formatter | Global |
+| 20 | Drag-to-reorder wallet | ⏭️ **Skip** — tidak ada di Fase 1; sort dilakukan by name/balance via UI dropdown | Wallet |
 
 ---
 
@@ -865,7 +865,97 @@ Contoh: rename dialog di `/loan/[counterpartyId]` (✅ FIXED 2026-05-14 — diup
 
 ---
 
-## 13. Daftar Dokumen Spesifikasi
+## 13. E2E Test Coverage (Playwright)
+
+Semua test E2E berada di `tests/e2e/` menggunakan Playwright dengan viewport mobile `390×844px`.
+Total: **148 test** di **14 file** (per 2026-05-14).
+
+| File | Modul | Jumlah Test | Skenario Utama |
+|------|-------|-------------|----------------|
+| `navigation.spec.ts` | Global | 6 | Root redirect, bottom nav tabs, header posisi, overflow, tap targets |
+| `wallet.spec.ts` | Wallet | 10 | List, add, edit name, duplicate check, back button, total balance |
+| `wallet-delete.spec.ts` | Wallet | 5 | Delete button, confirm dialog, cancel, soft delete, in-use guard |
+| `transactions.spec.ts` | Transactions | 11 | List, add income/expense/transfer, detail, history, summary bar |
+| `transactions-edit-delete.spec.ts` | Transactions | 8 | Edit amount/title, delete, transfer in list, date navigator |
+| `transactions-history.spec.ts` | Transactions | 15 | History page structure, search filter, clear search, no-results empty state, type filter chips (Income/Expense/All), wallet filter chips, wallet chip filtering, tap-to-detail, back navigation |
+| `loan.spec.ts` | Loan | 9 | List, add give/get, counterparty detail, outstanding, FAB |
+| `loan-edit-delete.spec.ts` | Loan | 12 | Edit entry, delete entry, mark paid off, unmark, delete counterparty, add get |
+| `report.spec.ts` | Report | 11 | Tabs, Live data, detail/category pages, custom report CRUD |
+| `report-monthly-custom.spec.ts` | Report | 10 | Monthly data, custom list, empty states, category page |
+| `settings.spec.ts` | Settings | 8 | Header, sections visible, backup buttons visible, delete guard, overflow |
+| `settings-backup.spec.ts` | Settings | 24 | Export download, restore upload/confirm/cancel/data, delete-all type-to-confirm, theme/accent/decimals/language/demo/help |
+| `settings-report.spec.ts` | Settings | 7 | /settings/report header, 8 toggle rows, aria-pressed attribute, toggle state change, bulk hide-all, bulk show-all |
+| `misc-coverage.spec.ts` | Global/Multi | 11 | /~offline render + module links; /report/detail with data + filter tabs + back; /report/custom/[id]/edit flow; Transfer updates both wallet balances; Loan auto paid-off (give+get=0 → Lunas) |
+
+### Route Coverage Matrix (22 routes spec §2.2)
+
+| Route | File | Status |
+|-------|------|--------|
+| `/` | `navigation.spec.ts` | ✅ Covered |
+| `/transactions` | `transactions.spec.ts`, `transactions-edit-delete.spec.ts` | ✅ Covered |
+| `/transactions/add/income` | `transactions.spec.ts` | ✅ Covered |
+| `/transactions/add/expense` | `transactions.spec.ts` | ✅ Covered |
+| `/transactions/add/transfer` | `transactions.spec.ts`, `misc-coverage.spec.ts` | ✅ Covered |
+| `/transactions/[id]` | `transactions.spec.ts`, `transactions-edit-delete.spec.ts` | ✅ Covered |
+| `/transactions/history` | `transactions-history.spec.ts` | ✅ Covered |
+| `/wallet` | `wallet.spec.ts`, `wallet-delete.spec.ts` | ✅ Covered |
+| `/wallet/add` | `wallet.spec.ts` | ✅ Covered |
+| `/wallet/[id]` | `wallet.spec.ts`, `wallet-delete.spec.ts` | ✅ Covered |
+| `/report` | `report.spec.ts`, `report-monthly-custom.spec.ts` | ✅ Covered |
+| `/report/custom/add` | `report.spec.ts`, `report-monthly-custom.spec.ts` | ✅ Covered |
+| `/report/custom/[id]/edit` | `misc-coverage.spec.ts` | ✅ Covered |
+| `/report/detail` | `report.spec.ts`, `misc-coverage.spec.ts` | ✅ Covered |
+| `/report/category` | `report.spec.ts`, `report-monthly-custom.spec.ts` | ✅ Covered |
+| `/loan` | `loan.spec.ts`, `loan-edit-delete.spec.ts` | ✅ Covered |
+| `/loan/[counterpartyId]` | `loan.spec.ts`, `loan-edit-delete.spec.ts` | ✅ Covered |
+| `/loan/add/give` | `loan.spec.ts` | ✅ Covered |
+| `/loan/add/get` | `loan.spec.ts`, `loan-edit-delete.spec.ts` | ✅ Covered |
+| `/loan/[counterpartyId]/edit/[entryId]` | `loan-edit-delete.spec.ts` | ✅ Covered |
+| `/settings` | `settings.spec.ts`, `settings-backup.spec.ts` | ✅ Covered |
+| `/settings/report` | `settings-report.spec.ts` | ✅ Covered |
+| `/~offline` | `misc-coverage.spec.ts` | ✅ Covered |
+
+### Helper tersedia di `tests/e2e/helpers/storage.ts`
+
+| Helper | Fungsi |
+|--------|--------|
+| `setupPage(page)` | Set localStorage flags (anon_id, welcomed, tour_completed) via `addInitScript` |
+| `goto(page, path)` | Navigate dan wait 500ms |
+| `gotoWithSeed(page, path, seedFn)` | Navigate → clear IDB → seed → reload |
+| `clearIDB(page)` | Kosongkan semua IDB object stores |
+| `seedWallets(page, wallets)` | Insert wallet records ke IDB |
+| `seedTransactions(page, transactions)` | Insert transaction records ke IDB |
+| `seedCounterparties(page, counterparties)` | Insert loan_counterparties ke IDB |
+| `seedLoanEntries(page, entries)` | Insert loan_entries ke IDB |
+| `TEST_ANON_ID` | UUID test untuk semua seed records |
+
+**Interface `SeedLoanEntry`** (field names harus sinkron dengan `LoanEntry` schema):
+- `transaction_date: string` — tanggal entry (bukan `entry_date`)
+- `note?: string` — catatan opsional (bukan `description`)
+- Tidak ada field `is_paid_off` — field ini ada di `LoanCounterparty`, bukan `LoanEntry`
+
+**Catatan penting:** `DB_VERSION` di `storage.ts` harus selalu sinkron dengan `DB_VERSION` di `src/lib/storage/idb-client.ts`. Per 2026-05-14 nilainya adalah `3`.
+
+### Known Issues (E2E Tests) — Fixed
+
+| Issue | Status | Fix Date |
+|-------|--------|----------|
+| `SeedLoanEntry` menggunakan field names yang salah (`description`, `entry_date`, `is_paid_off`) | ✅ FIXED | 2026-05-14 |
+| Category page test navigates ke `/report/category` tanpa `?name=` param — halaman return empty state | ✅ FIXED | 2026-05-14 |
+| Custom report form `getByLabel("Report Name")` diganti `locator('input#report-name')` | ✅ FIXED | 2026-05-14 |
+| Settings language test menggunakan `/en/settings` (URL-based locale) — app pakai cookie-based locale | ✅ FIXED | 2026-05-14 |
+| `getByText("DELETE ALL DATA")` dan `getByText("Sample Data")` strict mode violation — perbaiki dengan `.first()` | ✅ FIXED | 2026-05-14 |
+| `getByText("Delete All Data").click()` strict mode violation — perbaiki dengan `.first().click()` | ✅ FIXED | 2026-05-14 |
+
+### Fixture files di `tests/e2e/fixtures/`
+
+| File | Deskripsi |
+|------|-----------|
+| `backup-valid.json` | Valid `BackupData` (version 1) dengan 1 wallet + 1 transaksi untuk test Restore Backup |
+
+---
+
+## 14. Daftar Dokumen Spesifikasi
 
 Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 

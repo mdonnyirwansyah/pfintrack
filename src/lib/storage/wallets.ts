@@ -10,12 +10,10 @@ export type CreateWalletInput = {
   name: string;
   wallet_type: WalletType;
   balance: number;
-  currency?: string;
-  sort_order?: number;
 };
 
 export type UpdateWalletInput = Partial<
-  Pick<Wallet, "name" | "wallet_type" | "currency" | "sort_order">
+  Pick<Wallet, "name" | "wallet_type">
 >;
 
 const walletsLsRepo = {
@@ -42,8 +40,6 @@ const walletsLsRepo = {
       name: input.name,
       wallet_type: input.wallet_type,
       balance: input.balance,
-      currency: input.currency ?? "IDR",
-      sort_order: input.sort_order ?? all.filter((w) => w.is_active).length + 1,
       is_active: true,
       created_at: now,
       updated_at: now,

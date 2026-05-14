@@ -83,7 +83,7 @@ export default function AddCustomReportPage() {
     return errs;
   }
 
-  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -92,7 +92,7 @@ export default function AddCustomReportPage() {
     }
     setIsSubmitting(true);
     try {
-      createCustomReport({
+      await createCustomReport({
         name: name.trim(),
         start_date: startDate,
         end_date: endDate,

@@ -39,7 +39,7 @@ export function WalletPicker({
     }
     return wallets
       .filter((w) => w.is_active)
-      .sort((a, b) => (usageCount[b.id] ?? 0) - (usageCount[a.id] ?? 0) || a.sort_order - b.sort_order);
+      .sort((a, b) => (usageCount[b.id] ?? 0) - (usageCount[a.id] ?? 0) || a.name.localeCompare(b.name));
   }, [wallets, transactions]);
   const t = useTranslations("walletPicker");
 

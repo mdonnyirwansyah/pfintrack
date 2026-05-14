@@ -166,7 +166,6 @@ Pengguna mengisi "Name" → mengisi "Balance" → Tap "Save"
                            - balance: 0  ← SELALU 0, tidak menggunakan input user
                            - is_active: true
                            - created_at & updated_at (timestamp saat ini)
-                           - sort_order (urutan terakhir + 1)
                               ↓
                    Tambahkan ke array wallets
                    Simpan kembali ke localStorage['wallets']
@@ -328,9 +327,7 @@ Pengguna tap tombol "Delete" di Wallet Detail
     "name": "BCA",
     "balance": 823110.46,
     "wallet_type": "bank",
-    "currency": "IDR",
     "is_active": true,
-    "sort_order": 1,
     "created_at": "2026-01-15T10:00:00.000Z",
     "updated_at": "2026-04-20T08:30:00.000Z"
   }
@@ -346,9 +343,7 @@ Pengguna tap tombol "Delete" di Wallet Detail
 | `name` | String | Wajib, 2–50 karakter, unik per `anon_id` | Nama wallet |
 | `balance` | Number (desimal) | Wajib, ≥ 0 | Saldo wallet **saat ini** (current value, bukan initial) |
 | `wallet_type` | String (Enum) | Wajib | Lihat tabel Enum `wallet_type` |
-| `currency` | String | Default: `IDR` | ISO 4217 |
 | `is_active` | Boolean | Default: `true` | Soft delete flag |
-| `sort_order` | Number (integer) | Default: jumlah wallet + 1 | Urutan tampil |
 | `created_at` | String (ISO 8601) | Wajib | Timestamp wallet dibuat |
 | `updated_at` | String (ISO 8601) | Wajib | Timestamp terakhir wallet diperbarui |
 
@@ -569,7 +564,7 @@ Hasil:
 | **Soft Delete** | Wallet yang dihapus tidak dihapus permanen. Cukup ubah `is_active` menjadi `false`. Data tetap untuk audit dan migrasi Fase 2. |
 | **Format Angka** | Nilai `balance` disimpan sebagai **angka murni** (mis. `823110.46`). Konversi ke format locale `id-ID` (mis. `823.110,46`) hanya di lapisan UI. |
 | **Validasi Duplikat Nama** | Case-insensitive, hanya terhadap wallet yang `is_active: true`. |
-| **Urutan Wallet** | Mengikuti `sort_order`. Wallet baru di posisi paling bawah. Drag-to-reorder belum ada di Fase 1. |
+| **Urutan Wallet** | Wallet list diurutkan by name (A-Z) secara default. User dapat mengubah sort key via dropdown (name A-Z, name Z-A, balance tertinggi, balance terendah). Di WalletPicker (form transaksi/loan), wallet diurutkan by frekuensi pemakaian (transaction frequency) descending, dengan tiebreaker by name A-Z. |
 | **Re-load Setelah Navigasi** | Saat user kembali ke Wallet List dari Add/Edit, baca ulang data dari `localStorage` agar perubahan terbaru langsung tampil. |
 | **Balance Correction Transaction Pattern** ⭐ | Wallet module **tidak boleh** menulis `wallet.balance` secara langsung untuk perubahan berbasis koreksi. Harus via transaction "Balance Correction": (1) buat transaksi income/expense, (2) `applyTransactionToWallet()` mengubah balance. Ini menjaga satu jalur tunggal untuk semua perubahan balance. |
 | **Pencatatan Balance History** ⭐ | **WAJIB** dicatat bersamaan dengan pembuatan transaksi "Balance Correction": (a) Add Wallet dengan balance > 0, (b) Edit Wallet jika balance berubah. **TIDAK BOLEH** dicatat saat: transaksi dari Module Transactions, operasi loan dari Module Loan, atau soft delete wallet. |
@@ -579,7 +574,7 @@ Hasil:
 | **Migrasi Fase 2** | Field `anon_id` di `wallets` dan `wallet_balance_history` adalah kunci migrasi. Saat user buat akun, **kedua key** harus dikirim ke backend untuk dipindahkan ke `user_id` baru. |
 | **Satu jalur pencatatan history** ⭐ | Pencatatan `wallet_balance_history` dilakukan **HANYA** di `useWalletActions` (`handleCreate` dan `handleUpdate`), bukan di `useWalletStore`. `useWalletStore.createWallet` dan `updateWallet` tidak menulis history — semua perubahan balance dilakukan via Balance Correction transaction. |
 | **Hapus Wallet — In-Use Guard** ⭐ | Wallet yang memiliki transaksi aktif (sebagai `wallet_id` atau `destination_wallet_id`) atau loan entries aktif tidak dapat di-soft-delete. Cek dilakukan saat komponen dimuat di `/wallet/[id]`. Tombol Delete di-disabled dan menampilkan toast saat di-tap, bukan dialog konfirmasi. |
-| **`UpdateWalletInput` tidak include `balance`** ✅ | Tipe `UpdateWalletInput` di `wallets.ts` didefinisikan sebagai `Partial<Pick<Wallet, "name" \| "wallet_type" \| "currency" \| "sort_order">>` — `balance` tidak bisa di-patch langsung ke `walletsRepo.update()`. Perubahan balance hanya via Balance Correction transaction. |
+| **`UpdateWalletInput` tidak include `balance`** ✅ | Tipe `UpdateWalletInput` di `wallets.ts` didefinisikan sebagai `Partial<Pick<Wallet, "name" \| "wallet_type">>` — `balance` tidak bisa di-patch langsung ke `walletsRepo.update()`. Perubahan balance hanya via Balance Correction transaction. |
 
 ---
 

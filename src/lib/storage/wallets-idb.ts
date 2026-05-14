@@ -36,8 +36,6 @@ export const walletsIdbRepo = {
       name: input.name,
       wallet_type: input.wallet_type,
       balance: input.balance,
-      currency: input.currency ?? "IDR",
-      sort_order: input.sort_order ?? activeWallets.length + 1,
       is_active: true,
       created_at: now,
       updated_at: now,

@@ -27,10 +27,13 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: FAB
     <>
       {/* Overlay */}
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm cursor-default"
           onClick={close}
+          aria-label="Close actions overlay"
           aria-hidden="true"
+          tabIndex={-1}
         />
       )}
 
@@ -55,6 +58,7 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: FAB
                 {action.label}
               </span>
               <button
+                type="button"
                 onClick={() => {
                   close();
                   action.onClick();
@@ -74,6 +78,7 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: FAB
 
       {/* Main FAB */}
       <button
+        type="button"
         onClick={toggle}
         className={cn(
           "fixed right-4 z-50 rounded-full flex items-center justify-center",

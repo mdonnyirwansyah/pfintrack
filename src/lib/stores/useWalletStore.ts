@@ -16,7 +16,7 @@ interface WalletActions {
   /** Create a wallet and refresh state. Writes balance history if initial balance > 0. */
   createWallet: (input: CreateWalletInput) => Promise<Wallet>;
 
-  /** Update a wallet's name, type, currency, or sort_order. */
+  /** Update a wallet's name or type. */
   updateWallet: (id: string, patch: UpdateWalletInput) => Promise<Wallet>;
 
   /** Soft-delete a wallet. Does NOT write balance history. */

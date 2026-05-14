@@ -59,7 +59,7 @@ export default function WalletPage() {
       if (sortKey === "balance_asc") return a.balance - b.balance;
       if (sortKey === "name_asc") return a.name.localeCompare(b.name);
       if (sortKey === "name_desc") return b.name.localeCompare(a.name);
-      return a.sort_order - b.sort_order;
+      return a.name.localeCompare(b.name);
     });
 
   const activeWallets = wallets.filter((w) => w.is_active);

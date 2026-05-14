@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "exported_at": "2026-01-01T00:00:00.000Z",
+  "wallets": [
+    {
+      "id": "bk-wallet-001",
+      "anon_id": "test-anon-00000000-0000-0000-0000-000000000001",
+      "name": "Backup BCA",
+      "wallet_type": "bank",
+      "balance": 2500000,
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00.000Z",
+      "updated_at": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "wallet_balance_history": [],
+  "transactions": [
+    {
+      "id": "bk-tx-001",
+      "anon_id": "test-anon-00000000-0000-0000-0000-000000000001",
+      "type": "income",
+      "wallet_id": "bk-wallet-001",
+      "destination_wallet_id": null,
+      "amount": 2500000,
+      "title": "Backup Gaji",
+      "category": null,
+      "description": null,
+      "transaction_date": "2026-01-01",
+      "transaction_time": "09:00",
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00.000Z",
+      "updated_at": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "loan_counterparties": [],
+  "loan_entries": [],
+  "custom_reports": []
+}
