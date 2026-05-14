@@ -2,8 +2,8 @@
 ## Module: Transactions
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.5
-**Tanggal:** 2026-05-13
+**Versi Dokumen:** 1.0.0
+**Tanggal:** 2026-05-14
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -13,9 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.4** | **2026-05-05** | **Sync dengan implementasi: (1) Bottom Nav 5 tab (termasuk Settings). (2) Date/Time layout horizontal side-by-side. (3) WalletPicker header icons ✏️📄 belum diimplementasi (documented as pending). (4) Amount field: real-time onChange formatting (bukan onFocus/onBlur). (5) Default sort by transaction_time DESC. (6) TransactionItem layout: title sebagai primary, category sebagai secondary. (7) SummaryBar income prefix "+". (8) Description textarea multi-line. (9) Cancel button di form. (10) Swipe navigation. (11) Auto-open WalletPicker. (12) Wallet balance tampil di form. (13) Search juga cari destination wallet. (14) History grouping selalu aktif (bukan opsional). (15) Export filename termasuk shortId. (16) Asumsi #5 locale-aware. (17) Edit transaction: tipe dikunci. Dead code documented.** |
-| **1.5** | **2026-05-13** | **Koreksi riwayat revisi v1.4: Bottom Navigation adalah 5 tab (termasuk Settings), bukan 4 tab — sesuai implementasi aktual `src/components/shared/BottomNav.tsx`. Tidak ada perubahan lain di modul ini.** |
-| 1.3 | 2026-05-04 | Versi awal yang didokumentasikan. |
+| **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya (v1.3–v1.5) menjadi versi rilis pertama. Mencakup: Transaction List (date navigator, summary bar, sort control, swipe navigation, long-press delete + undo, welcome card), 3 form Add (Income/Expense/Transfer) dengan real-time formatting, suggestion chips dari history, WalletPicker bottom sheet, Transaction History (search), Export Excel (.xlsx), 5-tab Bottom Navigation, tipe transaksi dikunci saat edit, kategori khusus Balance Correction, dan catatan dead code.** |
 
 ---
 
@@ -625,9 +623,8 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 | **Soft Delete** | Transaksi yang dihapus tidak dihapus permanen. `is_active: false` untuk keperluan audit dan migrasi Fase 2. Transaksi soft-deleted **tidak** mempengaruhi balance wallet (efeknya sudah di-rollback saat dihapus). |
 | **Migrasi Fase 2** | Field `anon_id` di setiap transaksi adalah kunci migrasi. Saat user membuat akun, backend akan mencari semua transaksi dengan `anon_id` user dan memindahkannya ke `user_id` baru. |
 | **Tipe Transaksi Dikunci saat Edit** | Saat edit transaksi, `type` tidak dapat diubah (income tidak bisa diubah jadi expense, dst). Form Income/Expense atau Transfer ditentukan dari tipe asal. Wallet balance rollback+apply tetap benar untuk tipe yang sama. |
-| **Balance Correction di Suggestion Chips (Bug)** ⚠️ | `getTitleSuggestions` dan `getCategorySuggestions` saat ini tidak mengeksklusi "Balance Correction" dari sources. Harus ditambahkan filter: `t.title !== "Balance Correction"` di kedua fungsi dalam `useTransactionStore.ts`. |
-| **SortPill: duplikasi inline** ⚠️ | Komponen `SortPill` (`src/components/shared/SortPill.tsx`) sudah ada dan lengkap (termasuk `applySortKey` helper). Namun `transactions/page.tsx` mengimplementasikan sort logic secara inline alih-alih menggunakan komponen tersebut. Perlu direfactor untuk menggunakan `SortPill`. |
-| **Dead stubs di `features/transactions/`** ⚠️ | Tiga file adalah empty stubs yang tidak pernah diimplementasi: `src/features/transactions/hooks/useTransactionActions.ts`, `src/features/transactions/components/TransactionForm.tsx`, `src/features/transactions/components/CategoryChips.tsx`. Implementasi aktual ada di `src/app/transactions/_components/`. Stubs ini harus dihapus. |
+| **Balance Correction dieksklusi dari Suggestion Chips** ✅ | `getTitleSuggestions` dan `getCategorySuggestions` di `useTransactionStore.ts` sudah memfilter `t.title !== "Balance Correction"` dan `t.category !== "Balance Correction"` sehingga transaksi sistem tidak muncul sebagai suggestion. |
+| **SortPill: komponen shared** ✅ | `transactions/page.tsx` menggunakan komponen `SortPill` dari `src/components/shared/SortPill.tsx` beserta helper `applySortKey`. Tidak ada lagi sort logic inline. |
 | **Swipe Navigation** | `useSwipe` hook di `transactions/page.tsx`: swipe kiri = maju satu hari, swipe kanan = mundur satu hari. Threshold 50px horizontal; diabaikan jika gerakan vertikal lebih dominan (scrolling). |
 | **WalletPicker Header Icons (Pending)** | Spec menyebut dua ikon (✏️ dan 📄) di header WalletPicker. **Belum diimplementasi.** Tunda ke iterasi berikutnya. |
 
@@ -641,11 +638,11 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 | 2 | Edit transaction → recalculate wallet balance | ✅ Rollback efek lama, apply efek baru |
 | 3 | Hapus transaksi via tombol di Edit screen | ✅ Confirmation dialog wajib (komponen reusable) |
 | 4 | Expense > balance wallet | ✅ **Boleh minus + warning** (soft, tidak block) |
-| 5 | Format tanggal | ✅ **(Diperbarui v1.4)** **Locale-aware** — menggunakan `useLocale()` + `date-fns/locale`. EN: `Fri, 01 May 2026`, ID: `Jum, 01 Mei 2026`. Weekday headers di calendar popup juga locale-aware (single-letter, mulai Minggu). |
+| 5 | Format tanggal | ✅ **Locale-aware** — menggunakan `useLocale()` + `date-fns/locale`. EN: `Fri, 01 May 2026`, ID: `Jum, 01 Mei 2026`. Weekday headers di calendar popup juga locale-aware (single-letter, mulai Minggu). |
 | 6 | Limit chip suggestion | ✅ **8 chip** per field |
 | 7 | Ikon ✏️ dan 📄 di bottom sheet wallet | ⏳ **Belum diimplementasi** — ✏️ seharusnya navigasi ke Module Wallet, 📄 ke riwayat wallet. Pending Fase 1. |
 
 ---
 
-*— End of Technical Specification: Module Transactions (v1.5) —*
+*— End of Technical Specification: Module Transactions (v1.0.0) —*
 *Dokumen terkait: Module Wallet · Global Architecture · Module Report · Module Loan · Module Settings*

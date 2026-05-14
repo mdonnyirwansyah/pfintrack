@@ -2,8 +2,8 @@
 ## Module: Loan
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.4
-**Tanggal:** 2026-05-13
+**Versi Dokumen:** 1.0.0
+**Tanggal:** 2026-05-14
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -13,8 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.4** | **2026-05-13** | **Sinkronisasi codebase: (1) Tambah tabel Riwayat Revisi (sebelumnya tidak ada). (2) Tidak ada perubahan logika atau skema — modul Loan sudah konsisten dengan implementasi.** |
-| 1.3 | 2026-05-05 | Versi yang terdokumentasi terakhir. Mencakup Known Implementation Issues (Bug 1 Summary Bar terbalik, Bug 2 & 3 sudah FIXED). Terminologi Give/Get, Asumsi Wallet Wajib, Note Character Counter. |
+| **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya (v1.3–v1.4) menjadi versi rilis pertama. Mencakup: Loan List, Loan Detail per orang, form Add Give/Get, terminologi Give/Get, wallet wajib di form, pencocokan counterparty case-insensitive, Mark as Paid manual, cascade delete, Edit Entry (tipe terkunci), format tampilan outstanding, Summary Bar formula, Known Issues (Bug 1 tidak valid, Bug 2 & 3 sudah FIXED).** |
 
 ---
 
@@ -693,7 +692,7 @@ prefix = outstanding < 0 ? "+ " : outstanding > 0 ? "- " : ""
 
 ---
 
-## 9. Known Implementation Issues (v1.3 — 2026-05-05)
+## 9. Known Implementation Issues
 
 Bagian ini mendokumentasikan **bug yang diketahui** di implementasi saat ini — spec §4 tetap menjadi sumber kebenaran untuk perilaku yang *seharusnya*. Item di bawah perlu diperbaiki di kode.
 
@@ -752,5 +751,5 @@ const balanceColor =
 
 ---
 
-*— End of Technical Specification: Module Loan (v1.4) —*
+*— End of Technical Specification: Module Loan (v1.0.0) —*
 *Dokumen terkait: Module Wallet · Module Transactions · Global Architecture · Module Report · Module Settings*

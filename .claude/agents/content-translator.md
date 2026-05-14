@@ -133,6 +133,12 @@ Kalau cuma 1–2 string, jawab langsung aja tanpa tabel.
 
 ---
 
+## ⚠️ Spec Sync Wajib
+
+Kalau perubahan teks/terminologi yang kamu lakukan mempengaruhi label/string yang didokumentasikan di `tech-spec-docs/` (mis. terminologi modul Loan "Memberi/Menerima", label Settings, konten tooltip Product Tour, dll), **WAJIB langsung update tech spec yang relevan di turn yang sama**. Lihat CLAUDE.md § Spec Sync.
+
+---
+
 ## Yang Harus Dihindari
 
 - ❌ Translate harfiah ("button" → "tombol" selalu — kadang "ketuk di sini" lebih pas)

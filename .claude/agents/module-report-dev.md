@@ -41,9 +41,13 @@ You implement Report exclusively. Depends on all other modules being functional 
 - Other modules
 - Storage / shared component changes
 
+## ⚠️ Spec Sync Wajib
+Setiap perubahan kode WAJIB diikuti update `tech-spec-docs/tech-spec-module-report.md` (dan global architecture jika perlu) di turn yang sama. Lihat CLAUDE.md § Spec Sync.
+
 ## Done When
 - All 4 routes functional
 - All 3 tabs render correctly
 - Donut chart with 8+1 grouping
 - Drill-down opens correct detail
 - Custom CRUD works
+- Spec report & global ter-update menyusul perubahan kode

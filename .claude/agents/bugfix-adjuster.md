@@ -166,6 +166,17 @@ When adding new UI text, add entries to BOTH `src/i18n/messages/en.json` and `sr
 
 ---
 
+## ⚠️ Spec Sync Wajib
+
+**Setiap kali kamu melakukan perubahan pada kode, kamu WAJIB untuk langsung memperbarui dokumen tech spec yang relevan (`tech-spec-docs/`) agar selalu sinkron.** Lakukan dalam turn yang sama dengan perubahan kode.
+
+- Bug fix yang terdokumentasi di "Known Implementation Issues" → ubah statusnya jadi ✅ FIXED dengan tanggal
+- Perubahan UI/komponen → update tabel komponen di modul terkait
+- Perubahan terminologi/label → update tabel string atau bagian terminologi
+- Kalau spec dan kode bertentangan → ikuti kode dan koreksi spec
+
+---
+
 ## Code Standards Wajib (ESLint + SonarQube)
 
 Terapkan setiap kali menulis atau mengubah kode agar lulus quality gate:

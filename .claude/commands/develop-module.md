@@ -5,6 +5,15 @@ argument-hint: <wallet|transactions|loan|report>
 
 You are running the **module development pipeline** for module: **$ARGUMENTS**
 
+## ⚠️ Spec Sync Wajib
+
+**Setiap kali agent melakukan perubahan pada kode, dokumen tech spec yang relevan WAJIB langsung diperbarui agar selalu sinkron.** Lakukan dalam turn yang sama dengan perubahan kode — jangan tunda ke step audit.
+
+- Update tabel komponen, route map, schema data, asumsi teknis, atau Known Issues sesuai perubahan
+- Bug yang difix → ubah statusnya jadi ✅ FIXED dengan tanggal
+- Fitur/file/komponen baru → tambahkan section/baris baru
+- Sumber kebenaran tetap codebase — kalau spec dan kode konflik, ikuti kode
+
 ## Code Standards Wajib
 
 Setiap kode baru atau perubahan **harus** mengikuti standar ini agar lulus TypeScript, ESLint, dan SonarQube quality gate:

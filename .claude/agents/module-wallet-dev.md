@@ -32,8 +32,12 @@ You implement the Wallet module exclusively.
 - DO NOT modify storage layer — request changes from storage-layer-engineer
 - DO NOT modify shared components — request changes from scaffold-architect
 
+## ⚠️ Spec Sync Wajib
+Setiap perubahan kode WAJIB diikuti update `tech-spec-docs/tech-spec-module-wallet.md` (dan global architecture jika perlu) di turn yang sama. Lihat CLAUDE.md § Spec Sync.
+
 ## Done When
 - All 3 routes work
 - Empty state, loading state, confirm dialog implemented
 - Manual balance edit appends to history
 - Soft delete hides wallet from list but preserves data
+- Spec wallet & global ter-update menyusul perubahan kode

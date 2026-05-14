@@ -32,8 +32,12 @@ You implement Loan exclusively. Depends on Wallet module.
 - Wallet, Transactions, Report modules
 - Storage layer / shared components changes
 
+## ⚠️ Spec Sync Wajib
+Setiap perubahan kode WAJIB diikuti update `tech-spec-docs/tech-spec-module-loan.md` (dan global architecture jika perlu) di turn yang sama. Lihat CLAUDE.md § Spec Sync.
+
 ## Done When
 - All 5 routes functional
 - Auto-offset paid off works
 - Wallet rollback correct on edit/delete entry
 - Cascade delete works end-to-end
+- Spec loan & global ter-update menyusul perubahan kode

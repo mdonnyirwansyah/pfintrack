@@ -11,6 +11,21 @@ All implementation MUST follow `tech-spec-docs/`:
 - `tech-spec-module-loan.md` — give/get utang-piutang
 - `tech-spec-module-report.md` — agregat realtime/monthly/custom
 - `tech-spec-migration-indexeddb.md` — storage migration: localStorage → IndexedDB (PROP-0001)
+- `tech-spec-feature-product-tour.md` — onboarding tour
+
+## ⚠️ Spec Sync Wajib
+
+**Setiap kali kamu melakukan perubahan pada kode, kamu WAJIB untuk langsung memperbarui dokumen tech spec yang relevan agar selalu sinkron.**
+
+Berlaku untuk semua perubahan: penambahan fitur, perbaikan bug, refactor, perubahan tipe data, perubahan UI, perubahan route, perubahan terminologi, dll. Lakukan dalam turn yang sama dengan perubahan kode — jangan tunda.
+
+Aturan praktis:
+1. **Setelah edit kode**, identifikasi dokumen tech spec mana yang terkait (per modul atau global)
+2. **Update bagian yang relevan**: tabel komponen, route map, schema data, asumsi teknis, Known Issues, dll
+3. **Kalau bug** yang difix terdokumentasi di "Known Implementation Issues", ubah statusnya jadi ✅ FIXED dengan tanggal hari ini
+4. **Kalau ada fitur/file/komponen baru yang belum ada di spec**, tambahkan section/baris baru
+5. **Kalau ada gap yang tidak bisa diselesaikan saat itu juga**, dokumentasikan sebagai Known Issue agar traceable
+6. **Sumber kebenaran tetap codebase** — kalau spec dan kode konflik, ikuti kode dan koreksi spec
 
 ## Critical Invariants
 

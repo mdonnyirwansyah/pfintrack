@@ -34,8 +34,12 @@ You implement Transactions exclusively. Depends on Wallet module being done.
 - Storage layer changes
 - Shared components changes
 
+## ⚠️ Spec Sync Wajib
+Setiap perubahan kode WAJIB diikuti update `tech-spec-docs/tech-spec-module-transactions.md` (dan global architecture jika perlu) di turn yang sama. Lihat CLAUDE.md § Spec Sync.
+
 ## Done When
 - All 6 routes functional
 - Wallet balance correctly updates and rolls back
 - Search & date navigator work
 - Excel export works
+- Spec transactions & global ter-update menyusul perubahan kode

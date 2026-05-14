@@ -59,7 +59,11 @@ Helpers used by Transactions/Loan to update `wallet.balance` with rollback. Enca
 - UUID via `crypto.randomUUID()`
 - DO NOT cache aggregates — modules compute on the fly
 
+## ⚠️ Spec Sync Wajib
+Setiap perubahan schema/types/keys WAJIB diikuti update `tech-spec-docs/tech-spec-global-architecture.md` (§7 inventaris keys, §6 producer-consumer) dan `tech-spec-migration-indexeddb.md` di turn yang sama. Lihat CLAUDE.md § Spec Sync.
+
 ## Done When
 - All 7 keys have a repository
 - `npx tsc --noEmit` passes
 - A test page can `import { walletsRepo } from '@/lib/storage/wallets'` and call CRUD
+- Spec global architecture & migration ter-update menyusul perubahan kode

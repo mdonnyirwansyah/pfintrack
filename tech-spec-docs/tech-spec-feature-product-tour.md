@@ -2,8 +2,8 @@
 ## Feature: Product Tour (Onboarding)
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.3
-**Tanggal:** 2026-05-13
+**Versi Dokumen:** 1.0.0
+**Tanggal:** 2026-05-14
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -29,10 +29,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
-| **1.3** | **2026-05-13** | **Sinkronisasi dengan implementasi aktual: (1) Total step diperbarui dari 13 menjadi 22 step (index 0–21) — rincian per grup: Transactions 7 step, Wallet 6 step, Loan 3 step, Report 5 step, dan 1 step END. (2) Struktur Zustand store diperbarui: hanya field `run: boolean` yang ada (bukan `isTourRunning`/`currentStepIndex`/`tourSteps` seperti spec sebelumnya). (3) Path file store diperbarui: `src/lib/stores/useTourStore.ts` (bukan `lib/store/tour.ts`). (4) Asumsi 2 dan 7 diperbarui.** |
-| 1.2 | 2026-05-12 | Sinkronisasi §8.2 dengan §4 — §4 ditetapkan sebagai sumber kanonik string tooltip. String WL-1, LN-1, dan RP-1 di §8.2 diperbarui: ditambahkan kalimat instruksi eksplisit "Tap tab ini untuk melanjutkan." di akhir konten, sesuai dengan string yang tercantum di §4. |
-| 1.1 | 2026-05-12 | Keputusan arsitektur navigasi tur: navigasi antar tab bersifat manual (user tap tab sendiri). Open Question #1 di §11 ditutup sebagai RESOLVED. §3 diperbarui dengan catatan instruksi eksplisit di tooltip dan mekanisme pendeteksian elemen oleh Joyride. §4 diperbarui: step WL-1, LN-1, RP-1 ditandai sebagai step transisi tab. §10 diperbarui dengan catatan implementasi terkait konfigurasi Joyride untuk manual navigation. |
-| 1.0 | 2026-05-12 | Dokumen awal. Formalisasi user stories US-01 s.d. US-09 ke dalam spesifikasi teknis. Mencakup katalog 13 step tur, kontrak `data-tour`, localStorage contract, styling spec, dan acceptance criteria. |
+| **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya (v1.0–v1.3) menjadi versi rilis pertama. Mencakup: arsitektur tur (ProductTour, TourInitializer, TourTooltip, TourBeacon), 22 step linear (Transactions 7, Wallet 6, Loan 3, Report 5, END 1), Zustand store minimalis (`run: boolean` saja), navigasi antar tab manual, kontrak atribut `data-tour`, kontrak key `tour_completed`, styling spec (tooltip, overlay, spotlight), string Indonesia via i18n, 9 user stories dengan acceptance criteria, dan SKIP_TARGETS per grup modul.** |
 
 ---
 
@@ -41,12 +38,12 @@
 | # | Asumsi |
 |---|--------|
 | 1 | Library tur: **`react-joyride` v4**. Dipilih karena dukungan spotlight overlay, placement otomatis, dan locale prop bawaan. |
-| 2 | State management tur menggunakan **Zustand** (`src/lib/stores/useTourStore.ts`) agar konsisten dengan pola state aplikasi lainnya (`useAppStore`). State tur **tidak** di-persist ke Zustand persist middleware — persistensi hanya via key `tour_completed` di `localStorage`. **(DIPERBARUI di v1.3 — path file dikoreksi)** |
+| 2 | State management tur menggunakan **Zustand** (`src/lib/stores/useTourStore.ts`) agar konsisten dengan pola state aplikasi lainnya (`useAppStore`). State tur **tidak** di-persist ke Zustand persist middleware — persistensi hanya via key `tour_completed` di `localStorage`. |
 | 3 | Komponen `ProductTour` adalah **Client Component** dengan guard `useEffect` untuk mencegah render di server (SSR). `react-joyride` memerlukan akses ke DOM dan `window`. |
 | 4 | Tur dimulai dari route `/transactions` karena ini adalah tab default dan landing page aplikasi (sesuai §2.2 Global Architecture). |
 | 5 | Key `tour_completed` adalah **key tambahan di luar 7 key data finansial utama**. Key ini merupakan UI state murni — tidak berisi data finansial dan tidak perlu dimigrasi ke Fase 2. |
 | 6 | Step tur menggunakan atribut `data-tour="<nama>"` sebagai selector target. Pendekatan ini dipilih agar tidak bergantung pada class CSS atau struktur DOM yang dapat berubah saat refactor. |
-| 7 | Total step: **22 step** (index 0–21) tersebar di 4 modul + 1 step END. Pembagian per grup: Transactions (7 step, index 0–6), Wallet (6 step, index 7–12), Loan (3 step, index 13–15), Report (5 step, index 16–20), dan 1 step END (index 21). Urutan tur dimulai dari Transactions (modul default), diikuti Wallet, Loan, kemudian Report. **(DIPERBARUI di v1.3 — jumlah step dikoreksi dari 13 ke 22)** |
+| 7 | Total step: **22 step** (index 0–21) tersebar di 4 modul + 1 step END. Pembagian per grup: Transactions (7 step, index 0–6), Wallet (6 step, index 7–12), Loan (3 step, index 13–15), Report (5 step, index 16–20), dan 1 step END (index 21). Urutan tur dimulai dari Transactions (modul default), diikuti Wallet, Loan, kemudian Report. |
 | 8 | Semua string teks tooltip dan tombol navigasi tur ditulis dalam **Bahasa Indonesia** via `locale` prop `react-joyride`. |
 | 9 | Tap di luar area spotlight (overlay gelap) **tidak** menutup tur untuk mencegah penutupan tidak disengaja. Konfigurasi ini diatur via `disableOverlayClose: true` pada Joyride. |
 | 10 | Modul Settings menyediakan aksi "Lihat Tutorial" untuk memulai ulang tur secara manual. Ini adalah satu-satunya entry point manual selain trigger otomatis. |
@@ -90,7 +87,7 @@ Product Tour memandu pengguna baru memahami empat modul utama PFinTrack melalui 
 
 ## 2. Arsitektur
 
-### 2.1 Pohon Komponen **(DIPERBARUI di v1.3)**
+### 2.1 Pohon Komponen
 
 ```
 src/
@@ -131,7 +128,7 @@ ProductTour mount (useEffect)
    (pernah selesai/skip)  di useTourStore
 ```
 
-### 2.3 Zustand Store: `src/lib/stores/useTourStore.ts` **(DIPERBARUI di v1.3)**
+### 2.3 Zustand Store: `src/lib/stores/useTourStore.ts`
 
 Store minimalis — semua state navigasi step dikelola secara internal oleh `react-joyride`. Zustand hanya mengontrol apakah Joyride aktif atau tidak.
 
@@ -139,7 +136,7 @@ Store minimalis — semua state navigasi step dikelola secara internal oleh `rea
 |-------|------|------------|-----------|
 | `run` | `boolean` | `false` | Mengontrol apakah Joyride sedang aktif (`run` prop Joyride) |
 
-> **Catatan implementasi (v1.3):** Berbeda dengan spec awal yang merancang `isTourRunning`, `currentStepIndex`, dan `tourSteps` di store — implementasi aktual hanya menggunakan satu field `run`. Step definitions (`STEP_TARGETS`, `TRANSITION_STEPS`, `SKIP_TARGETS`) didefinisikan sebagai konstanta di dalam file `ProductTour.tsx`, bukan di store. Ini adalah pilihan implementasi yang valid karena state navigasi step dikontrol oleh `react-joyride` secara internal.
+> **Catatan implementasi:** Implementasi aktual hanya menggunakan satu field `run` (bukan `isTourRunning`/`currentStepIndex`/`tourSteps` yang pernah direncanakan). Step definitions (`STEP_TARGETS`, `TRANSITION_STEPS`, `SKIP_TARGETS`) didefinisikan sebagai konstanta di dalam file `ProductTour.tsx`, bukan di store. Ini adalah pilihan implementasi yang valid karena state navigasi step dikontrol oleh `react-joyride` secara internal.
 
 | Action | Perilaku |
 |--------|---------|
@@ -195,7 +192,7 @@ Step N sedang tampil
    └──────────────────────────────────┘
 ```
 
-### 3.3 Navigasi Antar Tab (DIPERBARUI di v1.1)
+### 3.3 Navigasi Antar Tab
 
 Navigasi antar tab saat tur berjalan adalah **manual** — user harus tap tab bottom nav sendiri. Tur **tidak** melakukan programmatic navigation (tidak ada `router.push()` di dalam callback Joyride).
 
@@ -241,7 +238,7 @@ User navigasi ke /settings
 
 ---
 
-## 4. Katalog Step Tur **(DIPERBARUI di v1.3)**
+## 4. Katalog Step Tur
 
 Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup. Step dieksekusi secara linear.
 
@@ -251,7 +248,7 @@ Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup.
 
 > **Catatan SKIP_TARGETS:** Skip per grup tersedia: dari TX (index 0) → WL (index 7), dari WL (index 7) → LN (index 13), dari LN (index 13) → RP (index 16), dari RP (index 16) → END (index 21).
 
-### 4.1 Grup: Transactions (Index 0–6) **(DIPERBARUI di v1.3)**
+### 4.1 Grup: Transactions (Index 0–6)
 
 | Index | Key | Target (`data-tour`) | Placement | Catatan |
 |-------|-----|---------------------|-----------|---------|
@@ -263,7 +260,7 @@ Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup.
 | 5 | `tx6` | `"tx-export"` | `'bottom'` | Ikon export Excel di header |
 | 6 | `tx7` | `"tx-history"` | `'bottom'` | Ikon navigasi ke History screen |
 
-### 4.2 Grup: Wallet (Index 7–12) **(DIPERBARUI di v1.3)**
+### 4.2 Grup: Wallet (Index 7–12)
 
 | Index | Key | Target (`data-tour`) | Placement | Catatan |
 |-------|-----|---------------------|-----------|---------|
@@ -274,7 +271,7 @@ Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup.
 | 11 | `wl5` | `"fab-wallet"` | `'top'` | FAB tambah wallet baru |
 | 12 | `wl6` | `"wallet-first-card"` | `'bottom'` | Kartu wallet pertama. Jika list kosong: step dilewati secara diam (Joyride melewati step jika elemen tidak ditemukan di DOM) |
 
-### 4.3 Grup: Loan (Index 13–15) **(DIPERBARUI di v1.3)**
+### 4.3 Grup: Loan (Index 13–15)
 
 | Index | Key | Target (`data-tour`) | Placement | Catatan |
 |-------|-----|---------------------|-----------|---------|
@@ -282,7 +279,7 @@ Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup.
 | 14 | `ln2` | `"fab-loan"` | `'top'` | FAB expandable di Loan List |
 | 15 | `ln3` | `"loan-counterparty-list"` | `'bottom'` | Container list counterparty. Jika kosong: step tetap valid (highlight area kosong) |
 
-### 4.4 Grup: Report (Index 16–20) **(DIPERBARUI di v1.3)**
+### 4.4 Grup: Report (Index 16–20)
 
 | Index | Key | Target (`data-tour`) | Placement | Catatan |
 |-------|-----|---------------------|-----------|---------|
@@ -292,7 +289,7 @@ Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup.
 | 19 | `rp4` | `"report-donut-chart"` | `'bottom'` | Donut chart |
 | 20 | `rp5` | `"report-custom-fab"` | `'top'` | FAB di tab Custom. Dilewati secara diam jika user tidak berada di tab Custom saat step ini ditampilkan |
 
-### 4.5 Step Penutup (Index 21) **(DIPERBARUI di v1.3)**
+### 4.5 Step Penutup (Index 21)
 
 | Index | Key | Target (`data-tour`) | Placement | Catatan |
 |-------|-----|---------------------|-----------|---------|
@@ -300,7 +297,7 @@ Total: **22 step** (index 0–21), dibagi menjadi 4 grup modul + 1 step penutup.
 
 ---
 
-## 5. Kontrak Atribut `data-tour` **(DIPERBARUI di v1.3)**
+## 5. Kontrak Atribut `data-tour`
 
 Seluruh atribut berikut **wajib** ada di komponen terkait. Ini adalah kontrak antara spesifikasi tur dan implementasi komponen.
 
@@ -558,7 +555,7 @@ useEffect(() => { setIsMounted(true) }, [])
 if (!isMounted) return null
 ```
 
-4. **Navigasi antar tab: manual, bukan programatik (DIPERBARUI di v1.1).** Jangan tambahkan `router.push()` di dalam callback Joyride (`onChange`, `callback`). Navigasi antar tab sepenuhnya diinisiasi oleh user sebagai respons terhadap instruksi di tooltip. Konsekuensi implementasi:
+4. **Navigasi antar tab: manual, bukan programatik.** Jangan tambahkan `router.push()` di dalam callback Joyride (`onChange`, `callback`). Navigasi antar tab sepenuhnya diinisiasi oleh user sebagai respons terhadap instruksi di tooltip. Konsekuensi implementasi:
    - Gunakan `disableScrolling: false` agar Joyride dapat scroll ke elemen target jika diperlukan.
    - Jika elemen target sebuah step tidak ada di DOM saat Joyride mencoba render step tersebut, Joyride harus melewati step tersebut secara diam (bukan throw error). Tangani kondisi ini via callback `STATUS.ERROR` — ketika error terjadi karena target tidak ditemukan, panggil `skipStep()` atau lanjut ke step berikutnya, jangan hentikan tur.
    - Step transisi tab (WL-1, LN-1, RP-1) aman karena target mereka (elemen BottomNav) selalu ada di DOM. Step konten per-halaman (WL-2, WL-3, LN-2, LN-3, RP-2, RP-3) baru tersedia setelah user berpindah ke tab yang tepat — pastikan penanganan error di atas sudah terpasang untuk kasus user yang tidak mengikuti urutan.
@@ -573,17 +570,19 @@ if (!isMounted) return null
 
 ---
 
-## 11. Pertimbangan & Pertanyaan Terbuka
+## 11. Keputusan Desain (Resolved)
 
-| # | Topik | Status | Catatan |
-|---|-------|--------|---------|
-| 1 | **Navigasi antar tab saat tur berlangsung** | **RESOLVED (v1.1): Manual navigation** | Navigasi antar tab adalah **manual** — user tap tab bottom nav sendiri. Tur tidak melakukan programmatic navigation (`router.push()` tidak digunakan di dalam callback Joyride). Step transisi tab (WL-1, LN-1, RP-1) menyorot langsung elemen tab di bottom nav dan menampilkan instruksi eksplisit di konten tooltip ("Tap tab ini untuk melanjutkan."). Joyride menunggu user tap "Berikutnya" sebelum lanjut ke step berikutnya; jika elemen target belum ada di DOM, step dilewati secara diam via penanganan `STATUS.ERROR`. Lihat §3.3 dan §10 item 4 untuk detail implementasi. |
-| 2 | **Step WL-3 saat wallet kosong** | Terbuka | Step ini secara eksplisit menyorot "kartu wallet jika ada". Perlu keputusan: (a) skip step ini sepenuhnya saat list kosong, atau (b) arahkan spotlight ke area list kosong dengan pesan alternatif "Setelah kamu menambah wallet, saldo akan terlihat di sini." |
-| 3 | **Judul tooltip** | Terbuka | User stories tidak mendefinisikan judul (heading) untuk setiap tooltip — hanya konten. Perlu keputusan apakah setiap tooltip punya heading pendek (mis. "Transactions", "Wallet") atau hanya konten body saja. |
-| 4 | **Beacon dot** | Terbuka | react-joyride menampilkan "beacon" (titik animasi berdenyut) sebelum tooltip muncul. Apakah beacon ini diaktifkan atau dinonaktifkan (`disableBeacon: true` per step)? Beacon dapat membingungkan di mobile jika tidak dikenali pengguna. |
-| 5 | **Multi-bahasa tur (Fase 2)** | Fase 2 | Di Fase 1 string tur hardcoded Indonesian. Di Fase 2, jika `next-intl` dipakai, string perlu dipindahkan ke `messages/*.json`. Namespace: `tour.steps`. |
-| 6 | **Analytics drop-off** | Fase 2 | Melacak di step mana pengguna paling banyak skip berguna untuk optimasi onboarding. Membutuhkan backend — skip untuk Fase 1. |
+Semua pertimbangan dan pertanyaan terbuka di iterasi sebelumnya sudah diselesaikan untuk release v1.0.0:
+
+| # | Topik | Keputusan |
+|---|-------|-----------|
+| 1 | Navigasi antar tab saat tur berlangsung | **Manual navigation.** Tur tidak melakukan `router.push()` di dalam callback Joyride. Step transisi tab (WL-1, LN-1, RP-1) menyorot langsung elemen tab di bottom nav dengan instruksi eksplisit di tooltip ("Ketuk tab ini untuk melanjutkan."). Jika target belum ada di DOM, step dilewati via `STATUS.ERROR`. |
+| 2 | Step WL-3 saat wallet kosong | **Skip step otomatis** via `TARGET_NOT_FOUND` handler di `ProductTour.handleEvent` — step dilanjutkan ke berikutnya tanpa pesan alternatif. |
+| 3 | Judul tooltip | **Hanya body content** — tooltip menampilkan konten saja tanpa heading terpisah, sesuai desain `TourTooltip` di `src/components/shared/TourTooltip.tsx`. |
+| 4 | Beacon dot | **Dinonaktifkan** — `disableBeacon: true` di setiap step (lihat `STEP_TARGETS` di `ProductTour.tsx`). |
+| 5 | Multi-bahasa tur | **Sudah diimplementasi** di v1.0.0 — string tur disimpan di `messages/id.json` dan `messages/en.json` namespace `tour.steps`, diakses via `useTranslations('tour')`. |
+| 6 | Analytics drop-off | **Defer ke Fase 2** — perlu backend untuk tracking; tidak ada di scope Fase 1. |
 
 ---
 
-*— End of Technical Specification: Feature Product Tour (v1.3) —*
+*— End of Technical Specification: Feature Product Tour (v1.0.0) —*
