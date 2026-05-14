@@ -51,14 +51,11 @@ export default function ReportPage() {
     loadCustomReports();
   }, [loadCustomReports]);
 
-  // Reload source data when switching tabs to pick up any changes
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
     sessionStorage.setItem("report_active_tab", tab);
-    void transactionsRepo.getAll().then(setTransactions);
-    void loanEntriesRepo.getAll().then(setLoanEntries);
-    void loanCounterpartiesRepo.getAll().then(setLoanCounterparties);
-    void walletBalanceHistoryRepo.getAll().then(setBalanceHistory);
+    // Data already loaded on mount — only reload custom reports list
+    // (transactions/loans are computed client-side; no need to re-hit IDB on tab click)
     if (tab === "custom") loadCustomReports();
   };
 

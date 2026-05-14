@@ -47,9 +47,9 @@ function makeTx(overrides: Partial<Transaction> & { type: Transaction["type"] })
 function makeLoanEntry(overrides: Partial<LoanEntry> & { type: LoanEntry["type"] }): LoanEntry {
   return {
     id: "e1", anon_id: "test", counterparty_id: "cp1",
-    wallet_id: "w1", amount: 200_000, description: null,
-    entry_date: "2026-05-10", transaction_date: "2026-05-10",
-    transaction_time: "10:00", is_paid_off: false, is_active: true,
+    wallet_id: "w1", amount: 200_000, note: null,
+    transaction_date: "2026-05-10",
+    transaction_time: "10:00", is_active: true,
     created_at: "2026-05-10T10:00:00.000Z",
     updated_at: "2026-05-10T10:00:00.000Z",
     ...overrides,

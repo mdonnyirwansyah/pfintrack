@@ -44,11 +44,9 @@ function loan(overrides: Partial<LoanEntry> & { type: LoanEntry["type"] }): Loan
     counterparty_id: "cp1",
     wallet_id: null,
     amount: 100_000,
-    description: null,
-    entry_date: "2026-05-10",
+    note: null,
     transaction_date: "2026-05-10",
     transaction_time: "10:00",
-    is_paid_off: false,
     is_active: true,
     created_at: "2026-05-10T10:00:00.000Z",
     updated_at: "2026-05-10T10:00:00.000Z",
@@ -169,7 +167,7 @@ describe("calcLoan", () => {
   });
 
   it("excludes entries outside period", () => {
-    const entries = [loan({ type: "get", amount: 100_000, transaction_date: "2026-04-01", entry_date: "2026-04-01" })];
+    const entries = [loan({ type: "get", amount: 100_000, transaction_date: "2026-04-01" })];
     expect(calcLoan(entries, PERIOD.start, PERIOD.end)).toBeNull();
   });
 });

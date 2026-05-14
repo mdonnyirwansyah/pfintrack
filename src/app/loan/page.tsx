@@ -60,34 +60,25 @@ export default function LoanPage() {
     return { summaryGet: get, summaryGive: give };
   }, [counterparties, entriesByCounterparty]);
 
-  // Sort: outstanding first (by updated_at DESC), then paid off
+  // Pre-compute aggregates once per render (O(n×m)) then sort (O(n log n))
   const sorted = useMemo(() => {
+    const agg = new Map(
+      counterparties.map((cp) => {
+        const entries = entriesByCounterparty[cp.id] ?? [];
+        let give = 0, get = 0;
+        for (const e of entries) {
+          if (e.type === "give") give += e.amount;
+          else get += e.amount;
+        }
+        const outstanding = give - get;
+        return [cp.id, { outstanding, paidOff: cp.manual_paid_off || outstanding === 0 }];
+      })
+    );
+
     return [...counterparties].sort((a, b) => {
-      const aEntries = entriesByCounterparty[a.id] ?? [];
-      const bEntries = entriesByCounterparty[b.id] ?? [];
-
-      const aGive = aEntries
-        .filter((e) => e.type === "give")
-        .reduce((s, e) => s + e.amount, 0);
-      const aGet = aEntries
-        .filter((e) => e.type === "get")
-        .reduce((s, e) => s + e.amount, 0);
-      const aOutstanding = aGive - aGet;
-      const aPaidOff = a.manual_paid_off || aOutstanding === 0;
-
-      const bGive = bEntries
-        .filter((e) => e.type === "give")
-        .reduce((s, e) => s + e.amount, 0);
-      const bGet = bEntries
-        .filter((e) => e.type === "get")
-        .reduce((s, e) => s + e.amount, 0);
-      const bOutstanding = bGive - bGet;
-      const bPaidOff = b.manual_paid_off || bOutstanding === 0;
-
-      // Outstanding first, paid off last
-      if (aPaidOff !== bPaidOff) return aPaidOff ? 1 : -1;
-
-      // Within same group: sort by updated_at DESC
+      const aAgg = agg.get(a.id)!;
+      const bAgg = agg.get(b.id)!;
+      if (aAgg.paidOff !== bAgg.paidOff) return aAgg.paidOff ? 1 : -1;
       return b.updated_at.localeCompare(a.updated_at);
     });
   }, [counterparties, entriesByCounterparty]);

@@ -12,7 +12,6 @@ import {
   calcExpenses,
   currentMonthStart,
   currentMonthEnd,
-  getTransactionsForCategory,
 } from "@/lib/report/calculations";
 import { DonutChart } from "./DonutChart";
 import { SavingRateCard } from "./SavingRateCard";
@@ -165,7 +164,7 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
     [transactions, start, end, donutMode]
   );
 
-  // Filtered by selected category, then sorted
+  // Filtered by selected category, then sorted — single pass using allModeTransactions
   const filteredTransactions = useMemo(() => {
     let base: typeof allModeTransactions;
     if (!selectedCategory) {
@@ -174,16 +173,13 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
       const top8 = new Set(breakdown.slice(0, 8).map((b) => b.category));
       base = allModeTransactions.filter((tx) => !top8.has(tx.category ?? "Other"));
     } else {
-      base = getTransactionsForCategory(transactions, start, end, selectedCategory);
-      // getTransactionsForCategory always filters type=expense; for income mode we need to redo
-      if (donutMode === "income") {
-        base = allModeTransactions.filter(
-          (tx) => (tx.category ?? "Other") === selectedCategory
-        );
-      }
+      // allModeTransactions already filtered by type+period — just filter by category
+      base = allModeTransactions.filter(
+        (tx) => (tx.category ?? "Other") === selectedCategory
+      );
     }
     return applySortKey(base, sortKey);
-  }, [selectedCategory, allModeTransactions, breakdown, transactions, start, end, sortKey, donutMode]);
+  }, [selectedCategory, allModeTransactions, breakdown, sortKey]);
 
   const handleDonutModeChange = (mode: DonutMode) => {
     if (mode === donutMode) return;

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Wallet, WalletType } from "@/lib/types/wallet";
 import { formatIDR } from "@/lib/format/number";
 import { ChevronRight, Landmark, Smartphone, Wallet as WalletIcon, TrendingUp, PiggyBank, Coins, MoreHorizontal } from "lucide-react";
@@ -27,7 +28,7 @@ interface WalletCardProps {
   onPress?: () => void;
 }
 
-export function WalletCard({ wallet, onPress }: WalletCardProps) {
+export const WalletCard = memo(function WalletCard({ wallet, onPress }: WalletCardProps) {
   const Icon = WALLET_TYPE_ICONS[wallet.wallet_type] ?? MoreHorizontal;
 
   return (
@@ -69,4 +70,4 @@ export function WalletCard({ wallet, onPress }: WalletCardProps) {
       </div>
     </button>
   );
-}
+});

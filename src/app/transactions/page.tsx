@@ -145,7 +145,7 @@ function TransactionsContent() {
     }
   };
 
-  const fabActions = [
+  const fabActions = useMemo(() => [
     {
       label: t("fab.expense"),
       icon: <ShoppingCart className="w-5 h-5 text-white" />,
@@ -164,7 +164,7 @@ function TransactionsContent() {
       color: "var(--text-secondary)",
       onClick: () => router.push(`/transactions/add/transfer?date=${activeDate}`),
     },
-  ];
+  ], [activeDate, router, t]);
 
   return (
     <>

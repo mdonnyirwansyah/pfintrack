@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { ChevronRight, User } from "lucide-react";
 import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
@@ -22,7 +23,7 @@ function computeAggregates(entries: LoanEntry[]) {
   return { totalGive, totalGet, outstanding };
 }
 
-export function CounterpartyListItem({
+export const CounterpartyListItem = memo(function CounterpartyListItem({
   counterparty,
   entries,
   onClick,
@@ -33,16 +34,14 @@ export function CounterpartyListItem({
   const isPaidOff =
     counterparty.manual_paid_off || outstanding === 0;
 
-  // Subtitle: note from the most-recent entry or fallback
-  const sortedEntries = [...entries].sort((a, b) => {
-    const da = `${a.transaction_date}T${a.transaction_time}`;
-    const db = `${b.transaction_date}T${b.transaction_time}`;
-    return db.localeCompare(da);
-  });
-  const subtitle =
-    sortedEntries.length > 0
-      ? sortedEntries[0].note || t("withoutExplanation")
-      : t("withoutExplanation");
+  // Find most-recent entry in O(n) via reduce instead of O(n log n) sort
+  const mostRecent = entries.reduce<LoanEntry | null>((best, e) => {
+    if (!best) return e;
+    const eKey = `${e.transaction_date}T${e.transaction_time}`;
+    const bKey = `${best.transaction_date}T${best.transaction_time}`;
+    return eKey > bKey ? e : best;
+  }, null);
+  const subtitle = mostRecent?.note ?? t("withoutExplanation");
 
   return (
     <button
@@ -115,4 +114,4 @@ export function CounterpartyListItem({
       </div>
     </button>
   );
-}
+});

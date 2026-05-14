@@ -4,7 +4,8 @@
       "Bash(nvm use *)",
       "Bash(fnm use *)",
       "Bash(python3 *)",
-      "Bash(bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run --coverage 2>&1')"
+      "Bash(bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run --coverage 2>&1')",
+      "Bash(bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run 2>&1')"
     ]
   }
 }
