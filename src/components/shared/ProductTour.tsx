@@ -132,6 +132,7 @@ function TourSkipConfirm({
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
           <button
+            type="button"
             onClick={onCancel}
             style={{
               flex: 1,
@@ -149,6 +150,7 @@ function TourSkipConfirm({
             {t('backToTour')}
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             style={{
               flex: 1,

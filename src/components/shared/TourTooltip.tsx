@@ -17,6 +17,18 @@ export function TourTooltip({
   const { shouldIntercept } = useTourIntercept();
   const t = useTranslations('tour');
 
+  // Strip joyride-injected `title` and `role` from button props.
+  // `title` causes unwanted native browser tooltips on buttons that already
+  // have visible text labels. `role` is redundant on a <button> element.
+  const { title: _skipTitle, role: _skipRole, ...skipRest } = skipProps;
+  const { title: _backTitle, role: _backRole, ...backRest } = backProps;
+  const {
+    title: _primaryTitle,
+    role: _primaryRole,
+    onClick: primaryOnClick,
+    ...primaryRest
+  } = primaryProps;
+
   return (
     <div
       {...tooltipProps}
@@ -88,7 +100,8 @@ export function TourTooltip({
         {/* Skip — left side */}
         {!isLastStep && (
           <button
-            {...skipProps}
+            type="button"
+            {...skipRest}
             style={{
               flex: '0 0 auto',
               height: 32,
@@ -113,7 +126,8 @@ export function TourTooltip({
         {/* Back button */}
         {index > 0 && (
           <button
-            {...backProps}
+            type="button"
+            {...backRest}
             style={{
               height: 32,
               padding: '0 12px',
@@ -133,10 +147,11 @@ export function TourTooltip({
 
         {/* Next / Finish button — always use primaryProps so ACTIONS.COMPLETE fires on last step */}
         <button
-          {...primaryProps}
+          type="button"
+          {...primaryRest}
           onClick={(e) => {
             if (!isLastStep && shouldIntercept(index)) return;
-            primaryProps.onClick(e);
+            primaryOnClick(e);
           }}
           style={{
             height: 32,

@@ -29,6 +29,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.0.1** | **2026-05-14** | **Fix: hapus native browser tooltip dari tombol tur (Skip, Back, Next, Finish). `react-joyride` menyuntikkan prop `title` ke `skipProps`/`backProps`/`primaryProps` yang memunculkan tooltip browser saat hover. Destructure dan buang `title` + `role` sebelum spread ke elemen `<button>` di `TourTooltip.tsx`. Tambah `type="button"` pada tombol di `TourSkipConfirm`. Tambah catatan implementasi di §10 item 9.** |
 | **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya (v1.0–v1.3) menjadi versi rilis pertama. Mencakup: arsitektur tur (ProductTour, TourInitializer, TourTooltip, TourBeacon), 22 step linear (Transactions 7, Wallet 6, Loan 3, Report 5, END 1), Zustand store minimalis (`run: boolean` saja), navigasi antar tab manual, kontrak atribut `data-tour`, kontrak key `tour_completed`, styling spec (tooltip, overlay, spotlight), string Indonesia via i18n, 9 user stories dengan acceptance criteria, dan SKIP_TARGETS per grup modul.** |
 
 ---
@@ -567,6 +568,14 @@ if (!isMounted) return null
 7. **Tap target tombol tur.** Tombol Berikutnya, Kembali, Lewati, Selesai wajib memenuhi minimum `44×44px`. Sesuaikan `styles.buttonNext`, `styles.buttonBack`, dll via `styles` prop Joyride jika dimensi default library tidak mencukupi.
 
 8. **Settings item "Lihat Tutorial".** Tambahkan sebagai item baris baru di section yang sesuai di `/settings`. Tidak perlu section khusus — bisa masuk ke section "About" atau section baru "Bantuan". Ikon yang disarankan: `HelpCircle` atau `BookOpen` dari lucide-react.
+
+9. **Stripping `title` dari props Joyride.** `react-joyride` menyuntikkan prop `title` berisi teks tombol ke dalam `backProps`, `primaryProps`, dan `skipProps`. Prop ini menghasilkan native browser tooltip saat hover — tidak diinginkan karena tombol sudah memiliki visible text label. Di `TourTooltip.tsx`, destructure `title` (dan `role`, yang redundan pada elemen `<button>`) sebelum spread ke elemen tombol:
+   ```tsx
+   const { title: _skipTitle, role: _skipRole, ...skipRest } = skipProps;
+   const { title: _backTitle, role: _backRole, ...backRest } = backProps;
+   const { title: _primaryTitle, role: _primaryRole, onClick: primaryOnClick, ...primaryRest } = primaryProps;
+   ```
+   Aturan umum: tooltip (native atau custom) hanya dipakai pada icon-only button tanpa visible text label.
 
 ---
 
