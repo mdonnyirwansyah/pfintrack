@@ -20,8 +20,9 @@ export function DemoBanner() {
 
   return (
     <>
-      <div
+      <aside
         className="flex items-center justify-between px-4 py-2.5 gap-2"
+        aria-label="Demo mode"
         style={{
           background: "var(--color-brand)",
           color: "var(--text-on-primary)",
@@ -53,7 +54,7 @@ export function DemoBanner() {
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
+      </aside>
 
       <ConfirmDialog
         open={confirmOpen}

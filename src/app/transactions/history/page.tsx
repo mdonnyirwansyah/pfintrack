@@ -254,7 +254,7 @@ function DateRangePickerSheet({
   const todayMax = toDateStr(todayDate());
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/40" onClick={() => picker.clearDateRange(setDateRange)} aria-hidden="true" />
+      <button type="button" className="fixed inset-0 z-40 bg-black/40 cursor-default" onClick={() => picker.clearDateRange(setDateRange)} aria-label="Close date picker" />
       <div className="fixed bottom-0 inset-x-0 mx-auto z-50 w-full max-w-md rounded-t-[24px] flex flex-col" style={{ background: "var(--bg-primary)", boxShadow: "0 -4px 32px rgba(0,0,0,0.18)" }}>
         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
           <div className="w-10 h-1 rounded-full" style={{ background: "var(--border-default)" }} />
@@ -325,14 +325,14 @@ function HistoryContent({
   }
   return (
     <div className="px-4">
-      <div className="glass rounded-[16px] overflow-hidden">
+      <ul className="glass rounded-[16px] overflow-hidden list-none">
         {filtered.map((tx, idx) => (
-          <div key={tx.id}>
+          <li key={tx.id}>
             {idx > 0 && <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />}
             <TransactionItem transaction={tx} wallets={wallets} showDate />
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

@@ -176,16 +176,16 @@ export default function WalletPage() {
 
         {/* Wallet list */}
         {!isLoading && displayedWallets.length > 0 && (
-          <div className="space-y-3">
+          <ul className="space-y-3 list-none">
             {displayedWallets.map((wallet, idx) => (
-              <div key={wallet.id} {...(idx === 0 ? { "data-tour": "wallet-first-card" } : {})}>
+              <li key={wallet.id} {...(idx === 0 ? { "data-tour": "wallet-first-card" } : {})}>
                 <WalletCard
                   wallet={wallet}
                   onPress={() => router.push(`/wallet/${wallet.id}`)}
                 />
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
 

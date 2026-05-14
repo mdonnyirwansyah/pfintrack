@@ -76,7 +76,11 @@ export function DonutChart({
   return (
     <div className="flex flex-col items-center w-full">
       {/* Donut + center label */}
-      <div style={{ width: "100%", height: 240, position: "relative" }}>
+      <div
+        role="img"
+        aria-label={`${centerLabelData.label}: ${formatIDR(centerLabelData.amount)}`}
+        style={{ width: "100%", height: 240, position: "relative" }}
+      >
         {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
           <PieChart>
             <Pie

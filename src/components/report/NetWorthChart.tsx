@@ -119,13 +119,13 @@ export function NetWorthChart({
   else deltaColor = "var(--text-secondary)";
 
   return (
-    <div className="glass rounded-[16px] px-4 pt-3 pb-4 space-y-3">
-      <h3
+    <figure className="glass rounded-[16px] px-4 pt-3 pb-4 space-y-3">
+      <figcaption
         className="text-[12px] font-semibold uppercase tracking-wider"
         style={{ color: "var(--text-secondary)" }}
       >
         {t("netWorth.title")}
-      </h3>
+      </figcaption>
 
       <div style={{ width: "100%", height: 120, minWidth: 0 }}>
       {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
@@ -187,6 +187,6 @@ export function NetWorthChart({
           </span>
         </span>
       </div>
-    </div>
+    </figure>
   );
 }

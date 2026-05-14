@@ -13,6 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.1.0** | **2026-05-14** | **Semantic HTML audit & fix. Ditambahkan §12 Konvensi Semantic HTML. Perubahan kode: list transaksi/wallet/loan pakai `<ul>`+`<li>`; Settings section labels `<p>` → `<h2>`; chart wrappers `<div>` → `<figure>`+`<figcaption>`; DemoBanner `<div>` → `<aside>`; SummaryBar `<div>` → `<section aria-label>`; DonutChart chart area diberi `role="img" aria-label`; rename dialog di loan detail ditambah `role="dialog" aria-modal aria-labelledby`; overlay backdrop history picker `<div onClick>` → `<button type="button">`; `transactions.summary.ariaLabel` ditambah ke en.json & id.json.** |
 | **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya menjadi versi rilis pertama. Mencakup: arsitektur Next.js App Router, 22 route (termasuk `/settings/report` dan `/~offline`), 5 tab Bottom Navigation, inventaris lengkap key state aplikasi (termasuk `pfintrack_color_theme`, `tour_completed`, `storage_version`), shared components (`SplashScreen`, `ColorThemeProvider`, `TourInitializer`, `ThemeToggle`, `TypeToConfirmDialog`), Settings module (`/settings` dan `/settings/report`), demo mode, color theme (blue/pink), producer-consumer contract, dan migrasi IndexedDB (PROP-0001).** |
 
 ---
@@ -791,7 +792,74 @@ UI text menggunakan bahasa **sesuai locale aktif** via `next-intl`. Pesan dalam 
 
 ---
 
-## 12. Daftar Dokumen Spesifikasi
+## 12. Konvensi Semantic HTML
+
+Seluruh halaman dan komponen PFinTrack mengikuti standar semantic HTML berikut untuk aksesibilitas dan SEO.
+
+### 12.1 Landmark Elements
+
+| Elemen | Penggunaan di PFinTrack |
+|--------|------------------------|
+| `<header>` | `AppHeader` — fixed top bar per halaman |
+| `<nav>` | `BottomNav` — tab navigasi bawah |
+| `<main>` | Wrapper konten utama di `RootLayout` (sudah diterapkan) |
+| `<aside>` | `DemoBanner` — banner informasi demo mode |
+| `<section>` | `SummaryBar` di Transactions — grup ringkasan harian (dengan `aria-label`) |
+| `<figure>` / `<figcaption>` | `MonthlyOverviewChart`, `NetWorthChart` — chart dengan keterangan |
+
+### 12.2 Heading Hierarchy
+
+| Level | Konteks |
+|-------|---------|
+| `<h1>` | Judul halaman di `AppHeader` (satu per halaman, di-render sebagai `<h1>`) |
+| `<h2>` | Section label di halaman Settings (`Appearance`, `Language`, `Display`, dll.) |
+| `<h2>` | Heading di komponen card: `LoanOutstandingSection`, rename dialog di Loan Detail |
+| `<h3>` | Sub-heading dalam card (digunakan di `MonthlySection`, dll.) |
+
+Aturan: jangan lewati level heading (tidak boleh langsung `h1` → `h3`).
+
+### 12.3 List Elements
+
+Setiap daftar item menggunakan `<ul>` + `<li>` (bukan `<div>`):
+
+| Halaman / Komponen | List |
+|--------------------|------|
+| `/transactions` | Daftar transaksi harian → `<ul>` + `<li>` |
+| `/transactions/history` | Daftar transaksi history → `<ul>` + `<li>` |
+| `/wallet` | Daftar wallet → `<ul>` + `<li>` |
+| `/loan` | Daftar counterparty → `<ul>` + `<li>` |
+| `/loan/[counterpartyId]` | Daftar loan entries → `<ul>` + `<li>` |
+| `RealtimeTab` | Daftar transaksi per kategori → `<ul>` + `<li>` |
+
+Tambahkan `list-none` di Tailwind untuk menghilangkan bullet bawaan browser.
+
+### 12.4 Interactive Elements
+
+| Wajib | Dilarang |
+|-------|---------|
+| `<button type="button">` untuk semua aksi | `<div onClick>` atau `<div role="button">` |
+| `<a href>` untuk navigasi ke route | `<button>` untuk link navigasi |
+| Backdrop/overlay: `<button type="button">` dengan `aria-label` | `<div onClick aria-hidden>` pada overlay interaktif |
+
+### 12.5 Chart Accessibility
+
+| Komponen | Pattern |
+|----------|---------|
+| `MonthlyOverviewChart` | `<figure>` + `<figcaption>` sebagai container + judul |
+| `NetWorthChart` | `<figure>` + `<figcaption>` sebagai container + judul |
+| `DonutChart` | Chart container `<div role="img" aria-label="...">` dengan deskripsi nilai |
+
+### 12.6 Dialog Accessibility
+
+Modal yang dibuat dengan `<div>` (bukan komponen Radix/shadcn) harus memiliki:
+- `role="dialog"` dan `aria-modal="true"` di container
+- `aria-labelledby` yang menunjuk ke `id` elemen judul (`<h2>`)
+
+Contoh: rename dialog di `/loan/[counterpartyId]`.
+
+---
+
+## 13. Daftar Dokumen Spesifikasi
 
 Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 
@@ -804,6 +872,8 @@ Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 | 5 | Module Report | `tech-spec-module-report.md` |
 | 6 | **Migrasi Storage: localStorage → IndexedDB** | `tech-spec-migration-indexeddb.md` |
 | 7 | **Feature: Product Tour (Onboarding)** | `tech-spec-feature-product-tour.md` |
+
+> Konvensi Semantic HTML tersedia di **§12** dokumen ini.
 
 **Urutan baca yang disarankan untuk developer baru:**
 1. Global Architecture (dokumen ini) — pahami konteks, stack, dan komponen shared

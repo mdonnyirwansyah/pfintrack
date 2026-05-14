@@ -142,16 +142,17 @@ export default function LoanPage() {
             );
           }
           return (
-            <div className="space-y-3" data-tour="loan-counterparty-list">
+            <ul className="space-y-3 list-none" data-tour="loan-counterparty-list">
               {sorted.map((cp) => (
-                <CounterpartyListItem
-                  key={cp.id}
-                  counterparty={cp}
-                  entries={entriesByCounterparty[cp.id] ?? []}
-                  onClick={() => router.push(`/loan/${cp.id}`)}
-                />
+                <li key={cp.id}>
+                  <CounterpartyListItem
+                    counterparty={cp}
+                    entries={entriesByCounterparty[cp.id] ?? []}
+                    onClick={() => router.push(`/loan/${cp.id}`)}
+                  />
+                </li>
               ))}
-            </div>
+            </ul>
           );
         })()}
       </div>

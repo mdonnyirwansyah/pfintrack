@@ -53,9 +53,9 @@ export function LoanOutstandingSection({
         className="px-4 py-3"
         style={{ borderBottom: "1px solid var(--divider)" }}
       >
-        <span className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
+        <h2 className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
           {t("loanSummary.title")}
-        </span>
+        </h2>
       </div>
 
       {/* Receivable row */}

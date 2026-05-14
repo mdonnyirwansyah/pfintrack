@@ -206,7 +206,8 @@
     "summary": {
       "income": "Pemasukan",
       "expenses": "Pengeluaran",
-      "balance": "Saldo"
+      "balance": "Saldo",
+      "ariaLabel": "Ringkasan harian"
     },
     "fab": {
       "expense": "Pengeluaran",

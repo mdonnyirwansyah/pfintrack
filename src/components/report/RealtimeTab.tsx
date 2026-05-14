@@ -315,9 +315,9 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
                     description={t("detail.noTransactionsDesc", { category: selectedCategory ?? "" })}
                   />
                 ) : (
-                  <div className="glass rounded-[16px] overflow-hidden">
+                  <ul className="glass rounded-[16px] overflow-hidden list-none">
                     {filteredTransactions.map((tx, idx) => (
-                      <div key={tx.id}>
+                      <li key={tx.id}>
                         {idx > 0 && (
                           <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />
                         )}
@@ -347,9 +347,9 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
                             {isIncomeMode ? "+" : "-"}{formatIDR(tx.amount)}
                           </span>
                         </div>
-                      </div>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 )}
               </div>
             </>

@@ -240,18 +240,19 @@ export default function LoanDetailPage({
             description={t("noEntriesDesc")}
           />
         ) : (
-          <div className="space-y-3">
+          <ul className="space-y-3 list-none">
             {sortedEntries.map((entry) => (
-              <LoanEntryListItem
-                key={entry.id}
-                entry={entry}
-                walletName={wallets.find((w) => w.id === entry.wallet_id)?.name ?? null}
-                onClick={() =>
-                  router.push(`/loan/${counterpartyId}/edit/${entry.id}`)
-                }
-              />
+              <li key={entry.id}>
+                <LoanEntryListItem
+                  entry={entry}
+                  walletName={wallets.find((w) => w.id === entry.wallet_id)?.name ?? null}
+                  onClick={() =>
+                    router.push(`/loan/${counterpartyId}/edit/${entry.id}`)
+                  }
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
 
@@ -304,12 +305,16 @@ export default function LoanDetailPage({
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.5)" }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="rename-dialog-title"
         >
           <div
             className="glass-strong w-full rounded-[20px] p-5"
             style={{ maxWidth: "340px" }}
           >
             <h2
+              id="rename-dialog-title"
               className="text-[16px] font-semibold mb-4"
               style={{ color: "var(--text-primary)" }}
             >

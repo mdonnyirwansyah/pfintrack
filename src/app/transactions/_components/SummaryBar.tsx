@@ -28,8 +28,9 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
   }
 
   return (
-    <div
+    <section
       className="mx-4 mb-3 glass rounded-[16px] flex overflow-hidden"
+      aria-label={t("ariaLabel")}
     >
       {/* Income */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
@@ -87,6 +88,6 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
           {balancePrefix}{formatIDR(Math.abs(balance))}
         </span>
       </div>
-    </div>
+    </section>
   );
 }

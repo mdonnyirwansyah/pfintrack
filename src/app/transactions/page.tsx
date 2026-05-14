@@ -302,11 +302,11 @@ function TransactionsContent() {
             );
           }
           return (
-            <div
-              className="mx-4 glass rounded-[16px] overflow-hidden"
+            <ul
+              className="mx-4 glass rounded-[16px] overflow-hidden list-none"
             >
               {dailyTransactions.map((tx, idx) => (
-                <div key={tx.id}>
+                <li key={tx.id}>
                   {idx > 0 && (
                     <div
                       className="mx-4"
@@ -314,9 +314,9 @@ function TransactionsContent() {
                     />
                   )}
                   <TransactionItem transaction={tx} wallets={wallets} onConfirmDelete={handleConfirmDelete} />
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           );
         })()}
       </div>

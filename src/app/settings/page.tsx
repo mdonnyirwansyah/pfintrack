@@ -87,12 +87,12 @@ export default function SettingsPage() {
       <div className="px-4 py-4 space-y-2">
 
         {/* ── Appearance ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("appearance")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           {/* Theme selector */}
@@ -200,12 +200,12 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Language ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("language")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           {LANGUAGE_OPTIONS.map(({ value, label }, idx) => {
@@ -274,12 +274,12 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Display ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("display")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           <button
@@ -323,12 +323,12 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Report ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("report.title")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           <button
@@ -353,12 +353,12 @@ export default function SettingsPage() {
         {/* ── Demo Mode ── */}
         {isDemoMode && (
           <>
-            <p
+            <h2
               className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
               style={{ color: "var(--color-negative)" }}
             >
               {t("demo.sectionTitle")}
-            </p>
+            </h2>
             <div className={sectionClass}>
               <button
                 className={rowClass + " w-full"}
@@ -386,12 +386,12 @@ export default function SettingsPage() {
         )}
 
         {/* ── Data & Storage ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {td("sectionTitle")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           {/* Persistent storage */}
@@ -530,12 +530,12 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Bantuan ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("help")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           <button
@@ -558,12 +558,12 @@ export default function SettingsPage() {
         </div>
 
         {/* ── About ── */}
-        <p
+        <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
         >
           {t("about")}
-        </p>
+        </h2>
 
         <div className={sectionClass}>
           <div className={rowClass}>

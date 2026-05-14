@@ -206,7 +206,8 @@
     "summary": {
       "income": "Income",
       "expenses": "Expenses",
-      "balance": "Balance"
+      "balance": "Balance",
+      "ariaLabel": "Daily summary"
     },
     "fab": {
       "expense": "Expense",
