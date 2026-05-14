@@ -133,8 +133,8 @@
     },
     "sort": {
       "default": "Default",
-      "balanceDesc": "Largest",
-      "balanceAsc": "Smallest",
+      "balanceDesc": "Highest",
+      "balanceAsc": "Lowest",
       "nameAsc": "A–Z",
       "nameDesc": "Z–A"
     },

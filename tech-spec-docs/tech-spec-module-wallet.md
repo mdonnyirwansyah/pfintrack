@@ -52,7 +52,10 @@
 |----------|-------|-----------------|
 | **App Header** | Statis | Bar navigasi atas. Background biru `#2196F3`. Teks "Wallet" rata tengah, warna putih, tebal. Tidak ada tombol back (ini adalah root screen dari tab Wallet). Tinggi `56px`. Mempertimbangkan safe area iOS (notch). |
 | **Total Balance Row** | Dinamis | Card rounded di atas list. Label "Total Balance" di kiri (tebal) dan nilai agregat saldo di kanan. Nilai dihitung otomatis dari seluruh wallet aktif (`is_active=true`). Tampil dengan format locale `id-ID`. Saat loading ditampilkan skeleton `w-28`. |
-| **Wallet List** | Dinamis | Daftar scrollable seluruh wallet aktif (`is_active=true`). Tiap item ditampilkan sebagai **WalletCard** (card glass, rounded-[16px]): ikon tipe wallet (circle) + nama wallet (bold) + label tipe wallet (kecil, secondary) + saldo terformat (kanan, bold, tabular-nums) + ikon chevron `›`. Antar item dipisahkan space (bukan divider). Urutan tampil berdasarkan field `sort_order` ascending. Tap item → navigasi ke `/wallet/[id]`. |
+| **Filter Bar** | Interaktif | Row di bawah Total Balance. Terdiri dari dua kontrol: **Filter Tipe** (kiri) dan **Sort** (kanan). |
+| **Filter Tipe** | Interaktif | Dropdown pill untuk filter berdasarkan `wallet_type`. Opsi: "Semua jenis" + semua tipe yang ada. Default: "Semua jenis". |
+| **Sort Dropdown** | Interaktif | Dropdown pill untuk mengubah urutan tampilan wallet. Opsi: **Default** · **A–Z** · **Z–A** · **Tertinggi** (`balance_desc`) · **Terendah** (`balance_asc`). Default: A–Z. |
+| **Wallet List** | Dinamis | Daftar scrollable seluruh wallet aktif (`is_active=true`) yang lolos filter. Tiap item ditampilkan sebagai **WalletCard** (card glass, rounded-[16px]): ikon tipe wallet (circle) + nama wallet (bold) + label tipe wallet (kecil, secondary) + saldo terformat (kanan, bold, tabular-nums) + ikon chevron `›`. Antar item dipisahkan space (bukan divider). Tap item → navigasi ke `/wallet/[id]`. |
 | **FAB Button (`+`)** | Interaktif | Tombol mengambang di pojok kanan bawah layar, posisi di atas bottom navigation. Bentuk lingkaran, warna biru `#2196F3`, ikon `+` putih. Tap → navigasi ke screen Add Wallet (`/wallet/add`). |
 | **Bottom Navigation** | Shared · Statis | Bar navigasi bawah dengan **5 tab**: Transactions · **Wallet** (aktif, biru) · Loan · Report · Settings. *(Komponen shared, lihat Global Architecture.)* |
 

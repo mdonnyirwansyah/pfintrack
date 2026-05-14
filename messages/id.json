@@ -133,8 +133,8 @@
     },
     "sort": {
       "default": "Default",
-      "balanceDesc": "Terbesar",
-      "balanceAsc": "Terkecil",
+      "balanceDesc": "Tertinggi",
+      "balanceAsc": "Terendah",
       "nameAsc": "A–Z",
       "nameDesc": "Z–A"
     },
