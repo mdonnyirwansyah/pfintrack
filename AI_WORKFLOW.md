@@ -30,7 +30,7 @@ Panduan praktis cara memakai infrastruktur Claude Code yang sudah disiapkan di p
 | Bug fix / UI tweak | Langsung deskripsikan masalahnya, atau spawn `bugfix-adjuster` | Edit langsung dengan invariant guard |
 | Cek implementasi vs spec | `/audit-spec` | Read-only diff vs `tech-spec-docs/` |
 | Cek skema localStorage masih cocok untuk Fase 2 | `/check-migration-ready` | Validasi 1:1 dengan DB schema masa depan |
-| Screenshot mobile multi-viewport | `/preview-mobile /route` | Screenshot 375/390/430 px |
+| E2E test mobile UI | `/preview-mobile [module]` | Playwright 56 tests @ 390px |
 | Build modul lengkap dari nol | `/develop-module wallet\|transactions\|loan\|report` | Pipeline dev → audit → test |
 | Deploy production | `/ship-it` | Validasi penuh + deploy |
 | Cari section di tech-spec | invoke skill `pfintrack-spec-lookup` | Grep cepat tanpa baca seluruh file |
@@ -71,7 +71,7 @@ Project ini punya **3 lapisan AI**:
 │  ┌─ Auditor agents (read-only) ───────────────────────┐        │
 │  │  spec-compliance-auditor      data-consistency-...  │        │
 │  │  i18n-format-validator        migration-readiness-..│        │
-│  │  mobile-ui-tester                                   │        │
+│  │  mobile-ui-tester (→ npm test)                      │        │
 │  └─────────────────────────────────────────────────────┘        │
 └─────────────────────────────────────────────────────────────────┘
                               ↓ reference
@@ -254,7 +254,7 @@ Jadi 1 modul baru = 1 agent baru. agent-bootstrapper otomatisasi pembuatannya.
    - `npx tsc --noEmit`
 
 3. Verifikasi:
-   - Jika UI: /preview-mobile /loan/add/give
+   - Jika UI: /preview-mobile loan
    - Jika logic data: spawn data-consistency-auditor
 ```
 
@@ -324,7 +324,7 @@ Misal: ganti pola state, restructure storage repo, dll.
    /check-migration-ready
    Spawn data-consistency-auditor
    Spawn i18n-format-validator
-   /preview-mobile /transactions   (smoke test UI)
+   /preview-mobile   (smoke test UI — runs full Playwright E2E suite)
 ```
 
 ---

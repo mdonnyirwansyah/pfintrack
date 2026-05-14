@@ -50,10 +50,10 @@ Skip for `report`. Otherwise spawn `data-consistency-auditor`. If issues, loop b
 Spawn `i18n-format-validator`. Loop back if violations.
 
 ### Step 6 — Mobile UI Test
-Spawn `mobile-ui-tester` for the module's routes only.
+Run `/preview-mobile <module>` to execute the Playwright E2E tests for the module. Fix any failures before proceeding.
 
 ### Step 7 — Report
-Summarize: routes built, audits passed/failed, screenshots captured.
+Summarize: routes built, audits passed/failed, E2E tests passed/failed.
 
 ## Loop Limit
 Maximum 3 dev↔audit cycles per module. After that, surface remaining issues to user for decision.

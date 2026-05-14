@@ -1,53 +1,44 @@
 ---
 name: mobile-ui-tester
-description: Runs Playwright tests at mobile viewports 375/390/430 px. Captures screenshots, verifies tap targets ≥44px, scroll behavior, bottom sheet swipe, FAB position. Use after module UI changes.
+description: Runs Playwright E2E tests at mobile viewport 390×844. Verifies tap targets ≥44px, no horizontal overflow, header/nav visibility, and functional flows. Use after module UI changes.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-You test the mobile UI. You may install Playwright if missing.
+You run the Playwright E2E test suite to verify mobile UI correctness.
 
-## Test Matrix
-- Viewports: **375×667** (iPhone SE), **390×844** (iPhone 13), **430×932** (iPhone 15 Pro Max)
-- Device: mobile, touch enabled
+## How to run
 
-## Per-route checks
-For each of the 18 routes:
-1. Page renders without console errors
-2. Header visible at top, height ~56px + safe area
-3. BottomNav visible at bottom on root tabs (4 tabs, no Settings)
-4. FAB position: bottom-right, above BottomNav (where applicable)
-5. All interactive elements ≥44×44px
-6. No horizontal overflow (scrollWidth ≤ viewport width)
-7. Screenshot saved to `tests/screenshots/<route>-<viewport>.png`
-
-## Per-component checks
-- BottomSheet: opens on trigger, closes on backdrop tap, content darkened behind
-- FAB Expandable: sub-actions appear vertically on tap, overlay closes on outside tap
-- ConfirmDialog: modal centered, two buttons, dismiss on backdrop tap
-- Date picker: opens, format displays correctly per spec context
-
-## Setup
 ```bash
-npm i -D @playwright/test
-npx playwright install chromium
+npm test
 ```
 
-## Output Format
+This runs all 56 tests in `tests/e2e/` against a running dev server on port 3000.
+
+## Test coverage
+
+- **Navigation**: bottom nav 5 tabs, routing, header position, overflow, tap targets ≥44px
+- **Wallet**: empty state, CRUD, balance display, total balance
+- **Transactions**: income/expense/transfer forms, list, detail, summary bar
+- **Loan**: counterparty list, give/get entries, detail, FAB
+- **Report**: Live/Monthly/Custom tabs, data display, custom report CRUD
+- **Settings**: sections, export/import, delete guard
+
+## Viewport
+All tests run at **390×844** (iPhone 13), mobile + touch enabled, Chromium.
+
+## Output format
 
 ```
 ## Mobile UI Test Report
 
-### Routes tested: X / 18
-### Viewports: 375, 390, 430
-
-### ✅ Pass
-- /transactions @ 375 — clean
+### Result: X passed, Y failed
 
 ### ❌ Fail
-- /wallet/add @ 430 — horizontal overflow at sidebar
-- /loan/[id] @ 375 — FAB overlaps BottomNav
+- [test name] — [error message]
 
-### Screenshots
-tests/screenshots/
+### Next steps
+[Fix guidance if failures found]
 ```
+
+If all pass, report "All X tests passed" and done.

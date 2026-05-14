@@ -1,6 +1,6 @@
 # Personal Finance Manager (pfintrack)
 
-Mobile-first Next.js (App Router) personal finance app. **Frontend-only**, all data in `localStorage`. Anonymous via UUID v4 (`anon_id`). Migration-ready to Fase 2 (backend + auth).
+Mobile-first Next.js (App Router) personal finance app. **Frontend-only**, all data in **IndexedDB** (`pfintrack_db`). Anonymous via UUID v4 (`anon_id`). Migration-ready to Fase 2 (backend + auth).
 
 ## Source of Truth
 
@@ -29,7 +29,7 @@ Aturan praktis:
 
 ## Critical Invariants
 
-1. **7 localStorage keys only**: `anon_id`, `wallets`, `wallet_balance_history`, `transactions`, `loan_counterparties`, `loan_entries`, `custom_reports`
+1. **Storage: IndexedDB** (`pfintrack_db`) untuk 6 object stores: `wallets`, `wallet_balance_history`, `transactions`, `loan_counterparties`, `loan_entries`, `custom_reports`. **localStorage** hanya untuk flags: `pfintrack_anon_id`, `pfintrack_welcomed`, `tour_completed`
 2. **Every record has**: `id` (UUID v4), `anon_id`, `is_active` (soft delete), `created_at`, `updated_at`
 3. **Numbers**: stored as plain JS Number, displayed via `Intl.NumberFormat('id-ID')` with 2 decimals
 4. **Dates**: stored ISO 8601, displayed per spec §4.2 (English read-only, Indonesia in form inputs)
@@ -46,7 +46,7 @@ Aturan praktis:
 /app                    Next.js routes (18 total per spec §2.2)
 /components/shared      Header, BottomNav, FAB, BottomSheet, Dialog, EmptyState
 /components/<module>    Module-specific components
-/lib/storage            Repository per localStorage key (data layer)
+/lib/storage            Repository per IndexedDB store (data layer, default backend: idb)
 /lib/format             id-ID number/date formatters
 /lib/types              TypeScript types (mirror Fase 2 DB schema)
 /lib/bootstrap          anon_id init
@@ -58,7 +58,7 @@ This project uses specialized agents in `.claude/agents/`. Use slash commands:
 - `/develop-module <wallet|transactions|loan|report>` — full pipeline for one module
 - `/audit-spec` — compliance check vs tech-spec
 - `/check-migration-ready` — Fase 2 schema validator
-- `/preview-mobile <route>` — multi-viewport screenshots
+- `/preview-mobile [module]` — run Playwright E2E tests (56 tests @ mobile 390px)
 
 ## Conventions
 

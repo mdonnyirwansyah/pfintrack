@@ -285,7 +285,7 @@ Your job ends when a proposal is accepted by the user. Hand off to:
 - **`bugfix-adjuster` agent** for small adjustments / cross-cutting tweaks
 - **`scaffold-architect`** if a brand-new module is needed (rare)
 - **`storage-layer-engineer`** if new repository functions are needed
-- After implementation, recommend: `/audit-spec`, `data-consistency-auditor` (if wallet.balance touched), `i18n-format-validator`, `mobile-ui-tester`
+- After implementation, recommend: `/audit-spec`, `data-consistency-auditor` (if wallet.balance touched), `i18n-format-validator`, `/preview-mobile`
 
 ---
 

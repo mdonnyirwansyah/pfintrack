@@ -22,7 +22,7 @@ Sequentially:
 - `npm run lint`
 - `npm run build`
 - Bundle size check (warn if any route >500KB first-load JS)
-- `mobile-ui-tester` smoke on root tabs
+- `npm test` — run full Playwright E2E suite (56 tests)
 
 ## Step 4 — Deploy
 Spawn `deploy-orchestrator`. Confirm again before push.
