@@ -170,7 +170,7 @@
 | **Memoization** | `useMemo` dengan dependency `[transactions]`. Tidak re-compute saat state lain berubah. |
 | **Tampilan bar** | Grouped bar per bulan: income (warna `var(--color-positive)`) di kiri, expense (warna `var(--color-negative)`) di kanan. |
 | **X-axis** | Label bulan dalam format singkat locale-aware: `"May"` (EN) atau `"Mei"` (ID). Gunakan `date-fns` locale untuk format. |
-| **Y-axis** | Tidak ditampilkan (terlalu sempit di 375px). Nilai numerik cukup dari tooltip. |
+| **Y-axis** | Ditampilkan di sisi kiri. Label diformat singkat: `G` (miliar), `M` (juta), `k` (ribu). Contoh: `1.5M`, `500k`. `width={32}`, `tickCount={4}`, `fontSize: 9`, warna `--text-tertiary`, tanpa axis line/tick line. |
 | **Tooltip** | Muncul saat tap/hover bar. Tampilkan: bulan penuh + income + expense. Format nilai: `formatIDR()`. |
 | **Interaksi tap bar** | Tap bar mana saja → navigasi ke `/report/detail?start={YYYY-MM-01}&end={YYYY-MM-akhir}`. |
 | **Viewport** | Wajib tidak overflow di 375px / 390px / 430px. Gunakan `<ResponsiveContainer width="100%" height={160}>`. |
@@ -189,8 +189,9 @@
 | **Tampilan garis** | Single line chart. Warna garis: `var(--color-brand)`. Titik (dot) aktif pada hover/tap. |
 | **Nilai ringkasan** | Di bawah chart: teks "Sekarang: {formatIDR(endBalanceBulanIni)}" dan "+{formatIDR(delta)} dari {bulanTermawal}" (atau nilai negatif jika turun). |
 | **X-axis** | Label bulan singkat locale-aware (sama dengan MonthlyOverviewChart). |
+| **Y-axis** | Ditampilkan di sisi kiri. Format sama dengan MonthlyOverviewChart: `G`/`M`/`k` suffix, `width={32}`, `tickCount={4}`, `fontSize: 9`, warna `--text-tertiary`, tanpa axis line/tick line. Konsisten dengan legend nominal bar chart. |
 | **Viewport** | `<ResponsiveContainer width="100%" height={120}>`. Tidak overflow di 375px. |
-| **Edge case** | Jika hanya 1 bulan data → tampilkan 1 titik, bukan garis. Jika semua bulan `endBalance = 0` → chart tetap ditampilkan dengan garis mendatar di 0. |
+| **Edge case** | Jika hanya 1 bulan data → tampilkan 1 titik, bukan garis. Jika semua bulan `endBalance = 0` → chart tidak ditampilkan (`return null`). |
 | **i18n keys** | `report.netWorth.title`, `report.netWorth.now`, `report.netWorth.from` |
 
 ---
@@ -268,7 +269,7 @@ Struktur form **identik** dengan Add Custom Report, dengan tambahan:
 | **File** | Diimplementasikan di dalam `DailySummarySection.tsx` sebagai case ketiga pada view toggle. Tidak perlu file komponen baru. |
 | **Library** | Recharts `BarChart` grouped. Gunakan data yang sudah dihitung oleh `buildDailySummaries()` — data yang sama dengan Mode List dan Mode Calendar. Tidak ada kalkulasi tambahan. |
 | **X-axis** | Label tanggal (angka saja, mis. `"1"`, `"5"`, `"10"`). Jika periode > 20 hari, tampilkan setiap 5 hari agar tidak berdesakan di 375px. |
-| **Y-axis** | Tidak ditampilkan (sempit). Nilai via tooltip. |
+| **Y-axis** | Ditampilkan di sisi kiri. Format sama: `G`/`M`/`k` suffix, `width={32}`, `tickCount={4}`, `fontSize: 9`, warna `--text-tertiary`, tanpa axis line/tick line. |
 | **Grouped bar** | Income (kiri, `var(--color-positive)`) dan Expense (kanan, `var(--color-negative)`) per hari. |
 | **Tooltip** | Tap/hover: tanggal + income + expense. |
 | **Interaksi tap** | Tap bar hari X → scroll ke section hari X di Transaction List di bawah DailySummarySection. Gunakan anchor ID berformat `day-{YYYY-MM-DD}`. |

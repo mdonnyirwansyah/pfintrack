@@ -8,7 +8,15 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
+  YAxis,
 } from "recharts";
+
+function fmtY(v: number): string {
+  if (v >= 1_000_000_000) return `${+(v / 1_000_000_000).toFixed(1)}G`;
+  if (v >= 1_000_000) return `${+(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000) return `${+(v / 1_000).toFixed(1)}k`;
+  return `${v}`;
+}
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { id as idLocale, enUS } from "date-fns/locale";
 import type { Transaction } from "@/lib/types/transaction";
@@ -123,7 +131,7 @@ export function NetWorthChart({
       {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
         <AreaChart
           data={chartData}
-          margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
+          margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
         >
           <defs>
             <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
@@ -131,6 +139,14 @@ export function NetWorthChart({
               <stop offset="95%" stopColor="var(--color-brand)" stopOpacity={0} />
             </linearGradient>
           </defs>
+          <YAxis
+            tickFormatter={fmtY}
+            tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
+            axisLine={false}
+            tickLine={false}
+            width={32}
+            tickCount={4}
+          />
           <XAxis
             dataKey="label"
             tick={{ fontSize: 9, fill: "var(--text-tertiary)" }}
