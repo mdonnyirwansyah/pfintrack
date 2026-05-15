@@ -5,6 +5,7 @@ import {
   idbGetAll,
   idbPut,
   idbPutAll,
+  idbUpdate,
 } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateWalletInput, UpdateWalletInput } from "./wallets";
@@ -28,7 +29,6 @@ export const walletsIdbRepo = {
   },
 
   async create(input: CreateWalletInput): Promise<Wallet> {
-    const activeWallets = await walletsIdbRepo.getAll();
     const now = new Date().toISOString();
 
     const wallet: Wallet = {
@@ -47,30 +47,22 @@ export const walletsIdbRepo = {
   },
 
   async update(id: string, patch: UpdateWalletInput): Promise<Wallet> {
-    const existing = await idbGet<Wallet>(STORE, id);
-    if (!existing) throw new Error(`Wallet not found: ${id}`);
-
-    const updated: Wallet = {
+    const updated = await idbUpdate<Wallet>(STORE, id, (existing) => ({
       ...existing,
       ...patch,
       updated_at: new Date().toISOString(),
-    };
-
-    await idbPut<Wallet>(STORE, updated);
+    }));
+    if (!updated) throw new Error(`Wallet not found: ${id}`);
     return updated;
   },
 
   async softDelete(id: string): Promise<void> {
-    const existing = await idbGet<Wallet>(STORE, id);
-    if (!existing) throw new Error(`Wallet not found: ${id}`);
-
-    const deleted: Wallet = {
+    const updated = await idbUpdate<Wallet>(STORE, id, (existing) => ({
       ...existing,
       is_active: false,
       updated_at: new Date().toISOString(),
-    };
-
-    await idbPut<Wallet>(STORE, deleted);
+    }));
+    if (!updated) throw new Error(`Wallet not found: ${id}`);
   },
 
   async putAll(records: Wallet[]): Promise<void> {

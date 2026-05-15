@@ -13,25 +13,23 @@ import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 import type { Wallet } from "@/lib/types/wallet";
 import { readKey, writeKey } from "./base";
-import { idbGet, idbPut } from "./idb-client";
+import { idbUpdate, idbUpdateMany } from "./idb-client";
 import { STORAGE_BACKEND } from "./config";
 
 const WALLETS_KEY = "wallets";
 
 async function applyDelta(walletId: string, delta: number): Promise<void> {
   if (STORAGE_BACKEND === "idb") {
-    const wallet = await idbGet<Wallet>("wallets", walletId);
-    if (!wallet) {
-      console.warn(
-        `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
-      );
-      return;
-    }
-    await idbPut<Wallet>("wallets", {
+    const updated = await idbUpdate<Wallet>("wallets", walletId, (wallet) => ({
       ...wallet,
       balance: wallet.balance + delta,
       updated_at: new Date().toISOString(),
-    });
+    }));
+    if (!updated) {
+      console.warn(
+        `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
+      );
+    }
   } else {
     const all = readKey<Wallet>(WALLETS_KEY);
     const idx = all.findIndex((w) => w.id === walletId);
@@ -46,6 +44,74 @@ async function applyDelta(walletId: string, delta: number): Promise<void> {
       balance: all[idx].balance + delta,
       updated_at: new Date().toISOString(),
     };
+    writeKey(WALLETS_KEY, all);
+  }
+}
+
+/**
+ * Atomic two-wallet balance mutation for transfers.
+ * On IDB backend both writes happen inside a single readwrite transaction:
+ * either both balances commit or neither does (no half-applied transfer if
+ * the tab is closed mid-operation).
+ *
+ * If either wallet id is missing, it is skipped and a warning is logged —
+ * matching the existing `applyDelta` behavior so callers don't see new
+ * failure modes.
+ */
+async function applyTransferDeltas(
+  sourceId: string,
+  sourceDelta: number,
+  destId: string | null,
+  destDelta: number,
+): Promise<void> {
+  if (!destId) {
+    await applyDelta(sourceId, sourceDelta);
+    return;
+  }
+
+  if (STORAGE_BACKEND === "idb") {
+    const now = new Date().toISOString();
+    const deltaById: Record<string, number> = {
+      [sourceId]: sourceDelta,
+      [destId]: destDelta,
+    };
+    await idbUpdateMany<Wallet>(
+      "wallets",
+      [sourceId, destId],
+      (existing, id) => {
+        if (!existing) {
+          console.warn(
+            `[wallet-balance-ops] wallet not found: ${id} — skipping balance update`
+          );
+          return null;
+        }
+        return {
+          ...existing,
+          balance: existing.balance + deltaById[id],
+          updated_at: now,
+        };
+      },
+    );
+  } else {
+    // localStorage is synchronous — already atomic at the JS-tick level.
+    const all = readKey<Wallet>(WALLETS_KEY);
+    const now = new Date().toISOString();
+    const apply = (id: string, delta: number) => {
+      const idx = all.findIndex((w) => w.id === id);
+      if (idx === -1) {
+        console.warn(
+          `[wallet-balance-ops] wallet not found: ${id} — skipping balance update`
+        );
+        return;
+      }
+      all[idx] = {
+        ...all[idx],
+        balance: all[idx].balance + delta,
+        updated_at: now,
+      };
+    };
+    apply(sourceId, sourceDelta);
+    apply(destId, destDelta);
     writeKey(WALLETS_KEY, all);
   }
 }
@@ -69,10 +135,12 @@ export async function applyTransactionToWallet(tx: Transaction): Promise<void> {
       await applyDelta(tx.wallet_id, -tx.amount);
       break;
     case "transfer":
-      await applyDelta(tx.wallet_id, -tx.amount);
-      if (tx.destination_wallet_id) {
-        await applyDelta(tx.destination_wallet_id, tx.amount);
-      }
+      await applyTransferDeltas(
+        tx.wallet_id,
+        -tx.amount,
+        tx.destination_wallet_id,
+        tx.amount,
+      );
       break;
   }
 }
@@ -90,10 +158,12 @@ export async function rollbackTransactionFromWallet(tx: Transaction): Promise<vo
       await applyDelta(tx.wallet_id, tx.amount);
       break;
     case "transfer":
-      await applyDelta(tx.wallet_id, tx.amount);
-      if (tx.destination_wallet_id) {
-        await applyDelta(tx.destination_wallet_id, -tx.amount);
-      }
+      await applyTransferDeltas(
+        tx.wallet_id,
+        tx.amount,
+        tx.destination_wallet_id,
+        -tx.amount,
+      );
       break;
   }
 }

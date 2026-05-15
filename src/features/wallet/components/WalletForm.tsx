@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Calculator } from "lucide-react";
 import type { WalletType } from "@/lib/types/wallet";
-import { formatIDR, parseIDR } from "@/lib/format/number";
+import { formatIDR, formatThousands, parseIDR } from "@/lib/format/number";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -226,7 +226,7 @@ export function WalletForm({
               if (integerPart) {
                 const parsed = Number.parseInt(integerPart, 10);
                 if (!Number.isNaN(parsed)) {
-                  integerPart = parsed.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".");
+                  integerPart = formatThousands(parsed);
                 } else {
                   integerPart = "";
                 }
@@ -268,7 +268,7 @@ export function WalletForm({
                 const factor = zeros === "000" ? 1000 : 100;
                 const newNum = num * factor;
                 if (newNum <= 999_999_999_999) {
-                  setBalance(newNum.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, "."));
+                  setBalance(formatThousands(newNum));
                 }
               }}
               className="px-2.5 py-1 rounded-[6px] text-[10px] font-medium transition-opacity active:opacity-60"

@@ -54,6 +54,15 @@ const transactionsLsRepo = {
     );
   },
 
+  getByDateRange(startDate: string, endDate: string): Transaction[] {
+    return readKey<Transaction>(KEY).filter(
+      (t) =>
+        t.is_active &&
+        t.transaction_date >= startDate &&
+        t.transaction_date <= endDate
+    );
+  },
+
   getByWalletId(walletId: string): Transaction[] {
     return readKey<Transaction>(KEY).filter(
       (t) =>
@@ -139,6 +148,23 @@ export const transactionsRepo = {
   async getByDate(date: string): Promise<Transaction[]> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getByDate(date);
     return transactionsLsRepo.getByDate(date);
+  },
+
+  /**
+   * Active transactions whose `transaction_date` falls within [startDate, endDate]
+   * (inclusive). On IDB backend this uses `IDBKeyRange.bound` against the
+   * `by_date` index, so the engine skips out-of-range rows without
+   * deserializing them — far cheaper than loading every transaction and
+   * filtering in JS.
+   */
+  async getByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<Transaction[]> {
+    if (STORAGE_BACKEND === "idb") {
+      return transactionsIdbRepo.getByDateRange(startDate, endDate);
+    }
+    return transactionsLsRepo.getByDateRange(startDate, endDate);
   },
 
   async getByWalletId(walletId: string): Promise<Transaction[]> {

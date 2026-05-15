@@ -38,6 +38,30 @@ export function formatIDRSigned(amount: number): string {
   return formatted;
 }
 
+// Dedicated integer formatter for live-typing inputs — independent from the
+// _showDecimals toggle so user input is never reformatted with fractions
+// while they're still typing the integer part.
+const idIntegerFormatter = new Intl.NumberFormat("id-ID", {
+  useGrouping: true,
+  maximumFractionDigits: 0,
+});
+
+/**
+ * Format an integer as a dot-grouped id-ID string (e.g. 1234567 → "1.234.567").
+ *
+ * Replaces the prior `replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".")` regex which
+ * SonarQube flagged for super-linear (catastrophic-backtracking) runtime on
+ * very long digit strings (ReDoS, javascript:S5852). `Intl.NumberFormat` is
+ * a native, linear-time alternative.
+ *
+ * Returns an empty string for non-finite input so live-typing handlers can
+ * safely chain it.
+ */
+export function formatThousands(value: number): string {
+  if (!Number.isFinite(value)) return "";
+  return idIntegerFormatter.format(value);
+}
+
 /**
  * Parse a formatted IDR string back to a number.
  * Example: "823.110,46" → 823110.46

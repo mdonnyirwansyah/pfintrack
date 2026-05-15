@@ -1,6 +1,12 @@
 import { generateUUID } from "@/lib/bootstrap/anon-id";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
-import { idbGet, idbGetAll, idbGetAllByIndex, idbPut, idbPutAll } from "./idb-client";
+import {
+  idbGetAll,
+  idbGetAllByIndex,
+  idbPut,
+  idbPutAll,
+  idbUpdate,
+} from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateWalletBalanceHistoryInput } from "./wallet-balance-history";
 
@@ -48,13 +54,11 @@ export const walletBalanceHistoryIdbRepo = {
   },
 
   async softDelete(id: string): Promise<void> {
-    const existing = await idbGet<WalletBalanceHistory>(STORE, id);
-    if (!existing) return;
-    await idbPut<WalletBalanceHistory>(STORE, {
+    await idbUpdate<WalletBalanceHistory>(STORE, id, (existing) => ({
       ...existing,
       is_active: false,
       updated_at: new Date().toISOString(),
-    });
+    }));
   },
 
   /** For migration runner — bulk-write records without transformation */

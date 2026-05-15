@@ -5,6 +5,7 @@ import {
   idbGetAll,
   idbPut,
   idbPutAll,
+  idbUpdate,
 } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateCustomReportInput, UpdateCustomReportInput } from "./custom-reports";
@@ -50,25 +51,22 @@ export const customReportsIdbRepo = {
   },
 
   async update(id: string, patch: UpdateCustomReportInput): Promise<CustomReport> {
-    const existing = await idbGet<CustomReport>(STORE, id);
-    if (!existing) throw new Error(`CustomReport not found: ${id}`);
-    const updated: CustomReport = {
+    const updated = await idbUpdate<CustomReport>(STORE, id, (existing) => ({
       ...existing,
       ...patch,
       updated_at: new Date().toISOString(),
-    };
-    await idbPut<CustomReport>(STORE, updated);
+    }));
+    if (!updated) throw new Error(`CustomReport not found: ${id}`);
     return updated;
   },
 
   async softDelete(id: string): Promise<void> {
-    const existing = await idbGet<CustomReport>(STORE, id);
-    if (!existing) throw new Error(`CustomReport not found: ${id}`);
-    await idbPut<CustomReport>(STORE, {
+    const updated = await idbUpdate<CustomReport>(STORE, id, (existing) => ({
       ...existing,
       is_active: false,
       updated_at: new Date().toISOString(),
-    });
+    }));
+    if (!updated) throw new Error(`CustomReport not found: ${id}`);
   },
 
   async putAll(records: CustomReport[]): Promise<void> {

@@ -15,10 +15,8 @@ import path from "path";
 import {
   setupPage,
   seedWallets,
-  clearIDB,
   goto,
   gotoWithSeed,
-  TEST_ANON_ID,
 } from "./helpers/storage";
 
 const FIXTURE_BACKUP = path.resolve(__dirname, "fixtures/backup-valid.json");

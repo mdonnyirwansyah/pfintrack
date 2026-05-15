@@ -9,7 +9,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { setupPage, seedWallets, seedCounterparties, seedLoanEntries, gotoWithSeed, goto, dismissDevOverlay } from "./helpers/storage";
+import { setupPage, seedWallets, seedCounterparties, seedLoanEntries, gotoWithSeed, dismissDevOverlay } from "./helpers/storage";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 const W1 = { id: "wallet-le-001", name: "BCA", wallet_type: "bank", balance: 5_000_000 };

@@ -5,6 +5,7 @@ import {
   idbGetAll,
   idbPut,
   idbPutAll,
+  idbUpdate,
 } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 
@@ -49,25 +50,22 @@ export const loanCounterpartiesIdbRepo = {
     id: string,
     patch: Partial<Pick<LoanCounterparty, "name" | "manual_paid_off">>,
   ): Promise<LoanCounterparty> {
-    const existing = await idbGet<LoanCounterparty>(STORE, id);
-    if (!existing) throw new Error(`LoanCounterparty not found: ${id}`);
-    const updated: LoanCounterparty = {
+    const updated = await idbUpdate<LoanCounterparty>(STORE, id, (existing) => ({
       ...existing,
       ...patch,
       updated_at: new Date().toISOString(),
-    };
-    await idbPut<LoanCounterparty>(STORE, updated);
+    }));
+    if (!updated) throw new Error(`LoanCounterparty not found: ${id}`);
     return updated;
   },
 
   async softDelete(id: string): Promise<void> {
-    const existing = await idbGet<LoanCounterparty>(STORE, id);
-    if (!existing) throw new Error(`LoanCounterparty not found: ${id}`);
-    await idbPut<LoanCounterparty>(STORE, {
+    const updated = await idbUpdate<LoanCounterparty>(STORE, id, (existing) => ({
       ...existing,
       is_active: false,
       updated_at: new Date().toISOString(),
-    });
+    }));
+    if (!updated) throw new Error(`LoanCounterparty not found: ${id}`);
   },
 
   async putAll(records: LoanCounterparty[]): Promise<void> {

@@ -24,7 +24,6 @@ const TODAY = format(new Date(), "yyyy-MM-dd");
 const MONTH_START = format(startOfMonth(new Date()), "yyyy-MM-dd");
 
 const W1 = { id: "wallet-misc-001", name: "BCA", wallet_type: "bank", balance: 5_000_000 };
-const W2 = { id: "wallet-misc-002", name: "GoPay", wallet_type: "e_wallet", balance: 1_000_000 };
 
 // ---------------------------------------------------------------------------
 // /~offline

@@ -172,6 +172,21 @@ export async function idbGetAllByIndex<T>(
   return db.getAllFromIndex(storeName, indexName, value) as Promise<T[]>;
 }
 
+/**
+ * Query an index by IDBKeyRange. Lets IndexedDB skip out-of-range rows
+ * at the index level instead of scanning all records and filtering in JS.
+ * Use for date-range / numeric-range queries.
+ */
+export async function idbGetAllByRange<T>(
+  storeName: StoreName,
+  indexName: string,
+  range: IDBKeyRange,
+): Promise<T[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
+  return db.getAllFromIndex(storeName, indexName, range) as Promise<T[]>;
+}
+
 export async function idbGet<T>(
   storeName: StoreName,
   id: string,
@@ -197,6 +212,57 @@ export async function idbDelete(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db: any = await getDB();
   await db.delete(storeName, id);
+}
+
+/**
+ * Atomic read-modify-write within a single readwrite transaction.
+ * Eliminates the race window between separate `idbGet` and `idbPut` calls.
+ * Returns the updated record, or `null` if no record exists for `id`.
+ */
+export async function idbUpdate<T>(
+  storeName: StoreName,
+  id: string,
+  updater: (existing: T) => T,
+): Promise<T | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
+  const tx = db.transaction(storeName, "readwrite");
+  const existing = (await tx.store.get(id)) as T | undefined;
+  if (!existing) {
+    await tx.done;
+    return null;
+  }
+  const updated = updater(existing);
+  await tx.store.put(updated);
+  await tx.done;
+  return updated;
+}
+
+/**
+ * Atomic read-modify-write for multiple ids within the SAME readwrite
+ * transaction. Either all writes commit or none do — useful for transfers
+ * that touch two wallets and must stay consistent on crash.
+ *
+ * `updater` receives the existing record (or `null` if missing) and returns
+ * either the next record to put, or `null` to skip writing that id.
+ */
+export async function idbUpdateMany<T>(
+  storeName: StoreName,
+  ids: readonly string[],
+  updater: (existing: T | null, id: string) => T | null,
+): Promise<void> {
+  if (ids.length === 0) return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = await getDB();
+  const tx = db.transaction(storeName, "readwrite");
+  for (const id of ids) {
+    const existing = (await tx.store.get(id)) as T | undefined;
+    const next = updater(existing ?? null, id);
+    if (next !== null) {
+      await tx.store.put(next);
+    }
+  }
+  await tx.done;
 }
 
 export async function idbPutAll<T>(

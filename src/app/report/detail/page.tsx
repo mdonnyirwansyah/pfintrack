@@ -49,8 +49,9 @@ function ReportDetailContent() {
   const [balanceHistory, setBalanceHistory] = useState<WalletBalanceHistory[]>([]);
 
   useEffect(() => {
+    if (!start || !end) return;
     void Promise.all([
-      transactionsRepo.getAll(),
+      transactionsRepo.getByDateRange(start, end),
       loanEntriesRepo.getAll(),
       loanCounterpartiesRepo.getAll(),
       walletBalanceHistoryRepo.getAll(),
@@ -60,7 +61,7 @@ function ReportDetailContent() {
       setLoanCounterparties(counterparties);
       setBalanceHistory(history);
     });
-  }, []);
+  }, [start, end]);
 
   // Donut toggle (local state, not sessionStorage — per-visit)
   const [donutMode, setDonutMode] = useState<DonutMode>("expense");

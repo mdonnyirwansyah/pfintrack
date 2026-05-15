@@ -4,8 +4,10 @@ import {
   idbGet,
   idbGetAll,
   idbGetAllByIndex,
+  idbGetAllByRange,
   idbPut,
   idbPutAll,
+  idbUpdate,
 } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateTransactionInput, UpdateTransactionInput } from "./transactions";
@@ -22,6 +24,25 @@ export const transactionsIdbRepo = {
   /** Returns active transactions for a specific date (YYYY-MM-DD) */
   async getByDate(date: string): Promise<Transaction[]> {
     const records = await idbGetAllByIndex<Transaction>(STORE, "by_date", date);
+    return records.filter((t) => t.is_active);
+  },
+
+  /**
+   * Returns active transactions within an inclusive date range (YYYY-MM-DD).
+   * Uses `IDBKeyRange.bound` on the `by_date` index — IndexedDB skips
+   * out-of-range rows at the index level, so this is O(matching rows)
+   * instead of O(all transactions).
+   */
+  async getByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<Transaction[]> {
+    const range = IDBKeyRange.bound(startDate, endDate);
+    const records = await idbGetAllByRange<Transaction>(
+      STORE,
+      "by_date",
+      range,
+    );
     return records.filter((t) => t.is_active);
   },
 
@@ -73,30 +94,22 @@ export const transactionsIdbRepo = {
   },
 
   async update(id: string, patch: UpdateTransactionInput): Promise<Transaction> {
-    const existing = await idbGet<Transaction>(STORE, id);
-    if (!existing) throw new Error(`Transaction not found: ${id}`);
-
-    const updated: Transaction = {
+    const updated = await idbUpdate<Transaction>(STORE, id, (existing) => ({
       ...existing,
       ...patch,
       updated_at: new Date().toISOString(),
-    };
-
-    await idbPut<Transaction>(STORE, updated);
+    }));
+    if (!updated) throw new Error(`Transaction not found: ${id}`);
     return updated;
   },
 
   async softDelete(id: string): Promise<void> {
-    const existing = await idbGet<Transaction>(STORE, id);
-    if (!existing) throw new Error(`Transaction not found: ${id}`);
-
-    const deleted: Transaction = {
+    const updated = await idbUpdate<Transaction>(STORE, id, (existing) => ({
       ...existing,
       is_active: false,
       updated_at: new Date().toISOString(),
-    };
-
-    await idbPut<Transaction>(STORE, deleted);
+    }));
+    if (!updated) throw new Error(`Transaction not found: ${id}`);
   },
 
   /** For migration runner — bulk-write records without transformation */

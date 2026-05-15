@@ -13,7 +13,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { format, startOfMonth, subMonths } from "date-fns";
+import { format, startOfMonth } from "date-fns";
 import {
   setupPage,
   seedWallets,
@@ -25,8 +25,6 @@ import {
 
 const TODAY = format(new Date(), "yyyy-MM-dd");
 const MONTH_START = format(startOfMonth(new Date()), "yyyy-MM-dd");
-const PREV_MONTH_DATE = format(subMonths(new Date(), 1), "yyyy-MM-dd");
-
 const W1 = { id: "wallet-rm-001", name: "BCA", wallet_type: "bank", balance: 10_000_000 };
 
 // ---------------------------------------------------------------------------

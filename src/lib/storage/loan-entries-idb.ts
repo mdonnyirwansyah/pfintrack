@@ -6,6 +6,8 @@ import {
   idbGetAllByIndex,
   idbPut,
   idbPutAll,
+  idbUpdate,
+  idbUpdateMany,
 } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
 import type { CreateLoanEntryInput } from "./loan-entries";
@@ -70,25 +72,22 @@ export const loanEntriesIdbRepo = {
       Pick<LoanEntry, "type" | "amount" | "wallet_id" | "note" | "transaction_date" | "transaction_time">
     >,
   ): Promise<LoanEntry> {
-    const existing = await idbGet<LoanEntry>(STORE, id);
-    if (!existing) throw new Error(`LoanEntry not found: ${id}`);
-    const updated: LoanEntry = {
+    const updated = await idbUpdate<LoanEntry>(STORE, id, (existing) => ({
       ...existing,
       ...patch,
       updated_at: new Date().toISOString(),
-    };
-    await idbPut<LoanEntry>(STORE, updated);
+    }));
+    if (!updated) throw new Error(`LoanEntry not found: ${id}`);
     return updated;
   },
 
   async softDelete(id: string): Promise<void> {
-    const existing = await idbGet<LoanEntry>(STORE, id);
-    if (!existing) throw new Error(`LoanEntry not found: ${id}`);
-    await idbPut<LoanEntry>(STORE, {
+    const updated = await idbUpdate<LoanEntry>(STORE, id, (existing) => ({
       ...existing,
       is_active: false,
       updated_at: new Date().toISOString(),
-    });
+    }));
+    if (!updated) throw new Error(`LoanEntry not found: ${id}`);
   },
 
   async softDeleteByCounterpartyId(counterpartyId: string): Promise<LoanEntry[]> {
@@ -97,15 +96,17 @@ export const loanEntriesIdbRepo = {
       "by_counterparty_id",
       counterpartyId,
     );
+    const activeIds = records.filter((e) => e.is_active).map((e) => e.id);
+    if (activeIds.length === 0) return [];
+
     const now = new Date().toISOString();
     const affected: LoanEntry[] = [];
-    for (const entry of records) {
-      if (entry.is_active) {
-        const soft: LoanEntry = { ...entry, is_active: false, updated_at: now };
-        await idbPut<LoanEntry>(STORE, soft);
-        affected.push(soft);
-      }
-    }
+    await idbUpdateMany<LoanEntry>(STORE, activeIds, (existing) => {
+      if (!existing) return null;
+      const soft: LoanEntry = { ...existing, is_active: false, updated_at: now };
+      affected.push(soft);
+      return soft;
+    });
     return affected;
   },
 

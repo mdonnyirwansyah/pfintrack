@@ -63,7 +63,18 @@ describe("generateUUID", () => {
   });
 
   it("returns a valid UUID v4 via fallback when crypto.randomUUID is unavailable", () => {
-    Object.defineProperty(globalThis, "crypto", { value: {}, writable: true, configurable: true });
+    // Simulate a legacy runtime that exposes crypto.getRandomValues but not
+    // crypto.randomUUID. The fallback must still produce a spec-compliant
+    // UUID v4 (version + variant bits set correctly).
+    const getRandomValues = (arr: Uint8Array) => {
+      for (let i = 0; i < arr.length; i++) arr[i] = (i * 17 + 3) & 0xff;
+      return arr;
+    };
+    Object.defineProperty(globalThis, "crypto", {
+      value: { getRandomValues },
+      writable: true,
+      configurable: true,
+    });
     expect(generateUUID()).toMatch(uuidRegex);
   });
 

@@ -76,9 +76,7 @@ function TourSkipConfirm({
   const t = useTranslations('tour');
   if (!open) return null;
 
-  const moduleName = moduleKey
-    ? t(`modules.${moduleKey}` as Parameters<typeof t>[0])
-    : '';
+  const moduleName = moduleKey ? t(`modules.${moduleKey}`) : '';
 
   return (
     <div

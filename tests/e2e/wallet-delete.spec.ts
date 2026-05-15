@@ -10,7 +10,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { setupPage, seedWallets, seedTransactions, goto, gotoWithSeed, dismissDevOverlay } from "./helpers/storage";
+import { setupPage, seedWallets, seedTransactions, gotoWithSeed, dismissDevOverlay } from "./helpers/storage";
 import { format } from "date-fns";
 
 const TODAY = format(new Date(), "yyyy-MM-dd");

@@ -29,6 +29,7 @@
 |-------|---------|----------------|
 | **1.0.0** | **2026-05-14** | **Baseline release. Konsolidasi seluruh revisi sebelumnya (v1.0–v1.1) menjadi versi rilis pertama. Mencakup: rasional migrasi localStorage→IndexedDB (PROP-0001), skema IDB `pfintrack_db` dengan 6 object store, kontrak API async per repo, 8 langkah migrasi berurutan, protokol migrasi data satu-kali (idempotent), feature flag `NEXT_PUBLIC_STORAGE_BACKEND`, mekanisme rollback, kontrak key `storage_version`, dan status implementasi (sudah diimplementasikan di codebase).** |
 | **1.1.0** | **2026-05-14** | **Field `currency` dan `sort_order` yang dihapus dari tipe `Wallet` bersifat dead data di IDB lama — tidak menyebabkan error dan didokumentasikan sebagai known behavior (§8.9).** |
+| **1.2.0** | **2026-05-15** | **Optimasi performa & atomicity query IndexedDB. (1) Tambah helper `idbUpdate` (atomic read-modify-write dalam 1 readwrite transaction) dan `idbUpdateMany` (multi-id RMW dalam 1 transaction) di `idb-client.ts` — eliminate race window antara `idbGet` + `idbPut` terpisah. (2) Semua `update()` / `softDelete()` di repo IDB (`wallets`, `transactions`, `loan_entries`, `loan_counterparties`, `custom_reports`, `wallet_balance_history`) refactor pakai `idbUpdate`. (3) `softDeleteByCounterpartyId` pakai `idbUpdateMany` — cascade soft-delete jadi atomic. (4) `applyTransactionToWallet` & `rollbackTransactionFromWallet` untuk type `transfer` pakai `applyTransferDeltas` yang menulis ke source & destination wallet dalam 1 readwrite transaction (tidak ada lagi half-applied transfer jika tab ditutup mid-operation). (5) Tambah method `transactionsRepo.getByDateRange(start, end)` pakai `IDBKeyRange.bound` pada index `by_date` — IndexedDB skip out-of-range rows di level index, jauh lebih murah daripada `getAll()` + filter JS. Dipakai di `app/report/detail/page.tsx`. Lihat §3.3 dan §11.** |
 
 ---
 
@@ -184,6 +185,7 @@ Semua metode repo yang saat ini mengembalikan `T` atau `T[]` secara sinkron, set
 | `getAllIncludingInactive()` | `Transaction[]` | `Promise<Transaction[]>` | |
 | `getById(id)` | `Transaction \| null` | `Promise<Transaction \| null>` | |
 | `getByDate(date)` | `Transaction[]` | `Promise<Transaction[]>` | Gunakan index `by_date` |
+| `getByDateRange(start, end)` | n/a (baru di v1.2.0) | `Promise<Transaction[]>` | `IDBKeyRange.bound(start, end)` pada index `by_date` — engine skip out-of-range rows tanpa deserialize. Inklusif kedua ujung. |
 | `getByWalletId(walletId)` | `Transaction[]` | `Promise<Transaction[]>` | Dua index query → merge → dedup by `id` |
 | `create(input)` | `Transaction` | `Promise<Transaction>` | |
 | `update(id, patch)` | `Transaction` | `Promise<Transaction>` | |
@@ -952,7 +954,19 @@ IndexedDB tersedia di:
 
 PWA install flow sebaiknya memperingatkan user agar tidak menggunakan private mode (iOS Safari private mode memiliki quota IDB yang reset pada akhir sesi).
 
-### 8.9 Backward-Compatibility: Field Dihapus dari Skema
+### 8.9 Atomicity Read-Modify-Write (v1.2.0)
+
+Semua mutasi yang membaca record lalu menulis kembali (`update`, `softDelete`, dan side-effect wallet balance) **wajib** memakai helper atomic `idbUpdate` atau `idbUpdateMany` dari `idb-client.ts`. Pattern lama `idbGet` + (mutate) + `idbPut` membuka race window kecil di mana proses lain (tab kedua, service worker, atau even handler bersamaan) bisa menulis di antara `get` dan `put` — yang mengakibatkan lost update pada record finansial.
+
+Aturan:
+- ✅ `idbUpdate<T>(store, id, (existing) => next)` — RMW satu record dalam 1 transaction
+- ✅ `idbUpdateMany<T>(store, ids, (existing, id) => next | null)` — RMW banyak record dalam 1 transaction (commit semua atau tidak sama sekali). Pakai untuk transfer wallet dan cascade soft-delete.
+- ❌ `idbGet` + `idbPut` berurutan untuk mutasi record yang sama — dilarang di kode baru
+- `idbGet` masih boleh dipakai untuk **read-only** lookup (mis. `getById`)
+
+Wallet transfer secara khusus: `applyTransactionToWallet` dan `rollbackTransactionFromWallet` untuk `type === "transfer"` memanggil `applyTransferDeltas(sourceId, sourceDelta, destId, destDelta)` yang menulis kedua wallet dalam 1 IDB readwrite transaction. Jika tab ditutup atau mati listrik di tengah operasi, **kedua write commit atau tidak sama sekali** — tidak akan ada lagi state "source sudah didebet tapi destination belum dikredit" yang dulu mungkin terjadi.
+
+### 8.10 Backward-Compatibility: Field Dihapus dari Skema
 
 #### Field `currency` dan `sort_order` (dihapus dari tipe `Wallet`)
 
@@ -1037,4 +1051,60 @@ Setiap IDB object store memetakan langsung ke tabel SQL. Setiap IDB index menjad
 
 ---
 
-*— End of Technical Specification: Migrasi Storage Layer localStorage → IndexedDB (v1.0.0) —*
+---
+
+## 13. Optimasi Query Performance (v1.2.0)
+
+### 13.1 Atomic Read-Modify-Write Helpers
+
+`src/lib/storage/idb-client.ts` mengekspor dua helper baru untuk eliminate race window pada mutasi yang membaca-mengubah-menulis:
+
+| Helper | Signature | Use Case |
+|---|---|---|
+| `idbUpdate<T>` | `(store, id, updater) => Promise<T \| null>` | RMW satu record dalam 1 readwrite transaction. Return `null` jika record tidak ada. |
+| `idbUpdateMany<T>` | `(store, ids, updater) => Promise<void>` | RMW banyak record dalam 1 readwrite transaction. Updater dipanggil per-id; return `null` untuk skip. Atomic — semua commit atau tidak sama sekali. |
+
+**Implementasi (ringkas):**
+```ts
+export async function idbUpdate<T>(store, id, updater) {
+  const db = await getDB();
+  const tx = db.transaction(store, "readwrite");
+  const existing = await tx.store.get(id);
+  if (!existing) { await tx.done; return null; }
+  const next = updater(existing);
+  await tx.store.put(next);
+  await tx.done;
+  return next;
+}
+```
+
+### 13.2 Range Query via `IDBKeyRange`
+
+`transactionsRepo.getByDateRange(startDate, endDate)` menggunakan `IDBKeyRange.bound(startDate, endDate)` pada index `by_date`:
+
+```ts
+const range = IDBKeyRange.bound(startDate, endDate);
+const records = await db.getAllFromIndex("transactions", "by_date", range);
+```
+
+IndexedDB skip semua row di luar range pada level index, jadi cost-nya `O(matching rows)` bukan `O(total rows)`. Dipakai di `app/report/detail/page.tsx` untuk monthly/custom report detail — page sebelumnya memanggil `getAll()` lalu filter di JS, sekarang langsung range query.
+
+Helper baru `idbGetAllByRange<T>(store, indexName, range)` di `idb-client.ts` mengeksposnya secara generic — repo lain bisa pakai pattern yang sama (mis. `loan_entries` per periode).
+
+### 13.3 Atomic Wallet Transfer
+
+`wallet-balance-ops.ts` punya helper internal `applyTransferDeltas(sourceId, sourceDelta, destId, destDelta)` yang menulis kedua wallet dalam 1 readwrite transaction via `idbUpdateMany`. Digunakan oleh `applyTransactionToWallet` dan `rollbackTransactionFromWallet` untuk type `transfer`. Memastikan tidak ada state "source sudah didebet tapi destination belum dikredit" jika tab crash atau ditutup mid-operation.
+
+### 13.4 Refactor Repo IDB
+
+Semua method `update()` dan `softDelete()` di IDB repo (`wallets`, `transactions`, `loan_entries`, `loan_counterparties`, `custom_reports`, `wallet_balance_history`) sudah refactor pakai `idbUpdate`. `loanEntriesIdbRepo.softDeleteByCounterpartyId` pakai `idbUpdateMany` untuk cascade atomic.
+
+### 13.5 Hal yang Belum Dioptimasi (Backlog)
+
+- **Compound index `[is_active, transaction_date]`** untuk skip soft-deleted di level index. Saat ini masih filter `t.is_active` di JS setelah getAll/range query. Worthwhile saat dataset transaction >5k atau ratio deleted >10%.
+- **`getByWalletId` dua-index query + dedup** masih digunakan. Sudah `Promise.all`, micro-optimasi (skip kalau dataset <5k).
+- **`wallet_balance_history` append-only**, tidak ada cleanup. Tumbuh proporsional ke jumlah manual balance edit (jarang).
+
+---
+
+*— End of Technical Specification: Migrasi Storage Layer localStorage → IndexedDB (v1.2.0) —*
