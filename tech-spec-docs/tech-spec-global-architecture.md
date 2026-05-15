@@ -919,22 +919,26 @@ Total: **148 test** di **14 file** (per 2026-05-14).
 
 | Helper | Fungsi |
 |--------|--------|
-| `setupPage(page)` | Set localStorage flags (anon_id, welcomed, tour_completed) via `addInitScript` |
+| `setupPage(page)` | Set localStorage flags + inject CSS `pointer-events: none` pada Next.js dev overlay + MutationObserver untuk remove dev elements |
 | `goto(page, path)` | Navigate dan wait 500ms |
-| `gotoWithSeed(page, path, seedFn)` | Navigate → clear IDB → seed → reload |
-| `clearIDB(page)` | Kosongkan semua IDB object stores |
+| `gotoWithSeed(page, path, seedFn)` | Navigate → clear IDB (with schema init) → seed → reload |
+| `clearIDB(page)` | Clear semua IDB stores; jika stores belum ada, buat schema terlebih dahulu via `onupgradeneeded` |
+| `dismissDevOverlay(page)` | Remove Next.js dev overlay elements (`nextjs-portal`, dll) yang bisa intercept pointer events |
 | `seedWallets(page, wallets)` | Insert wallet records ke IDB |
-| `seedTransactions(page, transactions)` | Insert transaction records ke IDB |
+| `seedTransactions(page, transactions)` | Insert transaction records ke IDB (`category` optional) |
 | `seedCounterparties(page, counterparties)` | Insert loan_counterparties ke IDB |
-| `seedLoanEntries(page, entries)` | Insert loan_entries ke IDB |
+| `seedLoanEntries(page, entries)` | Insert loan_entries ke IDB (`wallet_id` optional, default null) |
 | `TEST_ANON_ID` | UUID test untuk semua seed records |
 
 **Interface `SeedLoanEntry`** (field names harus sinkron dengan `LoanEntry` schema):
 - `transaction_date: string` — tanggal entry (bukan `entry_date`)
 - `note?: string` — catatan opsional (bukan `description`)
+- `wallet_id?: string | null` — jika null/undefined, WalletPicker auto-open di edit page
 - Tidak ada field `is_paid_off` — field ini ada di `LoanCounterparty`, bukan `LoanEntry`
 
-**Catatan penting:** `DB_VERSION` di `storage.ts` harus selalu sinkron dengan `DB_VERSION` di `src/lib/storage/idb-client.ts`. Per 2026-05-14 nilainya adalah `3`.
+**Catatan penting:** `DB_VERSION` di `storage.ts` harus selalu sinkron dengan `DB_VERSION` di `src/lib/storage/idb-client.ts`. Per 2026-05-14 nilainya adalah `2`.
+
+**`clearIDB` behavior:** jika DB belum dibuat (misal test navigates ke `/settings` yang tidak menggunakan IDB), `clearIDB` tetap memastikan semua 6 object stores ada via `onupgradeneeded`. Ini mencegah `NotFoundError` saat IDB-dependent pages diakses kemudian.
 
 ### Known Issues (E2E Tests) — Fixed
 
@@ -946,6 +950,14 @@ Total: **148 test** di **14 file** (per 2026-05-14).
 | Settings language test menggunakan `/en/settings` (URL-based locale) — app pakai cookie-based locale | ✅ FIXED | 2026-05-14 |
 | `getByText("DELETE ALL DATA")` dan `getByText("Sample Data")` strict mode violation — perbaiki dengan `.first()` | ✅ FIXED | 2026-05-14 |
 | `getByText("Delete All Data").click()` strict mode violation — perbaiki dengan `.first().click()` | ✅ FIXED | 2026-05-14 |
+| `clearIDB` tidak membuat IDB schema saat DB belum ada — `gotoWithSeed("/settings", ...)` menyebabkan `NotFoundError` saat navigasi ke IDB-dependent page | ✅ FIXED | 2026-05-15 |
+| `nextjs-portal` (Next.js dev tools indicator badge) intercept pointer events pada header buttons di beberapa test — header buttons tidak dapat di-click | ✅ FIXED | 2026-05-15 |
+| Loan entry tests menggunakan `getByText(/amount/).first()` yang match summary bar bukan entry row | ✅ FIXED | 2026-05-15 |
+| Settings language test menggunakan `"Indonesian"` sebagai button name, padahal label aktual adalah `"Indonesia"` | ✅ FIXED | 2026-05-15 |
+| Transaction edit tests seed tanpa `category` — form validation gagal saat submit karena category required | ✅ FIXED | 2026-05-15 |
+| Wallet delete test untuk in-use wallet mengexpect `alertdialog` padahal production code menampilkan toast | ✅ FIXED | 2026-05-15 |
+| Custom report test gagal karena bfcache restore stale state — fix dengan `page.goto("/report")` setelah submit | ✅ FIXED | 2026-05-15 |
+| Loan entry dengan `wallet_id: null` menyebabkan WalletPicker auto-open yang memblokir header button clicks | ✅ FIXED | 2026-05-15 |
 
 ### Fixture files di `tests/e2e/fixtures/`
 

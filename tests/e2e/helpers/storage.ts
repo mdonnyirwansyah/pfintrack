@@ -4,6 +4,15 @@ export const TEST_ANON_ID = "test-anon-00000000-0000-0000-0000-000000000001";
 const DB_NAME = "pfintrack_db";
 const DB_VERSION = 2;
 
+const STORE_NAMES = [
+  "wallets",
+  "wallet_balance_history",
+  "transactions",
+  "loan_counterparties",
+  "loan_entries",
+  "custom_reports",
+] as const;
+
 const now = () => new Date().toISOString();
 
 /**
@@ -24,6 +33,19 @@ export async function setupPage(page: Page) {
       // spinner. Tests seed data directly into IDB, so no migration is needed.
       localStorage.setItem("storage_version", "idb_v1");
 
+      // Inject a style that disables pointer-events on Next.js dev overlay elements
+      // so they never intercept test clicks, regardless of timing.
+      const style = document.createElement("style");
+      style.textContent =
+        "nextjs-portal, nextjs-portal *, " +
+        "[data-nextjs-devtools], [data-nextjs-devtools] *, " +
+        "[data-nextjs-dialog-overlay], " +
+        "#__next-dev-tools-indicator-portal, #__next-dev-tools-indicator-portal *, " +
+        "#__next-dev-overlay-portal, #__next-dev-overlay-portal *, " +
+        "[id^='__next-dev'], [id^='__next-dev'] * " +
+        "{ pointer-events: none !important; }";
+      (document.head || document.documentElement).appendChild(style);
+
       // Use MutationObserver to remove Next.js dev tools elements as they are
       // added to the DOM, preventing them from appearing as the "last button
       // with SVG" and interfering with FAB-targeting E2E selectors.
@@ -43,7 +65,9 @@ export async function setupPage(page: Page) {
           for (const node of mutation.addedNodes) {
             if (node.nodeType === Node.ELEMENT_NODE) {
               removeDevTools(node as Element);
-              (node as Element).querySelectorAll("[data-issues-collapse], [data-nextjs-devtools]").forEach(removeDevTools);
+              (node as Element)
+                .querySelectorAll("[data-issues-collapse], [data-nextjs-devtools]")
+                .forEach(removeDevTools);
             }
           }
         }
@@ -54,17 +78,37 @@ export async function setupPage(page: Page) {
   );
 }
 
-/** Clears all object stores in pfintrack_db. Call after a goto() so the DB exists. */
+/**
+ * Ensures pfintrack_db exists with the correct schema (all 6 object stores).
+ * Safe to call before the app has ever navigated to an IDB-using page.
+ * If the DB already exists with stores, this is a no-op (clears all records).
+ */
 export async function clearIDB(page: Page) {
+  const storeList = Array.from(STORE_NAMES);
   await page.evaluate(
-    async ([dbName, dbVer]) => {
+    async ({ dbName, dbVer, storeNames }: { dbName: string; dbVer: number; storeNames: string[] }) => {
       await new Promise<void>((resolve, reject) => {
-        const req = indexedDB.open(dbName as string, dbVer as number);
-        req.onerror = () => resolve(); // DB might not exist yet
+        const req = indexedDB.open(dbName, dbVer);
+        req.onerror = () => resolve();
+
+        // Create missing stores during upgrade (first open or version bump).
+        req.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          for (const name of storeNames) {
+            if (!db.objectStoreNames.contains(name)) {
+              db.createObjectStore(name, { keyPath: "id" });
+            }
+          }
+        };
+
         req.onsuccess = () => {
           const db = req.result;
           const stores = Array.from(db.objectStoreNames);
-          if (stores.length === 0) { db.close(); resolve(); return; }
+          if (stores.length === 0) {
+            db.close();
+            resolve();
+            return;
+          }
           const tx = db.transaction(stores, "readwrite");
           for (const s of stores) tx.objectStore(s).clear();
           tx.oncomplete = () => { db.close(); resolve(); };
@@ -72,7 +116,7 @@ export async function clearIDB(page: Page) {
         };
       });
     },
-    [DB_NAME, DB_VERSION] as const,
+    { dbName: DB_NAME, dbVer: DB_VERSION, storeNames: storeList },
   );
 }
 
@@ -132,11 +176,12 @@ export interface SeedLoanEntry {
   amount: number;
   note?: string;
   transaction_date: string;
+  wallet_id?: string | null;
 }
 
 export async function seedWallets(page: Page, wallets: SeedWallet[]) {
   const ts = now();
-  await idbPut(page, "wallets", wallets.map((w, i) => ({
+  await idbPut(page, "wallets", wallets.map((w) => ({
     id: w.id,
     anon_id: TEST_ANON_ID,
     name: w.name,
@@ -188,18 +233,20 @@ export async function seedLoanEntries(page: Page, entries: SeedLoanEntry[]) {
     anon_id: TEST_ANON_ID,
     counterparty_id: e.counterparty_id,
     type: e.type,
-    wallet_id: null,
+    wallet_id: e.wallet_id ?? null,
     amount: e.amount,
     note: e.note ?? null,
     transaction_date: e.transaction_date,
     transaction_time: "10:00",
     is_active: true,
-    created_at: ts, updated_at: ts,
+    created_at: ts,
+    updated_at: ts,
   })));
 }
 
 /**
- * Navigates to route, clears IDB, seeds data, then reloads so the app reads fresh data.
+ * Navigates to route, clears IDB (creating schema if needed), seeds data,
+ * then reloads so the app reads fresh data.
  * Use this when a test needs pre-seeded data visible on first render.
  */
 export async function gotoWithSeed(
@@ -207,14 +254,14 @@ export async function gotoWithSeed(
   path: string,
   seed: () => Promise<void>,
 ) {
-  // First nav ensures the app has created the IDB schema
+  // First nav establishes page context so page.evaluate() works.
   await page.goto(path, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(400);
-  // Clear then seed — clearIDB is safe here because addInitScript won't re-run
-  // (it only fires before page loads, not after domcontentloaded)
+  // clearIDB creates the schema if stores are missing (e.g. when the target
+  // page does not itself open IDB on load, such as /settings).
   await clearIDB(page);
   await seed();
-  // Reload so React components re-read data from IDB
+  // Reload so React components re-read data from IDB.
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.waitForTimeout(500);
 }
@@ -223,4 +270,16 @@ export async function gotoWithSeed(
 export async function goto(page: Page, path: string) {
   await page.goto(path, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(500);
+}
+
+/**
+ * Removes Next.js dev overlay elements that can intercept pointer events in tests.
+ * Call before clicking elements that might be blocked by the dev indicator badge.
+ */
+export async function dismissDevOverlay(page: Page) {
+  await page.evaluate(() => {
+    document.querySelectorAll(
+      "nextjs-portal, [data-nextjs-devtools], #__next-dev-tools-indicator-portal, #__next-dev-overlay-portal"
+    ).forEach((el) => el.remove());
+  });
 }

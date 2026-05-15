@@ -292,7 +292,7 @@ test.describe("Settings — Language", () => {
 
   test("clicking Indonesian language triggers locale change", async ({ page }) => {
     await goto(page, "/settings");
-    const idBtn = page.getByRole("button", { name: "Indonesian" });
+    const idBtn = page.getByRole("button", { name: "Indonesia" });
     await idBtn.click();
     // Locale is cookie-based, not URL-based — just verify the page stays on /settings
     await page.waitForTimeout(1000);

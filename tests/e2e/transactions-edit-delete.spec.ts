@@ -10,7 +10,7 @@
 
 import { test, expect } from "@playwright/test";
 import { format, subDays } from "date-fns";
-import { setupPage, seedWallets, seedTransactions, gotoWithSeed } from "./helpers/storage";
+import { setupPage, seedWallets, seedTransactions, gotoWithSeed, dismissDevOverlay } from "./helpers/storage";
 
 const TODAY = format(new Date(), "yyyy-MM-dd");
 const YESTERDAY = format(subDays(new Date(), 1), "yyyy-MM-dd");
@@ -32,7 +32,7 @@ test.describe("Transactions — Edit", () => {
       await seedWallets(page, [W1]);
       await seedTransactions(page, [{
         id: "tx-edit-001", type: "income", wallet_id: W1.id,
-        amount: 1_000_000, title: "Gaji", transaction_date: TODAY,
+        amount: 1_000_000, title: "Gaji", category: "Salary", transaction_date: TODAY,
       }]);
     });
 
@@ -57,7 +57,7 @@ test.describe("Transactions — Edit", () => {
       await seedWallets(page, [W1]);
       await seedTransactions(page, [{
         id: "tx-edit-002", type: "expense", wallet_id: W1.id,
-        amount: 50_000, title: "Ojek Online", transaction_date: TODAY,
+        amount: 50_000, title: "Ojek Online", category: "Transportation", transaction_date: TODAY,
       }]);
     });
 
@@ -106,7 +106,7 @@ test.describe("Transactions — Delete", () => {
       await seedWallets(page, [W1]);
       await seedTransactions(page, [{
         id: "tx-del-002", type: "expense", wallet_id: W1.id,
-        amount: 75_000, title: "Mie Ayam", transaction_date: TODAY,
+        amount: 75_000, title: "Mie Ayam", category: "Food & Drinks", transaction_date: TODAY,
       }]);
     });
 
@@ -114,6 +114,7 @@ test.describe("Transactions — Delete", () => {
     await expect(page).toHaveURL(/\/transactions\/tx-del-002/);
 
     // Click delete
+    await dismissDevOverlay(page);
     const deleteBtn = page.locator('button[aria-label*="elete"], button:has-text("Delete"), button:has-text("Hapus")').first();
     await deleteBtn.click();
 

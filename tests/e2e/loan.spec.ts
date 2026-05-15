@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { setupPage, seedWallets, seedCounterparties, seedLoanEntries, goto, gotoWithSeed } from "./helpers/storage";
+import { setupPage, seedWallets, seedCounterparties, seedLoanEntries, goto, gotoWithSeed, dismissDevOverlay } from "./helpers/storage";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 const W1 = { id: "wallet-loan-001", name: "BCA", wallet_type: "bank", balance: 5_000_000 };
@@ -107,7 +107,8 @@ test.describe("Loan", () => {
 
   test("FAB expands to show Give and Receive options", async ({ page }) => {
     await goto(page, "/loan");
-    // Find the expandable FAB (last button with SVG icon)
+    // Remove dev overlay so the FAB (last button with SVG) is the actual FAB
+    await dismissDevOverlay(page);
     const fab = page.locator("button").filter({ has: page.locator("svg") }).last();
     await fab.click();
     await page.waitForTimeout(200);

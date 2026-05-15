@@ -10,7 +10,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { setupPage, seedWallets, seedTransactions, goto, gotoWithSeed } from "./helpers/storage";
+import { setupPage, seedWallets, seedTransactions, goto, gotoWithSeed, dismissDevOverlay } from "./helpers/storage";
 import { format } from "date-fns";
 
 const TODAY = format(new Date(), "yyyy-MM-dd");
@@ -36,6 +36,7 @@ test.describe("Wallet — Delete", () => {
     await page.goto(`/wallet/${W1.id}`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete wallet"]').click();
 
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
@@ -47,6 +48,7 @@ test.describe("Wallet — Delete", () => {
     await page.goto(`/wallet/${W1.id}`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete wallet"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
@@ -64,6 +66,7 @@ test.describe("Wallet — Delete", () => {
     await page.goto(`/wallet/${W1.id}`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete wallet"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
@@ -92,17 +95,13 @@ test.describe("Wallet — Delete", () => {
     await page.goto(`/wallet/${W1.id}`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
+    // Clicking delete on an in-use wallet shows a toast (no dialog)
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete wallet"]').click();
-    await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
-    await page.getByRole("button", { name: "Delete" }).click();
 
     await page.waitForTimeout(600);
 
-    // Either a toast error shows up, or the wallet remains accessible
-    // The wallet should NOT have been deleted
-    const errorToast = page.locator('[data-sonner-toast], .toast, [role="status"]').filter({ hasText: /cannot|use|digunakan/i });
-    const walletStillThere = await page.getByText("BCA Delete Test").count();
-    const toastShown = await errorToast.count();
-    expect(walletStillThere + toastShown).toBeGreaterThan(0);
+    // The wallet should NOT have been deleted — it still shows on this page
+    await expect(page.getByLabel("Wallet Name")).toHaveValue("BCA Delete Test");
   });
 });

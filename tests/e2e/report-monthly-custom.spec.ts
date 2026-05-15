@@ -20,6 +20,7 @@ import {
   seedTransactions,
   goto,
   gotoWithSeed,
+  dismissDevOverlay,
 } from "./helpers/storage";
 
 const TODAY = format(new Date(), "yyyy-MM-dd");
@@ -108,7 +109,7 @@ test.describe("Report — Custom Tab", () => {
   });
 
   test("creating a custom report makes it appear in the Custom tab list", async ({ page }) => {
-    // Navigate to /report to establish history first
+    // Navigate to /report to establish history, then go to the add page
     await goto(page, "/report");
     await page.goto("/report/custom/add", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(300);
@@ -121,13 +122,18 @@ test.describe("Report — Custom Tab", () => {
     }
     await page.locator("button[type='submit']").click();
 
+    // After submit, router.back() goes to /report. Wait for navigation.
     await expect(page).toHaveURL(/\/report/);
     await page.waitForTimeout(400);
 
-    // Switch to Custom tab if not already there
-    const customTab = page.getByRole("button", { name: "Custom" });
-    if (await customTab.isVisible()) await customTab.click();
-    await page.waitForTimeout(300);
+    // Navigate directly to /report to bypass any bfcache stale state.
+    await page.goto("/report", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(600);
+
+    // Switch to Custom tab
+    await dismissDevOverlay(page);
+    await page.getByRole("button", { name: "Custom" }).click();
+    await page.waitForTimeout(500);
 
     await expect(page.getByText("April Review")).toBeVisible();
   });

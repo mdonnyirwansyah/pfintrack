@@ -9,7 +9,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { setupPage, seedWallets, seedCounterparties, seedLoanEntries, gotoWithSeed, goto } from "./helpers/storage";
+import { setupPage, seedWallets, seedCounterparties, seedLoanEntries, gotoWithSeed, goto, dismissDevOverlay } from "./helpers/storage";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 const W1 = { id: "wallet-le-001", name: "BCA", wallet_type: "bank", balance: 5_000_000 };
@@ -35,8 +35,8 @@ test.describe("Loan — Edit Entry", () => {
       }]);
     });
 
-    // Click on the entry row to navigate to edit
-    await page.getByText(/400\.000/).first().click();
+    // Click on the entry row button to navigate to edit
+    await page.locator("button").filter({ hasText: /400\.000/ }).first().click();
     await expect(page).toHaveURL(/\/loan\/.*\/edit\//);
   });
 
@@ -47,6 +47,7 @@ test.describe("Loan — Edit Entry", () => {
       await seedLoanEntries(page, [{
         id: "le-edit-002", counterparty_id: CP1.id, type: "give",
         amount: 600_000, note: "Pinjam motor", transaction_date: TODAY,
+        wallet_id: W1.id,
       }]);
     });
 
@@ -60,10 +61,11 @@ test.describe("Loan — Edit Entry", () => {
       await seedLoanEntries(page, [{
         id: "le-edit-003", counterparty_id: CP1.id, type: "give",
         amount: 200_000, note: "Pinjam parkir", transaction_date: TODAY,
+        wallet_id: W1.id,
       }]);
     });
 
-    await page.getByText(/200\.000/).first().click();
+    await page.locator("button").filter({ hasText: /200\.000/ }).first().click();
     await expect(page).toHaveURL(/\/loan\/.*\/edit\//);
 
     const amountInput = page.getByPlaceholder("Amount");
@@ -94,6 +96,7 @@ test.describe("Loan — Delete Entry", () => {
       await seedLoanEntries(page, [{
         id: "le-del-001", counterparty_id: CP1.id, type: "give",
         amount: 100_000, note: "Pinjam rokok", transaction_date: TODAY,
+        wallet_id: W1.id,
       }]);
     });
 
@@ -107,10 +110,11 @@ test.describe("Loan — Delete Entry", () => {
       await seedCounterparties(page, [CP1]);
       await seedLoanEntries(page, [{
         id: "le-del-002", counterparty_id: CP1.id, type: "give",
-        amount: 150_000, transaction_date: TODAY,
+        amount: 150_000, transaction_date: TODAY, wallet_id: W1.id,
       }]);
     });
 
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete entry"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
     await expect(page.getByText("Delete this entry?")).toBeVisible();
@@ -121,7 +125,7 @@ test.describe("Loan — Delete Entry", () => {
       await seedWallets(page, [W1]);
       await seedCounterparties(page, [CP1]);
       await seedLoanEntries(page, [
-        { id: "le-del-003", counterparty_id: CP1.id, type: "give", amount: 350_000, note: "Pinjam helm", transaction_date: TODAY },
+        { id: "le-del-003", counterparty_id: CP1.id, type: "give", amount: 350_000, note: "Pinjam helm", transaction_date: TODAY, wallet_id: W1.id },
         { id: "le-del-004", counterparty_id: CP1.id, type: "give", amount: 50_000, note: "Pinjam kunci", transaction_date: TODAY },
       ]);
     });
@@ -130,6 +134,7 @@ test.describe("Loan — Delete Entry", () => {
     await page.goto(`/loan/${CP1.id}/edit/le-del-003`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete entry"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
     await page.getByRole("button", { name: "Delete" }).click();
@@ -221,6 +226,7 @@ test.describe("Loan — Delete Counterparty", () => {
     await page.getByText("Sari Dewi").click();
     await expect(page).toHaveURL(new RegExp(`/loan/${CP2.id}`));
 
+    await dismissDevOverlay(page);
     await page.locator('button[aria-label="Delete counterparty"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
