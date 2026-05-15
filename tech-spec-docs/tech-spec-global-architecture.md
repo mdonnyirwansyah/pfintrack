@@ -786,13 +786,25 @@ Language switch sudah diimplementasi dengan `next-intl`:
 | **Provider** | `NextIntlClientProvider` di `src/app/layout.tsx` |
 | **Pesan terjemahan** | `src/i18n/messages/en.json` dan `src/i18n/messages/id.json` |
 | **Akses di komponen** | `useTranslations("namespace")` hook |
-| **Scope terjemahan** | Label UI, placeholder, pesan validasi, empty state, header title, dialog text |
+| **Scope terjemahan** | Label UI, placeholder, pesan validasi, empty state, header title, dialog text, `aria-label` interaktif |
 | **TIDAK diterjemahkan** | Format tanggal (tetap English), format angka (tetap `id-ID` Intl), key field di storage |
 | **Default** | English (`"en"`) |
 
 ### 11.3 Konsistensi Text
 
 UI text menggunakan bahasa **sesuai locale aktif** via `next-intl`. Pesan dalam file `messages/en.json` dan `messages/id.json` harus konsisten dan lengkap.
+
+**Aturan `aria-label`:** Semua atribut `aria-label` yang mengandung teks tampilan (bukan role teknis) harus menggunakan `t("key")` dari `useTranslations`. Kunci yang sudah ada di `common` namespace dapat digunakan langsung (misal `tc("back")`, `tc("close")`, `tc("delete")`, `tc("add")`, `tc("clear")`). Kunci khusus untuk konteks navigasi hari (`common.prevDay`, `common.nextDay`), toggle theme (`common.switchToLight`, `common.switchToDark`), dan overlay (`common.closeOverlay`) sudah tersedia.
+
+**Namespace keys yang ditambahkan (2026-05-15):**
+- `common.prevDay`, `common.nextDay` — navigasi DateNavigator
+- `common.switchToLight`, `common.switchToDark` — ThemeToggle
+- `common.closeOverlay` — FABExpandable backdrop
+- `report.daily.listView`, `report.daily.calendarView` — view toggle DailySummarySection
+- `tour.modules.{transactions|wallet|loan|report}` — nama modul di skip dialog (i18n aware)
+- `tour.cancelAriaLabel` — backdrop TourSkipConfirm
+- `demo.banner.demoModeAriaLabel` — DemoBanner aside landmark
+- `offline.{heading|description|retry}` — halaman offline
 
 ---
 

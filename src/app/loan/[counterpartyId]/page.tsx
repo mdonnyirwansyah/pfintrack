@@ -165,7 +165,7 @@ export default function LoanDetailPage({
             minHeight: "var(--tap-target-min)",
             color: "var(--text-primary)",
           }}
-          aria-label="Mark as paid"
+          aria-label={t("markPaidOff")}
         >
           <UserCheck className="w-5 h-5" />
         </button>
@@ -179,7 +179,7 @@ export default function LoanDetailPage({
             minHeight: "var(--tap-target-min)",
             color: "var(--color-accent-warm)",
           }}
-          aria-label="Unmark paid off"
+          aria-label={t("unmarkPaidOff")}
         >
           <UserCheck className="w-5 h-5" />
         </button>
@@ -196,7 +196,7 @@ export default function LoanDetailPage({
           minHeight: "var(--tap-target-min)",
           color: "var(--text-primary)",
         }}
-        aria-label="Edit name"
+        aria-label={tc("edit")}
       >
         <Pencil className="w-5 h-5" />
       </button>
@@ -208,7 +208,7 @@ export default function LoanDetailPage({
           minHeight: "var(--tap-target-min)",
           color: "var(--color-negative)",
         }}
-        aria-label="Delete counterparty"
+        aria-label={tc("delete")}
       >
         <Trash2 className="w-5 h-5" />
       </button>

@@ -237,6 +237,7 @@ function DateRangePickerSheet({
   labelApply,
   labelPickStart,
   labelPickEnd,
+  labelClose,
 }: Readonly<{
   picker: DatePickerState & DatePickerActions;
   setDateRange: (r: { start: string; end: string } | null) => void;
@@ -247,12 +248,13 @@ function DateRangePickerSheet({
   labelApply: string;
   labelPickStart: string;
   labelPickEnd: string;
+  labelClose: string;
 }>) {
   const hint = picker.activeField === "from" ? labelPickStart : labelPickEnd;
   const todayMax = toDateStr(todayDate());
   return (
     <>
-      <button type="button" className="fixed inset-0 z-40 bg-black/40 cursor-default" onClick={() => picker.clearDateRange(setDateRange)} aria-label="Close date picker" />
+      <button type="button" className="fixed inset-0 z-40 bg-black/40 cursor-default" onClick={() => picker.clearDateRange(setDateRange)} aria-label={labelClose} />
       <div className="fixed bottom-0 inset-x-0 mx-auto z-50 w-full max-w-md rounded-t-[24px] flex flex-col" style={{ background: "var(--bg-primary)", boxShadow: "0 -4px 32px rgba(0,0,0,0.18)" }}>
         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
           <div className="w-10 h-1 rounded-full" style={{ background: "var(--border-default)" }} />
@@ -412,7 +414,7 @@ export default function TransactionHistoryPage() {
               onClick={() => setSearchQuery("")}
               className="flex items-center justify-center"
               style={{ color: "var(--text-tertiary)", minWidth: 24, minHeight: 24 }}
-              aria-label="Clear search"
+              aria-label={tc("clear")}
             >
               <X className="w-4 h-4" />
             </button>
@@ -534,6 +536,7 @@ export default function TransactionHistoryPage() {
           labelApply={t("history.apply")}
           labelPickStart={t("history.pickStart")}
           labelPickEnd={t("history.pickEnd")}
+          labelClose={tc("close")}
         />
       )}
     </>

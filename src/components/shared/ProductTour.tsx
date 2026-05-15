@@ -55,26 +55,30 @@ const SKIP_TARGETS: Record<number, number> = {
   16: 21, // Skip Report       → END
 };
 
-const MODULE_NAMES: Record<number, string> = {
-  0:  'Transactions',
-  7:  'Wallet',
-  13: 'Loan',
-  16: 'Report',
+const MODULE_KEYS: Record<number, string> = {
+  0:  'transactions',
+  7:  'wallet',
+  13: 'loan',
+  16: 'report',
 };
 
 function TourSkipConfirm({
   open,
-  moduleName,
+  moduleKey,
   onConfirm,
   onCancel,
-}: {
+}: Readonly<{
   open: boolean;
-  moduleName: string;
+  moduleKey: string;
   onConfirm: () => void;
   onCancel: () => void;
-}) {
+}>) {
   const t = useTranslations('tour');
   if (!open) return null;
+
+  const moduleName = moduleKey
+    ? t(`modules.${moduleKey}` as Parameters<typeof t>[0])
+    : '';
 
   return (
     <div
@@ -91,7 +95,7 @@ function TourSkipConfirm({
       {/* Backdrop */}
       <button
         type="button"
-        aria-label="Cancel"
+        aria-label={t("cancelAriaLabel")}
         onClick={onCancel}
         style={{ position: 'absolute', inset: 0, cursor: 'default', background: 'transparent', border: 'none' }}
       />
@@ -243,7 +247,7 @@ export function ProductTour() {
     const expectedPath = TRANSITION_STEPS[index];
     if (expectedPath && !pathname.startsWith(expectedPath)) {
       pendingStepRef.current = index;
-      setPendingModuleName(MODULE_NAMES[index] ?? '');
+      setPendingModuleName(MODULE_KEYS[index] ?? '');
       setConfirmSkip(true);
       return true;
     }
@@ -288,7 +292,7 @@ export function ProductTour() {
 
       <TourSkipConfirm
         open={confirmSkip}
-        moduleName={pendingModuleName}
+        moduleKey={pendingModuleName}
         onConfirm={handleConfirmSkip}
         onCancel={handleCancelSkip}
       />

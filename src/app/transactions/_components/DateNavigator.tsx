@@ -30,7 +30,7 @@ interface DateNavigatorProps {
 // Sun=0 reference week: 2023-01-01 was a Sunday
 const REFERENCE_SUNDAY = new Date(2023, 0, 1);
 
-export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) {
+export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigatorProps>) {
   const locale = useLocale();
   const tc = useTranslations("common");
   const dfnsLocale = locale === "id" ? idLocale : enUS;
@@ -84,7 +84,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
           minHeight: "var(--tap-target-min)",
           color: "var(--text-primary)",
         }}
-        aria-label="Previous day"
+        aria-label={tc("prevDay")}
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
@@ -127,7 +127,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
             <button
               type="button"
               className="fixed inset-0 z-40 cursor-default"
-              aria-label="Close calendar"
+              aria-label={tc("close")}
               onClick={() => setIsOpen(false)}
             />
 
@@ -258,7 +258,7 @@ export function DateNavigator({ activeDate, onDateChange }: DateNavigatorProps) 
           minHeight: "var(--tap-target-min)",
           color: "var(--text-primary)",
         }}
-        aria-label="Next day"
+        aria-label={tc("nextDay")}
       >
         <ChevronRight className="w-5 h-5" />
       </button>

@@ -24,6 +24,7 @@ export default function EditLoanEntryPage({
   const { counterpartyId, entryId } = use(params);
   const router = useRouter();
   const t = useTranslations("loan");
+  const tc = useTranslations("common");
 
   const { wallets, loadWallets } = useWalletStore();
   const { updateEntry, deleteEntry } = useLoanEntryStore();
@@ -120,7 +121,7 @@ export default function EditLoanEntryPage({
         minHeight: "var(--tap-target-min)",
         color: "var(--color-negative)",
       }}
-      aria-label="Delete entry"
+      aria-label={tc("delete")}
     >
       <Trash2 className="w-5 h-5" />
     </button>

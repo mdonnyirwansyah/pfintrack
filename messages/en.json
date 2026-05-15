@@ -22,7 +22,12 @@
     "soon": "Soon",
     "noData": "No data",
     "items": "{count, plural, one {# item} other {# items}}",
-    "today": "Today"
+    "today": "Today",
+    "prevDay": "Previous day",
+    "nextDay": "Next day",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "closeOverlay": "Close overlay"
   },
   "splash": {
     "tagline": "Personal Finance Tracker"
@@ -359,6 +364,8 @@
       "noData": "No income or expense transactions this period.",
       "filteredBy": "Filtered: {category}",
       "chartView": "Chart",
+      "listView": "List view",
+      "calendarView": "Calendar view",
       "weekdays": {
         "sun": "Su",
         "mon": "Mo",
@@ -478,6 +485,11 @@
       "rangeExceeds": "Range must not exceed 10 years"
     }
   },
+  "offline": {
+    "heading": "You're offline",
+    "description": "Cached pages are still accessible.",
+    "retry": "Try Again"
+  },
   "walletPicker": {
     "title": "Select Wallet",
     "noWallets": "No wallets available"
@@ -486,7 +498,8 @@
     "banner": {
       "message": "You're viewing sample data.",
       "clearButton": "Clear & Start",
-      "closeAriaLabel": "Close banner"
+      "closeAriaLabel": "Close banner",
+      "demoModeAriaLabel": "Demo mode"
     },
     "clearConfirm": {
       "title": "Delete Sample Data?",
@@ -510,6 +523,13 @@
     "skipDescription": "You haven't opened the {module} tab yet. Skip this section and continue to the next module?",
     "confirmSkip": "Yes, Skip",
     "backToTour": "Back to Tour",
+    "modules": {
+      "transactions": "Transactions",
+      "wallet": "Wallet",
+      "loan": "Loan",
+      "report": "Report"
+    },
+    "cancelAriaLabel": "Cancel",
     "steps": {
       "tx1": "All your financial records are here — income, expenses, and transfers between wallets. Tap this tab to get started.",
       "tx2": "Swipe left/right or tap the arrows to navigate between dates. Tap the date to open the calendar.",

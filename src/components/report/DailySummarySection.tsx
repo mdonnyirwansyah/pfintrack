@@ -465,7 +465,7 @@ export function DailySummarySection({
                 background: view === "list" ? "var(--color-brand)" : "transparent",
                 color: view === "list" ? "white" : "var(--text-tertiary)",
               }}
-              aria-label="List view"
+              aria-label={t("daily.listView")}
             >
               <List className="w-3.5 h-3.5" />
             </button>
@@ -476,7 +476,7 @@ export function DailySummarySection({
                 background: view === "calendar" ? "var(--color-brand)" : "transparent",
                 color: view === "calendar" ? "white" : "var(--text-tertiary)",
               }}
-              aria-label="Calendar view"
+              aria-label={t("daily.calendarView")}
             >
               <CalendarDays className="w-3.5 h-3.5" />
             </button>

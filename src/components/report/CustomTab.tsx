@@ -67,7 +67,7 @@ export function CustomTab({
 
       <FAB
         onClick={() => router.push("/report/custom/add")}
-        aria-label="Add custom report"
+        aria-label={t("addReport")}
         data-tour="report-custom-fab"
       />
     </div>

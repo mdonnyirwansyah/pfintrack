@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface AppHeaderProps {
   title: string;
@@ -24,8 +25,9 @@ export function AppHeader({
   variant = "default",
   className,
   style,
-}: AppHeaderProps) {
+}: Readonly<AppHeaderProps>) {
   const router = useRouter();
+  const tc = useTranslations("common");
 
   const handleBack = () => {
     if (onBack) {
@@ -62,7 +64,7 @@ export function AppHeader({
               minHeight: "var(--tap-target-min)",
               color: "var(--text-primary)",
             }}
-            aria-label="Go back"
+            aria-label={tc("back")}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>

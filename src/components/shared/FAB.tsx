@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 interface FABProps {
   onClick: () => void;
   className?: string;
-  "aria-label"?: string;
+  "aria-label": string;
   "data-tour"?: string;
 }
 
-export function FAB({ onClick, className, "aria-label": ariaLabel = "Add", "data-tour": dataTour }: FABProps) {
+export function FAB({ onClick, className, "aria-label": ariaLabel, "data-tour": dataTour }: Readonly<FABProps>) {
   return (
     <button
       onClick={onClick}

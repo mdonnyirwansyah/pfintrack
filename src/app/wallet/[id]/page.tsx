@@ -34,6 +34,7 @@ export default function EditWalletPage({
 
   const { handleUpdate, handleDelete, isNameTaken, loadWallets } = useWalletActions();
   const t = useTranslations("wallet");
+  const tc = useTranslations("common");
 
   useEffect(() => {
     async function init() {
@@ -114,7 +115,7 @@ export default function EditWalletPage({
     <button
       onClick={() => {
         if (isInUse) {
-          toast.error(t("cannotDeleteInUse") || "Wallet sedang digunakan dalam transaksi/pinjaman dan tidak dapat dihapus.", {
+          toast.error(t("cannotDeleteInUse"), {
             id: "delete-in-use",
             duration: 3000,
           });
@@ -128,7 +129,7 @@ export default function EditWalletPage({
         minHeight: "var(--tap-target-min)",
         color: isInUse ? "var(--text-tertiary)" : "var(--color-negative)",
       }}
-      aria-label="Delete wallet"
+      aria-label={tc("delete")}
     >
       <Trash2 className="w-5 h-5" />
     </button>
@@ -175,11 +176,7 @@ export default function EditWalletPage({
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         title={t("deleteConfirm.title")}
-        description={
-          <>
-            Wallet <strong>{wallet.name}</strong> will be deleted. This action cannot be undone.
-          </>
-        }
+        description={t("deleteConfirm.description", { name: wallet.name })}
         confirmLabel={t("deleteConfirm.confirm")}
         cancelLabel={t("deleteConfirm.cancel")}
         variant="destructive"

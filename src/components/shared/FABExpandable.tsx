@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export interface FABSubAction {
   label: string;
@@ -17,8 +18,9 @@ interface FABExpandableProps {
   "data-tour"?: string;
 }
 
-export function FABExpandable({ actions, className, "data-tour": dataTour }: FABExpandableProps) {
+export function FABExpandable({ actions, className, "data-tour": dataTour }: Readonly<FABExpandableProps>) {
   const [open, setOpen] = useState(false);
+  const tc = useTranslations("common");
 
   const toggle = () => setOpen((prev) => !prev);
   const close = () => setOpen(false);
@@ -31,7 +33,7 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: FAB
           type="button"
           className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm cursor-default"
           onClick={close}
-          aria-label="Close actions overlay"
+          aria-label={tc("closeOverlay")}
           aria-hidden="true"
           tabIndex={-1}
         />
@@ -92,7 +94,7 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: FAB
           backgroundColor: "var(--color-brand)",
           boxShadow: "var(--shadow-fab)",
         }}
-        aria-label={open ? "Close actions" : "Add"}
+        aria-label={open ? tc("close") : tc("add")}
         aria-expanded={open}
         {...(dataTour ? { "data-tour": dataTour } : {})}
       >

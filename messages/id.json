@@ -22,7 +22,12 @@
     "soon": "Segera",
     "noData": "Tidak ada data",
     "items": "{count} item",
-    "today": "Hari ini"
+    "today": "Hari ini",
+    "prevDay": "Hari sebelumnya",
+    "nextDay": "Hari berikutnya",
+    "switchToLight": "Ganti ke mode terang",
+    "switchToDark": "Ganti ke mode gelap",
+    "closeOverlay": "Tutup overlay"
   },
   "splash": {
     "tagline": "Pelacak Keuangan Pribadi"
@@ -359,6 +364,8 @@
       "noData": "Tidak ada transaksi masuk atau keluar pada periode ini.",
       "filteredBy": "Difilter: {category}",
       "chartView": "Grafik",
+      "listView": "Tampilan daftar",
+      "calendarView": "Tampilan kalender",
       "weekdays": {
         "sun": "Mi",
         "mon": "Sn",
@@ -478,6 +485,11 @@
       "rangeExceeds": "Rentang tidak boleh melebihi 10 tahun"
     }
   },
+  "offline": {
+    "heading": "Kamu sedang offline",
+    "description": "Halaman yang tersimpan masih bisa dibuka.",
+    "retry": "Coba Lagi"
+  },
   "walletPicker": {
     "title": "Pilih Dompet",
     "noWallets": "Tidak ada dompet tersedia"
@@ -486,7 +498,8 @@
     "banner": {
       "message": "Kamu lagi lihat data contoh.",
       "clearButton": "Hapus & Mulai",
-      "closeAriaLabel": "Tutup banner"
+      "closeAriaLabel": "Tutup banner",
+      "demoModeAriaLabel": "Mode demo"
     },
     "clearConfirm": {
       "title": "Hapus Data Sampel?",
@@ -510,6 +523,13 @@
     "skipDescription": "Tab {module} belum dibuka. Mau langsung lanjut ke bagian berikutnya?",
     "confirmSkip": "Ya, Lewati",
     "backToTour": "Kembali ke Tour",
+    "modules": {
+      "transactions": "Transaksi",
+      "wallet": "Dompet",
+      "loan": "Pinjaman",
+      "report": "Laporan"
+    },
+    "cancelAriaLabel": "Batal",
     "steps": {
       "tx1": "Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar dompet. Ketuk tab ini untuk memulai.",
       "tx2": "Geser kiri/kanan atau ketuk panah untuk pindah tanggal. Ketuk tanggal untuk membuka kalender.",

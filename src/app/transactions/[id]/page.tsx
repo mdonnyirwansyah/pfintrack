@@ -105,7 +105,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
         minHeight: "var(--tap-target-min)",
         color: "var(--color-negative)",
       }}
-      aria-label="Delete transaction"
+      aria-label={tc("delete")}
     >
       <Trash2 className="w-5 h-5" />
     </button>

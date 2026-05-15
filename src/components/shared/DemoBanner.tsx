@@ -22,7 +22,7 @@ export function DemoBanner() {
     <>
       <aside
         className="flex items-center justify-between px-4 py-2.5 gap-2"
-        aria-label="Demo mode"
+        aria-label={t("banner.demoModeAriaLabel")}
         style={{
           background: "var(--color-brand)",
           color: "var(--text-on-primary)",

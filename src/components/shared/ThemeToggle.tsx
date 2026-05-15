@@ -3,10 +3,12 @@
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { useMounted } from "@/hooks/useMounted";
+import { useTranslations } from "next-intl";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
+  const tc = useTranslations("common");
 
   if (!mounted) {
     return (
@@ -29,7 +31,7 @@ export function ThemeToggle() {
         height: "var(--tap-target-min)",
         color: "var(--text-primary)",
       }}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? tc("switchToLight") : tc("switchToDark")}
     >
       {isDark ? (
         <Sun className="w-5 h-5" />
