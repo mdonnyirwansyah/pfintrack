@@ -27,7 +27,7 @@ test.describe("Wallet — Delete", () => {
     await page.goto(`/wallet/${W1.id}`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
-    const deleteBtn = page.locator('button[aria-label="Delete wallet"]');
+    const deleteBtn = page.locator('button[aria-label="Delete"]');
     await expect(deleteBtn).toBeVisible();
   });
 
@@ -37,7 +37,7 @@ test.describe("Wallet — Delete", () => {
     await page.waitForTimeout(400);
 
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete wallet"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
 
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
     await expect(page.getByText("Delete Wallet?")).toBeVisible();
@@ -49,7 +49,7 @@ test.describe("Wallet — Delete", () => {
     await page.waitForTimeout(400);
 
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete wallet"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
     await page.getByRole("button", { name: "Cancel" }).click();
@@ -67,10 +67,10 @@ test.describe("Wallet — Delete", () => {
     await page.waitForTimeout(400);
 
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete wallet"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
-    await page.getByRole("button", { name: "Delete" }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "Delete" }).click();
 
     // Should navigate to wallet list
     await expect(page).toHaveURL(/\/wallet$/);
@@ -97,7 +97,7 @@ test.describe("Wallet — Delete", () => {
 
     // Clicking delete on an in-use wallet shows a toast (no dialog)
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete wallet"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
 
     await page.waitForTimeout(600);
 

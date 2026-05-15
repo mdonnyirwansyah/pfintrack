@@ -36,19 +36,21 @@ test.describe("Offline Page", () => {
 
   test("offline page renders heading and retry button", async ({ page }) => {
     await goto(page, "/~offline");
-    // Heading in Indonesian (hardcoded on this page)
-    await expect(page.getByText("Kamu sedang offline")).toBeVisible();
+    // Heading text (default locale: en)
+    await expect(page.getByText("You're offline")).toBeVisible();
     // Retry button
-    await expect(page.getByRole("button", { name: /Coba Lagi/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Try Again/i })).toBeVisible();
   });
 
   test("offline page shows navigation links to all modules", async ({ page }) => {
     await goto(page, "/~offline");
-    await expect(page.getByRole("link", { name: "Transaksi" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Dompet" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Pinjaman" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Laporan" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Pengaturan" })).toBeVisible();
+    // Scope to <main> so we don't collide with the bottom-nav links (same names).
+    const main = page.getByRole("main");
+    await expect(main.getByRole("link", { name: "Transactions" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Wallet" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Loan" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Report" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Settings" })).toBeVisible();
   });
 });
 
@@ -107,7 +109,7 @@ test.describe("Report Detail Page", () => {
 
   test("report detail page has back navigation button", async ({ page }) => {
     await goto(page, `/report/detail?start=${MONTH_START}&end=${TODAY}`);
-    await expect(page.locator('button[aria-label="Go back"]')).toBeVisible();
+    await expect(page.locator('button[aria-label="Back"]')).toBeVisible();
   });
 
   test("report detail page with no data shows empty state", async ({ page }) => {

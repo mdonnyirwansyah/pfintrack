@@ -13,6 +13,46 @@ const STORE_NAMES = [
   "custom_reports",
 ] as const;
 
+/**
+ * Index schema mirroring src/lib/storage/idb-client.ts.
+ * MUST stay in sync — if the app declares an index, the test helper
+ * must create it too, otherwise repository code that queries by index
+ * will throw NotFoundError when the helper pre-creates the DB before
+ * the app's own onupgradeneeded fires.
+ */
+const STORE_INDEXES: Readonly<Record<string, ReadonlyArray<readonly [string, string]>>> = {
+  wallets: [
+    ["by_anon_id", "anon_id"],
+    ["by_is_active", "is_active"],
+  ],
+  wallet_balance_history: [
+    ["by_anon_id", "anon_id"],
+    ["by_wallet_id", "wallet_id"],
+    ["by_is_active", "is_active"],
+  ],
+  transactions: [
+    ["by_anon_id", "anon_id"],
+    ["by_wallet_id", "wallet_id"],
+    ["by_dest_wallet_id", "destination_wallet_id"],
+    ["by_date", "transaction_date"],
+    ["by_is_active", "is_active"],
+  ],
+  loan_counterparties: [
+    ["by_anon_id", "anon_id"],
+    ["by_is_active", "is_active"],
+  ],
+  loan_entries: [
+    ["by_anon_id", "anon_id"],
+    ["by_counterparty_id", "counterparty_id"],
+    ["by_wallet_id", "wallet_id"],
+    ["by_is_active", "is_active"],
+  ],
+  custom_reports: [
+    ["by_anon_id", "anon_id"],
+    ["by_is_active", "is_active"],
+  ],
+};
+
 const now = () => new Date().toISOString();
 
 /**
@@ -86,17 +126,29 @@ export async function setupPage(page: Page) {
 export async function clearIDB(page: Page) {
   const storeList = Array.from(STORE_NAMES);
   await page.evaluate(
-    async ({ dbName, dbVer, storeNames }: { dbName: string; dbVer: number; storeNames: string[] }) => {
+    async ({ dbName, dbVer, storeNames, indexes }: { dbName: string; dbVer: number; storeNames: string[]; indexes: Record<string, ReadonlyArray<readonly [string, string]>> }) => {
       await new Promise<void>((resolve, reject) => {
         const req = indexedDB.open(dbName, dbVer);
         req.onerror = () => resolve();
 
-        // Create missing stores during upgrade (first open or version bump).
+        // Create missing stores + indexes during upgrade (first open or version bump).
+        // The index list MUST match src/lib/storage/idb-client.ts — otherwise
+        // repository queries via idbGetAllByIndex throw NotFoundError.
         req.onupgradeneeded = (event) => {
           const db = (event.target as IDBOpenDBRequest).result;
+          const tx = (event.target as IDBOpenDBRequest).transaction;
           for (const name of storeNames) {
-            if (!db.objectStoreNames.contains(name)) {
-              db.createObjectStore(name, { keyPath: "id" });
+            let store: IDBObjectStore;
+            if (db.objectStoreNames.contains(name)) {
+              store = tx!.objectStore(name);
+            } else {
+              store = db.createObjectStore(name, { keyPath: "id" });
+            }
+            const wantedIndexes = indexes[name] ?? [];
+            for (const [indexName, keyPath] of wantedIndexes) {
+              if (!store.indexNames.contains(indexName)) {
+                store.createIndex(indexName, keyPath);
+              }
             }
           }
         };
@@ -116,7 +168,7 @@ export async function clearIDB(page: Page) {
         };
       });
     },
-    { dbName: DB_NAME, dbVer: DB_VERSION, storeNames: storeList },
+    { dbName: DB_NAME, dbVer: DB_VERSION, storeNames: storeList, indexes: STORE_INDEXES },
   );
 }
 

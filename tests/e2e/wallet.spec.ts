@@ -85,7 +85,7 @@ test.describe("Wallet", () => {
     await goto(page, "/wallet");
     await page.goto("/wallet/add", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(300);
-    await page.locator('button[aria-label="Go back"]').click();
+    await page.locator('button[aria-label="Back"]').click();
     await expect(page).toHaveURL(/\/wallet$/);
   });
 

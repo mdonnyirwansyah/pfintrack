@@ -41,7 +41,7 @@ test.describe("Transactions History — Page Structure", () => {
   test("history page renders header with back button", async ({ page }) => {
     await goto(page, "/transactions/history");
     await expect(page.locator("header")).toBeVisible();
-    await expect(page.locator('button[aria-label="Go back"]')).toBeVisible();
+    await expect(page.locator('button[aria-label="Back"]')).toBeVisible();
   });
 
   test("history page renders search bar", async ({ page }) => {
@@ -132,7 +132,7 @@ test.describe("Transactions History — Search", () => {
     await expect(page.getByText("Ojek")).not.toBeVisible();
 
     // Clear via the X button
-    await page.locator('button[aria-label="Clear search"]').click();
+    await page.locator('button[aria-label="Clear"]').click();
     await page.waitForTimeout(200);
 
     // Both items visible again
@@ -300,7 +300,7 @@ test.describe("Transactions History — Navigation", () => {
     await page.goto("/transactions/history", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(400);
 
-    await page.locator('button[aria-label="Go back"]').click();
+    await page.locator('button[aria-label="Back"]').click();
     await expect(page).toHaveURL(/\/transactions/);
   });
 });

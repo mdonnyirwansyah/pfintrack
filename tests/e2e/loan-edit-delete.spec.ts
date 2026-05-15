@@ -100,7 +100,7 @@ test.describe("Loan — Delete Entry", () => {
       }]);
     });
 
-    const deleteBtn = page.locator('button[aria-label="Delete entry"]');
+    const deleteBtn = page.locator('button[aria-label="Delete"]');
     await expect(deleteBtn).toBeVisible();
   });
 
@@ -115,7 +115,7 @@ test.describe("Loan — Delete Entry", () => {
     });
 
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete entry"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
     await expect(page.getByText("Delete this entry?")).toBeVisible();
   });
@@ -135,9 +135,9 @@ test.describe("Loan — Delete Entry", () => {
     await page.waitForTimeout(400);
 
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete entry"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
-    await page.getByRole("button", { name: "Delete" }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "Delete" }).click();
 
     // Navigate back to counterparty detail
     await expect(page).toHaveURL(new RegExp(`/loan/${CP1.id}`));
@@ -170,7 +170,7 @@ test.describe("Loan — Mark Paid Off", () => {
       }]);
     });
 
-    const markPaidBtn = page.locator('button[aria-label="Mark as paid"]');
+    const markPaidBtn = page.locator('button[aria-label="Mark as Paid Off"]');
     await expect(markPaidBtn).toBeVisible();
   });
 
@@ -184,11 +184,11 @@ test.describe("Loan — Mark Paid Off", () => {
       }]);
     });
 
-    await page.locator('button[aria-label="Mark as paid"]').click();
+    await page.locator('button[aria-label="Mark as Paid Off"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
-    // Confirm mark as paid
-    await page.getByRole("button", { name: "Mark as Paid Off" }).click();
+    // Confirm mark as paid (scope to dialog so we don't re-click the header trigger)
+    await page.getByRole("alertdialog").getByRole("button", { name: "Mark as Paid Off" }).click();
     await page.waitForTimeout(500);
 
     // Status should show "Paid Off"
@@ -210,7 +210,7 @@ test.describe("Loan — Delete Counterparty", () => {
       await seedCounterparties(page, [CP2]);
     });
 
-    const deleteBtn = page.locator('button[aria-label="Delete counterparty"]');
+    const deleteBtn = page.locator('button[aria-label="Delete"]');
     await expect(deleteBtn).toBeVisible();
   });
 
@@ -227,10 +227,10 @@ test.describe("Loan — Delete Counterparty", () => {
     await expect(page).toHaveURL(new RegExp(`/loan/${CP2.id}`));
 
     await dismissDevOverlay(page);
-    await page.locator('button[aria-label="Delete counterparty"]').click();
+    await page.locator('button[aria-label="Delete"]').click();
     await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 3000 });
 
-    await page.getByRole("button", { name: "Delete" }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "Delete" }).click();
 
     // Should navigate to loan list
     await expect(page).toHaveURL(/\/loan$/);

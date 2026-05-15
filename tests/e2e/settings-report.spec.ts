@@ -21,7 +21,7 @@ test.describe("Settings Report Visibility", () => {
   test("settings/report page renders header with back button", async ({ page }) => {
     await goto(page, "/settings/report");
     await expect(page.locator("header")).toBeVisible();
-    await expect(page.locator('button[aria-label="Go back"]')).toBeVisible();
+    await expect(page.locator('button[aria-label="Back"]')).toBeVisible();
   });
 
   test("page shows multiple toggle rows with aria-pressed", async ({ page }) => {
