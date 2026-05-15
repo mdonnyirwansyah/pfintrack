@@ -554,5 +554,51 @@
       "rp4": "This chart shows the distribution of your expenses or income by category. Tap a slice to filter the list below.",
       "rp5": "Tap to create a custom report for a specific date range."
     }
+  },
+  "changelog": {
+    "title": "What's New",
+    "subtitle": "The story behind every PFinTrack update",
+    "currentBadge": "Your current version",
+    "latestBadge": "Latest",
+    "entries": [
+      {
+        "version": "1.0.2",
+        "date": "May 15, 2026",
+        "tagline": "Smoother & Steadier",
+        "intro": "Small touches that make every interaction feel more natural.",
+        "items": [
+          "Money moves between wallets in perfect sync — your balances always line up",
+          "Indonesian screen readers now feel right at home with fully localized accessibility labels",
+          "Icon badges and quick menus look unified across the app",
+          "The app launches faster and stays rock-steady from the very first second"
+        ]
+      },
+      {
+        "version": "1.0.1",
+        "date": "May 14, 2026",
+        "tagline": "First Polish",
+        "intro": "Final touches that make the experience even smoother.",
+        "items": [
+          "The onboarding tour now looks clean and focused",
+          "Confirmation dialogs feel more natural and accessibility-friendly",
+          "Switching tabs in Reports is instant",
+          "Long lists in Wallet & Loan scroll more smoothly"
+        ]
+      },
+      {
+        "version": "1.0.0",
+        "date": "April 1, 2026",
+        "tagline": "Day One",
+        "intro": "The very start of PFinTrack — manage your personal finance from one place.",
+        "items": [
+          "Track wallets, edit balances manually, and follow every change",
+          "Log income, expenses, and transfers between wallets",
+          "Manage loans with automatic settlement detection",
+          "Real-time, monthly, and custom reports tailored to you",
+          "Backup, theme, language, and even demo data — all in one place",
+          "Works offline and installs like a native app"
+        ]
+      }
+    ]
   }
 }

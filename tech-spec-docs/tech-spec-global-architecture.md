@@ -13,6 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.1.5** | **2026-05-15** | **Tambah route `/settings/whats-new` — in-app changelog. Halaman menampilkan timeline rilis (badge versi, tanggal, tagline, intro, bullet list improvements) dengan badge "Versimu sekarang" pada entry yang match `APP_VERSION` (`src/lib/version.ts`). Konten dilokalisasi via namespace `changelog` di `messages/{id,en}.json` (bilingual). Row "About → PFinTrack" di `/settings` diubah dari static `<div>` jadi `<button>` clickable yang navigasi ke route ini. Total route: 22 → 23.** |
 | **1.1.4** | **2026-05-15** | **E2E test sync setelah lokalisasi `aria-label` via `next-intl` (commit 121075e). Aria-label spesifik (mis. `"Delete entry"`, `"Delete wallet"`, `"Delete counterparty"`, `"Go back"`, `"Clear search"`, `"Mark as paid"`) sudah diganti dengan key generik dari namespace `common` (`"Delete"`, `"Back"`, `"Clear"`, `"Mark as Paid Off"`). Tests di `loan-edit-delete.spec.ts`, `wallet-delete.spec.ts`, `wallet.spec.ts`, `transactions-history.spec.ts`, `misc-coverage.spec.ts`, dan `settings-report.spec.ts` diupdate menyesuaikan label aktual yang dirender pada default locale `en`. Tombol konfirmasi di dialog di-scope ke `getByRole("alertdialog")` agar tidak bentrok dengan tombol pemicu (header). Indonesian-text assertion di `misc-coverage.spec.ts` (offline page heading, nav links) diubah ke versi English karena default locale = `en`. Aturan baru: kalau menambah `aria-label` baru via `next-intl`, pastikan key-nya stabil lintas locale ATAU update E2E test menggunakan label rendered locale `en`. ✅ FIXED 2026-05-15.** |
 | **1.1.3** | **2026-05-15** | **Tambah shared component `IconBadge` (`src/components/shared/IconBadge.tsx`). Replace semua inline icon-with-background di WalletCard, CounterpartyListItem, Settings, dan Settings/Report. Tabel shared components di §3 diperbarui.** |
 | **1.1.2** | **2026-05-14** | **Replace `<div role="dialog">` dengan elemen semantik `<dialog open>` native HTML5 di rename dialog `/loan/[counterpartyId]`. §12.6 diperbarui: aturan `role="dialog"` dihapus (redundant), panduan penggunaan `<dialog>` native ditambahkan.** |
@@ -99,6 +100,7 @@
 | `/loan/[counterpartyId]/edit/[entryId]` | Loan | Edit single loan entry |
 | `/settings` | Settings | Pengaturan app (tab ke-5 Bottom Nav) |
 | **`/settings/report`** | **Settings** | **Halaman visibilitas komponen Report — toggle show/hide per komponen analitik** |
+| **`/settings/whats-new`** | **Settings** | **Halaman in-app changelog — timeline rilis dengan badge versi, tagline, dan ringkasan tiap pembaruan. Diakses dari row "PFinTrack vX.Y.Z" di Settings/About.** |
 | **`/~offline`** | **Global** | **Halaman offline fallback (PWA service worker) — tampil saat pengguna tidak ada koneksi dan request ke route yang tidak ter-cache** |
 
 ---
@@ -758,7 +760,20 @@ Route utama adalah `/settings` (tab ke-5 di Bottom Navigation), dengan satu sub-
 | **Data & Storage** | Import backup | Row → tap membuka file picker (`.json`, `.gz`) → konfirmasi dialog → `importBackup(file)` → reload. |
 | **Data & Storage** | Delete All Data | Row merah → tap membuka `TypeToConfirmDialog` (user harus ketik frasa konfirmasi) → `deleteAllData()` → reload. |
 | **Help** | Lihat Tutorial | Row → tap memanggil `useTourStore.resetTour()` → tur onboarding dimulai ulang dari step 1. |
-| **About** | Info row | Nama app `pfintrack` + versi `v0.1.0`. |
+| **About** | What's New row | Row clickable: nama app `PFinTrack` + label `v{APP_VERSION}` + chevron → navigasi ke `/settings/whats-new`. Versi dibaca dari konstanta `APP_VERSION` di `src/lib/version.ts`. |
+
+**Screen: What's New (`/settings/whats-new`)**
+
+In-app changelog dengan layout timeline vertikal. Konten dibaca dari namespace `changelog` di `messages/{id,en}.json` (bilingual via `next-intl`).
+
+| Elemen | Deskripsi |
+|--------|-----------|
+| Header | `AppHeader` dengan `showBack` + title `changelog.title`. |
+| Subtitle | Paragraf intro pendek (`changelog.subtitle`). |
+| Timeline | `<ol>` vertikal dengan garis penghubung. Tiap entry = satu `<li>` berisi node bulat (ikon Sparkles) + card glass. |
+| Entry card | Header (versi + tanggal), tagline (`<h2>`), badge "Versimu sekarang" jika `entry.version === APP_VERSION`, intro paragraf, bullet list improvements. |
+| Sumber data | `t.raw("entries")` — array `ChangelogEntry` (`{version, date, tagline, intro, items[]}`). |
+| Aturan konten | Bahasa positif & user-oriented. Tidak menyebut "bug fix" atau detail teknis internal. |
 
 **Screen: Report Visibility (`/settings/report`)**
 

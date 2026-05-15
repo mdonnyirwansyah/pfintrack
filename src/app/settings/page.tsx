@@ -18,6 +18,7 @@ import { exportBackup, importBackup, deleteAllData } from "@/lib/storage/backup"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { TypeToConfirmDialog } from "@/components/shared/TypeToConfirmDialog";
 import { toast } from "sonner";
+import { APP_VERSION } from "@/lib/version";
 
 type ThemeOption = "light" | "dark" | "system";
 
@@ -537,7 +538,10 @@ export default function SettingsPage() {
         </h2>
 
         <div className={sectionClass}>
-          <div className={rowClass}>
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => router.push("/settings/whats-new")}
+          >
             <div className="flex items-center gap-3">
               <IconBadge
                 icon={Info}
@@ -549,10 +553,13 @@ export default function SettingsPage() {
                 PFinTrack
               </span>
             </div>
-            <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-              v1.0.0
-            </span>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+                v{APP_VERSION}
+              </span>
+              <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
+            </div>
+          </button>
         </div>
 
       </div>

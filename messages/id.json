@@ -554,5 +554,51 @@
       "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Ketuk potongan untuk memfilter daftar di bawah.",
       "rp5": "Ketuk untuk membuat laporan kustom dengan rentang tanggal tertentu."
     }
+  },
+  "changelog": {
+    "title": "Apa yang Baru",
+    "subtitle": "Cerita di balik tiap pembaruan PFinTrack",
+    "currentBadge": "Versimu sekarang",
+    "latestBadge": "Terbaru",
+    "entries": [
+      {
+        "version": "1.0.2",
+        "date": "15 Mei 2026",
+        "tagline": "Lebih Halus, Lebih Tenang",
+        "intro": "Sentuhan kecil yang bikin tiap interaksi terasa lebih natural.",
+        "items": [
+          "Perpindahan saldo antar dompet kini selalu sinkron — angkamu nyambung tanpa selisih sedetik pun",
+          "Pembaca layar bahasa Indonesia jadi terasa lebih akrab, tiap label aksesibilitas ikut bahasa pilihanmu",
+          "Badge ikon dan menu pintas tampil lebih seragam di seluruh aplikasi",
+          "Aplikasi siap dipakai lebih cepat dan mantap sejak detik pertama dibuka"
+        ]
+      },
+      {
+        "version": "1.0.1",
+        "date": "14 Mei 2026",
+        "tagline": "Polesan Awal",
+        "intro": "Sentuhan akhir yang bikin pengalaman makin mulus.",
+        "items": [
+          "Tur perkenalan tampil lebih bersih dan fokus",
+          "Dialog konfirmasi terasa lebih natural dan ramah aksesibilitas",
+          "Berpindah tab di halaman Laporan terasa instan",
+          "Daftar panjang di Dompet & Pinjaman bergulir lebih mulus"
+        ]
+      },
+      {
+        "version": "1.0.0",
+        "date": "1 April 2026",
+        "tagline": "Babak Awal",
+        "intro": "Awal perjalanan PFinTrack — kelola keuangan pribadi dari satu tempat.",
+        "items": [
+          "Catat dompet, edit saldo manual, dan lacak riwayat perubahannya",
+          "Pencatatan pemasukan, pengeluaran, sampai transfer antar dompet",
+          "Manajemen utang-piutang lengkap dengan deteksi lunas otomatis",
+          "Laporan keuangan realtime, bulanan, dan kustom sesuai kebutuhan",
+          "Backup data, tema, bahasa, sampai data demo — semua dalam satu tempat",
+          "Bisa dipakai offline dan diinstall layaknya aplikasi asli"
+        ]
+      }
+    ]
   }
 }
