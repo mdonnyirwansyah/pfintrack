@@ -10,6 +10,12 @@ const withSerwist = withSerwistInit({
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
-const nextConfig: NextConfig = {};
+const allowedDevOrigins = process.env.NEXT_DEV_ALLOWED_ORIGINS
+  ? process.env.NEXT_DEV_ALLOWED_ORIGINS.split(",").map((s) => s.trim())
+  : [];
+
+const nextConfig: NextConfig = {
+  ...(allowedDevOrigins.length > 0 && { allowedDevOrigins }),
+};
 
 export default withNextIntl(withSerwist(nextConfig));

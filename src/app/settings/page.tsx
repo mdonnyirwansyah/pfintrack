@@ -6,6 +6,7 @@ import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, Shield
 import { useColorTheme } from "@/hooks/useColorTheme";
 import type { ColorTheme } from "@/hooks/useColorTheme";
 import { AppHeader } from "@/components/shared/AppHeader";
+import { IconBadge } from "@/components/shared/IconBadge";
 import { useMounted } from "@/hooks/useMounted";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -107,23 +108,12 @@ export default function SettingsPage() {
                   aria-pressed={isActive}
                 >
                   <div className="flex items-center gap-3">
-                    <div
-                      className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                      style={{
-                        background: isActive
-                          ? "var(--color-brand-soft)"
-                          : "var(--bg-icon)",
-                      }}
-                    >
-                      <Icon
-                        className="w-4 h-4"
-                        style={{
-                          color: isActive
-                            ? "var(--color-brand)"
-                            : "var(--text-secondary)",
-                        }}
-                      />
-                    </div>
+                    <IconBadge
+                      icon={Icon}
+                      iconColor={isActive ? "var(--color-brand)" : "var(--text-secondary)"}
+                      background={isActive ? "var(--color-brand-soft)" : "var(--bg-icon)"}
+                      size="sm"
+                    />
                     <span
                       className="text-[13px]"
                       style={{
@@ -162,12 +152,12 @@ export default function SettingsPage() {
           <div style={dividerStyle} />
           <div className={rowClass}>
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <Palette className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={Palette}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                 {t("accentColor.label")}
               </span>
@@ -220,23 +210,12 @@ export default function SettingsPage() {
                   disabled={isPending}
                 >
                   <div className="flex items-center gap-3">
-                    <div
-                      className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                      style={{
-                        background: isActive
-                          ? "var(--color-brand-soft)"
-                          : "var(--bg-icon)",
-                      }}
-                    >
-                      <Globe
-                        className="w-4 h-4"
-                        style={{
-                          color: isActive
-                            ? "var(--color-brand)"
-                            : "var(--text-secondary)",
-                        }}
-                      />
-                    </div>
+                    <IconBadge
+                      icon={Globe}
+                      iconColor={isActive ? "var(--color-brand)" : "var(--text-secondary)"}
+                      background={isActive ? "var(--color-brand-soft)" : "var(--bg-icon)"}
+                      size="sm"
+                    />
                     <span
                       className="text-[13px]"
                       style={{
@@ -288,12 +267,12 @@ export default function SettingsPage() {
             aria-pressed={showDecimals}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <Hash className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={Hash}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <div className="text-left">
                 <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                   {t("showDecimals")}
@@ -336,12 +315,12 @@ export default function SettingsPage() {
             onClick={() => router.push("/settings/report")}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <ChartPie className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={ChartPie}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                 {t("report.visibilitySettings")}
               </span>
@@ -365,12 +344,12 @@ export default function SettingsPage() {
                 onClick={() => setDemoConfirmOpen(true)}
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                    style={{ background: "var(--color-negative-soft)" }}
-                  >
-                    <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
-                  </div>
+                  <IconBadge
+                    icon={Trash2}
+                    iconColor="var(--color-negative)"
+                    background="var(--color-negative-soft)"
+                    size="sm"
+                  />
                   <div className="text-left">
                     <p className="text-[13px] font-medium" style={{ color: "var(--color-negative)" }}>
                       {t("demo.clearButton")}
@@ -405,20 +384,12 @@ export default function SettingsPage() {
             }}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{
-                  background: storagePersisted
-                    ? "color-mix(in srgb, var(--color-positive) 15%, transparent)"
-                    : "var(--bg-icon)",
-                }}
-              >
-                {storagePersisted ? (
-                  <ShieldCheck className="w-4 h-4" style={{ color: "var(--color-positive)" }} />
-                ) : (
-                  <ShieldOff className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-                )}
-              </div>
+              <IconBadge
+                icon={storagePersisted ? ShieldCheck : ShieldOff}
+                iconColor={storagePersisted ? "var(--color-positive)" : "var(--text-secondary)"}
+                background={storagePersisted ? "color-mix(in srgb, var(--color-positive) 15%, transparent)" : "var(--bg-icon)"}
+                size="sm"
+              />
               <div className="text-left">
                 <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                   {td("persistTitle")}
@@ -448,12 +419,12 @@ export default function SettingsPage() {
             }}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <Download className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={Download}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <div className="text-left">
                 <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                   {td("exportTitle")}
@@ -473,12 +444,12 @@ export default function SettingsPage() {
             onClick={() => importInputRef.current?.click()}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <Upload className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={Upload}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <div className="text-left">
                 <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                   {td("importTitle")}
@@ -511,12 +482,12 @@ export default function SettingsPage() {
             onClick={() => setDeleteAllOpen(true)}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "color-mix(in srgb, var(--color-negative) 12%, transparent)" }}
-              >
-                <Trash2 className="w-4 h-4" style={{ color: "var(--color-negative)" }} />
-              </div>
+              <IconBadge
+                icon={Trash2}
+                iconColor="var(--color-negative)"
+                background="color-mix(in srgb, var(--color-negative) 12%, transparent)"
+                size="sm"
+              />
               <div className="text-left">
                 <p className="text-[13px] font-medium" style={{ color: "var(--color-negative)" }}>
                   {td("deleteAllTitle")}
@@ -543,12 +514,12 @@ export default function SettingsPage() {
             onClick={() => resetTour()}
           >
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <BookOpen className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={BookOpen}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                 {t("viewTutorial")}
               </span>
@@ -568,12 +539,12 @@ export default function SettingsPage() {
         <div className={sectionClass}>
           <div className={rowClass}>
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                style={{ background: "var(--bg-icon)" }}
-              >
-                <Info className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-              </div>
+              <IconBadge
+                icon={Info}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
               <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                 PFinTrack
               </span>

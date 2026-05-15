@@ -2,16 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CreditCard, ArrowUpDown, ChevronDown } from "lucide-react";
+import { CreditCard, ChevronDown, Check } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { FAB } from "@/components/shared/FAB";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { SortPill } from "@/components/shared/SortPill";
 import { WalletCard } from "@/features/wallet/components/WalletCard";
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { formatIDR } from "@/lib/format/number";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
 import type { WalletType } from "@/lib/types/wallet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type SortKey = "default" | "balance_desc" | "balance_asc" | "name_asc" | "name_desc";
 
@@ -19,22 +26,6 @@ const WALLET_TYPES: WalletType[] = [
   "bank", "bank_digital", "e_wallet", "investment", "savings", "digital_asset", "other",
 ];
 
-const selectStyle: React.CSSProperties = {
-  appearance: "none",
-  WebkitAppearance: "none",
-  background: "var(--bg-secondary)",
-  border: "1px solid var(--border-default)",
-  borderRadius: 20,
-  color: "var(--text-secondary)",
-  fontSize: 11,
-  fontWeight: 500,
-  paddingTop: 6,
-  paddingBottom: 6,
-  paddingLeft: 12,
-  paddingRight: 24,
-  outline: "none",
-  cursor: "pointer",
-};
 
 // [7] Wallet List
 export default function WalletPage() {
@@ -77,42 +68,62 @@ export default function WalletPage() {
       return (
         <div className="flex items-center justify-between mb-3">
           {/* Filter type — left */}
-          <div data-tour="wl-filter-type" className="relative flex items-center">
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value as WalletType | "all")}
-              style={selectStyle}
-            >
-              <option value="all">{t("filterType.all")}</option>
-              {WALLET_TYPES.map((type) => (
-                <option key={type} value={type}>{t(`types.${type}`)}</option>
-              ))}
-            </select>
-            <ChevronDown
-              className="absolute right-2 w-3 h-3 pointer-events-none"
-              style={{ color: "var(--text-secondary)" }}
-            />
+          <div data-tour="wl-filter-type">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium outline-none cursor-pointer"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                <span>
+                  {typeFilter === "all" ? t("filterType.all") : t(`types.${typeFilter}`)}
+                </span>
+                <ChevronDown className="w-3 h-3 shrink-0" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                side="bottom"
+                sideOffset={6}
+                className="glass w-auto min-w-[130px]"
+                style={{ borderRadius: 12 }}
+              >
+                <DropdownMenuItem
+                  onClick={() => setTypeFilter("all")}
+                  className="text-[12px] justify-between focus:bg-[var(--color-brand-soft)] focus:text-[var(--text-primary)]"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {t("filterType.all")}
+                  {typeFilter === "all" && (
+                    <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--color-brand)" }} />
+                  )}
+                </DropdownMenuItem>
+                {WALLET_TYPES.map((type) => (
+                  <DropdownMenuItem
+                    key={`filter-type-${type}`}
+                    onClick={() => setTypeFilter(type)}
+                    className="text-[12px] justify-between focus:bg-[var(--color-brand-soft)] focus:text-[var(--text-primary)]"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {t(`types.${type}`)}
+                    {typeFilter === type && (
+                      <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--color-brand)" }} />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Sort — right */}
-          <div data-tour="wl-sort" className="relative flex items-center">
-            <ArrowUpDown
-              className="absolute left-2.5 w-3 h-3 pointer-events-none"
-              style={{ color: "var(--text-secondary)" }}
-            />
-            <select
+          <div data-tour="wl-sort">
+            <SortPill
               value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as SortKey)}
-              style={{ ...selectStyle, paddingLeft: 24 }}
-            >
-              <option value="name_asc">{t("sort.nameAsc")}</option>
-              <option value="name_desc">{t("sort.nameDesc")}</option>
-              <option value="balance_desc">{t("sort.balanceDesc")}</option>
-              <option value="balance_asc">{t("sort.balanceAsc")}</option>
-            </select>
-            <ChevronDown
-              className="absolute right-2 w-3 h-3 pointer-events-none"
-              style={{ color: "var(--text-secondary)" }}
+              onChange={setSortKey}
+              options={[
+                { value: "name_asc", label: t("sort.nameAsc") },
+                { value: "name_desc", label: t("sort.nameDesc") },
+                { value: "balance_desc", label: t("sort.balanceDesc") },
+                { value: "balance_asc", label: t("sort.balanceAsc") },
+              ]}
             />
           </div>
         </div>

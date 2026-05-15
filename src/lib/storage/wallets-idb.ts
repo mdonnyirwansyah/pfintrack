@@ -1,3 +1,4 @@
+import { generateUUID } from "@/lib/bootstrap/anon-id";
 import type { Wallet } from "@/lib/types/wallet";
 import {
   idbGet,
@@ -31,7 +32,7 @@ export const walletsIdbRepo = {
     const now = new Date().toISOString();
 
     const wallet: Wallet = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       anon_id: getOrCreateAnonId(),
       name: input.name,
       wallet_type: input.wallet_type,

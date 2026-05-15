@@ -5,6 +5,7 @@ import { ChevronRight, User } from "lucide-react";
 import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
+import { IconBadge } from "@/components/shared/IconBadge";
 
 interface CounterpartyListItemProps {
   counterparty: LoanCounterparty;
@@ -52,12 +53,11 @@ export const CounterpartyListItem = memo(function CounterpartyListItem({
       }}
     >
       {/* Icon */}
-      <div
-        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
-        style={{ backgroundColor: "var(--color-brand-soft)" }}
-      >
-        <User className="w-4 h-4" style={{ color: "var(--color-brand)" }} strokeWidth={1.5} />
-      </div>
+      <IconBadge
+        icon={User}
+        iconColor="var(--color-brand)"
+        background="var(--color-brand-soft)"
+      />
 
       {/* Name + subtitle */}
       <div className="flex-1 min-w-0">

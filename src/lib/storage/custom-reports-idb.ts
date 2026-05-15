@@ -1,3 +1,4 @@
+import { generateUUID } from "@/lib/bootstrap/anon-id";
 import type { CustomReport } from "@/lib/types/report";
 import {
   idbGet,
@@ -35,7 +36,7 @@ export const customReportsIdbRepo = {
   async create(input: CreateCustomReportInput): Promise<CustomReport> {
     const now = new Date().toISOString();
     const report: CustomReport = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       anon_id: getOrCreateAnonId(),
       name: input.name.trim(),
       start_date: input.start_date,

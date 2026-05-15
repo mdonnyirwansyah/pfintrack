@@ -1,71 +1,56 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowUpDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { ArrowUpDown, ChevronDown, Check } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export type SortKey = "datetime_desc" | "datetime_asc" | "amount_desc" | "amount_asc";
 
-interface SortPillProps {
-  value: SortKey;
-  onChange: (key: SortKey) => void;
+interface SortPillProps<T extends string> {
+  value: T;
+  onChange: (key: T) => void;
+  options: Readonly<{ value: T; label: string }[]>;
 }
 
-const SORT_KEYS: SortKey[] = ["datetime_desc", "datetime_asc", "amount_desc", "amount_asc"];
-
-export function SortPill({ value, onChange }: SortPillProps) {
-  const t = useTranslations("transactions.sort");
-  const [open, setOpen] = useState(false);
-  const isDefault = value === "datetime_desc";
+export function SortPill<T extends string>({ value, onChange, options }: Readonly<SortPillProps<T>>) {
+  const currentLabel = options.find((o) => o.value === value)?.label ?? value;
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
-        style={{
-          background: !isDefault ? "var(--color-brand)" : "var(--bg-secondary)",
-          color: !isDefault ? "var(--text-on-primary)" : "var(--text-secondary)",
-          border: "1px solid var(--border-default)",
-        }}
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium outline-none cursor-pointer"
+        style={{ color: "var(--text-secondary)" }}
       >
-        <ArrowUpDown className="w-3.5 h-3.5" />
-        {t(value)}
-      </button>
-
-      {open && (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 z-40 cursor-default"
-            aria-label="Close sort menu"
-            onClick={() => setOpen(false)}
-          />
-          <div
-            className="absolute right-0 top-full mt-1 z-50 rounded-[12px] overflow-hidden py-1 min-w-[130px]"
-            style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-default)",
-              boxShadow: "var(--shadow-lg)",
-            }}
+        <ArrowUpDown className="w-3 h-3 shrink-0" />
+        <span>{currentLabel}</span>
+        <ChevronDown className="w-3 h-3 shrink-0" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        side="bottom"
+        sideOffset={6}
+        className="glass w-auto min-w-[130px]"
+        style={{ borderRadius: 12 }}
+      >
+        {options.map((opt) => (
+          <DropdownMenuItem
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className="text-[12px] justify-between focus:bg-[var(--color-brand-soft)] focus:text-[var(--text-primary)]"
+            style={{ color: "var(--text-primary)" }}
           >
-            {SORT_KEYS.map((key) => (
-              <button
-                key={key}
-                onClick={() => { onChange(key); setOpen(false); }}
-                className="w-full text-left px-4 py-2.5 text-[12px] font-medium transition-colors"
-                style={{
-                  color: value === key ? "var(--color-brand)" : "var(--text-primary)",
-                  background: value === key ? "var(--color-brand-soft)" : "transparent",
-                }}
-              >
-                {t(key)}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+            {opt.label}
+            {opt.value === value && (
+              <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--color-brand)" }} />
+            )}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

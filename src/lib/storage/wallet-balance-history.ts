@@ -1,3 +1,4 @@
+import { generateUUID } from "@/lib/bootstrap/anon-id";
 /**
  * Repository for wallet_balance_history.
  *
@@ -57,7 +58,7 @@ const walletBalanceHistoryLsRepo = {
     const now = new Date().toISOString();
 
     const record: WalletBalanceHistory = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       anon_id: getOrCreateAnonId(),
       wallet_id: input.wallet_id,
       previous_balance: input.previous_balance,

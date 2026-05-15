@@ -13,6 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.1.3** | **2026-05-15** | **Tambah shared component `IconBadge` (`src/components/shared/IconBadge.tsx`). Replace semua inline icon-with-background di WalletCard, CounterpartyListItem, Settings, dan Settings/Report. Tabel shared components di §3 diperbarui.** |
 | **1.1.2** | **2026-05-14** | **Replace `<div role="dialog">` dengan elemen semantik `<dialog open>` native HTML5 di rename dialog `/loan/[counterpartyId]`. §12.6 diperbarui: aturan `role="dialog"` dihapus (redundant), panduan penggunaan `<dialog>` native ditambahkan.** |
 | **1.1.1** | **2026-05-14** | **Fix aksesibilitas heading skip-level: `<h3>` di `EmptyState` dan `CategoryTrendChart` diubah ke `<h2>` karena keduanya muncul langsung di bawah `<h1>` tanpa `<h2>` di antaranya. §12.2 diperbarui dengan aturan eksplisit untuk `EmptyState` dan komponen chart.** |
 | **1.1.0** | **2026-05-14** | **Semantic HTML audit & fix. Ditambahkan §12 Konvensi Semantic HTML. Perubahan kode: list transaksi/wallet/loan pakai `<ul>`+`<li>`; Settings section labels `<p>` → `<h2>`; chart wrappers `<div>` → `<figure>`+`<figcaption>`; DemoBanner `<div>` → `<aside>`; SummaryBar `<div>` → `<section aria-label>`; DonutChart chart area diberi `role="img" aria-label`; rename dialog di loan detail ditambah `role="dialog" aria-modal aria-labelledby`; overlay backdrop history picker `<div onClick>` → `<button type="button">`; `transactions.summary.ariaLabel` ditambah ke en.json & id.json.** |
@@ -281,6 +282,7 @@ Komponen-komponen berikut ada di `src/components/shared/`:
 | `TourInitializer` | `src/components/shared/TourInitializer.tsx` | Client component yang memeriksa `localStorage['tour_completed']` saat mount — jika tidak ada, memanggil `useTourStore.startTour()`. Ini adalah trigger otomatis tur pertama kali. |
 | `ThemeToggle` | `src/components/shared/ThemeToggle.tsx` | Komponen helper untuk toggle light/dark theme. Digunakan di Settings. |
 | `TypeToConfirmDialog` | `src/components/shared/TypeToConfirmDialog.tsx` | Dialog konfirmasi destruktif yang mengharuskan user mengetik frasa tertentu sebelum aksi dikonfirmasi (pola "type to confirm"). Digunakan di Settings → Delete All Data. |
+| `IconBadge` | `src/components/shared/IconBadge.tsx` | Komponen reusable untuk ikon dengan background berwarna (lingkaran atau kotak rounded). Digunakan di WalletCard, CounterpartyListItem, Settings, Settings/Report. Props: `icon` (React.ElementType), `iconColor` (CSS color), `background` (CSS color), `size` ("sm"=32px / "md"=36px, default "md"), `shape` ("square"=rounded-[10px] / "circle"=rounded-full, default "square"), `border` (opsional), `strokeWidth` (default 1.5). |
 
 ---
 

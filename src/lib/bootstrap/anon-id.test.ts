@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { randomUUID } from "crypto";
-import { getOrCreateAnonId, readAnonId } from "./anon-id";
+import { getOrCreateAnonId, readAnonId, generateUUID } from "./anon-id";
 
 function makeLocalStorageMock() {
   const store: Record<string, string> = {};
@@ -52,6 +52,23 @@ describe("getOrCreateAnonId", () => {
   it("returns ssr-placeholder when window is undefined (SSR)", () => {
     Object.defineProperty(globalThis, "window", { value: undefined, writable: true, configurable: true });
     expect(getOrCreateAnonId()).toBe("ssr-placeholder");
+  });
+});
+
+describe("generateUUID", () => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  it("returns a valid UUID v4 when crypto.randomUUID is available", () => {
+    expect(generateUUID()).toMatch(uuidRegex);
+  });
+
+  it("returns a valid UUID v4 via fallback when crypto.randomUUID is unavailable", () => {
+    Object.defineProperty(globalThis, "crypto", { value: {}, writable: true, configurable: true });
+    expect(generateUUID()).toMatch(uuidRegex);
+  });
+
+  it("generates unique values on each call", () => {
+    expect(generateUUID()).not.toBe(generateUUID());
   });
 });
 

@@ -1,3 +1,4 @@
+import { generateUUID } from "@/lib/bootstrap/anon-id";
 import type { LoanEntry } from "@/lib/types/loan";
 import {
   idbGet,
@@ -46,7 +47,7 @@ export const loanEntriesIdbRepo = {
   async create(input: CreateLoanEntryInput): Promise<LoanEntry> {
     const now = new Date().toISOString();
     const entry: LoanEntry = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       anon_id: getOrCreateAnonId(),
       counterparty_id: input.counterparty_id,
       type: input.type,

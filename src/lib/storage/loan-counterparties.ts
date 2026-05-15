@@ -1,3 +1,4 @@
+import { generateUUID } from "@/lib/bootstrap/anon-id";
 import type { LoanCounterparty } from "@/lib/types/loan";
 import { readKey, writeKey } from "./base";
 import { getOrCreateAnonId } from "./anon-id";
@@ -40,7 +41,7 @@ const loanCounterpartiesLsRepo = {
     const all = readKey<LoanCounterparty>(KEY);
     const now = new Date().toISOString();
     const counterparty: LoanCounterparty = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       anon_id: getOrCreateAnonId(),
       name: input.name.trim(),
       manual_paid_off: false,

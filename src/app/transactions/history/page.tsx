@@ -485,11 +485,10 @@ export default function TransactionHistoryPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => picker.open(dateRange)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-[0.96]"
+                className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium outline-none cursor-pointer"
                 style={{
-                  background: dateRange ? "var(--color-brand-soft)" : "var(--bg-secondary)",
                   color: dateRange ? "var(--color-brand)" : "var(--text-secondary)",
-                  border: `1px solid ${dateRange ? "var(--color-brand)" : "var(--border-default)"}`,
+                  border: dateRange ? "1px solid var(--color-brand)" : undefined,
                 }}
                 aria-label={t("history.dateFilter")}
               >
@@ -500,7 +499,16 @@ export default function TransactionHistoryPage() {
                   <span>{t("history.allTime")}</span>
                 )}
               </button>
-              <SortPill value={sortKey} onChange={setSortKey} />
+              <SortPill
+                value={sortKey}
+                onChange={setSortKey}
+                options={[
+                  { value: "datetime_desc", label: t("sort.datetime_desc") },
+                  { value: "datetime_asc", label: t("sort.datetime_asc") },
+                  { value: "amount_desc", label: t("sort.amount_desc") },
+                  { value: "amount_asc", label: t("sort.amount_asc") },
+                ]}
+              />
             </div>
           </div>
         )}

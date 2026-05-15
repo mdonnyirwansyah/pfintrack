@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { ChartPie, HandCoins, Lightbulb, ArrowRightLeft, Pencil, BarChart3, TrendingUp, Eye, EyeOff } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { useAppStore } from "@/lib/stores/useAppStore";
+import { IconBadge } from "@/components/shared/IconBadge";
 
 export default function ReportSettingsPage() {
   const t = useTranslations("settings");
@@ -93,12 +94,12 @@ export default function ReportSettingsPage() {
                   aria-pressed={isOn}
                 >
                   <div className="flex items-center gap-3">
-                    <div
-                      className="flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0"
-                      style={{ background: "var(--bg-icon)" }}
-                    >
-                      <Icon className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
-                    </div>
+                    <IconBadge
+                      icon={Icon}
+                      iconColor="var(--text-secondary)"
+                      background="var(--bg-icon)"
+                      size="sm"
+                    />
                     {hint ? (
                       <div className="text-left">
                         <p className="text-[13px]" style={{ color: "var(--text-primary)" }}>

@@ -1,3 +1,4 @@
+import { generateUUID } from "@/lib/bootstrap/anon-id";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import { idbGet, idbGetAll, idbGetAllByIndex, idbPut, idbPutAll } from "./idb-client";
 import { getOrCreateAnonId } from "./anon-id";
@@ -30,7 +31,7 @@ export const walletBalanceHistoryIdbRepo = {
     const now = new Date().toISOString();
 
     const record: WalletBalanceHistory = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       anon_id: getOrCreateAnonId(),
       wallet_id: input.wallet_id,
       previous_balance: input.previous_balance,

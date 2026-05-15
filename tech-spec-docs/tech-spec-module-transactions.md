@@ -135,8 +135,13 @@ Judul header: **"Add Transfer"**. Struktur mirip Add Income/Expense, dengan perb
 |----------|-------|-----------------|
 | **App Header** | Statis | Tombol back `‹`. Judul "History". |
 | **Search Bar** | Interaktif | Input teks dengan ikon search 🔍. Placeholder *"Search transactions..."*. Mencari pada field: `title`, `category`, `description`, nama wallet (`wallet_id`), **dan nama destination wallet** (`destination_wallet_id`). Pencarian bersifat **real-time** dan **case-insensitive**. Tombol **X (clear)** muncul di kanan saat ada query untuk menghapus pencarian. Auto-focus saat halaman dibuka. |
-| **Transaction List (All)** | Dinamis | Seluruh transaksi user (tanpa filter tanggal). **Selalu di-group per tanggal** sebagai header section (date label + divider + item count). Dalam setiap group, urut DESC by `transaction_time`. |
-| **Empty State (Search)** | Dinamis | Tampil jika query search tidak menemukan hasil. Teks: *"Tidak ada transaksi yang cocok dengan pencarian"*. |
+| **Type Filter Chips** | Interaktif | Row chip horizontal (scrollable) untuk filter tipe: All · Income · Expense · Transfer · Balance Correction. Chip aktif berwarna biru solid. |
+| **Wallet Filter Chips** | Interaktif | Row chip horizontal (scrollable) untuk filter per wallet. Hanya muncul jika ada ≥2 wallet dalam data transaksi. Chip aktif menggunakan `--color-brand-soft` background + `--color-brand` border. |
+| **Count + Date + Sort Bar** | Interaktif | Row dengan tiga elemen: jumlah hasil di kiri, tombol date range filter di tengah-kanan, dan sort dropdown di paling kanan. |
+| **Date Range Filter** | Interaktif | Pill button. Tap → bottom sheet dengan calendar range picker + field input from/to. Default: bulan berjalan (1st–today). State "All time" saat tidak ada filter. |
+| **Sort Dropdown** | Interaktif | Native `<select>` styled sebagai pill (appearance: none, borderRadius: 20, `--bg-secondary`). Ikon `ArrowUpDown` di kiri (absolute), `ChevronDown` di kanan (absolute). Opsi: Newest · Oldest · Highest · Lowest. **Visual identik dengan sort dropdown di Wallet module** (`/wallet`). |
+| **Transaction List (All)** | Dinamis | Seluruh transaksi user setelah filter diterapkan. Tanpa grouping tanggal — list flat dengan `showDate` prop pada `TransactionItem`. Urut sesuai `sortKey` aktif. |
+| **Empty State (Search)** | Dinamis | Tampil jika filter tidak menemukan hasil. Teks disesuaikan: jika ada filter aktif → "No results", jika belum ada transaksi sama sekali → "No history". |
 
 ---
 
@@ -625,6 +630,7 @@ Filter dilakukan in-memory secara real-time. Pencocokan case-insensitive pada `t
 | **Tipe Transaksi Dikunci saat Edit** | Saat edit transaksi, `type` tidak dapat diubah (income tidak bisa diubah jadi expense, dst). Form Income/Expense atau Transfer ditentukan dari tipe asal. Wallet balance rollback+apply tetap benar untuk tipe yang sama. |
 | **Balance Correction dieksklusi dari Suggestion Chips** ✅ | `getTitleSuggestions` dan `getCategorySuggestions` di `useTransactionStore.ts` sudah memfilter `t.title !== "Balance Correction"` dan `t.category !== "Balance Correction"` sehingga transaksi sistem tidak muncul sebagai suggestion. |
 | **SortPill: komponen shared** ✅ | `transactions/page.tsx` menggunakan komponen `SortPill` dari `src/components/shared/SortPill.tsx` beserta helper `applySortKey`. Tidak ada lagi sort logic inline. |
+| **History Sort — visual konsisten dengan Wallet module** ✅ FIXED 2026-05-15 | Sort control di `/transactions/history` sebelumnya menggunakan komponen `SortPill` (custom dropdown dengan toggle + floating menu) yang tampilannya berbeda dari Wallet module. Sejak 2026-05-15, History menggunakan native `<select>` styled identik dengan wallet sort: appearance:none, borderRadius:20, `ArrowUpDown` icon kiri + `ChevronDown` icon kanan, warna `--bg-secondary` / `--text-secondary`. Helper `applySortKey` dari `SortPill.tsx` tetap digunakan untuk logic sorting. |
 | **Swipe Navigation** | `useSwipe` hook di `transactions/page.tsx`: swipe kiri = maju satu hari, swipe kanan = mundur satu hari. Threshold 50px horizontal; diabaikan jika gerakan vertikal lebih dominan (scrolling). |
 | **WalletPicker Header Icons (Pending)** | Spec menyebut dua ikon (✏️ dan 📄) di header WalletPicker. **Belum diimplementasi.** Tunda ke iterasi berikutnya. |
 

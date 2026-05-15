@@ -2,6 +2,7 @@ import { memo } from "react";
 import type { Wallet, WalletType } from "@/lib/types/wallet";
 import { formatIDR } from "@/lib/format/number";
 import { ChevronRight, Landmark, Smartphone, Wallet as WalletIcon, TrendingUp, PiggyBank, Coins, MoreHorizontal } from "lucide-react";
+import { IconBadge } from "@/components/shared/IconBadge";
 
 const WALLET_TYPE_ICONS: Record<WalletType, React.ElementType> = {
   bank: Landmark,
@@ -38,12 +39,11 @@ export const WalletCard = memo(function WalletCard({ wallet, onPress }: WalletCa
       style={{ minHeight: 48 }}
     >
       {/* Icon */}
-      <div
-        className="flex-shrink-0 w-9 h-9 rounded-[10px] flex items-center justify-center"
-        style={{ backgroundColor: "var(--color-brand-soft)" }}
-      >
-        <Icon className="w-4 h-4" style={{ color: "var(--color-brand)" }} strokeWidth={1.5} />
-      </div>
+      <IconBadge
+        icon={Icon}
+        iconColor="var(--color-brand)"
+        background="var(--color-brand-soft)"
+      />
 
       {/* Name + type */}
       <div className="flex-1 min-w-0">

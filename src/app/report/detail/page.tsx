@@ -39,6 +39,7 @@ function ReportDetailContent() {
   const categoryParam = searchParams.get("category");
   const t = useTranslations("report");
   const tc = useTranslations("common");
+  const ts = useTranslations("transactions");
   const locale = useLocale();
 
   // Data state
@@ -493,7 +494,16 @@ function ReportDetailContent() {
               >
                 {tc("items", { count: filteredTxns.length })}
               </span>
-              <SortPill value={sortKey} onChange={setSortKey} />
+              <SortPill
+            value={sortKey}
+            onChange={setSortKey}
+            options={[
+              { value: "datetime_desc", label: ts("sort.datetime_desc") },
+              { value: "datetime_asc", label: ts("sort.datetime_asc") },
+              { value: "amount_desc", label: ts("sort.amount_desc") },
+              { value: "amount_asc", label: ts("sort.amount_asc") },
+            ]}
+          />
             </div>
           </div>
 

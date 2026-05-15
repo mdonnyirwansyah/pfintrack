@@ -222,7 +222,16 @@ function TransactionsContent() {
         {!isLoading && dailyTransactions.length > 0 && (
           <div className="px-4 mb-2 flex items-center justify-end">
             <span data-tour="transactions-filter-bar">
-              <SortPill value={sortKey} onChange={setSortKey} />
+              <SortPill
+                value={sortKey}
+                onChange={setSortKey}
+                options={[
+                  { value: "datetime_desc", label: t("sort.datetime_desc") },
+                  { value: "datetime_asc", label: t("sort.datetime_asc") },
+                  { value: "amount_desc", label: t("sort.amount_desc") },
+                  { value: "amount_asc", label: t("sort.amount_asc") },
+                ]}
+              />
             </span>
           </div>
         )}

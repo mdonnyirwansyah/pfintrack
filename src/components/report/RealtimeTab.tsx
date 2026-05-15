@@ -83,6 +83,7 @@ interface RealtimeTabProps {
 export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: RealtimeTabProps) {
   const t = useTranslations("report");
   const tc = useTranslations("common");
+  const ts = useTranslations("transactions");
   const locale = useLocale();
   const reportVisibility = useAppStore((s) => s.reportVisibility);
   const dateFnsLocale = locale === "id" ? idLocale : enUS;
@@ -300,7 +301,16 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
                     <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
                       {tc("items", { count: filteredTransactions.length })}
                     </span>
-                    <SortPill value={sortKey} onChange={setSortKey} />
+                    <SortPill
+            value={sortKey}
+            onChange={setSortKey}
+            options={[
+              { value: "datetime_desc", label: ts("sort.datetime_desc") },
+              { value: "datetime_asc", label: ts("sort.datetime_asc") },
+              { value: "amount_desc", label: ts("sort.amount_desc") },
+              { value: "amount_asc", label: ts("sort.amount_asc") },
+            ]}
+          />
                   </div>
                 </div>
 

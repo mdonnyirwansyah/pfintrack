@@ -156,6 +156,7 @@ export function DailySummarySection({
   selectedCategory,
 }: DailySummarySectionProps) {
   const t = useTranslations("report");
+  const ts = useTranslations("transactions");
   const locale = useLocale();
   const mounted = useMounted();
   const [view, setView] = useState<"list" | "calendar" | "chart">("calendar");
@@ -440,7 +441,16 @@ export function DailySummarySection({
         <div className="flex items-center gap-2">
           {/* Sort pill — only in list view */}
           {view === "list" && (
-            <SortPill value={sortKey} onChange={setSortKey} />
+            <SortPill
+            value={sortKey}
+            onChange={setSortKey}
+            options={[
+              { value: "datetime_desc", label: ts("sort.datetime_desc") },
+              { value: "datetime_asc", label: ts("sort.datetime_asc") },
+              { value: "amount_desc", label: ts("sort.amount_desc") },
+              { value: "amount_asc", label: ts("sort.amount_asc") },
+            ]}
+          />
           )}
 
           {/* View toggle */}
