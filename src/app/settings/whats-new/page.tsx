@@ -21,10 +21,7 @@ export default function WhatsNewPage() {
     <>
       <AppHeader title={t("title")} showBack />
 
-      <main
-        className="px-4 pb-24"
-        style={{ paddingTop: "calc(var(--header-height) + env(safe-area-inset-top) + 16px)" }}
-      >
+      <div className="px-4 pt-4 pb-4">
         <p
           className="text-[13px] mb-6 px-1"
           style={{ color: "var(--text-secondary)" }}
@@ -127,7 +124,7 @@ export default function WhatsNewPage() {
             );
           })}
         </ol>
-      </main>
+      </div>
     </>
   );
 }

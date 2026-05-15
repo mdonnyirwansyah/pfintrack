@@ -2,7 +2,7 @@
 
 import { useTransition, useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff, ChartPie, ChevronRight, Palette, BookOpen } from "lucide-react";
+import { Sun, Moon, Monitor, Globe, Info, Hash, Trash2, Download, Upload, ShieldCheck, ShieldOff, ChartPie, ChevronRight, Palette, BookOpen, HelpCircle } from "lucide-react";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import type { ColorTheme } from "@/hooks/useColorTheme";
 import { AppHeader } from "@/components/shared/AppHeader";
@@ -42,6 +42,7 @@ export default function SettingsPage() {
   const [storageSupported, setStorageSupported] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
   const td = useTranslations("settings.data");
+  const tf = useTranslations("faq");
 
   useEffect(() => {
     setIsDemoMode(globalThis.localStorage.getItem("pfintrack_demo_mode") === "true");
@@ -523,6 +524,24 @@ export default function SettingsPage() {
               />
               <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
                 {t("viewTutorial")}
+              </span>
+            </div>
+            <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
+          </button>
+          <div style={{ height: 1, background: "var(--divider)", marginInline: 16 }} />
+          <button
+            className={rowClass + " w-full"}
+            onClick={() => router.push("/settings/faq")}
+          >
+            <div className="flex items-center gap-3">
+              <IconBadge
+                icon={HelpCircle}
+                iconColor="var(--text-secondary)"
+                background="var(--bg-icon)"
+                size="sm"
+              />
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                {tf("title")}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />

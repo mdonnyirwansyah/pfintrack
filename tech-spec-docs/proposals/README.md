@@ -73,6 +73,7 @@ implementasi MVP-nya sesuai roadmap di section 8."
 | [PROP-0002](./PROP-0002-report-module-enhancements.md) | Report Module Enhancements — Analisa Keuangan Lebih Dalam | Draft | Report | L | 2026-05-07 |
 | [PROP-0003](./PROP-0003-color-theme-picker.md) | Color Theme Picker | Draft | Cross-cutting (Settings, CSS, layout) | S | 2026-05-11 |
 | [PROP-0004](./PROP-0004-report-visibility-settings.md) | Report Visibility Settings | Draft | Report, Settings | S | 2026-05-11 |
+| [PROP-0005](./PROP-0005-in-app-faq.md) | In-App FAQ (Frequently Asked Questions) | Draft | Settings, Cross-cutting (i18n) | S | 2026-05-15 |
 
 > Saat agent membuat proposal baru, **wajib update tabel ini** sebagai bagian dari output.
 

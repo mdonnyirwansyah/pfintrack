@@ -600,5 +600,85 @@
         ]
       }
     ]
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Pertanyaan yang sering ditanyakan tentang PFinTrack",
+    "searchPlaceholder": "Cari pertanyaan...",
+    "searchClear": "Bersihkan pencarian",
+    "noResults": "Tidak ada hasil untuk '{query}'",
+    "categories": [
+      {
+        "title": "Privasi & Data",
+        "items": [
+          {
+            "q": "Data saya tersimpan di mana?",
+            "a": "Semua data keuanganmu — dompet, transaksi, pinjaman — tersimpan langsung di perangkatmu, di penyimpanan lokal browser. PFinTrack tidak punya server dan tidak pernah mengirim datamu ke mana pun. Data kamu, di perangkat kamu, titik."
+          },
+          {
+            "q": "Apa yang terjadi kalau saya ganti atau kehilangan HP?",
+            "a": "Karena data tersimpan di perangkat, ganti HP tanpa backup = data hilang. Solusinya sederhana: buka Settings → Data & Penyimpanan → Export sebelum pindah. File backup-nya bisa kamu simpan ke Google Drive, galeri, atau mana pun. Nanti tinggal import di HP baru."
+          },
+          {
+            "q": "Apakah PFinTrack bisa melihat data keuangan saya?",
+            "a": "Tidak. PFinTrack tidak punya akun, tidak ada login, dan tidak ada koneksi ke server apa pun. Data kamu 100% ada di perangkatmu dan tidak bisa diakses siapa pun selain kamu — termasuk tim PFinTrack. Kami bahkan tidak tahu kamu ada."
+          },
+          {
+            "q": "Bagaimana cara backup dan restore data?",
+            "a": "Buka Settings → Data & Penyimpanan. Di sana kamu bisa Export data ke file .json atau .gz, dan Import untuk mengembalikannya. Lakukan backup rutin terutama sebelum ganti HP atau update browser besar."
+          },
+          {
+            "q": "Bagaimana cara hapus semua data saya?",
+            "a": "Buka Settings → Data & Penyimpanan → pilih opsi hapus semua data. Ini akan menghapus seluruh dompet, transaksi, dan catatan pinjaman secara permanen. Tidak bisa di-undo, jadi pastikan kamu sudah backup kalau masih butuh datanya."
+          }
+        ]
+      },
+      {
+        "title": "Fitur & Cara Kerja",
+        "items": [
+          {
+            "q": "Apa perbedaan Give dan Get di modul Loan?",
+            "a": "Give = kamu yang kasih pinjaman ke orang lain, jadi mereka yang punya utang ke kamu. Get = kamu yang terima uang dari orang itu, bisa berupa pelunasan utang mereka atau kamu yang balik utang ke mereka. Semua dicatat per nama orang biar gampang dipantau."
+          },
+          {
+            "q": "Kenapa Transfer tidak masuk sebagai pengeluaran?",
+            "a": "Transfer hanya memindahkan uang antar dompetmu sendiri — total kekayaanmu tidak berkurang. Beda dengan pengeluaran yang betul-betul keluar dari kantong. Kalau ditampilkan sebagai pengeluaran, laporan keuanganmu akan kelihatan jelek padahal sebenarnya tidak ada yang berubah."
+          },
+          {
+            "q": "Apa itu \"Balance Correction\" di daftar transaksi?",
+            "a": "Ini catatan otomatis yang muncul saat kamu mengedit saldo dompet secara manual. Misalnya, saldo BCA kamu ubah dari Rp 500.000 jadi Rp 750.000 — PFinTrack akan otomatis mencatat selisih Rp 250.000 sebagai Balance Correction supaya jejak perubahannya tetap terlacak."
+          },
+          {
+            "q": "Apa itu Saving Rate dan bagaimana cara menghitungnya?",
+            "a": "Saving Rate menunjukkan berapa persen dari pemasukanmu yang berhasil kamu simpan dalam suatu periode. Rumusnya: (Pemasukan − Pengeluaran) ÷ Pemasukan × 100%. Kalau pemasukanmu Rp 10 juta dan pengeluaran Rp 7 juta, Saving Rate-mu 30%. Makin tinggi, makin bagus."
+          },
+          {
+            "q": "Mengapa saldo dompet bisa bernilai negatif?",
+            "a": "Ini bisa terjadi kalau kamu mencatat pengeluaran atau pinjaman yang lebih besar dari saldo yang tersedia di dompet itu. PFinTrack tidak memblokir ini karena realitanya memang begitu — bisa saja kartu kredit atau tabunganmu memang minus. Saldo negatif bukan error, itu data yang valid."
+          }
+        ]
+      },
+      {
+        "title": "Teknis & Operasional",
+        "items": [
+          {
+            "q": "Apakah PFinTrack bisa digunakan tanpa koneksi internet?",
+            "a": "Ya, sepenuhnya. PFinTrack adalah PWA (Progressive Web App) yang bisa diinstall dan dipakai 100% offline. Semua fitur — catat transaksi, lihat laporan, kelola dompet — tetap jalan tanpa internet. Koneksi hanya diperlukan saat pertama kali membuka app."
+          },
+          {
+            "q": "Apa itu \"Data Sampel / Demo Mode\"?",
+            "a": "Demo Mode mengisi app dengan data contoh — dompet, transaksi, dan pinjaman palsu — supaya kamu bisa eksplorasi semua fitur tanpa harus input data asli dulu. Aktifkan dari Settings, dan hapus kapan saja lewat tombol merah di Settings saat kamu siap mulai dengan data sendiri."
+          },
+          {
+            "q": "Bagaimana cara memulai ulang tur panduan?",
+            "a": "Buka Settings → scroll ke section Bantuan → ketuk \"Lihat Tutorial\". Tur akan mulai dari awal dan memandu kamu lewat semua fitur utama lagi. Berguna banget kalau kamu baru saja reset data atau ingin refresh ingatan."
+          },
+          {
+            "q": "Apakah aplikasi ini gratis selamanya?",
+            "a": "Ya. PFinTrack gratis sepenuhnya — tidak ada versi premium, tidak ada langganan, tidak ada iklan, tidak ada in-app purchase. Semua fitur yang ada sekarang dan yang akan datang di Fase 1 ini gratis untuk semua orang."
+          }
+        ]
+      }
+    ]
   }
 }

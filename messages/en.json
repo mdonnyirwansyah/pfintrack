@@ -600,5 +600,85 @@
         ]
       }
     ]
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Frequently asked questions about PFinTrack",
+    "searchPlaceholder": "Search questions...",
+    "searchClear": "Clear search",
+    "noResults": "No results for '{query}'",
+    "categories": [
+      {
+        "title": "Privacy & Data",
+        "items": [
+          {
+            "q": "Where is my data stored?",
+            "a": "All your financial data — wallets, transactions, loans — is stored locally on your device, inside your browser's storage. PFinTrack has no server and never sends your data anywhere. It's yours, on your device, full stop."
+          },
+          {
+            "q": "What happens if I switch phones or lose my device?",
+            "a": "Since your data lives on your device, switching phones without a backup means losing it. The fix is simple: go to Settings → Data & Storage → Export before you switch. Save the backup file somewhere safe — Google Drive, your gallery, anywhere. Then import it on your new device."
+          },
+          {
+            "q": "Can PFinTrack see my financial data?",
+            "a": "No. PFinTrack has no accounts, no login, and no server connection. Your data is 100% on your device and can't be accessed by anyone else — including the PFinTrack team. We don't even know you exist."
+          },
+          {
+            "q": "How do I back up and restore my data?",
+            "a": "Go to Settings → Data & Storage. From there you can Export your data as a .json or .gz file, and Import to restore it. It's a good habit to back up regularly, especially before switching phones or doing a major browser update."
+          },
+          {
+            "q": "How do I delete all my data?",
+            "a": "Go to Settings → Data & Storage and choose the option to delete all data. This permanently removes all your wallets, transactions, and loan records. It can't be undone, so make sure you've exported a backup first if you might need it later."
+          }
+        ]
+      },
+      {
+        "title": "Features & How It Works",
+        "items": [
+          {
+            "q": "What's the difference between Give and Get in the Loan module?",
+            "a": "Give means you lent money to someone — they owe you. Get means you received money from them — either they're paying you back, or you're the one paying off a debt. Everything is grouped by person so you can track it in one place."
+          },
+          {
+            "q": "Why doesn't a Transfer count as an expense?",
+            "a": "A transfer just moves money between your own wallets — your total net worth stays the same. It's different from an expense, where money actually leaves your pocket. Counting it as an expense would make your reports look worse than they actually are."
+          },
+          {
+            "q": "What is \"Balance Correction\" in my transaction list?",
+            "a": "This is an automatic entry that appears when you manually edit a wallet's balance. For example, if you change your BCA balance from Rp 500,000 to Rp 750,000, PFinTrack records the Rp 250,000 difference as a Balance Correction so the change is always traceable."
+          },
+          {
+            "q": "What is Saving Rate and how is it calculated?",
+            "a": "Saving Rate shows what percentage of your income you actually kept during a period. The formula is: (Income − Expenses) ÷ Income × 100%. If your income is Rp 10 million and expenses Rp 7 million, your Saving Rate is 30%. Higher is better."
+          },
+          {
+            "q": "Why can my wallet balance go negative?",
+            "a": "This can happen when you record an expense or loan that exceeds a wallet's available balance. PFinTrack doesn't block it because that's how real life works — credit cards and overdraft accounts can genuinely go negative. A negative balance isn't a glitch, it's valid data."
+          }
+        ]
+      },
+      {
+        "title": "Technical & Operational",
+        "items": [
+          {
+            "q": "Can I use PFinTrack without an internet connection?",
+            "a": "Yes, completely. PFinTrack is a PWA (Progressive Web App) that can be installed and used 100% offline. All features — logging transactions, viewing reports, managing wallets — work without internet. You only need a connection the very first time you open the app."
+          },
+          {
+            "q": "What is \"Demo Mode\" (Sample Data)?",
+            "a": "Demo Mode fills the app with sample data — fake wallets, transactions, and loans — so you can explore all features without entering real data first. Turn it on from Settings, and clear it anytime using the red button in Settings when you're ready to start fresh with your own data."
+          },
+          {
+            "q": "How do I restart the guided tour?",
+            "a": "Go to Settings → scroll to the Help section → tap \"View Tutorial\". The tour will restart from the beginning and walk you through all the main features again. Handy if you just reset your data or want a quick refresher."
+          },
+          {
+            "q": "Is this app free forever?",
+            "a": "Yes. PFinTrack is completely free — no premium tier, no subscription, no ads, no in-app purchases. Every feature available now and in future Fase 1 updates is free for everyone."
+          }
+        ]
+      }
+    ]
   }
 }

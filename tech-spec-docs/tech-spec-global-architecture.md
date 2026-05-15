@@ -13,6 +13,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.1.7** | **2026-05-15** | **Tambah search ke halaman FAQ (`/settings/faq`). Input search sticky di atas list (di bawah subtitle) dengan ikon `Search` (lucide) dan tombol clear `X` saat query non-empty. Filter realtime case-insensitive ke field `q` dan `a`. Saat query aktif: item yang match auto-expand (`open` attribute), kategori kosong di-hide, dan empty state `<p>` ramah ditampilkan (`faq.noResults`) kalau zero match. Tambah key i18n baru: `faq.searchPlaceholder`, `faq.searchClear`, `faq.noResults` (dengan placeholder `{query}`) di `messages/{id,en}.json`. Promosi feature dari Roadmap v2 (PROP-0005) ke v1.** |
+| **1.1.6** | **2026-05-15** | **Tambah route `/settings/faq` — in-app FAQ (PROP-0005). 14 pertanyaan bilingual di 3 kategori (Privasi & Data, Fitur & Cara Kerja, Teknis & Operasional). Konten di namespace `faq` (`messages/{id,en}.json`). Multi-open accordion via native `<details>`/`<summary>` (zero-JS, accessible, indikator chevron rotate via group-open). Row baru "FAQ" di section Help Settings (di samping "Lihat Tutorial") dengan ikon `HelpCircle`. Total route: 23 → 24.** |
 | **1.1.5** | **2026-05-15** | **Tambah route `/settings/whats-new` — in-app changelog. Halaman menampilkan timeline rilis (badge versi, tanggal, tagline, intro, bullet list improvements) dengan badge "Versimu sekarang" pada entry yang match `APP_VERSION` (`src/lib/version.ts`). Konten dilokalisasi via namespace `changelog` di `messages/{id,en}.json` (bilingual). Row "About → PFinTrack" di `/settings` diubah dari static `<div>` jadi `<button>` clickable yang navigasi ke route ini. Total route: 22 → 23.** |
 | **1.1.4** | **2026-05-15** | **E2E test sync setelah lokalisasi `aria-label` via `next-intl` (commit 121075e). Aria-label spesifik (mis. `"Delete entry"`, `"Delete wallet"`, `"Delete counterparty"`, `"Go back"`, `"Clear search"`, `"Mark as paid"`) sudah diganti dengan key generik dari namespace `common` (`"Delete"`, `"Back"`, `"Clear"`, `"Mark as Paid Off"`). Tests di `loan-edit-delete.spec.ts`, `wallet-delete.spec.ts`, `wallet.spec.ts`, `transactions-history.spec.ts`, `misc-coverage.spec.ts`, dan `settings-report.spec.ts` diupdate menyesuaikan label aktual yang dirender pada default locale `en`. Tombol konfirmasi di dialog di-scope ke `getByRole("alertdialog")` agar tidak bentrok dengan tombol pemicu (header). Indonesian-text assertion di `misc-coverage.spec.ts` (offline page heading, nav links) diubah ke versi English karena default locale = `en`. Aturan baru: kalau menambah `aria-label` baru via `next-intl`, pastikan key-nya stabil lintas locale ATAU update E2E test menggunakan label rendered locale `en`. ✅ FIXED 2026-05-15.** |
 | **1.1.3** | **2026-05-15** | **Tambah shared component `IconBadge` (`src/components/shared/IconBadge.tsx`). Replace semua inline icon-with-background di WalletCard, CounterpartyListItem, Settings, dan Settings/Report. Tabel shared components di §3 diperbarui.** |
@@ -101,6 +103,7 @@
 | `/settings` | Settings | Pengaturan app (tab ke-5 Bottom Nav) |
 | **`/settings/report`** | **Settings** | **Halaman visibilitas komponen Report — toggle show/hide per komponen analitik** |
 | **`/settings/whats-new`** | **Settings** | **Halaman in-app changelog — timeline rilis dengan badge versi, tagline, dan ringkasan tiap pembaruan. Diakses dari row "PFinTrack vX.Y.Z" di Settings/About.** |
+| **`/settings/faq`** | **Settings** | **In-app FAQ. 14 pertanyaan bilingual dalam 3 kategori (Privasi & Data / Fitur & Cara Kerja / Teknis & Operasional). Multi-open accordion via native `<details>`/`<summary>`. Diakses dari row "FAQ" di section Help.** |
 | **`/~offline`** | **Global** | **Halaman offline fallback (PWA service worker) — tampil saat pengguna tidak ada koneksi dan request ke route yang tidak ter-cache** |
 
 ---
@@ -760,7 +763,23 @@ Route utama adalah `/settings` (tab ke-5 di Bottom Navigation), dengan satu sub-
 | **Data & Storage** | Import backup | Row → tap membuka file picker (`.json`, `.gz`) → konfirmasi dialog → `importBackup(file)` → reload. |
 | **Data & Storage** | Delete All Data | Row merah → tap membuka `TypeToConfirmDialog` (user harus ketik frasa konfirmasi) → `deleteAllData()` → reload. |
 | **Help** | Lihat Tutorial | Row → tap memanggil `useTourStore.resetTour()` → tur onboarding dimulai ulang dari step 1. |
+| **Help** | FAQ | Row → tap navigasi ke `/settings/faq`. Ikon `HelpCircle`. |
 | **About** | What's New row | Row clickable: nama app `PFinTrack` + label `v{APP_VERSION}` + chevron → navigasi ke `/settings/whats-new`. Versi dibaca dari konstanta `APP_VERSION` di `src/lib/version.ts`. |
+
+**Screen: FAQ (`/settings/faq`)**
+
+Halaman FAQ in-app. Konten dibaca dari namespace `faq` di `messages/{id,en}.json` (bilingual). 14 pertanyaan di 3 kategori. Multi-open accordion: user dapat membuka beberapa Q sekaligus.
+
+| Elemen | Deskripsi |
+|--------|-----------|
+| Header | `AppHeader` dengan `showBack` + title `faq.title`. |
+| Subtitle | Paragraf intro pendek (`faq.subtitle`). |
+| Search input | Input text di bawah subtitle (static, bukan sticky). Ikon `Search` (lucide) di kiri, ikon clear `X` di kanan saat query non-empty (button dengan `aria-label=faq.searchClear`). Placeholder + aria-label dari `faq.searchPlaceholder`. Min tap height 44px. Filter realtime case-insensitive ke `q` dan `a` (`.toLowerCase().includes(needle)`) via `useMemo`. |
+| Kategori | Section per kategori dengan header uppercase 11px. Kategori dengan zero match saat search aktif → di-hide seluruhnya. |
+| Item | Native `<details>` per Q. `<summary>` berisi pertanyaan + chevron, body berisi jawaban. Chevron rotate 180° saat open via `group-open:rotate-180`. Saat search query aktif (`hasQuery`), atribut `open` di-set true → semua item match auto-expand sehingga user langsung lihat jawaban. |
+| Empty state | Saat search tidak menemukan hasil, render `<p>` di tengah dengan teks `faq.noResults` (placeholder `{query}` di-interpolate via `next-intl`). |
+| Sumber data | `t.raw("categories")` — array `FaqCategory` (`{title, items: {q, a}[]}`). |
+| Aksesibilitas | `<details>`/`<summary>` native = keyboard navigable, screen-reader compatible by default. Min tap height 44px. Input search punya `aria-label`, tombol clear `<button type="button">` punya `aria-label`. Empty state pakai `<p>` semantik. |
 
 **Screen: What's New (`/settings/whats-new`)**
 
