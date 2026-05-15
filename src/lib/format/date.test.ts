@@ -50,6 +50,18 @@ describe("formatDateRange", () => {
     expect(formatDateRange("invalid", "2026-05-31")).toBe("");
     expect(formatDateRange("2026-05-01", "invalid")).toBe("");
   });
+
+  it("accepts Date objects for both from and to", () => {
+    expect(formatDateRange(new Date("2026-05-01"), new Date("2026-05-31"), "en")).toBe(
+      "01 May 2026 - 31 May 2026"
+    );
+  });
+
+  it("accepts Date object for from and string for to", () => {
+    expect(formatDateRange(new Date("2026-05-01"), "2026-05-31", "id")).toBe(
+      "01 Mei 2026 - 31 Mei 2026"
+    );
+  });
 });
 
 describe("formatDisplayDateLocale", () => {

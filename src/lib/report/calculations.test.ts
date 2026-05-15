@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { randomUUID } from "crypto";
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
@@ -20,7 +21,7 @@ import {
 
 function tx(overrides: Partial<Transaction> & { type: Transaction["type"] }): Transaction {
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     anon_id: "test",
     wallet_id: "w1",
     destination_wallet_id: null,
@@ -39,7 +40,7 @@ function tx(overrides: Partial<Transaction> & { type: Transaction["type"] }): Tr
 
 function loan(overrides: Partial<LoanEntry> & { type: LoanEntry["type"] }): LoanEntry {
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     anon_id: "test",
     counterparty_id: "cp1",
     wallet_id: null,
@@ -56,7 +57,7 @@ function loan(overrides: Partial<LoanEntry> & { type: LoanEntry["type"] }): Loan
 
 function hist(overrides: Partial<WalletBalanceHistory>): WalletBalanceHistory {
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     anon_id: "test",
     wallet_id: "w1",
     previous_balance: 0,
@@ -295,6 +296,12 @@ describe("calcCategoryBreakdown", () => {
     const result = calcCategoryBreakdown(txs, PERIOD.start, PERIOD.end);
     expect(result[0].category).toBe("Other");
   });
+
+  it("returns empty array when all transaction amounts are zero (grandTotal === 0)", () => {
+    const txs = [tx({ type: "expense", amount: 0, category: "Food" })];
+    const result = calcCategoryBreakdown(txs, PERIOD.start, PERIOD.end);
+    expect(result).toEqual([]);
+  });
 });
 
 // ── getTransactionsForCategory ───────────────────────────────────────────────
@@ -308,7 +315,7 @@ describe("getTransactionsForCategory", () => {
     ];
     const result = getTransactionsForCategory(txs, PERIOD.start, PERIOD.end, "Food");
     expect(result).toHaveLength(2);
-    expect(result.every(t => (t.category ?? "Other") === "Food")).toBe(true);
+    expect(result.every(t => t.category === "Food")).toBe(true);
   });
 
   it("for Lainnya: returns all active expense transactions in period", () => {
@@ -337,6 +344,16 @@ describe("getTransactionsForCategory", () => {
       tx({ type: "expense", category: "Food" }),
     ];
     expect(getTransactionsForCategory(txs, PERIOD.start, PERIOD.end, "Food")).toHaveLength(1);
+  });
+
+  it("matches null category as 'Other' when looking up by 'Other'", () => {
+    const txs = [
+      tx({ type: "expense", category: null, amount: 50_000 }),
+      tx({ type: "expense", category: "Food", amount: 30_000 }),
+    ];
+    const result = getTransactionsForCategory(txs, PERIOD.start, PERIOD.end, "Other");
+    expect(result).toHaveLength(1);
+    expect(result[0].category).toBeNull();
   });
 });
 

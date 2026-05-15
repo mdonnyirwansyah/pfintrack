@@ -204,3 +204,71 @@ describe("rollbackLoanEntryFromWallet", () => {
     expect(mockGet).not.toHaveBeenCalled();
   });
 });
+
+// ── localStorage backend (else branch, lines 36-50) ─────────────────────────
+
+function makeLocalStorageMock() {
+  const store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => { store[key] = value; },
+    clear: () => { for (const k of Object.keys(store)) delete store[k]; },
+  };
+}
+
+describe("localStorage backend (STORAGE_BACKEND !== 'idb')", () => {
+  let mockStorage: ReturnType<typeof makeLocalStorageMock>;
+
+  beforeEach(() => {
+    mockStorage = makeLocalStorageMock();
+    expect(mockStorage.getItem("__nonexistent__")).toBeNull();
+    Object.defineProperty(globalThis, "window", { value: globalThis, writable: true, configurable: true });
+    Object.defineProperty(globalThis, "localStorage", { value: mockStorage, writable: true, configurable: true });
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    mockStorage.clear();
+  });
+
+  it("income: reads wallet from localStorage and writes updated balance back", async () => {
+    vi.doMock("@/lib/storage/config", () => ({ STORAGE_BACKEND: "localstorage" }));
+    vi.doMock("@/lib/storage/idb-client", () => ({ idbGet: vi.fn(), idbPut: vi.fn() }));
+    const { applyTransactionToWallet: applyTx } = await import("./wallet-balance-ops");
+
+    const wallet = makeWallet(1_000_000);
+    globalThis.localStorage.setItem("wallets", JSON.stringify([wallet]));
+
+    await applyTx(makeTx({ type: "income", amount: 500_000 }));
+
+    const stored = JSON.parse(globalThis.localStorage.getItem("wallets")!) as Wallet[];
+    expect(stored[0].balance).toBe(1_500_000);
+  });
+
+  it("expense: decreases balance in localStorage", async () => {
+    vi.doMock("@/lib/storage/config", () => ({ STORAGE_BACKEND: "localstorage" }));
+    vi.doMock("@/lib/storage/idb-client", () => ({ idbGet: vi.fn(), idbPut: vi.fn() }));
+    const { applyTransactionToWallet: applyTx } = await import("./wallet-balance-ops");
+
+    const wallet = makeWallet(1_000_000);
+    globalThis.localStorage.setItem("wallets", JSON.stringify([wallet]));
+
+    await applyTx(makeTx({ type: "expense", amount: 300_000 }));
+
+    const stored = JSON.parse(globalThis.localStorage.getItem("wallets")!) as Wallet[];
+    expect(stored[0].balance).toBe(700_000);
+  });
+
+  it("skips silently when wallet not found in localStorage (idx === -1)", async () => {
+    vi.doMock("@/lib/storage/config", () => ({ STORAGE_BACKEND: "localstorage" }));
+    vi.doMock("@/lib/storage/idb-client", () => ({ idbGet: vi.fn(), idbPut: vi.fn() }));
+    const { applyTransactionToWallet: applyTx } = await import("./wallet-balance-ops");
+
+    globalThis.localStorage.setItem("wallets", JSON.stringify([]));
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await expect(applyTx(makeTx({ type: "income" }))).resolves.not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+});
