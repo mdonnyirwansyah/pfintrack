@@ -1,12 +1,6 @@
 import type { NextConfig } from "next";
-import withSerwistInit from "@serwist/next";
+import { withSerwist } from "@serwist/turbopack";
 import createNextIntlPlugin from "next-intl/plugin";
-
-const withSerwist = withSerwistInit({
-  swSrc: "src/app/sw.ts",
-  swDest: "public/sw.js",
-  disable: process.env.NODE_ENV === "development",
-});
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -16,6 +10,15 @@ const allowedDevOrigins = process.env.NEXT_DEV_ALLOWED_ORIGINS
 
 const nextConfig: NextConfig = {
   ...(allowedDevOrigins.length > 0 && { allowedDevOrigins }),
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "recharts",
+      "@base-ui/react",
+      "react-day-picker",
+    ],
+  },
 };
 
 export default withNextIntl(withSerwist(nextConfig));

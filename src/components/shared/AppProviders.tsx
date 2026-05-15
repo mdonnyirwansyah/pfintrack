@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SerwistProvider } from "@serwist/turbopack/react";
 import { Toaster } from "@/components/ui/sonner";
 import { getOrCreateAnonId } from "@/lib/bootstrap/anon-id";
 import { useAppStore } from "@/lib/stores/useAppStore";
@@ -51,7 +52,10 @@ export function AppProviders({ children }: AppProvidersProps) {
   }
 
   return (
-    <>
+    <SerwistProvider
+      swUrl="/serwist/sw.js"
+      disable={process.env.NODE_ENV === "development"}
+    >
       {children}
       <Toaster
         position="top-center"
@@ -65,6 +69,6 @@ export function AppProviders({ children }: AppProvidersProps) {
           },
         }}
       />
-    </>
+    </SerwistProvider>
   );
 }

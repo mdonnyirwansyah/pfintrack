@@ -2,8 +2,8 @@
 ## Global Architecture
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.1.1
-**Tanggal:** 2026-05-14
+**Versi Dokumen:** 1.2.1
+**Tanggal:** 2026-05-16
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
 
@@ -13,6 +13,8 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.2.1** | **2026-05-16** | **Tutup gap unit-test coverage untuk mencapai 100% di semua metric (stmts/branch/funcs/lines). (1) Tambah `src/lib/version.test.ts` — assert `APP_VERSION` match pola semver `/^\d+\.\d+\.\d+$/` dan sinkron dengan `package.json#version`. Sebelumnya file `src/lib/version.ts` 0% coverage. (2) Tambah test suite `formatThousands` di `src/lib/format/number.test.ts` untuk meng-cover early-return branch `!Number.isFinite(value)` (baris 61-63): kasus `NaN`, `+Infinity`, `-Infinity` (semua return `""`), plus happy path integer dot-grouped. Sebelumnya number.ts 91.66% stmts (baris 61-63 uncovered). Total: 9 test files, 153 tests passing, `All files` 100% di stmts/branch/funcs/lines, `npx eslint .` zero warning.** |
+| **1.2.0** | **2026-05-15** | **Performance overhaul Next.js 16: (1) Migrasi `@serwist/next` → `@serwist/turbopack` v9.5.11. Build sekarang full Turbopack (script `next build`, bukan `next build --webpack` lagi). SW di-serve via Route Handler di `app/serwist/[path]/route.ts` (URL: `/serwist/sw.js`, registrasi via `<SerwistProvider>` di `AppProviders`). Native esbuild dipakai (`useNativeEsbuild: true`). (2) Tambah `experimental.optimizePackageImports` untuk `lucide-react`, `date-fns`, `recharts`, `@base-ui/react`, `react-day-picker` untuk auto tree-shake. (3) `ProductTour` di-wrap `ProductTourLazy` (`next/dynamic` + `ssr: false`) — `react-joyride` (~50KB) sekarang hanya di-load saat `useTourStore.run === true`, bukan setiap page load. (4) Legacy `public/sw.js` diganti dengan stub self-unregistering supaya install lama dengan SW lama bermigrasi clean (delete caches + unregister + reload).** |
 | **1.1.7** | **2026-05-15** | **Tambah search ke halaman FAQ (`/settings/faq`). Input search sticky di atas list (di bawah subtitle) dengan ikon `Search` (lucide) dan tombol clear `X` saat query non-empty. Filter realtime case-insensitive ke field `q` dan `a`. Saat query aktif: item yang match auto-expand (`open` attribute), kategori kosong di-hide, dan empty state `<p>` ramah ditampilkan (`faq.noResults`) kalau zero match. Tambah key i18n baru: `faq.searchPlaceholder`, `faq.searchClear`, `faq.noResults` (dengan placeholder `{query}`) di `messages/{id,en}.json`. Promosi feature dari Roadmap v2 (PROP-0005) ke v1.** |
 | **1.1.6** | **2026-05-15** | **Tambah route `/settings/faq` — in-app FAQ (PROP-0005). 14 pertanyaan bilingual di 3 kategori (Privasi & Data, Fitur & Cara Kerja, Teknis & Operasional). Konten di namespace `faq` (`messages/{id,en}.json`). Multi-open accordion via native `<details>`/`<summary>` (zero-JS, accessible, indikator chevron rotate via group-open). Row baru "FAQ" di section Help Settings (di samping "Lihat Tutorial") dengan ikon `HelpCircle`. Total route: 23 → 24.** |
 | **1.1.5** | **2026-05-15** | **Tambah route `/settings/whats-new` — in-app changelog. Halaman menampilkan timeline rilis (badge versi, tanggal, tagline, intro, bullet list improvements) dengan badge "Versimu sekarang" pada entry yang match `APP_VERSION` (`src/lib/version.ts`). Konten dilokalisasi via namespace `changelog` di `messages/{id,en}.json` (bilingual). Row "About → PFinTrack" di `/settings` diubah dari static `<div>` jadi `<button>` clickable yang navigasi ke route ini. Total route: 22 → 23.** |
@@ -69,11 +71,14 @@
 
 | Komponen | Pilihan |
 |----------|---------|
-| Framework | **Next.js (App Router)** |
+| Framework | **Next.js 16 (App Router)** |
+| Bundler | **Turbopack** (default untuk `next dev` dan `next build` sejak Next.js 16) |
 | Bahasa | TypeScript |
-| Penyimpanan Data | **`localStorage` browser** |
+| Penyimpanan Data | **IndexedDB** (`pfintrack_db`) — lihat `tech-spec-migration-indexeddb.md` |
 | Autentikasi | Tidak ada (anonymous via UUID v4) |
 | Backend / API | Tidak ada di Fase 1 |
+| PWA / Service Worker | **`@serwist/turbopack` v9.5.x** — SW di-build via Next.js Route Handler di `app/serwist/[path]/route.ts`, di-serve di `/serwist/sw.js`, registrasi via `<SerwistProvider>` client component. Legacy SW di `/sw.js` di-keep sebagai self-unregistering stub untuk migrasi clean dari install lama. |
+| Bundle Optimization | `experimental.optimizePackageImports` untuk `lucide-react`, `date-fns`, `recharts`, `@base-ui/react`, `react-day-picker` (auto tree-shake barrel imports) |
 | Hosting | Static / SSG (mis. Vercel, Netlify, Cloudflare Pages) |
 
 ### 2.2 Daftar Halaman (Route Map)
@@ -105,6 +110,7 @@
 | **`/settings/whats-new`** | **Settings** | **Halaman in-app changelog — timeline rilis dengan badge versi, tagline, dan ringkasan tiap pembaruan. Diakses dari row "PFinTrack vX.Y.Z" di Settings/About.** |
 | **`/settings/faq`** | **Settings** | **In-app FAQ. 14 pertanyaan bilingual dalam 3 kategori (Privasi & Data / Fitur & Cara Kerja / Teknis & Operasional). Multi-open accordion via native `<details>`/`<summary>`. Diakses dari row "FAQ" di section Help.** |
 | **`/~offline`** | **Global** | **Halaman offline fallback (PWA service worker) — tampil saat pengguna tidak ada koneksi dan request ke route yang tidak ter-cache** |
+| **`/serwist/[path]`** | **Global** | **Route Handler (SSG) yang men-serve service worker (`/serwist/sw.js`) dan source map-nya. Di-generate oleh `@serwist/turbopack` saat `next build` menggunakan native esbuild.** |
 
 ---
 

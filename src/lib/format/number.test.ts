@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { formatIDR, formatIDRSigned, parseIDR, setFormatDecimals } from "./number";
+import { formatIDR, formatIDRSigned, formatThousands, parseIDR, setFormatDecimals } from "./number";
 
 describe("formatIDR", () => {
   beforeEach(() => setFormatDecimals(false));
@@ -44,6 +44,32 @@ describe("formatIDRSigned", () => {
 
   it("no prefix for zero", () => {
     expect(formatIDRSigned(0)).toBe("0");
+  });
+});
+
+describe("formatThousands", () => {
+  it("formats integer with dot grouping", () => {
+    expect(formatThousands(1234567)).toBe("1.234.567");
+  });
+
+  it("formats zero", () => {
+    expect(formatThousands(0)).toBe("0");
+  });
+
+  it("formats small number without separator", () => {
+    expect(formatThousands(500)).toBe("500");
+  });
+
+  it("returns empty string for NaN", () => {
+    expect(formatThousands(Number.NaN)).toBe("");
+  });
+
+  it("returns empty string for Infinity", () => {
+    expect(formatThousands(Number.POSITIVE_INFINITY)).toBe("");
+  });
+
+  it("returns empty string for -Infinity", () => {
+    expect(formatThousands(Number.NEGATIVE_INFINITY)).toBe("");
   });
 });
 
