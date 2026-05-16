@@ -54,7 +54,6 @@ export function SortPill<T extends string>({ value, onChange, options }: Readonl
   );
 }
 
-/** Apply sortKey to a transaction array (returns new sorted array) */
 export function applySortKey<T extends { transaction_date: string; transaction_time: string; created_at: string; amount: number }>(
   items: T[],
   sortKey: SortKey

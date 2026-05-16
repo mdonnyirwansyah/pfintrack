@@ -1,18 +1,4 @@
 import { generateUUID } from "@/lib/bootstrap/anon-id";
-/**
- * Repository for wallet_balance_history.
- *
- * CRITICAL: This key is written in two cases only:
- *  1. Add Wallet — when initial balance > 0 (previous=0, new=balance)
- *  2. Edit Wallet — when the user manually changes balance via /wallet/[id]
- *
- * It MUST NOT be written by:
- *  - Transactions module (income/expense/transfer)
- *  - Loan module (give/get)
- *  - Soft delete of a wallet
- *
- * Used by Module Report to compute Balance Correction per period.
- */
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import { readKey, writeKey } from "./base";
 import { getOrCreateAnonId } from "./anon-id";
@@ -33,7 +19,6 @@ export type UpdateWalletBalanceHistoryInput = Partial<
 >;
 
 const walletBalanceHistoryLsRepo = {
-  /** Returns only is_active=true records */
   getAll(): WalletBalanceHistory[] {
     return readKey<WalletBalanceHistory>(KEY).filter((r) => r.is_active);
   },
@@ -46,7 +31,6 @@ const walletBalanceHistoryLsRepo = {
     return readKey<WalletBalanceHistory>(KEY).find((r) => r.id === id) ?? null;
   },
 
-  /** Get all active history records for a specific wallet */
   getByWalletId(walletId: string): WalletBalanceHistory[] {
     return readKey<WalletBalanceHistory>(KEY).filter(
       (r) => r.wallet_id === walletId && r.is_active
@@ -107,10 +91,6 @@ const walletBalanceHistoryLsRepo = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
-// ---------------------------------------------------------------------------
-
 export const walletBalanceHistoryRepo = {
   async getAll(): Promise<WalletBalanceHistory[]> {
     if (STORAGE_BACKEND === "idb") return walletBalanceHistoryIdbRepo.getAll();
@@ -124,7 +104,6 @@ export const walletBalanceHistoryRepo = {
 
   async getById(id: string): Promise<WalletBalanceHistory | null> {
     if (STORAGE_BACKEND === "idb") {
-      // IDB repo doesn't expose getById; scan getAll and find
       const all = await walletBalanceHistoryIdbRepo.getAll();
       return all.find((r) => r.id === id) ?? null;
     }

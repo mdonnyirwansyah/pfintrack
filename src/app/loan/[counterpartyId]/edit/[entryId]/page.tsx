@@ -15,7 +15,6 @@ import { Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
-// [14] Edit Loan Entry
 export default function EditLoanEntryPage({
   params,
 }: {

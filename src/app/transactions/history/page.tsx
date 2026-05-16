@@ -298,12 +298,6 @@ function DateRangePickerSheet({
   );
 }
 
-/**
- * Initial render budget for /transactions/history.
- * With ~8.000 transactions, rendering all rows at once freezes the main
- * thread (5–20s). We render only the first PAGE_SIZE rows and reveal more
- * via an IntersectionObserver sentinel as the user scrolls.
- */
 const PAGE_SIZE = 50;
 
 function HistoryContent({
@@ -432,9 +426,6 @@ export default function TransactionHistoryPage() {
     [transactions, activeFilter, dateRange, activeWalletId, searchQuery, walletMap, sortKey]
   );
 
-  // Windowing: render only the first `visibleCount` rows; reset when the
-  // filtered result-set changes (filter/search/sort/date/wallet) so that
-  // a new query starts from the top instead of inheriting a deep scroll.
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
@@ -451,7 +442,6 @@ export default function TransactionHistoryPage() {
       <AppHeader title={t("history.title")} showBack />
 
       <div className="px-4 pt-3 pb-2">
-        {/* Search bar */}
         <div
           className="flex items-center gap-3 px-4 py-3 rounded-[12px]"
           style={{
@@ -481,7 +471,6 @@ export default function TransactionHistoryPage() {
           )}
         </div>
 
-        {/* Type filter chips */}
         {!isLoading && (
           <div className="flex gap-2 mt-3 overflow-x-auto pb-0.5 no-scrollbar">
             {FILTERS.map((f) => {
@@ -504,7 +493,6 @@ export default function TransactionHistoryPage() {
           </div>
         )}
 
-        {/* Wallet filter chips */}
         {!isLoading && activeWallets.length >= 2 && (
           <div className="flex gap-2 mt-2 overflow-x-auto pb-0.5 no-scrollbar">
             <button
@@ -538,7 +526,6 @@ export default function TransactionHistoryPage() {
           </div>
         )}
 
-        {/* Count + sort + date filter */}
         {!isLoading && (
           <div className="flex items-center justify-between mt-2">
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
@@ -576,7 +563,6 @@ export default function TransactionHistoryPage() {
         )}
       </div>
 
-      {/* Content */}
       <HistoryContent
         isLoading={isLoading}
         filtered={filtered}

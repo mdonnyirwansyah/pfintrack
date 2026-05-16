@@ -110,10 +110,6 @@ const loanEntriesLsRepo = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
-// ---------------------------------------------------------------------------
-
 export const loanEntriesRepo = {
   async getAll(): Promise<LoanEntry[]> {
     if (STORAGE_BACKEND === "idb") return loanEntriesIdbRepo.getAll();

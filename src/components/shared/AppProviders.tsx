@@ -17,8 +17,6 @@ export function AppProviders({ children }: AppProvidersProps) {
   const setHydrated = useAppStore((s) => s.setHydrated);
   const showDecimals = useAppStore((s) => s.showDecimals);
 
-  // Start as true so the initial client render matches the server HTML (avoids hydration mismatch).
-  // useEffect then checks if migration is still needed and flips to false until it completes.
   const [migrationReady, setMigrationReady] = useState(true);
 
   useEffect(() => {
@@ -32,13 +30,11 @@ export function AppProviders({ children }: AppProvidersProps) {
   }, []);
 
   useEffect(() => {
-    // Bootstrap: ensure anon_id exists in localStorage
     const id = getOrCreateAnonId();
     setAnonId(id);
     setHydrated(true);
   }, [setAnonId, setHydrated]);
 
-  // Sync decimal preference to the format module
   useEffect(() => {
     setFormatDecimals(showDecimals);
   }, [showDecimals]);

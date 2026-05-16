@@ -41,14 +41,12 @@ function TransactionsContent() {
   const t = useTranslations("transactions");
   const td = useTranslations("demo.welcome");
 
-  // Initialize activeDate from ?date= query param, fallback to today
   const dateParam = searchParams.get("date");
   const [activeDate, setActiveDate] = useState(dateParam ?? todayISO());
   const [isExporting, setIsExporting] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
   const [pendingDeletes, setPendingDeletes] = useState<Set<string>>(new Set());
 
-  // Update state and sync URL together to avoid timing issues from useEffect
   const handleDateChange = (date: string) => {
     setActiveDate(date);
     router.replace(`/transactions?date=${date}`, { scroll: false });
@@ -67,7 +65,6 @@ function TransactionsContent() {
   const dailyTransactions = useMemo(() => applySortKey(rawDailyTransactions, sortKey), [rawDailyTransactions, sortKey]);
 
   const handleConfirmDelete = useCallback((id: string) => {
-    // Hide immediately from UI
     setPendingDeletes((prev) => new Set([...prev, id]));
 
     let isUndone = false;
@@ -204,12 +201,10 @@ function TransactionsContent() {
       />
 
       <div className="pt-2 pb-24" {...swipeHandlers}>
-        {/* Date navigator */}
         <div data-tour="tx-date-nav">
           <DateNavigator activeDate={activeDate} onDateChange={handleDateChange} />
         </div>
 
-        {/* Summary bar */}
         <div data-tour="tx-summary">
           <SummaryBar
             income={summary.income}
@@ -218,7 +213,6 @@ function TransactionsContent() {
           />
         </div>
 
-        {/* Sort bar — only show when there are transactions */}
         {!isLoading && dailyTransactions.length > 0 && (
           <div className="px-4 mb-2 flex items-center justify-end">
             <span data-tour="transactions-filter-bar">
@@ -236,7 +230,6 @@ function TransactionsContent() {
           </div>
         )}
 
-        {/* Welcome card — shown only when app is completely empty for the first time */}
         {!isLoading && !dismissedWelcome && wallets.length === 0 && transactions.length === 0 && (
           <div className="px-4 mt-4">
             <div
@@ -287,7 +280,6 @@ function TransactionsContent() {
           </div>
         )}
 
-        {/* Transaction list */}
         {(() => {
           if (isLoading) {
             return (

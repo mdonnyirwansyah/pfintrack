@@ -3,10 +3,6 @@ import type { Wallet } from "@/lib/types/wallet";
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 
-// Mock IDB and config before importing the module under test.
-// The wallet-balance-ops module now uses atomic helpers `idbUpdate` and
-// `idbUpdateMany` (single-transaction read-modify-write) instead of the
-// older `idbGet` + `idbPut` pair.
 vi.mock("@/lib/storage/idb-client", () => ({
   idbUpdate: vi.fn(),
   idbUpdateMany: vi.fn(),
@@ -73,20 +69,10 @@ function makeLoanEntry(overrides: Partial<LoanEntry> & { type: LoanEntry["type"]
   };
 }
 
-/**
- * Drives `idbUpdate(storeName, id, updater)` against a virtual wallet table.
- * Returns the recorded list of wallets that were written so assertions can
- * verify the resulting balance for each id.
- */
 function setupIdbUpdate(initial: Wallet[]) {
   const writes: Wallet[] = [];
   mockUpdate.mockImplementation(async (_store, id, updater) => {
-    // All tests using this helper provide a fixture wallet for every id
-    // they query, so the lookup is guaranteed to succeed. The "missing
-    // wallet" path for single-record updates is exercised separately by
-    // tests that call `mockUpdate.mockResolvedValue(null)` directly.
     const existing = initial.find((w) => w.id === id) as Wallet;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const next = (updater as any)(existing) as Wallet;
     writes.push(next);
     return next;
@@ -99,7 +85,6 @@ function setupIdbUpdateMany(initial: Wallet[]) {
   mockUpdateMany.mockImplementation(async (_store, ids, updater) => {
     for (const id of ids) {
       const existing = initial.find((w) => w.id === id) ?? null;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const next = (updater as any)(existing, id) as Wallet | null;
       if (next) writes.push(next);
     }
@@ -110,8 +95,6 @@ function setupIdbUpdateMany(initial: Wallet[]) {
 beforeEach(() => {
   vi.clearAllMocks();
 });
-
-// ── applyTransactionToWallet ─────────────────────────────────────────────────
 
 describe("applyTransactionToWallet", () => {
   it("income: increases wallet balance by amount", async () => {
@@ -152,8 +135,6 @@ describe("applyTransactionToWallet", () => {
   });
 
   it("transfer with null destination: falls back to single-wallet applyDelta", async () => {
-    // destination_wallet_id is null — applyTransferDeltas should short-circuit
-    // to applyDelta on the source wallet only (no idbUpdateMany call).
     const writes = setupIdbUpdate([makeWallet(1_000_000)]);
 
     await applyTransactionToWallet(makeTx({
@@ -167,8 +148,6 @@ describe("applyTransactionToWallet", () => {
   });
 
   it("transfer: warns and skips missing wallets while still committing the rest", async () => {
-    // Only the source wallet exists. destination is missing — updater should
-    // return null for it and emit a warning, but the source still updates.
     const writes = setupIdbUpdateMany([makeWallet(1_000_000, "w1")]);
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
@@ -186,8 +165,6 @@ describe("applyTransactionToWallet", () => {
     warnSpy.mockRestore();
   });
 });
-
-// ── rollbackTransactionFromWallet ────────────────────────────────────────────
 
 describe("rollbackTransactionFromWallet", () => {
   it("income rollback: decreases wallet balance", async () => {
@@ -220,19 +197,15 @@ describe("rollbackTransactionFromWallet", () => {
   });
 
   it("apply then rollback returns original balance", async () => {
-    // Apply expense
     const applyWrites = setupIdbUpdate([makeWallet(1_000_000)]);
     await applyTransactionToWallet(makeTx({ type: "expense", amount: 300_000 }));
     expect(applyWrites[0].balance).toBe(700_000);
 
-    // Rollback expense
     const rollbackWrites = setupIdbUpdate([makeWallet(700_000)]);
     await rollbackTransactionFromWallet(makeTx({ type: "expense", amount: 300_000 }));
     expect(rollbackWrites[0].balance).toBe(1_000_000);
   });
 });
-
-// ── applyLoanEntryToWallet ───────────────────────────────────────────────────
 
 describe("applyLoanEntryToWallet", () => {
   it("give: decreases wallet balance (user paid out)", async () => {
@@ -254,8 +227,6 @@ describe("applyLoanEntryToWallet", () => {
   });
 });
 
-// ── rollbackLoanEntryFromWallet ──────────────────────────────────────────────
-
 describe("rollbackLoanEntryFromWallet", () => {
   it("give rollback: increases wallet balance", async () => {
     const writes = setupIdbUpdate([makeWallet(800_000)]);
@@ -275,12 +246,9 @@ describe("rollbackLoanEntryFromWallet", () => {
   });
 });
 
-// ── localStorage backend (else branch) ───────────────────────────────────────
-
 function makeLocalStorageMock() {
   const store: Record<string, string> = {};
   return {
-    // Per Storage spec: getItem returns null for unknown keys.
     getItem: (key: string): string | null => (key in store ? store[key] : null),
     setItem: (key: string, value: string) => { store[key] = value; },
     clear: () => { for (const k of Object.keys(store)) delete store[k]; },
@@ -292,7 +260,6 @@ describe("localStorage backend (STORAGE_BACKEND !== 'idb')", () => {
 
   beforeEach(() => {
     mockStorage = makeLocalStorageMock();
-    // Sanity-check that the mock returns null for unknown keys (Storage spec).
     expect(mockStorage.getItem("__nonexistent__")).toBeNull();
     Object.defineProperty(globalThis, "window", { value: globalThis, writable: true, configurable: true });
     Object.defineProperty(globalThis, "localStorage", { value: mockStorage, writable: true, configurable: true });
@@ -368,7 +335,6 @@ describe("localStorage backend (STORAGE_BACKEND !== 'idb')", () => {
     }));
     const { applyTransactionToWallet: applyTx } = await import("./wallet-balance-ops");
 
-    // Only source wallet exists in localStorage
     const w1 = makeWallet(1_000_000, "w1");
     globalThis.localStorage.setItem("wallets", JSON.stringify([w1]));
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});

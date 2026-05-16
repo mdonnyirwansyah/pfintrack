@@ -48,7 +48,6 @@ export function LoanOutstandingSection({
 
   return (
     <div className="glass rounded-[16px] overflow-hidden" style={{ padding: 0 }}>
-      {/* Section header */}
       <div
         className="px-4 py-3"
         style={{ borderBottom: "1px solid var(--divider)" }}
@@ -58,7 +57,6 @@ export function LoanOutstandingSection({
         </h2>
       </div>
 
-      {/* Receivable row */}
       {totalReceivable > 0 && (
         <div
           className="flex items-center justify-between px-4"
@@ -73,7 +71,6 @@ export function LoanOutstandingSection({
         </div>
       )}
 
-      {/* Payable row */}
       {totalPayable > 0 && (
         <div
           className="flex items-center justify-between px-4"

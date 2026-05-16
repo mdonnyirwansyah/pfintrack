@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl";
 
 export interface WalletFormValues {
   name: string;
-  /** Raw string during editing; parsed to number on submit */
   balance: string;
   wallet_type: WalletType;
 }
@@ -95,7 +94,6 @@ export function WalletForm({
     return errs;
   }
 
-  // Auto-focus name field on mount (add mode)
   useEffect(() => {
     if (isAddMode && nameRef.current) {
       nameRef.current.focus();
@@ -117,8 +115,6 @@ export function WalletForm({
     setErrors({});
     onSubmit({ ...values, name: name.trim() });
   };
-
-  // No longer needed, real-time formatting handles this
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
@@ -167,7 +163,6 @@ export function WalletForm({
         )}
       </div>
 
-      {/* Wallet Type */}
       <div className="flex flex-col gap-1">
         <label
           htmlFor="wallet-type"
@@ -198,7 +193,6 @@ export function WalletForm({
         </select>
       </div>
 
-      {/* Balance */}
       <div className="flex flex-col gap-1">
         <label
           htmlFor="wallet-balance"
@@ -294,7 +288,6 @@ export function WalletForm({
         )}
       </div>
 
-      {/* Save button */}
       <button
         type="submit"
         disabled={isSubmitting}
@@ -326,7 +319,6 @@ export function WalletForm({
         })()}
       </button>
 
-      {/* Delete slot — only in edit mode */}
       {deleteSlot && <div className="mt-2">{deleteSlot}</div>}
     </form>
   );

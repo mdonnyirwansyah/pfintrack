@@ -41,7 +41,6 @@ export function SavingRateCard({ income, expenses }: SavingRateCardProps) {
     <div
       className="glass rounded-[16px] px-4 py-3 space-y-2"
     >
-      {/* Header row */}
       <div className="flex items-center justify-between">
         <span
           className="text-[12px] font-semibold uppercase tracking-wider"
@@ -58,7 +57,6 @@ export function SavingRateCard({ income, expenses }: SavingRateCardProps) {
         </span>
       </div>
 
-      {/* Progress bar */}
       <div
         className="w-full rounded-full overflow-hidden"
         style={{ height: 6, background: "var(--bg-secondary)" }}
@@ -72,7 +70,6 @@ export function SavingRateCard({ income, expenses }: SavingRateCardProps) {
         />
       </div>
 
-      {/* Benchmark text */}
       <p
         className="text-[11px]"
         style={{ color: "var(--text-tertiary)" }}
@@ -80,7 +77,6 @@ export function SavingRateCard({ income, expenses }: SavingRateCardProps) {
         {t("benchmark")}
       </p>
 
-      {/* Income / Saved row */}
       {!isNA && (
         <div className="flex items-center justify-between pt-0.5">
           <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>

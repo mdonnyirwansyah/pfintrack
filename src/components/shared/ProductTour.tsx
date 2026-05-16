@@ -9,38 +9,31 @@ import { TourTooltip } from '@/components/shared/TourTooltip';
 import { TourBeacon } from '@/components/shared/TourBeacon';
 import { TourInterceptContext } from '@/lib/stores/tourInterceptContext';
 
-// index 0–6: Transactions, 7–12: Wallet, 13–15: Loan, 16–20: Report, 21: END
 const STEP_TARGETS = [
-  // Transactions (7 steps)
-  { target: '[data-tour="nav-tab-transactions"]',    placement: 'top'    as const, key: 'tx1' }, // 0 — transition
-  { target: '[data-tour="tx-date-nav"]',             placement: 'bottom' as const, key: 'tx2' }, // 1
-  { target: '[data-tour="tx-summary"]',              placement: 'bottom' as const, key: 'tx3' }, // 2
-  { target: '[data-tour="fab-transactions"]',        placement: 'top'    as const, key: 'tx4' }, // 3
-  { target: '[data-tour="transactions-filter-bar"]', placement: 'left'   as const, key: 'tx5' }, // 4
-  { target: '[data-tour="tx-export"]',               placement: 'bottom' as const, key: 'tx6' }, // 5
-  { target: '[data-tour="tx-history"]',              placement: 'bottom' as const, key: 'tx7' }, // 6
-  // Wallet (6 steps)
-  { target: '[data-tour="nav-tab-wallet"]',          placement: 'top'    as const, key: 'wl1' }, // 7 — transition
-  { target: '[data-tour="wl-total-balance"]',        placement: 'bottom' as const, key: 'wl2' }, // 8
-  { target: '[data-tour="wl-filter-type"]',          placement: 'bottom' as const, key: 'wl3' }, // 9
-  { target: '[data-tour="wl-sort"]',                 placement: 'bottom' as const, key: 'wl4' }, // 10
-  { target: '[data-tour="fab-wallet"]',              placement: 'top'    as const, key: 'wl5' }, // 11
-  { target: '[data-tour="wallet-first-card"]',       placement: 'bottom' as const, key: 'wl6' }, // 12
-  // Loan (3 steps)
-  { target: '[data-tour="nav-tab-loan"]',            placement: 'top'    as const, key: 'ln1' }, // 13 — transition
-  { target: '[data-tour="fab-loan"]',                placement: 'top'    as const, key: 'ln2' }, // 14
-  { target: '[data-tour="loan-counterparty-list"]',  placement: 'bottom' as const, key: 'ln3' }, // 15
-  // Report (5 steps)
-  { target: '[data-tour="nav-tab-report"]',          placement: 'top'    as const, key: 'rp1' }, // 16 — transition
-  { target: '[data-tour="report-period-tabs"]',      placement: 'bottom' as const, key: 'rp2' }, // 17
-  { target: '[data-tour="report-donut-mode"]',       placement: 'bottom' as const, key: 'rp3' }, // 18
-  { target: '[data-tour="report-donut-chart"]',      placement: 'bottom' as const, key: 'rp4' }, // 19
-  { target: '[data-tour="report-custom-fab"]',       placement: 'top'    as const, key: 'rp5' }, // 20 — silently skipped if not on Custom tab
-  // End
-  { target: '[data-tour="nav-tab-transactions"]',    placement: 'top'    as const, key: 'end' }, // 21
+  { target: '[data-tour="nav-tab-transactions"]',    placement: 'top'    as const, key: 'tx1' },
+  { target: '[data-tour="tx-date-nav"]',             placement: 'bottom' as const, key: 'tx2' },
+  { target: '[data-tour="tx-summary"]',              placement: 'bottom' as const, key: 'tx3' },
+  { target: '[data-tour="fab-transactions"]',        placement: 'top'    as const, key: 'tx4' },
+  { target: '[data-tour="transactions-filter-bar"]', placement: 'left'   as const, key: 'tx5' },
+  { target: '[data-tour="tx-export"]',               placement: 'bottom' as const, key: 'tx6' },
+  { target: '[data-tour="tx-history"]',              placement: 'bottom' as const, key: 'tx7' },
+  { target: '[data-tour="nav-tab-wallet"]',          placement: 'top'    as const, key: 'wl1' },
+  { target: '[data-tour="wl-total-balance"]',        placement: 'bottom' as const, key: 'wl2' },
+  { target: '[data-tour="wl-filter-type"]',          placement: 'bottom' as const, key: 'wl3' },
+  { target: '[data-tour="wl-sort"]',                 placement: 'bottom' as const, key: 'wl4' },
+  { target: '[data-tour="fab-wallet"]',              placement: 'top'    as const, key: 'wl5' },
+  { target: '[data-tour="wallet-first-card"]',       placement: 'bottom' as const, key: 'wl6' },
+  { target: '[data-tour="nav-tab-loan"]',            placement: 'top'    as const, key: 'ln1' },
+  { target: '[data-tour="fab-loan"]',                placement: 'top'    as const, key: 'ln2' },
+  { target: '[data-tour="loan-counterparty-list"]',  placement: 'bottom' as const, key: 'ln3' },
+  { target: '[data-tour="nav-tab-report"]',          placement: 'top'    as const, key: 'rp1' },
+  { target: '[data-tour="report-period-tabs"]',      placement: 'bottom' as const, key: 'rp2' },
+  { target: '[data-tour="report-donut-mode"]',       placement: 'bottom' as const, key: 'rp3' },
+  { target: '[data-tour="report-donut-chart"]',      placement: 'bottom' as const, key: 'rp4' },
+  { target: '[data-tour="report-custom-fab"]',       placement: 'top'    as const, key: 'rp5' },
+  { target: '[data-tour="nav-tab-transactions"]',    placement: 'top'    as const, key: 'end' },
 ];
 
-// Transition step indices that require tab navigation before advancing
 const TRANSITION_STEPS: Record<number, string> = {
   0:  '/transactions',
   7:  '/wallet',
@@ -49,10 +42,10 @@ const TRANSITION_STEPS: Record<number, string> = {
 };
 
 const SKIP_TARGETS: Record<number, number> = {
-  0:  7,  // Skip Transactions → WL-1
-  7:  13, // Skip Wallet       → LN-1
-  13: 16, // Skip Loan         → RP-1
-  16: 21, // Skip Report       → END
+  0:  7,
+  7:  13,
+  13: 16,
+  16: 21,
 };
 
 const MODULE_KEYS: Record<number, string> = {
@@ -90,7 +83,6 @@ function TourSkipConfirm({
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      {/* Backdrop */}
       <button
         type="button"
         aria-label={t("cancelAriaLabel")}
@@ -199,7 +191,6 @@ export function ProductTour() {
 
   useEffect(() => { setIsMounted(true); }, []);
 
-  // When tour is requested: reset step + navigate if needed, but don't start Joyride yet
   useEffect(() => {
     if (run) {
       setStepIndex(0);
@@ -210,10 +201,8 @@ export function ProductTour() {
     } else {
       setJoyrideRun(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [run]);
 
-  // Only activate Joyride once we are actually on /transactions
   useEffect(() => {
     if (run && pathname.startsWith('/transactions')) {
       setJoyrideRun(true);
@@ -226,7 +215,6 @@ export function ProductTour() {
     if (status === STATUS.FINISHED) { completeTour(); return; }
     if (status === STATUS.SKIPPED)  { skipTour(); return; }
 
-    // Silently advance when target element is absent (e.g. empty wallet/loan list)
     if (type === EVENTS.TARGET_NOT_FOUND) {
       setStepIndex((i) => i + 1);
       return;
@@ -276,7 +264,6 @@ export function ProductTour() {
         tooltipComponent={TourTooltip}
         beaconComponent={TourBeacon}
         options={{
-          // Joyride z-index kept below dialog's z-[2000]
           zIndex: 1000,
           overlayColor: 'rgba(0, 0, 0, 0.45)',
           overlayClickAction: false,

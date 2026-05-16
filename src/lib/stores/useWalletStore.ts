@@ -10,20 +10,14 @@ interface WalletState {
 }
 
 interface WalletActions {
-  /** Load active wallets from storage via walletsRepo */
   loadWallets: () => Promise<void>;
 
-  /** Create a wallet and refresh state. Writes balance history if initial balance > 0. */
   createWallet: (input: CreateWalletInput) => Promise<Wallet>;
 
-  /** Update a wallet's name or type. */
   updateWallet: (id: string, patch: UpdateWalletInput) => Promise<Wallet>;
 
-  /** Soft-delete a wallet. Does NOT write balance history. */
   softDeleteWallet: (id: string) => Promise<void>;
 
-  /** Check if a name is already used by an active wallet (case-insensitive).
-   *  Pass excludeId to skip a wallet when editing. */
   isNameTaken: (name: string, excludeId?: string) => boolean;
 }
 

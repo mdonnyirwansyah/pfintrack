@@ -18,7 +18,6 @@ function AddTransferContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("transactions");
 
-  // Read ?date= from URL, fallback to today
   const dateParam = searchParams.get("date");
   const initialDate = dateParam ?? todayISO();
 

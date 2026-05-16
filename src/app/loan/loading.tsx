@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function LoanLoading() {
   return (
     <div className="px-4 py-4">
-      {/* LoanSummaryBar: 3-column totals */}
       <div className="glass rounded-[16px] overflow-hidden mb-4" style={{ minHeight: 64 }}>
         <div className="flex">
           {["col-give", "col-net", "col-get"].map((id) => (
@@ -15,7 +14,6 @@ export default function LoanLoading() {
         </div>
       </div>
 
-      {/* Counterparty list items */}
       <div className="space-y-3">
         {["cp-a", "cp-b", "cp-c", "cp-d"].map((id) => (
           <div key={id} className="glass rounded-[16px] px-4 flex items-center gap-2.5" style={{ minHeight: 56 }}>

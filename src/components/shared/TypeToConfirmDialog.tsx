@@ -15,7 +15,6 @@ interface TypeToConfirmDialogProps {
   readonly onOpenChange: (open: boolean) => void;
   readonly title: string;
   readonly description: string;
-  /** Exact phrase the user must type to enable the confirm button */
   readonly confirmPhrase: string;
   readonly inputLabel: string;
   readonly inputPlaceholder: string;
@@ -39,7 +38,6 @@ export function TypeToConfirmDialog({
   const [typed, setTyped] = useState("");
   const canConfirm = typed === confirmPhrase;
 
-  // Reset input whenever dialog opens
   useEffect(() => {
     if (open) setTyped("");
   }, [open]);

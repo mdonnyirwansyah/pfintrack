@@ -20,7 +20,6 @@ import { useLoanCounterpartyStore, useLoanEntryStore } from "@/lib/stores/useLoa
 import { useWalletStore } from "@/lib/stores/useWalletStore";
 import { useTranslations } from "next-intl";
 
-// [13] Loan Detail (entries list per counterparty)
 export default function LoanDetailPage({
   params,
 }: {
@@ -62,7 +61,6 @@ export default function LoanDetailPage({
     [counterparties, counterpartyId]
   );
 
-  // Aggregates
   const { totalGive, totalGet, outstanding } = useMemo(() => {
     const give = entries
       .filter((e) => e.type === "give")
@@ -76,7 +74,6 @@ export default function LoanDetailPage({
   const isPaidOff =
     counterparty?.manual_paid_off || outstanding === 0;
 
-  // Sort entries: DESC by date+time, fallback to created_at on tie (minute resolution)
   const sortedEntries = useMemo(
     () =>
       [...entries].sort((a, b) => {
@@ -84,13 +81,11 @@ export default function LoanDetailPage({
         const db = `${b.transaction_date}T${b.transaction_time}`;
         const byDatetime = db.localeCompare(da);
         if (byDatetime !== 0) return byDatetime;
-        // Tiebreaker: created_at (ISO with seconds) — DESC
         return b.created_at.localeCompare(a.created_at);
       }),
     [entries]
   );
 
-  // FAB actions: navigate to add forms with counterpartyId pre-filled
   const fabActions = [
     {
       label: t("fab.give"),
@@ -108,7 +103,6 @@ export default function LoanDetailPage({
     },
   ];
 
-  // Handle rename submit
   function handleRenameSubmit() {
     const trimmed = editNameValue.trim();
     if (!trimmed) {
@@ -132,13 +126,11 @@ export default function LoanDetailPage({
     setEditNameError("");
   }
 
-  // Handle delete counterparty
   function handleDeleteCounterparty() {
     deleteCounterparty(counterpartyId);
     router.replace("/loan");
   }
 
-  // If counterparty not found (maybe deleted or wrong ID)
   if (!counterparty) {
     return (
       <>
@@ -225,14 +217,12 @@ export default function LoanDetailPage({
       />
 
       <div className="px-4 pt-4 pb-4">
-        {/* Summary bar */}
         <LoanDetailSummaryBar
           totalGet={totalGet}
           totalGive={totalGive}
           outstanding={outstanding}
         />
 
-        {/* Entry list */}
         {sortedEntries.length === 0 ? (
           <EmptyState
             icon={Users}
@@ -258,7 +248,6 @@ export default function LoanDetailPage({
 
       <FABExpandable actions={fabActions} />
 
-      {/* Mark as paid confirmation */}
       <ConfirmDialog
         open={isMarkAsPaidOpen}
         onOpenChange={setIsMarkAsPaidOpen}
@@ -273,7 +262,6 @@ export default function LoanDetailPage({
         }}
       />
 
-      {/* Unmark paid off confirmation */}
       <ConfirmDialog
         open={isUnmarkPaidOffOpen}
         onOpenChange={setIsUnmarkPaidOffOpen}
@@ -288,7 +276,6 @@ export default function LoanDetailPage({
         }}
       />
 
-      {/* Delete counterparty confirmation */}
       <ConfirmDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
@@ -300,7 +287,6 @@ export default function LoanDetailPage({
         onConfirm={handleDeleteCounterparty}
       />
 
-      {/* Edit name dialog */}
       {isEditNameOpen && (
         <dialog
           className="fixed inset-0 z-50 flex items-center justify-center p-4 border-0 max-w-none max-h-none w-full h-full m-0 bg-transparent"

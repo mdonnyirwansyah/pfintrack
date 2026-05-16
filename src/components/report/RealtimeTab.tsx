@@ -90,12 +90,10 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
   const start = currentMonthStart();
   const end = currentMonthEnd();
 
-  // sessionStorage key for insight dismiss — resets every month
-  const insightMonthKey = start.slice(0, 7); // YYYY-MM
+  const insightMonthKey = start.slice(0, 7);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
-  // Always start with defaults to match server render, restore from sessionStorage after hydration
   const [donutMode, setDonutMode] = useState<DonutMode>("expense");
   const [insightDismissed, setInsightDismissed] = useState<boolean>(false);
 
@@ -107,7 +105,6 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
     }
   }, [insightMonthKey]);
 
-  // Saving Rate (always computed from the full period income/expenses)
   const income = useMemo(
     () => calcIncome(transactions, start, end),
     [transactions, start, end]
@@ -139,13 +136,11 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
     sessionStorage.setItem(`dismissed_insight_${insightMonthKey}`, "true");
   };
 
-  // Category breakdown — respects donutMode
   const breakdown = useMemo(
     () => calcCategoryBreakdown(transactions, start, end, donutMode),
     [transactions, start, end, donutMode]
   );
 
-  // Base transaction list for the current mode
   const allModeTransactions = useMemo(
     () =>
       transactions
@@ -165,7 +160,6 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
     [transactions, start, end, donutMode]
   );
 
-  // Filtered by selected category, then sorted — single pass using allModeTransactions
   const filteredTransactions = useMemo(() => {
     let base: typeof allModeTransactions;
     if (!selectedCategory) {
@@ -174,7 +168,6 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
       const top8 = new Set(breakdown.slice(0, 8).map((b) => b.category));
       base = allModeTransactions.filter((tx) => !top8.has(tx.category ?? "Other"));
     } else {
-      // allModeTransactions already filtered by type+period — just filter by category
       base = allModeTransactions.filter(
         (tx) => (tx.category ?? "Other") === selectedCategory
       );
@@ -201,19 +194,16 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
 
   return (
     <div className="space-y-4">
-      {/* Period label */}
       <div className="text-center">
         <span className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>
           {formatDateRange(start, end, locale)}
         </span>
       </div>
 
-      {/* B1 — Saving Rate Card (always shown, not conditional on income > 0 — component handles N/A) */}
       {reportVisibility.showSavingRateCard && (
         <SavingRateCard income={income} expenses={expenses} />
       )}
 
-      {/* D1 — Loan Outstanding Section (conditional, below SavingRateCard) */}
       {reportVisibility.showLoanOutstanding && (
         <LoanOutstandingSection
           loanCounterparties={loanCounterparties}
@@ -221,12 +211,10 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
         />
       )}
 
-      {/* B2 — Insight Card (conditional, dismissible) */}
       {reportVisibility.showInsightCard && insight && !insightDismissed && (
         <InsightCard insight={insight} onDismiss={handleDismissInsight} />
       )}
 
-      {/* C1 — Donut chart section: toggle pill, chart, daily summary, category list */}
       {reportVisibility.showDonutChart && (
         <>
           <div
@@ -281,7 +269,6 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
               />
               </div>
 
-              {/* Daily summary (list/calendar toggle) — only in expense mode to stay backward compatible */}
               {!isIncomeMode && (
                 <DailySummarySection
                   transactions={transactions}
@@ -291,7 +278,6 @@ export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: R
                 />
               )}
 
-              {/* Transaction list */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>

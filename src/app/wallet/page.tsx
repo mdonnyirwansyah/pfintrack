@@ -26,8 +26,6 @@ const WALLET_TYPES: WalletType[] = [
   "bank", "bank_digital", "e_wallet", "investment", "savings", "digital_asset", "other",
 ];
 
-
-// [7] Wallet List
 export default function WalletPage() {
   const router = useRouter();
   const { wallets, isLoading, loadWallets } = useWalletStore();
@@ -67,7 +65,6 @@ export default function WalletPage() {
     if (activeWallets.length > 0) {
       return (
         <div className="flex items-center justify-between mb-3">
-          {/* Filter type — left */}
           <div data-tour="wl-filter-type">
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -113,7 +110,6 @@ export default function WalletPage() {
             </DropdownMenu>
           </div>
 
-          {/* Sort — right */}
           <div data-tour="wl-sort">
             <SortPill
               value={sortKey}
@@ -137,7 +133,6 @@ export default function WalletPage() {
       <AppHeader title={t("title")} />
 
       <div className="px-4 py-4">
-        {/* Total Balance row */}
         <div
           data-tour="wl-total-balance"
           className="glass rounded-[16px] px-4 mb-4 flex items-center justify-between"
@@ -155,10 +150,8 @@ export default function WalletPage() {
           )}
         </div>
 
-        {/* Sort + Filter bar */}
         {renderSortFilterBar()}
 
-        {/* Loading skeletons — card list */}
         {isLoading && (
           <div className="space-y-3">
             {["wlt-a", "wlt-b", "wlt-c", "wlt-d"].map((id) => (
@@ -167,7 +160,6 @@ export default function WalletPage() {
           </div>
         )}
 
-        {/* Empty state */}
         {!isLoading && activeWallets.length === 0 && (
           <EmptyState
             icon={CreditCard}
@@ -176,7 +168,6 @@ export default function WalletPage() {
           />
         )}
 
-        {/* No results after filter */}
         {!isLoading && activeWallets.length > 0 && displayedWallets.length === 0 && (
           <EmptyState
             icon={CreditCard}
@@ -185,7 +176,6 @@ export default function WalletPage() {
           />
         )}
 
-        {/* Wallet list */}
         {!isLoading && displayedWallets.length > 0 && (
           <ul className="space-y-3 list-none">
             {displayedWallets.map((wallet, idx) => (

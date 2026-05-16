@@ -42,7 +42,6 @@ function ReportDetailContent() {
   const ts = useTranslations("transactions");
   const locale = useLocale();
 
-  // Data state
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loanEntries, setLoanEntries] = useState<LoanEntry[]>([]);
   const [loanCounterparties, setLoanCounterparties] = useState<LoanCounterparty[]>([]);
@@ -63,34 +62,28 @@ function ReportDetailContent() {
     });
   }, [start, end]);
 
-  // Donut toggle (local state, not sessionStorage — per-visit)
   const [donutMode, setDonutMode] = useState<DonutMode>("expense");
 
-  // Category selection — reset on donut mode change
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     categoryParam ?? null
   );
 
   const [sortKey, setSortKey] = useState<SortKey>("datetime_desc");
 
-  // Transaction type filter — follows donut mode default
   const [txFilter, setTxFilter] = useState<TxFilter>(
     categoryParam ? "expense" : "all"
   );
 
-  // Category breakdown — respects donutMode
   const breakdown = useMemo(
     () => calcCategoryBreakdown(transactions, start, end, donutMode),
     [transactions, start, end, donutMode]
   );
 
-  // Monthly summary for the summary card
   const summary = useMemo(
     () => calculateMonthlySummary(transactions, loanEntries, balanceHistory, start, end),
     [transactions, loanEntries, balanceHistory, start, end]
   );
 
-  // Loan entries in the period
   const periodLoanEntries = useMemo(
     () =>
       loanEntries.filter(
@@ -102,7 +95,6 @@ function ReportDetailContent() {
     [loanEntries, start, end]
   );
 
-  // Map counterparty_id -> name for quick lookup
   const counterpartyMap = useMemo(() => {
     const map = new Map<string, LoanCounterparty>();
     for (const cp of loanCounterparties) {
@@ -111,7 +103,6 @@ function ReportDetailContent() {
     return map;
   }, [loanCounterparties]);
 
-  // All transactions in period for filter chips
   const allPeriodTransactions = useMemo(
     () =>
       transactions
@@ -129,7 +120,6 @@ function ReportDetailContent() {
     [transactions, start, end]
   );
 
-  // Base list for donut mode (used for category drill-down)
   const allModeTransactions = useMemo(
     () =>
       allPeriodTransactions.filter(
@@ -140,7 +130,6 @@ function ReportDetailContent() {
     [allPeriodTransactions, donutMode]
   );
 
-  // Drill-down list (respects selected category from donut)
   const drillBase = useMemo(() => {
     if (!selectedCategory) return allModeTransactions;
     if (selectedCategory === "Lainnya") {
@@ -157,11 +146,9 @@ function ReportDetailContent() {
     );
   }, [transactions, start, end, selectedCategory, breakdown, allModeTransactions, donutMode]);
 
-  // Transaction type filter chips — operates on ALL period transactions
   const filteredTxns = useMemo(() => {
     let base: Transaction[];
     if (selectedCategory) {
-      // When a category is selected, show the drill-down list regardless of chip
       base = drillBase;
     } else {
       switch (txFilter) {
@@ -191,13 +178,11 @@ function ReportDetailContent() {
     if (mode === donutMode) return;
     setDonutMode(mode);
     setSelectedCategory(null);
-    // Sync the filter chip to follow donut mode
     setTxFilter(mode);
   };
 
   const handleTxFilterChange = (filter: TxFilter) => {
     setTxFilter(filter);
-    // Clear category selection when chip changes
     setSelectedCategory(null);
   };
 
@@ -219,7 +204,6 @@ function ReportDetailContent() {
     { id: "transfer", label: t("detail.filterTransfer") },
   ];
 
-  // Empty state per filter
   function renderEmptyState() {
     if (selectedCategory) {
       return (
@@ -271,7 +255,6 @@ function ReportDetailContent() {
       <AppHeader title={headerTitle} showBack />
 
       <div className="px-4 py-4 space-y-4">
-        {/* Period label (only when no custom name) */}
         {nameParam && (
           <div className="text-center">
             <span
@@ -283,7 +266,6 @@ function ReportDetailContent() {
           </div>
         )}
 
-        {/* Feature 1: Monthly Summary Card */}
         <div className="glass rounded-[16px] p-4">
           <h2
             className="text-[11px] font-semibold mb-3 uppercase tracking-wide"
@@ -294,7 +276,6 @@ function ReportDetailContent() {
           <PeriodSummaryRows summary={summary} />
         </div>
 
-        {/* Feature 2: Income/Expense Donut Toggle */}
         <div
           className="flex items-center rounded-full p-1 gap-1"
           style={{
@@ -348,7 +329,6 @@ function ReportDetailContent() {
               selectedCategory={selectedCategory}
               centerLabel={isIncomeMode ? t("donut.income") : undefined}
             />
-            {/* View Trend link when a real category is selected */}
             {selectedCategory && selectedCategory !== "Lainnya" && (
               <button
                 className="w-full flex items-center justify-center gap-2 py-2 rounded-[12px] transition-opacity active:opacity-70"
@@ -372,7 +352,6 @@ function ReportDetailContent() {
           </>
         )}
 
-        {/* Daily summary — only in expense mode */}
         {breakdown.length > 0 && !isIncomeMode && (
           <DailySummarySection
             transactions={transactions}
@@ -382,7 +361,6 @@ function ReportDetailContent() {
           />
         )}
 
-        {/* Feature 4: Loan Entries Section */}
         {periodLoanEntries.length > 0 && (
           <div className="space-y-2">
             <h2
@@ -445,9 +423,7 @@ function ReportDetailContent() {
           </div>
         )}
 
-        {/* Feature 3: Transaction Type Filter Chips + Transaction list */}
         <div className="space-y-2">
-          {/* Filter chips — only shown when no category selected */}
           {!selectedCategory && (
             <div className="flex items-center gap-2 overflow-x-auto pb-0.5 no-scrollbar">
               {TX_FILTERS.map(({ id, label }) => (
@@ -478,7 +454,6 @@ function ReportDetailContent() {
             </div>
           )}
 
-          {/* List header */}
           <div className="flex items-center justify-between px-1">
             <h2
               className="text-[12px] font-semibold"

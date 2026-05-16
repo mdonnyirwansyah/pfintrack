@@ -8,10 +8,6 @@ import { todayISO, currentTimeHHMM } from "@/lib/format/date";
 import type { WalletFormValues } from "@/features/wallet/components/WalletForm";
 import type { WalletType } from "@/lib/types/wallet";
 
-/**
- * Convenience hook that wraps useWalletStore actions with form-value parsing.
- * Also creates Balance Correction transactions when wallet balance is set or changed.
- */
 export function useWalletActions() {
   const { createWallet, updateWallet, softDeleteWallet, isNameTaken, loadWallets } =
     useWalletStore();
@@ -20,7 +16,6 @@ export function useWalletActions() {
     const balance = parseIDR(values.balance.trim());
     const actualBalance = Number.isNaN(balance) ? 0 : balance;
 
-    // Create wallet with 0 balance — balance will be applied via Balance Correction transaction
     const wallet = await createWallet({
       name: values.name.trim(),
       wallet_type: values.wallet_type as WalletType,
@@ -28,14 +23,12 @@ export function useWalletActions() {
     });
 
     if (actualBalance > 0) {
-      // Write balance history for the initial balance (manual edit = wallet creation)
       await walletBalanceHistoryRepo.create({
         wallet_id: wallet.id,
         previous_balance: 0,
         new_balance: actualBalance,
       });
 
-      // Create Balance Correction income transaction (applies wallet side-effect: balance += actualBalance)
       useTransactionStore.getState().createTransaction({
         type: "income",
         wallet_id: wallet.id,
@@ -55,21 +48,18 @@ export function useWalletActions() {
     const actualNewBalance = Number.isNaN(newBalanceParsed) ? previousBalance : newBalanceParsed;
     const delta = actualNewBalance - previousBalance;
 
-    // Update name and type only — balance is handled via transaction below
     const updated = await updateWallet(id, {
       name: values.name.trim(),
       wallet_type: values.wallet_type as WalletType,
     });
 
     if (delta !== 0) {
-      // Write balance history for the manual balance change
       await walletBalanceHistoryRepo.create({
         wallet_id: id,
         previous_balance: previousBalance,
         new_balance: actualNewBalance,
       });
 
-      // Create Balance Correction transaction (applies wallet side-effect for the delta)
       useTransactionStore.getState().createTransaction({
         type: delta > 0 ? "income" : "expense",
         wallet_id: id,

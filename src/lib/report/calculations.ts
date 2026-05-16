@@ -1,9 +1,3 @@
-/**
- * Core report calculation functions.
- * All computed on-the-fly — never cached to localStorage.
- * §9 performance: use memoization at component level for heavy calcs.
- */
-
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 import type { WalletBalanceHistory } from "@/lib/types/wallet";
@@ -12,8 +6,8 @@ export interface PeriodSummary {
   expenses: number;
   income: number;
   balance: number;
-  loan: number | null; // null = no loan entries in period
-  balanceCorrection: number | null; // null = no corrections in period
+  loan: number | null;
+  balanceCorrection: number | null;
 }
 
 export interface CategoryBreakdown {
@@ -23,7 +17,6 @@ export interface CategoryBreakdown {
   color: string;
 }
 
-/** Chart colour palette — deterministic per category name */
 const CHART_COLORS = [
   "#5B8DEF",
   "#34C759",
@@ -36,23 +29,19 @@ const CHART_COLORS = [
   "#A2845E",
 ] as const;
 
-/** Deterministic colour from category string */
 export function categoryColor(_category: string, index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
 }
 
-/** Check if a date string (YYYY-MM-DD) is within [startDate, endDate] inclusive */
 function inRange(date: string, start: string, end: string): boolean {
   return date >= start && date <= end;
 }
 
-/** Check if ISO timestamp is within period (uses date portion) */
 function timestampInRange(ts: string, start: string, end: string): boolean {
-  const datePart = ts.slice(0, 10); // "YYYY-MM-DD"
+  const datePart = ts.slice(0, 10);
   return datePart >= start && datePart <= end;
 }
 
-/** §4.1 Expenses calculation — excludes Balance Correction transactions */
 export function calcExpenses(
   transactions: Transaction[],
   start: string,
@@ -69,7 +58,6 @@ export function calcExpenses(
     .reduce((sum, t) => sum + t.amount, 0);
 }
 
-/** §4.2 Income calculation — excludes Balance Correction transactions */
 export function calcIncome(
   transactions: Transaction[],
   start: string,
@@ -86,7 +74,6 @@ export function calcIncome(
     .reduce((sum, t) => sum + t.amount, 0);
 }
 
-/** §4.4 Loan cash flow: Get − Give */
 export function calcLoan(
   loanEntries: LoanEntry[],
   start: string,
@@ -107,7 +94,6 @@ export function calcLoan(
   return net === 0 ? null : net;
 }
 
-/** §4.5 Balance Correction from wallet_balance_history */
 export function calcBalanceCorrection(
   history: WalletBalanceHistory[],
   start: string,
@@ -121,7 +107,6 @@ export function calcBalanceCorrection(
   return sum === 0 ? null : sum;
 }
 
-/** §4.3 Full period summary */
 export function calcPeriodSummary(
   transactions: Transaction[],
   loanEntries: LoanEntry[],
@@ -140,9 +125,6 @@ export function calcPeriodSummary(
   };
 }
 
-/** §4.6 / §4.10 Category breakdown — max 8 + "Lainnya".
- *  @param type "expense" (default, backward compatible) | "income"
- */
 export function calcCategoryBreakdown(
   transactions: Transaction[],
   start: string,
@@ -159,14 +141,12 @@ export function calcCategoryBreakdown(
 
   if (expenses.length === 0) return [];
 
-  // Group by category
   const totals = new Map<string, number>();
   for (const t of expenses) {
     const cat = t.category ?? "Other";
     totals.set(cat, (totals.get(cat) ?? 0) + t.amount);
   }
 
-  // Sort DESC
   const sorted = Array.from(totals.entries()).sort((a, b) => b[1] - a[1]);
 
   const grandTotal = sorted.reduce((s, [, v]) => s + v, 0);
@@ -183,7 +163,6 @@ export function calcCategoryBreakdown(
     }));
   }
 
-  // Top 8 + "Lainnya"
   const top = sorted.slice(0, MAX_CATEGORIES);
   const rest = sorted.slice(MAX_CATEGORIES);
   const lainnyaTotal = rest.reduce((s, [, v]) => s + v, 0);
@@ -205,7 +184,6 @@ export function calcCategoryBreakdown(
   return result;
 }
 
-/** Get transactions for a specific category in a period (for drill-down) */
 export function getTransactionsForCategory(
   transactions: Transaction[],
   start: string,
@@ -213,7 +191,6 @@ export function getTransactionsForCategory(
   category: string
 ): Transaction[] {
   if (category === "Lainnya") {
-    // Return all transactions NOT in the top 8 — caller handles this
     return transactions.filter(
       (t) =>
         t.is_active &&
@@ -232,7 +209,6 @@ export function getTransactionsForCategory(
   );
 }
 
-/** Generate list of months (YYYY-MM) from max date down to min date */
 export function generateMonthList(
   transactions: Transaction[]
 ): Array<{ start: string; end: string }> {
@@ -260,27 +236,16 @@ export function generateMonthList(
   return months;
 }
 
-/** Detailed metrics for a single month including start/end balance */
 export interface MonthlySummary {
   startBalance: number;
   income: number;
   expenses: number;
   balance: number;
-  loan: number | null;        // null = no loan entries in period
-  balanceCorrection: number | null; // null = no corrections in period
+  loan: number | null;
+  balanceCorrection: number | null;
   endBalance: number;
 }
 
-/**
- * Calculate monthly summary for a given month range.
- *
- * - startBalance: cumulative (income − expenses + corrections) BEFORE start
- * - income / expenses: totals within the month
- * - balance: income − expenses within the month
- * - loan: cash flow loan (Get − Give) within the month, null if none
- * - balanceCorrection: manual wallet edits within the month
- * - endBalance: startBalance + balance + balanceCorrection
- */
 export function calculateMonthlySummary(
   transactions: Transaction[],
   loanEntries: LoanEntry[],
@@ -315,13 +280,11 @@ export function calculateMonthlySummary(
   return { startBalance, income, expenses, balance, loan, balanceCorrection, endBalance };
 }
 
-/** First day of current month as YYYY-MM-DD */
 export function currentMonthStart(): string {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 }
 
-/** Last day of current month as YYYY-MM-DD */
 export function currentMonthEnd(): string {
   const now = new Date();
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();

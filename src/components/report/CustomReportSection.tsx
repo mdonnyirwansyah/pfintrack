@@ -44,7 +44,6 @@ export function CustomReportSection({
 
   return (
     <div className="glass rounded-[16px] p-4">
-      {/* Header */}
       <div className="flex items-start justify-between mb-1">
         <button
           className="flex-1 flex flex-col items-center active:opacity-70 transition-opacity"
@@ -64,7 +63,6 @@ export function CustomReportSection({
           </span>
         </button>
 
-        {/* Edit icon */}
         <button
           className="flex items-center justify-center rounded-full transition-opacity active:opacity-60 flex-shrink-0"
           style={{
@@ -79,7 +77,6 @@ export function CustomReportSection({
         </button>
       </div>
 
-      {/* Chevron row */}
       <button
         className="w-full flex items-center justify-end mb-3 active:opacity-70"
         onClick={handleDrillDown}
@@ -91,7 +88,6 @@ export function CustomReportSection({
         />
       </button>
 
-      {/* Start Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>
           {t("startBalance")}
@@ -111,7 +107,6 @@ export function CustomReportSection({
 
       <div className="my-1" style={{ height: "1px", background: "var(--divider)" }} />
 
-      {/* End Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>
           {t("endBalance")}

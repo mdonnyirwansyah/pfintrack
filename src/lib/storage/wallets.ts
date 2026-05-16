@@ -18,7 +18,6 @@ export type UpdateWalletInput = Partial<
 >;
 
 const walletsLsRepo = {
-  /** Returns only is_active=true records */
   getAll(): Wallet[] {
     return readKey<Wallet>(KEY).filter((w) => w.is_active);
   },
@@ -78,10 +77,6 @@ const walletsLsRepo = {
     writeKey(KEY, all);
   },
 };
-
-// ---------------------------------------------------------------------------
-// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
-// ---------------------------------------------------------------------------
 
 export const walletsRepo = {
   async getAll(): Promise<Wallet[]> {

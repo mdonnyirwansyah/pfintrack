@@ -40,7 +40,6 @@ export function SplashScreen() {
         zIndex: 9999,
       }}
     >
-      {/* Icon */}
       <div
         style={{
           width: 72,
@@ -72,7 +71,6 @@ export function SplashScreen() {
         </svg>
       </div>
 
-      {/* App name + tagline */}
       <div
         style={{
           textAlign: "center",
@@ -104,7 +102,6 @@ export function SplashScreen() {
         </p>
       </div>
 
-      {/* Loading dots */}
       <div
         style={{
           position: "absolute",

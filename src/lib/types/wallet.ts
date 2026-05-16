@@ -18,11 +18,6 @@ export interface Wallet {
   updated_at: string;
 }
 
-/**
- * Records manual edits to wallet.balance via the Edit Wallet screen.
- * NEVER written by Transactions or Loan operations.
- * Used by Module Report for Balance Correction calculation.
- */
 export interface WalletBalanceHistory {
   id: string;
   anon_id: string;

@@ -130,7 +130,6 @@ export default function EditCustomReportPage() {
       <AppHeader title={t("editReport")} showBack />
 
       <form onSubmit={handleSubmit} className="px-4 py-4 space-y-5">
-        {/* Report Name */}
         <div className="space-y-1.5">
           <label
             className="text-[12px] font-medium"
@@ -171,7 +170,6 @@ export default function EditCustomReportPage() {
           )}
         </div>
 
-        {/* Start Date */}
         <div className="space-y-1.5">
           <label
             className="text-[12px] font-medium"
@@ -217,7 +215,6 @@ export default function EditCustomReportPage() {
           )}
         </div>
 
-        {/* End Date */}
         <div className="space-y-1.5">
           <label
             className="text-[12px] font-medium"
@@ -263,7 +260,6 @@ export default function EditCustomReportPage() {
           )}
         </div>
 
-        {/* Save button */}
         <div className="flex justify-end pt-2">
           <button
             type="submit"
@@ -279,7 +275,6 @@ export default function EditCustomReportPage() {
           </button>
         </div>
 
-        {/* Delete button */}
         <div className="pt-4">
           <button
             type="button"

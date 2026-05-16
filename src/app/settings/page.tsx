@@ -88,8 +88,6 @@ export default function SettingsPage() {
       <AppHeader title={t("title")} />
 
       <div className="px-4 py-4 space-y-2">
-
-        {/* ── Appearance ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2"
           style={{ color: "var(--text-tertiary)" }}
@@ -98,7 +96,6 @@ export default function SettingsPage() {
         </h2>
 
         <div className={sectionClass}>
-          {/* Theme selector */}
           {THEME_OPTIONS.map(({ value, label, icon: Icon }, idx) => {
             const isActive = mounted ? theme === value : value === "system";
             return (
@@ -129,7 +126,6 @@ export default function SettingsPage() {
                     </span>
                   </div>
 
-                  {/* Checkmark */}
                   {isActive && (
                     <svg
                       width="18"
@@ -150,7 +146,6 @@ export default function SettingsPage() {
             );
           })}
 
-          {/* Color Theme Swatch Row */}
           <div style={dividerStyle} />
           <div className={rowClass}>
             <div className="flex items-center gap-3">
@@ -191,7 +186,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* ── Language ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
@@ -254,7 +248,6 @@ export default function SettingsPage() {
           })}
         </div>
 
-        {/* ── Display ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
@@ -285,7 +278,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Toggle switch */}
             <div
               className="relative w-11 h-6 rounded-full transition-colors shrink-0"
               style={{
@@ -303,7 +295,6 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* ── Report ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
@@ -331,7 +322,6 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* ── Demo Mode ── */}
         {isDemoMode && (
           <>
             <h2
@@ -366,7 +356,6 @@ export default function SettingsPage() {
           </>
         )}
 
-        {/* ── Data & Storage ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
@@ -375,7 +364,6 @@ export default function SettingsPage() {
         </h2>
 
         <div className={sectionClass}>
-          {/* Persistent storage */}
           <button
             className={rowClass + " w-full"}
             disabled={!storageSupported || !!storagePersisted}
@@ -409,7 +397,6 @@ export default function SettingsPage() {
 
           <div style={dividerStyle} />
 
-          {/* Export */}
           <button
             className={rowClass + " w-full"}
             onClick={async () => {
@@ -440,7 +427,6 @@ export default function SettingsPage() {
 
           <div style={dividerStyle} />
 
-          {/* Import */}
           <button
             className={rowClass + " w-full"}
             onClick={() => importInputRef.current?.click()}
@@ -478,7 +464,6 @@ export default function SettingsPage() {
 
           <div style={dividerStyle} />
 
-          {/* Delete All Data */}
           <button
             className={rowClass + " w-full"}
             onClick={() => setDeleteAllOpen(true)}
@@ -502,7 +487,6 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* ── Bantuan ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}
@@ -548,7 +532,6 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* ── About ── */}
         <h2
           className="text-[11px] font-semibold uppercase tracking-wider px-1 mb-2 mt-4"
           style={{ color: "var(--text-tertiary)" }}

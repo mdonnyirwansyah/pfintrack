@@ -34,7 +34,6 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
 
   return (
     <div className="glass rounded-[16px] p-4">
-      {/* Header row */}
       <button
         className="w-full flex items-center justify-between mb-3 active:opacity-70 transition-opacity"
         style={{ minHeight: "var(--tap-target-min)" }}
@@ -54,7 +53,6 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
         />
       </button>
 
-      {/* Start Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>
           {t("startBalance")}
@@ -70,12 +68,10 @@ export function MonthlySection({ start, end, summary }: MonthlySectionProps) {
 
       <div className="my-1" style={{ height: "1px", background: "var(--divider)" }} />
 
-      {/* Existing rows: Expenses, Income, Balance, Loan?, Correction? */}
       <PeriodSummaryRows summary={summary} />
 
       <div className="my-1" style={{ height: "1px", background: "var(--divider)" }} />
 
-      {/* End Balance */}
       <div className="flex items-center justify-between py-1">
         <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>
           {t("endBalance")}

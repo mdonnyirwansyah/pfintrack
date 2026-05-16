@@ -37,7 +37,7 @@ import {
 import { useTranslations, useLocale } from "next-intl";
 
 interface DaySummary {
-  date: string; // YYYY-MM-DD
+  date: string;
   income: number;
   expenses: number;
 }
@@ -99,7 +99,6 @@ function sortDailySummaries(summaries: DaySummary[], sortKey: SortKey): DaySumma
   });
 }
 
-/** Abbreviate large numbers: 1200000 → "1.2M", 50000 → "50K", 500 → "500" */
 function abbr(n: number): string {
   if (n >= 1_000_000) {
     const v = n / 1_000_000;
@@ -142,8 +141,8 @@ function DailyBarTooltip({ active, payload, label }: DailyBarTooltipProps) {
 
 interface DailySummarySectionProps {
   transactions: Transaction[];
-  start: string; // YYYY-MM-DD
-  end: string;   // YYYY-MM-DD
+  start: string;
+  end: string;
   selectedCategory?: string | null;
 }
 
@@ -189,10 +188,8 @@ export function DailySummarySection({
   const calEnd   = endOfWeek(endOfMonth(currentMonth));
   const calDays  = eachDayOfInterval({ start: calStart, end: calEnd });
 
-  // Chart data: sorted ascending by date, with short day label for X-axis
   const chartData = useMemo(() => {
     const sorted = [...rawSummaries].sort((a, b) => a.date.localeCompare(b.date));
-    // If > 20 days, only show every 5th label to avoid crowding
     const total = sorted.length;
     return sorted.map((s) => {
       const dayNum = Number.parseInt(s.date.slice(8, 10), 10);
@@ -284,7 +281,6 @@ export function DailySummarySection({
               radius={[2, 2, 0, 0]}
               maxBarSize={14}
               fill="var(--color-positive)"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onClick={(data: any) => {
                 const dateStr = (data as { date: string }).date;
                 const el = document.getElementById(`day-${dateStr}`);
@@ -298,7 +294,6 @@ export function DailySummarySection({
               radius={[2, 2, 0, 0]}
               maxBarSize={14}
               fill="var(--color-negative)"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onClick={(data: any) => {
                 const dateStr = (data as { date: string }).date;
                 const el = document.getElementById(`day-${dateStr}`);
@@ -316,7 +311,6 @@ export function DailySummarySection({
   function renderCalendarView() {
     return (
       <div className="glass rounded-[16px] p-3">
-        {/* Month navigator */}
         <div className="flex items-center justify-between mb-2">
           <button
             onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
@@ -343,7 +337,6 @@ export function DailySummarySection({
           </button>
         </div>
 
-        {/* Weekday headers — i18n */}
         <div className="grid grid-cols-7 mb-1">
           {WEEKDAY_KEYS.map((key) => (
             <div
@@ -356,7 +349,6 @@ export function DailySummarySection({
           ))}
         </div>
 
-        {/* Day cells */}
         <div className="grid grid-cols-7 gap-x-0.5 gap-y-1">
           {calDays.map((day) => {
             const dateStr = format(day, "yyyy-MM-dd");
@@ -422,7 +414,6 @@ export function DailySummarySection({
 
   return (
     <div className="space-y-3">
-      {/* Header + controls */}
       <div className="flex items-center justify-between px-1">
         <div className="flex flex-col gap-0.5">
           <h2 className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
@@ -439,7 +430,6 @@ export function DailySummarySection({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Sort pill — only in list view */}
           {view === "list" && (
             <SortPill
             value={sortKey}
@@ -453,7 +443,6 @@ export function DailySummarySection({
           />
           )}
 
-          {/* View toggle */}
           <div
             className="flex items-center rounded-full p-0.5 gap-0.5"
             style={{ background: "var(--bg-secondary)" }}

@@ -48,7 +48,6 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
       ? getCategorySuggestions(transactions, transaction.type, locale)
       : [];
 
-  // Loading
   if (transaction === undefined) {
     return (
       <>
@@ -66,7 +65,6 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     );
   }
 
-  // Not found or deleted
   if (!transaction?.is_active) {
     return (
       <>
@@ -164,7 +162,6 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     );
   }
 
-  // Income or Expense
   const handleIncomeExpenseSubmit = async (values: IncomeExpenseFormValues) => {
     setIsSubmitting(true);
     try {

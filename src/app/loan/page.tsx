@@ -13,7 +13,6 @@ import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 import type { LoanEntry } from "@/lib/types/loan";
 import { useTranslations } from "next-intl";
 
-// [10] Counterparty List
 export default function LoanPage() {
   const router = useRouter();
   const { counterparties, isLoading, loadCounterparties } =
@@ -24,7 +23,6 @@ export default function LoanPage() {
     loadCounterparties();
   }, [loadCounterparties]);
 
-  // Load all active entries and group by counterparty_id
   const [entriesByCounterparty, setEntriesByCounterparty] = useState<Record<string, LoanEntry[]>>({});
 
   useEffect(() => {
@@ -36,9 +34,8 @@ export default function LoanPage() {
       }
       setEntriesByCounterparty(map);
     });
-  }, [counterparties]); // re-compute when counterparties change (after mutations)
+  }, [counterparties]);
 
-  // Summary: total get (outstanding > 0) + total give (outstanding < 0) across active counterparties
   const { summaryGet, summaryGive } = useMemo(() => {
     let get = 0;
     let give = 0;
@@ -60,7 +57,6 @@ export default function LoanPage() {
     return { summaryGet: get, summaryGive: give };
   }, [counterparties, entriesByCounterparty]);
 
-  // Pre-compute aggregates once per render (O(n×m)) then sort (O(n log n))
   const sorted = useMemo(() => {
     const agg = new Map(
       counterparties.map((cp) => {
@@ -105,10 +101,8 @@ export default function LoanPage() {
       />
 
       <div className="px-4 pt-4 pb-4">
-        {/* Summary Bar */}
         <LoanSummaryBar totalGet={summaryGet} totalGive={summaryGive} />
 
-        {/* List */}
         {(() => {
           if (isLoading) {
             return (

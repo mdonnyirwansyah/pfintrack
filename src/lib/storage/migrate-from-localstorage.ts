@@ -1,4 +1,3 @@
-// anon_id: intentionally kept in localStorage. See PROP-0001 §Step 7.
 import { walletsIdbRepo } from "./wallets-idb";
 import { walletBalanceHistoryIdbRepo } from "./wallet-balance-history-idb";
 import { transactionsIdbRepo } from "./transactions-idb";
@@ -13,7 +12,6 @@ import type { CustomReport } from "@/lib/types/report";
 const STORAGE_VERSION_KEY = "storage_version";
 const STORAGE_VERSION_VALUE = "idb_v1";
 
-/** Synchronous check — safe to call during React lazy state init. */
 export function isMigrationDone(): boolean {
   if (globalThis.window === undefined) return true;
   return globalThis.localStorage.getItem(STORAGE_VERSION_KEY) === STORAGE_VERSION_VALUE;
@@ -79,12 +77,6 @@ async function migrateCustomReports(): Promise<void> {
   globalThis.localStorage.removeItem("custom_reports");
 }
 
-/**
- * One-time migration from localStorage to IndexedDB.
- *
- * Guards with a localStorage "storage_version" flag so it only runs once.
- * Each block migrates one key: read JSON from localStorage, putAll to IDB, remove from localStorage.
- */
 export async function runStorageMigration(): Promise<void> {
   if (globalThis.window === undefined) return;
 
@@ -98,6 +90,5 @@ export async function runStorageMigration(): Promise<void> {
   try { await migrateLoanEntries(); } catch (err) { console.warn("[migration] loan_entries migration failed:", err); }
   try { await migrateCustomReports(); } catch (err) { console.warn("[migration] custom_reports migration failed:", err); }
 
-  // Mark migration complete (only after ALL blocks succeed)
   globalThis.localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION_VALUE);
 }

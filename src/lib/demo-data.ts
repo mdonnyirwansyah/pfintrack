@@ -1,9 +1,3 @@
-/**
- * Demo Mode helpers — inject and clear realistic sample data.
- * Covers a full month (~30 days) with 50+ transactions across 3 wallets,
- * 3 loan counterparties, and 6 expense categories.
- */
-
 import { walletsRepo } from "@/lib/storage/wallets";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
@@ -14,14 +8,12 @@ import { STORAGE_BACKEND } from "@/lib/storage/config";
 import { idbClearStore } from "@/lib/storage/idb-client";
 import { writeKey } from "@/lib/storage/base";
 
-/** ISO date N days before today */
 function daysAgo(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
   return d.toISOString().slice(0, 10);
 }
 
-/** Mirror of useWalletActions.handleCreate: create wallet at 0, then apply initial balance via Balance Correction transaction. */
 async function createWalletWithBalance(
   name: string,
   wallet_type: Parameters<typeof walletsRepo.create>[0]["wallet_type"],
@@ -49,7 +41,6 @@ async function createWalletWithBalance(
   return wallet;
 }
 
-/** Mirror of useWalletActions.handleUpdate: apply a manual balance correction as a transaction. */
 async function applyBalanceCorrection(
   walletId: string,
   previousBalance: number,
@@ -89,24 +80,13 @@ type TxDef = {
 };
 
 export async function injectDemoData(): Promise<void> {
-  // ── Wallets ───────────────────────────────────────────────────────────────
-  // Each wallet is initialized with an opening balance via a Balance Correction transaction,
-  // mirroring the useWalletActions.handleCreate flow in production.
   const bca   = await createWalletWithBalance("BCA",   "bank",     3_500_000, 33);
-  const gopay = await createWalletWithBalance("GoPay", "e_wallet", 0,         33); // starts at 0
+  const gopay = await createWalletWithBalance("GoPay", "e_wallet", 0,         33);
   const tunai = await createWalletWithBalance("Tunai", "other",    750_000,   33);
 
-  // Simulate a manual BCA balance edit after reconciling with the passbook
-  // (discrepancy from an overlooked admin fee — mid-April)
   await applyBalanceCorrection(bca.id, 3_500_000, 3_450_000, 20, "09:00");
 
-  // ── Transactions — 1 month full (today = day 0, ~30 days back) ──────────
-  //
-  // Structure: monthly salary at month-start, regular top-ups, daily spending, monthly
-  // bills, entertainment, transportation, health, education, and freelance income.
-  //
   const txDefs: TxDef[] = [
-    // ── Week 1: Apr 1–7 (30–26 days ago) ───────────────────────────────
     { type: "income",   walletId: bca.id,   amount: 9_500_000, title: "Gaji Bulan April",        category: "Pendapatan",        daysBack: 32, time: "08:00", description: "Gaji bulanan April 2026" },
     { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 1_200_000, title: "Top Up GoPay",            category: "Transfer",          daysBack: 32, time: "08:15" },
     { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 700_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack: 32, time: "08:30" },
@@ -126,8 +106,6 @@ export async function injectDemoData(): Promise<void> {
     { type: "expense",  walletId: tunai.id, amount: 32_000,    title: "Sarapan Warung",           category: "Makanan & Minuman", daysBack: 27, time: "07:30" },
     { type: "expense",  walletId: bca.id,   amount: 85_000,    title: "Nonton Bioskop",           category: "Hiburan",           daysBack: 26, time: "19:30", description: "Nonton bareng teman" },
     { type: "expense",  walletId: gopay.id, amount: 68_000,    title: "Makan Siang",              category: "Makanan & Minuman", daysBack: 26, time: "12:15" },
-
-    // ── Week 2: Apr 8–14 (25–19 days ago) ──────────────────────────────
     { type: "expense",  walletId: gopay.id, amount: 45_000,    title: "Ojek Online",              category: "Transportasi",      daysBack: 25, time: "07:45" },
     { type: "expense",  walletId: bca.id,   amount: 125_000,   title: "Apotek",                   category: "Kesehatan",         daysBack: 25, time: "18:00", description: "Beli obat flu dan vitamin" },
     { type: "expense",  walletId: tunai.id, amount: 35_000,    title: "Kopi & Snack",             category: "Makanan & Minuman", daysBack: 24, time: "09:00" },
@@ -141,8 +119,6 @@ export async function injectDemoData(): Promise<void> {
     { type: "expense",  walletId: bca.id,   amount: 199_000,   title: "Kursus Online",            category: "Pendidikan",        daysBack: 20, time: "20:00", description: "Langganan platform belajar" },
     { type: "expense",  walletId: tunai.id, amount: 165_000,   title: "Bensin",                   category: "Transportasi",      daysBack: 19, time: "07:00" },
     { type: "expense",  walletId: gopay.id, amount: 88_000,    title: "Makan Malam",              category: "Makanan & Minuman", daysBack: 19, time: "19:00" },
-
-    // ── Week 3: Apr 15–21 (18–12 days ago) ─────────────────────────────
     { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 1_500_000, title: "Top Up GoPay",            category: "Transfer",          daysBack: 18, time: "08:00" },
     { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 400_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack: 18, time: "08:10" },
     { type: "expense",  walletId: gopay.id, amount: 48_000,    title: "Ojek Online",              category: "Transportasi",      daysBack: 18, time: "08:30" },
@@ -157,8 +133,6 @@ export async function injectDemoData(): Promise<void> {
     { type: "expense",  walletId: bca.id,   amount: 380_000,   title: "Peralatan Rumah",          category: "Belanja",           daysBack: 13, time: "15:00", description: "Beli ember dan peralatan bersih-bersih" },
     { type: "expense",  walletId: gopay.id, amount: 38_000,    title: "Kopi & Snack",             category: "Makanan & Minuman", daysBack: 13, time: "09:30" },
     { type: "expense",  walletId: gopay.id, amount: 92_000,    title: "GrabFood",                 category: "Makanan & Minuman", daysBack: 12, time: "12:00" },
-
-    // ── Week 4: Apr 22–30 (11–3 days ago) ──────────────────────────────
     { type: "expense",  walletId: tunai.id, amount: 165_000,   title: "Bensin",                   category: "Transportasi",      daysBack: 11, time: "07:00" },
     { type: "expense",  walletId: gopay.id, amount: 55_000,    title: "Ojek Online",              category: "Transportasi",      daysBack: 11, time: "08:00" },
     { type: "expense",  walletId: gopay.id, amount: 75_000,    title: "Makan Siang",              category: "Makanan & Minuman", daysBack: 10, time: "12:30" },
@@ -176,8 +150,6 @@ export async function injectDemoData(): Promise<void> {
     { type: "expense",  walletId: bca.id,   amount: 185_000,   title: "Cek Kesehatan",            category: "Kesehatan",         daysBack:  4, time: "10:00", description: "Medical check-up rutin" },
     { type: "expense",  walletId: tunai.id, amount: 165_000,   title: "Bensin",                   category: "Transportasi",      daysBack:  3, time: "07:00" },
     { type: "expense",  walletId: gopay.id, amount: 88_000,    title: "Makan Malam",              category: "Makanan & Minuman", daysBack:  3, time: "19:00" },
-
-    // ── Early May (2–0 days ago) ─────────────────────────────────────────
     { type: "income",   walletId: bca.id,   amount: 9_500_000, title: "Gaji Bulan Mei",           category: "Pendapatan",        daysBack:  2, time: "08:00", description: "Gaji bulanan Mei 2026" },
     { type: "transfer", walletId: bca.id,   destId: gopay.id,  amount: 600_000,   title: "Top Up GoPay",            category: "Transfer",          daysBack:  2, time: "08:15" },
     { type: "transfer", walletId: bca.id,   destId: tunai.id,  amount: 400_000,   title: "Ambil Tunai",             category: "Transfer",          daysBack:  2, time: "08:20" },
@@ -209,8 +181,6 @@ export async function injectDemoData(): Promise<void> {
     await applyTransactionToWallet(tx);
   }
 
-  // ── Loan counterparties & entries ─────────────────────────────────────────
-  // Budi — receivable (we lent money, not yet repaid)
   const budi = await loanCounterpartiesRepo.create({ name: "Budi" });
   const budiloan1 = await loanEntriesRepo.create({
     counterparty_id: budi.id,
@@ -233,7 +203,6 @@ export async function injectDemoData(): Promise<void> {
   });
   await applyLoanEntryToWallet(budiloan2);
 
-  // Sinta — payable (we borrowed, fully repaid)
   const sinta = await loanCounterpartiesRepo.create({ name: "Sinta" });
   const sintaloan1 = await loanEntriesRepo.create({
     counterparty_id: sinta.id,
@@ -256,7 +225,6 @@ export async function injectDemoData(): Promise<void> {
   });
   await applyLoanEntryToWallet(sintaloan2);
 
-  // Andi — receivable for business capital, not yet repaid
   const andi = await loanCounterpartiesRepo.create({ name: "Andi" });
   const andiloan1 = await loanEntriesRepo.create({
     counterparty_id: andi.id,
@@ -269,7 +237,6 @@ export async function injectDemoData(): Promise<void> {
   });
   await applyLoanEntryToWallet(andiloan1);
 
-  // ── Set demo flag ─────────────────────────────────────────────────────────
   if (globalThis.window !== undefined) {
     globalThis.localStorage.setItem("pfintrack_demo_mode", "true");
   }

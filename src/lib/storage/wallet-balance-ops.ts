@@ -1,14 +1,3 @@
-/**
- * Cross-cutting helpers for updating wallet.balance as a side-effect
- * of Transaction and Loan operations.
- *
- * CRITICAL INVARIANTS (§6.3):
- *  - These helpers MUST NOT write to `wallet_balance_history`.
- *  - `wallet_balance_history` is ONLY written by the Wallet module
- *    when a user manually edits balance via the Edit Wallet screen.
- *  - All writes here go directly to `wallets` only.
- */
-
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanEntry } from "@/lib/types/loan";
 import type { Wallet } from "@/lib/types/wallet";
@@ -48,16 +37,6 @@ async function applyDelta(walletId: string, delta: number): Promise<void> {
   }
 }
 
-/**
- * Atomic two-wallet balance mutation for transfers.
- * On IDB backend both writes happen inside a single readwrite transaction:
- * either both balances commit or neither does (no half-applied transfer if
- * the tab is closed mid-operation).
- *
- * If either wallet id is missing, it is skipped and a warning is logged —
- * matching the existing `applyDelta` behavior so callers don't see new
- * failure modes.
- */
 async function applyTransferDeltas(
   sourceId: string,
   sourceDelta: number,
@@ -93,7 +72,6 @@ async function applyTransferDeltas(
       },
     );
   } else {
-    // localStorage is synchronous — already atomic at the JS-tick level.
     const all = readKey<Wallet>(WALLETS_KEY);
     const now = new Date().toISOString();
     const apply = (id: string, delta: number) => {
@@ -116,16 +94,6 @@ async function applyTransferDeltas(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Transaction helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Apply a transaction's effect to wallet balance(s).
- * - income:   wallet.balance += amount
- * - expense:  wallet.balance -= amount
- * - transfer: source -= amount, destination += amount
- */
 export async function applyTransactionToWallet(tx: Transaction): Promise<void> {
   switch (tx.type) {
     case "income":
@@ -145,10 +113,6 @@ export async function applyTransactionToWallet(tx: Transaction): Promise<void> {
   }
 }
 
-/**
- * Rollback (reverse) a transaction's effect from wallet balance(s).
- * Used before editing or soft-deleting a transaction.
- */
 export async function rollbackTransactionFromWallet(tx: Transaction): Promise<void> {
   switch (tx.type) {
     case "income":
@@ -168,15 +132,6 @@ export async function rollbackTransactionFromWallet(tx: Transaction): Promise<vo
   }
 }
 
-// ---------------------------------------------------------------------------
-// Loan entry helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Apply a loan entry's effect to wallet balance (if wallet_id is set).
- * - give: wallet.balance -= amount  (user paid out)
- * - get:  wallet.balance += amount  (user received)
- */
 export async function applyLoanEntryToWallet(entry: LoanEntry): Promise<void> {
   if (!entry.wallet_id) return;
 
@@ -190,10 +145,6 @@ export async function applyLoanEntryToWallet(entry: LoanEntry): Promise<void> {
   }
 }
 
-/**
- * Rollback (reverse) a loan entry's effect from wallet balance.
- * Used before editing or soft-deleting a loan entry.
- */
 export async function rollbackLoanEntryFromWallet(entry: LoanEntry): Promise<void> {
   if (!entry.wallet_id) return;
 

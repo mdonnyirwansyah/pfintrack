@@ -11,7 +11,6 @@ import type { LoanCounterparty } from "@/lib/types/loan";
 import { useTranslations } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
-// [12] Add Get Entry
 function AddGetContent() {
   const router = useRouter();
   const searchParams = useSearchParams();

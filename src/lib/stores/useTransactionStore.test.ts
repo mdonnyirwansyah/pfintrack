@@ -26,8 +26,6 @@ function tx(overrides: Partial<Transaction> & { type: Transaction["type"] }): Tr
   };
 }
 
-// ── selectByDate ─────────────────────────────────────────────────────────────
-
 describe("selectByDate", () => {
   it("returns only transactions for the given date", () => {
     const txs = [
@@ -65,8 +63,6 @@ describe("selectByDate", () => {
     expect(selectByDate(txs, "2026-05-10")).toEqual([]);
   });
 });
-
-// ── computeDailySummary ──────────────────────────────────────────────────────
 
 describe("computeDailySummary", () => {
   it("sums income and expenses correctly", () => {
@@ -116,8 +112,6 @@ describe("computeDailySummary", () => {
   });
 });
 
-// ── getTitleSuggestions ──────────────────────────────────────────────────────
-
 describe("getTitleSuggestions", () => {
   it("returns unique title+category pairs for the given type", () => {
     const txs = [
@@ -166,8 +160,6 @@ describe("getTitleSuggestions", () => {
   });
 });
 
-// ── getCategorySuggestions ───────────────────────────────────────────────────
-
 describe("getCategorySuggestions", () => {
   it("returns user categories when transactions exist (no defaults mixed in)", () => {
     const txs = [
@@ -175,7 +167,6 @@ describe("getCategorySuggestions", () => {
     ];
     const result = getCategorySuggestions(txs, "expense", "en");
     expect(result).toContain("Hobi");
-    // When user has categories, defaults are NOT included
     expect(result).not.toContain("Food & Drinks");
   });
 

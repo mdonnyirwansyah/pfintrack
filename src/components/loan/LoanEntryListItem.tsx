@@ -26,7 +26,6 @@ export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListI
         minHeight: "var(--tap-target-min)",
       }}
     >
-      {/* Date + note */}
       <div className="flex-1 min-w-0">
         <p
           className="text-[10px] font-medium truncate"
@@ -50,7 +49,6 @@ export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListI
         )}
       </div>
 
-      {/* Amount */}
       <div className="flex items-center gap-1 shrink-0">
         <span
           className="text-[10px] font-semibold tabular-nums"

@@ -98,7 +98,6 @@ export async function deleteAllData(): Promise<void> {
     writeKey("loan_entries", []);
     writeKey("custom_reports", []);
   }
-  // Reset onboarding flags so welcome screen shows again
   localStorage.removeItem("pfintrack_demo_mode");
   localStorage.removeItem("pfintrack_welcomed");
 }

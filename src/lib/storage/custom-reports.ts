@@ -75,10 +75,6 @@ const customReportsLsRepo = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
-// ---------------------------------------------------------------------------
-
 export const customReportsRepo = {
   async getAll(): Promise<CustomReport[]> {
     if (STORAGE_BACKEND === "idb") return customReportsIdbRepo.getAll();

@@ -35,7 +35,6 @@ export const CounterpartyListItem = memo(function CounterpartyListItem({
   const isPaidOff =
     counterparty.manual_paid_off || outstanding === 0;
 
-  // Find most-recent entry in O(n) via reduce instead of O(n log n) sort
   const mostRecent = entries.reduce<LoanEntry | null>((best, e) => {
     if (!best) return e;
     const eKey = `${e.transaction_date}T${e.transaction_time}`;
@@ -52,14 +51,11 @@ export const CounterpartyListItem = memo(function CounterpartyListItem({
         minHeight: 48,
       }}
     >
-      {/* Icon */}
       <IconBadge
         icon={User}
         iconColor="var(--color-brand)"
         background="var(--color-brand-soft)"
       />
-
-      {/* Name + subtitle */}
       <div className="flex-1 min-w-0">
         <p
           className="text-[10px] font-semibold truncate"
@@ -75,7 +71,6 @@ export const CounterpartyListItem = memo(function CounterpartyListItem({
         </p>
       </div>
 
-      {/* Outstanding / Paid off */}
       <div className="flex items-center gap-1 shrink-0">
         {(() => {
           if (isPaidOff) {

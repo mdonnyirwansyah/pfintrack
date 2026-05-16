@@ -53,7 +53,6 @@ export function AppHeader({
         ...style,
       }}
     >
-      {/* Left: back button or spacer */}
       <div className="w-10 flex items-center">
         {showBack && (
           <button
@@ -71,7 +70,6 @@ export function AppHeader({
         )}
       </div>
 
-      {/* Center: title + subtitle */}
       <div className="flex-1 flex flex-col items-center justify-center text-center">
         <h1
           className="text-[16px] font-semibold leading-tight truncate max-w-[200px]"
@@ -89,7 +87,6 @@ export function AppHeader({
         )}
       </div>
 
-      {/* Right: action buttons */}
       <div className="min-w-[44px] flex items-center justify-end">
         {actions}
       </div>

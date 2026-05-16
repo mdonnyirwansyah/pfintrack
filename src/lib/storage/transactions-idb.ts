@@ -15,24 +15,16 @@ import type { CreateTransactionInput, UpdateTransactionInput } from "./transacti
 const STORE = "transactions" as const;
 
 export const transactionsIdbRepo = {
-  /** Returns only is_active=true records */
   async getAll(): Promise<Transaction[]> {
     const all = await idbGetAll<Transaction>(STORE);
     return all.filter((t) => t.is_active);
   },
 
-  /** Returns active transactions for a specific date (YYYY-MM-DD) */
   async getByDate(date: string): Promise<Transaction[]> {
     const records = await idbGetAllByIndex<Transaction>(STORE, "by_date", date);
     return records.filter((t) => t.is_active);
   },
 
-  /**
-   * Returns active transactions within an inclusive date range (YYYY-MM-DD).
-   * Uses `IDBKeyRange.bound` on the `by_date` index — IndexedDB skips
-   * out-of-range rows at the index level, so this is O(matching rows)
-   * instead of O(all transactions).
-   */
   async getByDateRange(
     startDate: string,
     endDate: string,
@@ -46,10 +38,6 @@ export const transactionsIdbRepo = {
     return records.filter((t) => t.is_active);
   },
 
-  /**
-   * Returns active transactions where wallet_id OR destination_wallet_id matches.
-   * Runs two index queries then deduplicates on id.
-   */
   async getByWalletId(walletId: string): Promise<Transaction[]> {
     const [bySource, byDest] = await Promise.all([
       idbGetAllByIndex<Transaction>(STORE, "by_wallet_id", walletId),
@@ -112,7 +100,6 @@ export const transactionsIdbRepo = {
     if (!updated) throw new Error(`Transaction not found: ${id}`);
   },
 
-  /** For migration runner — bulk-write records without transformation */
   async putAll(records: Transaction[]): Promise<void> {
     await idbPutAll<Transaction>(STORE, records);
   },

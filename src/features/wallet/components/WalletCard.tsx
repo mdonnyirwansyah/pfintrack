@@ -38,14 +38,12 @@ export const WalletCard = memo(function WalletCard({ wallet, onPress }: WalletCa
       className="w-full glass rounded-[16px] px-4 py-2.5 text-left transition-all active:scale-[0.98] flex items-center gap-2.5"
       style={{ minHeight: 48 }}
     >
-      {/* Icon */}
       <IconBadge
         icon={Icon}
         iconColor="var(--color-brand)"
         background="var(--color-brand-soft)"
       />
 
-      {/* Name + type */}
       <div className="flex-1 min-w-0">
         <p
           className="text-[10px] font-semibold truncate"
@@ -58,7 +56,6 @@ export const WalletCard = memo(function WalletCard({ wallet, onPress }: WalletCa
         </p>
       </div>
 
-      {/* Balance + chevron */}
       <div className="flex-shrink-0 flex items-center gap-1.5">
         <span
           className="text-[10px] font-semibold tabular-nums"

@@ -29,9 +29,9 @@ interface MonthlyOverviewChartProps {
 }
 
 interface MonthData {
-  label: string; // Short month label e.g. "May" / "Mei"
-  start: string; // YYYY-MM-01
-  end: string;   // YYYY-MM-DD (last day)
+  label: string;
+  start: string;
+  end: string;
   income: number;
   expenses: number;
 }

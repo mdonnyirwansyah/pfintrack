@@ -17,8 +17,6 @@ import {
   currentMonthEnd,
 } from "./calculations";
 
-// ── Fixtures ────────────────────────────────────────────────────────────────
-
 function tx(overrides: Partial<Transaction> & { type: Transaction["type"] }): Transaction {
   return {
     id: randomUUID(),
@@ -73,8 +71,6 @@ function hist(overrides: Partial<WalletBalanceHistory>): WalletBalanceHistory {
 
 const PERIOD = { start: "2026-05-01", end: "2026-05-31" };
 
-// ── calcExpenses ─────────────────────────────────────────────────────────────
-
 describe("calcExpenses", () => {
   it("sums active expense transactions in period", () => {
     const txs = [
@@ -109,8 +105,6 @@ describe("calcExpenses", () => {
   });
 });
 
-// ── calcIncome ───────────────────────────────────────────────────────────────
-
 describe("calcIncome", () => {
   it("sums active income transactions in period", () => {
     const txs = [
@@ -130,8 +124,6 @@ describe("calcIncome", () => {
     expect(calcIncome(txs, PERIOD.start, PERIOD.end)).toBe(0);
   });
 });
-
-// ── calcLoan ─────────────────────────────────────────────────────────────────
 
 describe("calcLoan", () => {
   it("returns null when no loan entries in period", () => {
@@ -173,8 +165,6 @@ describe("calcLoan", () => {
   });
 });
 
-// ── calcBalanceCorrection ────────────────────────────────────────────────────
-
 describe("calcBalanceCorrection", () => {
   it("returns null for empty history", () => {
     expect(calcBalanceCorrection([], PERIOD.start, PERIOD.end)).toBeNull();
@@ -207,8 +197,6 @@ describe("calcBalanceCorrection", () => {
   });
 });
 
-// ── calcPeriodSummary ────────────────────────────────────────────────────────
-
 describe("calcPeriodSummary", () => {
   it("balance = income − expenses", () => {
     const txs = [
@@ -231,8 +219,6 @@ describe("calcPeriodSummary", () => {
     expect(summary.balanceCorrection).toBe(50_000);
   });
 });
-
-// ── calcCategoryBreakdown ────────────────────────────────────────────────────
 
 describe("calcCategoryBreakdown", () => {
   it("returns empty array when no transactions", () => {
@@ -304,8 +290,6 @@ describe("calcCategoryBreakdown", () => {
   });
 });
 
-// ── getTransactionsForCategory ───────────────────────────────────────────────
-
 describe("getTransactionsForCategory", () => {
   it("returns transactions matching specific category", () => {
     const txs = [
@@ -357,8 +341,6 @@ describe("getTransactionsForCategory", () => {
   });
 });
 
-// ── generateMonthList ────────────────────────────────────────────────────────
-
 describe("generateMonthList", () => {
   it("returns empty array for no transactions", () => {
     expect(generateMonthList([])).toEqual([]);
@@ -381,7 +363,7 @@ describe("generateMonthList", () => {
       tx({ type: "income", transaction_date: "2026-03-15" }),
     ];
     const result = generateMonthList(txs);
-    expect(result).toHaveLength(3); // May, Apr, Mar
+    expect(result).toHaveLength(3);
     expect(result[0].start).toBe("2026-05-01");
     expect(result[2].start).toBe("2026-03-01");
   });
@@ -395,8 +377,6 @@ describe("generateMonthList", () => {
     expect(result).toHaveLength(1);
   });
 });
-
-// ── calculateMonthlySummary ──────────────────────────────────────────────────
 
 describe("calculateMonthlySummary", () => {
   it("calculates income, expenses, balance for a month", () => {
@@ -412,13 +392,13 @@ describe("calculateMonthlySummary", () => {
 
   it("startBalance accumulates transactions before period", () => {
     const txs = [
-      tx({ type: "income", amount: 3_000_000, transaction_date: "2026-04-10" }), // before
-      tx({ type: "expense", amount: 500_000, transaction_date: "2026-04-15" }), // before
-      tx({ type: "income", amount: 1_000_000, transaction_date: "2026-05-10" }), // in period
+      tx({ type: "income", amount: 3_000_000, transaction_date: "2026-04-10" }),
+      tx({ type: "expense", amount: 500_000, transaction_date: "2026-04-15" }),
+      tx({ type: "income", amount: 1_000_000, transaction_date: "2026-05-10" }),
     ];
     const result = calculateMonthlySummary(txs, [], [], PERIOD.start, PERIOD.end);
-    expect(result.startBalance).toBe(2_500_000); // 3M - 500K
-    expect(result.endBalance).toBe(3_500_000); // 2.5M + 1M
+    expect(result.startBalance).toBe(2_500_000);
+    expect(result.endBalance).toBe(3_500_000);
   });
 
   it("endBalance includes balanceCorrection", () => {
@@ -430,28 +410,23 @@ describe("calculateMonthlySummary", () => {
   });
 
   it("startBalance accumulates balance corrections before period", () => {
-    // Covers prevCorrections reducer: history entries before period.start
-    // must be summed into the carried-over startBalance.
     const history = [
-      hist({ delta: 150_000, corrected_at: "2026-04-05T10:00:00.000Z" }), // before
-      hist({ delta: -50_000, corrected_at: "2026-04-20T10:00:00.000Z" }), // before
-      hist({ delta: 999_999, corrected_at: "2026-05-10T10:00:00.000Z" }), // in period (ignored for prevCorrections)
-      hist({ delta: 77_000, corrected_at: "2026-03-01T10:00:00.000Z", is_active: false }), // inactive
+      hist({ delta: 150_000, corrected_at: "2026-04-05T10:00:00.000Z" }),
+      hist({ delta: -50_000, corrected_at: "2026-04-20T10:00:00.000Z" }),
+      hist({ delta: 999_999, corrected_at: "2026-05-10T10:00:00.000Z" }),
+      hist({ delta: 77_000, corrected_at: "2026-03-01T10:00:00.000Z", is_active: false }),
     ];
     const result = calculateMonthlySummary([], [], history, PERIOD.start, PERIOD.end);
-    expect(result.startBalance).toBe(100_000); // 150K + (-50K)
+    expect(result.startBalance).toBe(100_000);
     expect(result.balanceCorrection).toBe(999_999);
-    expect(result.endBalance).toBe(1_099_999); // 100K + 0 (no in-period tx) + 999_999
+    expect(result.endBalance).toBe(1_099_999);
   });
 });
-
-// ── currentMonthStart / currentMonthEnd ──────────────────────────────────────
 
 describe("currentMonthStart", () => {
   it("returns first day of current month in YYYY-MM-DD", () => {
     const result = currentMonthStart();
     expect(result).toMatch(/^\d{4}-\d{2}-01$/);
-    // Should be today's year and month
     const now = new Date();
     const expected = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
     expect(result).toBe(expected);
@@ -462,7 +437,6 @@ describe("currentMonthEnd", () => {
   it("returns last day of current month in YYYY-MM-DD", () => {
     const result = currentMonthEnd();
     expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    // Day should be 28–31
     const day = Number.parseInt(result.split("-")[2], 10);
     expect(day).toBeGreaterThanOrEqual(28);
     expect(day).toBeLessThanOrEqual(31);

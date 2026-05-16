@@ -8,14 +8,6 @@ interface LoanSummaryBarProps {
   readonly totalGive: number;
 }
 
-/**
- * Summary bar untuk halaman utama Loan.
- * Konsep warna sama dengan SummaryBar di transactions:
- * - Label  : var(--text-secondary)
- * - Get    : var(--color-positive)
- * - Give   : var(--color-negative)
- * - Balance: dinamis berdasarkan nilai
- */
 export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
   const t = useTranslations("loan.summary");
   const balance = totalGive - totalGet;
@@ -40,7 +32,6 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
       className="glass flex rounded-[16px] overflow-hidden mb-4"
       style={{ minHeight: 64 }}
     >
-      {/* Get column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
@@ -57,13 +48,11 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
         </span>
       </div>
 
-      {/* Divider */}
       <div
         className="w-px self-stretch my-2"
         style={{ background: "var(--divider)" }}
       />
 
-      {/* Give column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
@@ -80,13 +69,11 @@ export function LoanSummaryBar({ totalGet, totalGive }: LoanSummaryBarProps) {
         </span>
       </div>
 
-      {/* Divider */}
       <div
         className="w-px self-stretch my-2"
         style={{ background: "var(--divider)" }}
       />
 
-      {/* Balance column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"

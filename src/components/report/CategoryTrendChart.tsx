@@ -95,7 +95,6 @@ export function CategoryTrendChart({
       bars.push({ label, fullLabel, total });
     }
 
-    // Stats — only from months with data
     const withData = bars.filter((b) => b.total > 0);
     const avg = withData.length > 0
       ? withData.reduce((s, b) => s + b.total, 0) / withData.length
@@ -172,7 +171,6 @@ export function CategoryTrendChart({
       </ResponsiveContainer> : null}
       </div>
 
-      {/* Stats */}
       <div className="space-y-1 pt-1">
         <div className="flex items-center justify-between">
           <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>

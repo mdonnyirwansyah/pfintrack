@@ -17,7 +17,6 @@ import { toast } from "sonner";
 import { transactionsRepo } from "@/lib/storage/transactions";
 import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 
-// [9] Edit Wallet
 export default function EditWalletPage({
   params,
 }: {
@@ -71,7 +70,6 @@ export default function EditWalletPage({
     router.push("/wallet");
   };
 
-  // For duplicate name check: exclude the current wallet from the check
   const checkNameTaken = (name: string) => isNameTaken(name, wallet?.id);
 
   if (notFound) {
@@ -140,7 +138,6 @@ export default function EditWalletPage({
       <AppHeader title={t("editTitle")} showBack actions={headerActions} />
 
       <div className="px-4 py-4">
-        {/* Current balance info */}
         <div
           className="glass rounded-[16px] px-4 py-3 mb-4 flex items-center justify-between"
           style={{}}

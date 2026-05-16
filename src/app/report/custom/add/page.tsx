@@ -23,7 +23,7 @@ function getDefaultEndDate(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
-const MAX_RANGE_DAYS = 10 * 365 + 3; // ~10 years including leap years
+const MAX_RANGE_DAYS = 10 * 365 + 3;
 
 export default function AddCustomReportPage() {
   const router = useRouter();
@@ -108,7 +108,6 @@ export default function AddCustomReportPage() {
       <AppHeader title={t("addReport")} showBack />
 
       <form onSubmit={handleSubmit} className="px-4 py-4 space-y-5">
-        {/* Report Name */}
         <div className="space-y-1.5">
           <label
             className="text-[12px] font-medium"
@@ -149,7 +148,6 @@ export default function AddCustomReportPage() {
           )}
         </div>
 
-        {/* Start Date */}
         <div className="space-y-1.5">
           <label
             className="text-[12px] font-medium"
@@ -195,7 +193,6 @@ export default function AddCustomReportPage() {
           )}
         </div>
 
-        {/* End Date */}
         <div className="space-y-1.5">
           <label
             className="text-[12px] font-medium"
@@ -241,7 +238,6 @@ export default function AddCustomReportPage() {
           )}
         </div>
 
-        {/* Save button */}
         <div className="flex justify-end pt-2">
           <button
             type="submit"

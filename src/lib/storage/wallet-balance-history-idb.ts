@@ -13,7 +13,6 @@ import type { CreateWalletBalanceHistoryInput } from "./wallet-balance-history";
 const STORE = "wallet_balance_history" as const;
 
 export const walletBalanceHistoryIdbRepo = {
-  /** Returns only is_active=true records */
   async getAll(): Promise<WalletBalanceHistory[]> {
     const all = await idbGetAll<WalletBalanceHistory>(STORE);
     return all.filter((r) => r.is_active);
@@ -23,7 +22,6 @@ export const walletBalanceHistoryIdbRepo = {
     return idbGetAll<WalletBalanceHistory>(STORE);
   },
 
-  /** Get all active history records for a specific wallet */
   async getByWalletId(walletId: string): Promise<WalletBalanceHistory[]> {
     const records = await idbGetAllByIndex<WalletBalanceHistory>(
       STORE,
@@ -61,7 +59,6 @@ export const walletBalanceHistoryIdbRepo = {
     }));
   },
 
-  /** For migration runner — bulk-write records without transformation */
   async putAll(records: WalletBalanceHistory[]): Promise<void> {
     await idbPutAll<WalletBalanceHistory>(STORE, records);
   },

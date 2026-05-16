@@ -27,10 +27,8 @@ interface IncomeExpenseFormProps {
   readonly categorySuggestions: string[];
   readonly isSubmitting: boolean;
   readonly isEditMode?: boolean;
-  /** If true, hides title, category and description fields (e.g. Balance Correction) */
   readonly hideMetaFields?: boolean;
   readonly onSubmit: (values: IncomeExpenseFormValues) => void;
-  /** Extra actions rendered after the form (e.g. delete button on edit page) */
   readonly footerActions?: React.ReactNode;
 }
 
@@ -149,9 +147,7 @@ export function IncomeExpenseForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
-      {/* Date & Time Row */}
       <div className="flex gap-2 w-full">
-        {/* Date */}
         <div className="flex-[3] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             {t("form.date")}
@@ -175,7 +171,6 @@ export function IncomeExpenseForm({
           )}
         </div>
 
-        {/* Time */}
         <div className="flex-[2] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             {t("form.time")}
@@ -200,7 +195,6 @@ export function IncomeExpenseForm({
         </div>
       </div>
 
-      {/* Wallet selector */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           {t("form.wallet")}
@@ -233,7 +227,6 @@ export function IncomeExpenseForm({
         )}
       </div>
 
-      {/* Amount */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           {t("form.amount")}
@@ -319,7 +312,6 @@ export function IncomeExpenseForm({
         )}
       </div>
 
-      {/* Title */}
       {!hideMetaFields && (
         <div>
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
@@ -356,7 +348,6 @@ export function IncomeExpenseForm({
         </div>
       )}
 
-      {/* Category */}
       {!hideMetaFields && (
         <div>
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
@@ -393,7 +384,6 @@ export function IncomeExpenseForm({
         </div>
       )}
 
-      {/* Description */}
       {!hideMetaFields && (
         <div>
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
@@ -421,10 +411,8 @@ export function IncomeExpenseForm({
         </div>
       )}
 
-      {/* Footer actions */}
       {footerActions}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={isSubmitting}
@@ -438,7 +426,6 @@ export function IncomeExpenseForm({
         {isSubmitting ? tc("saving") : resolvedSubmitLabel}
       </button>
 
-      {/* Wallet picker */}
       <WalletPicker
         open={isWalletOpen}
         onClose={() => setIsWalletOpen(false)}

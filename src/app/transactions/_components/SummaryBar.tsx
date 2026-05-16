@@ -11,7 +11,6 @@ interface SummaryBarProps {
 
 export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
   const t = useTranslations("transactions.summary");
-  // Income: "+" only if > 0
   const incomePrefix = income > 0 ? "+ " : "";
   const expensesPrefix = expenses > 0 ? "- " : "";
   let balancePrefix: string;
@@ -32,7 +31,6 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
       className="mx-4 mb-3 glass rounded-[16px] flex overflow-hidden"
       aria-label={t("ariaLabel")}
     >
-      {/* Income */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
           className="text-[10px] font-medium mb-1"
@@ -49,10 +47,8 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         </span>
       </div>
 
-      {/* Divider */}
       <div className="w-px self-stretch my-2" style={{ background: "var(--divider)" }} />
 
-      {/* Expenses */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
           className="text-[10px] font-medium mb-1"
@@ -69,10 +65,8 @@ export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {
         </span>
       </div>
 
-      {/* Divider */}
       <div className="w-px self-stretch my-2" style={{ background: "var(--divider)" }} />
 
-      {/* Balance */}
       <div className="flex-1 flex flex-col items-center py-3 px-2">
         <span
           className="text-[10px] font-medium mb-1"

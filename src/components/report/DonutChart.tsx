@@ -9,12 +9,9 @@ interface DonutChartProps {
   readonly data: CategoryBreakdown[];
   readonly onCategorySelect?: (category: string) => void;
   readonly selectedCategory?: string | null;
-  /** Override the default "Total" center label when no category is selected */
   readonly centerLabel?: string;
 }
 
-// Active segment — slightly expanded with glow shadow
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderActiveShape = (props: any) => {
   const {
     cx, cy, innerRadius, outerRadius,
@@ -28,7 +25,6 @@ const renderActiveShape = (props: any) => {
 
   return (
     <g>
-      {/* Glow layer behind the segment */}
       <Sector
         cx={cx}
         cy={cy}
@@ -39,7 +35,6 @@ const renderActiveShape = (props: any) => {
         fill={fill}
         opacity={0.2}
       />
-      {/* Active segment — expanded */}
       <Sector
         cx={cx}
         cy={cy}
@@ -75,7 +70,6 @@ export function DonutChart({
 
   return (
     <div className="flex flex-col items-center w-full">
-      {/* Donut + center label */}
       <div
         role="img"
         aria-label={`${centerLabelData.label}: ${formatIDR(centerLabelData.amount)}`}
@@ -92,7 +86,6 @@ export function DonutChart({
               paddingAngle={2}
               dataKey="total"
               strokeWidth={0}
-              // @ts-expect-error recharts typings missing activeIndex on PieProps in some versions
               activeIndex={activeIndex >= 0 ? activeIndex : undefined}
               activeShape={renderActiveShape}
             >
@@ -113,7 +106,6 @@ export function DonutChart({
           </PieChart>
         </ResponsiveContainer> : null}
 
-        {/* Center label overlay */}
         <div
           style={{
             position: "absolute",
@@ -140,7 +132,6 @@ export function DonutChart({
         </div>
       </div>
 
-      {/* Legend */}
       <div className="w-full space-y-1 mt-1">
         {data.map((entry) => {
           const isActive = selectedCategory === entry.category;
@@ -158,7 +149,6 @@ export function DonutChart({
               }}
               onClick={() => onCategorySelect?.(entry.category)}
             >
-              {/* Color dot */}
               <span
                 className="flex-shrink-0 rounded-full"
                 style={{
@@ -170,7 +160,6 @@ export function DonutChart({
                 }}
               />
 
-              {/* Category name */}
               <span
                 className="flex-1 text-[13px] text-left font-medium truncate"
                 style={{
@@ -181,7 +170,6 @@ export function DonutChart({
                 {entry.category}
               </span>
 
-              {/* Percentage */}
               <span
                 className="text-[11px] font-semibold tabular-nums"
                 style={{ color: isActive ? entry.color : "var(--text-tertiary)" }}
@@ -189,7 +177,6 @@ export function DonutChart({
                 {entry.percentage.toFixed(1)}%
               </span>
 
-              {/* Amount */}
               <span
                 className="text-[13px] font-semibold tabular-nums ml-1"
                 style={{ color: isActive ? entry.color : "var(--text-primary)" }}

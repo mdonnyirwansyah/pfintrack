@@ -27,7 +27,6 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: Rea
 
   return (
     <>
-      {/* Overlay */}
       {open && (
         <button
           type="button"
@@ -39,7 +38,6 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: Rea
         />
       )}
 
-      {/* Sub-actions */}
       <div
         className="fixed right-4 z-50 flex flex-col-reverse items-end gap-3"
         style={{
@@ -78,7 +76,6 @@ export function FABExpandable({ actions, className, "data-tour": dataTour }: Rea
           ))}
       </div>
 
-      {/* Main FAB */}
       <button
         type="button"
         onClick={toggle}

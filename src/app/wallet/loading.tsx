@@ -3,13 +3,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function WalletLoading() {
   return (
     <div className="px-4 py-4">
-      {/* Total balance row */}
       <div className="glass rounded-[16px] px-4 mb-4 flex items-center justify-between" style={{ minHeight: 64 }}>
         <Skeleton className="h-4 w-24 rounded" />
         <Skeleton className="h-4 w-28 rounded" />
       </div>
 
-      {/* Wallet cards */}
       <div className="space-y-3">
         {["wlt-a", "wlt-b", "wlt-c", "wlt-d"].map((id) => (
           <div key={id} className="glass rounded-[16px] px-4 py-2.5 flex items-center gap-2.5">

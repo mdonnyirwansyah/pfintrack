@@ -124,7 +124,6 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
         style={{ minHeight: 48 }}
         {...longPressHandlers}
       >
-        {/* Icon */}
         <div
           className="flex-shrink-0 w-9 h-9 rounded-[10px] flex items-center justify-center"
           style={{ background: iconBg, border: iconBorder }}
@@ -141,7 +140,6 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
           )}
         </div>
 
-        {/* Details */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <span
@@ -160,7 +158,6 @@ export const TransactionItem = memo(function TransactionItem({ transaction, wall
           </div>
 
           {isBalanceCorrection ? (
-            /* Balance Correction: wallet badge + time in one compact row */
             <div className="flex items-center justify-between gap-2 mt-0.5">
               {wallet ? (
                 <span

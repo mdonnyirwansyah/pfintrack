@@ -25,7 +25,6 @@ function CategoryTrendContent() {
     void transactionsRepo.getAll().then(setTransactions);
   }, []);
 
-  // Recent transactions: only current month, expense, matching category, sorted DESC
   const start = currentMonthStart();
   const end = currentMonthEnd();
 
@@ -69,13 +68,11 @@ function CategoryTrendContent() {
       <AppHeader title={categoryName} showBack />
 
       <div className="px-4 py-4 space-y-4">
-        {/* 6-month trend chart */}
         <CategoryTrendChart
           transactions={transactions}
           categoryName={categoryName}
         />
 
-        {/* Recent transactions in current month */}
         <div className="space-y-2">
           <h2
             className="text-[12px] font-semibold px-1"

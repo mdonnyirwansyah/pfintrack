@@ -31,12 +31,10 @@ export interface LoanEntryFormErrors {
 interface LoanEntryFormProps {
   readonly type: LoanEntryType;
   readonly initialValues?: Partial<LoanEntryFormValues>;
-  /** If true, name field is pre-filled and locked (cannot be edited) */
   readonly isNameLocked?: boolean;
   readonly wallets: Wallet[];
   readonly isSubmitting: boolean;
   readonly isEditMode?: boolean;
-  /** If provided, shows a Delete button (edit mode) */
   readonly onDelete?: () => void;
   readonly onSubmit: (values: LoanEntryFormValues) => void;
 }
@@ -83,7 +81,6 @@ export function LoanEntryForm({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const noteRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-open wallet picker on mount if it's add mode
   useEffect(() => {
     if (!initialValues?.wallet_id) {
       setIsWalletPickerOpen(true);
@@ -92,8 +89,6 @@ export function LoanEntryForm({
 
   const selectedWallet = wallets.find((w) => w.id === values.wallet_id) ?? null;
   const parsedAmount = parseIDR(values.amount) || 0;
-  // In edit mode the wallet balance already reflects the original entry being deducted,
-  // so add it back before comparing to avoid a false "insufficient" warning.
   const originalAmount = isEditMode ? (parseIDR(initialValues?.amount ?? "0") || 0) : 0;
   const insufficientBalance =
     type === "give" &&
@@ -109,7 +104,6 @@ export function LoanEntryForm({
     value: LoanEntryFormValues[K]
   ) {
     setValues((prev) => ({ ...prev, [key]: value }));
-    // Clear field error on change
     if (errors[key as keyof LoanEntryFormErrors]) {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
     }
@@ -181,9 +175,7 @@ export function LoanEntryForm({
   return (
     <>
       <form onSubmit={handleSubmit} className="px-4 py-4 space-y-4" noValidate>
-        {/* Date & Time Row */}
         <div className="flex gap-2 w-full">
-          {/* Date */}
           <div className="flex-[3] min-w-0 overflow-hidden space-y-1">
             <label
               className="block text-[12px] font-medium"
@@ -206,7 +198,6 @@ export function LoanEntryForm({
             )}
           </div>
 
-          {/* Time */}
           <div className="flex-[2] min-w-0 overflow-hidden space-y-1">
             <label
               className="block text-[12px] font-medium"
@@ -230,7 +221,6 @@ export function LoanEntryForm({
           </div>
         </div>
 
-        {/* Wallet selector (required) */}
         <div className="space-y-1">
           <label
             className="text-[12px] font-medium"
@@ -275,7 +265,6 @@ export function LoanEntryForm({
           )}
         </div>
 
-        {/* Amount */}
         <div className="space-y-1">
           <label
             className="text-[12px] font-medium"
@@ -371,7 +360,6 @@ export function LoanEntryForm({
           )}
         </div>
 
-        {/* Name */}
         <div className="space-y-1">
           <label
             className="text-[12px] font-medium"
@@ -413,7 +401,6 @@ export function LoanEntryForm({
           )}
         </div>
 
-        {/* Note */}
         <div className="space-y-1">
           <label
             className="text-[12px] font-medium"
@@ -452,7 +439,6 @@ export function LoanEntryForm({
           </p>
         </div>
 
-        {/* Delete button (edit mode only) */}
         {onDelete && (
           <button
             type="button"
@@ -469,7 +455,6 @@ export function LoanEntryForm({
           </button>
         )}
 
-        {/* Save button */}
         <div className="pt-2 pb-4">
           <button
             type="submit"
@@ -499,7 +484,6 @@ export function LoanEntryForm({
         </div>
       </form>
 
-      {/* Wallet picker bottom sheet */}
       <WalletPicker
         open={isWalletPickerOpen}
         onClose={() => setIsWalletPickerOpen(false)}
@@ -515,7 +499,6 @@ export function LoanEntryForm({
         }}
       />
 
-      {/* Delete confirmation dialog */}
       {onDelete && (
         <ConfirmDialog
           open={isDeleteDialogOpen}

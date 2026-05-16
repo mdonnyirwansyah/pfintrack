@@ -56,7 +56,6 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
     const updated = await transactionsRepo.update(id, patch);
     await applyTransactionToWallet(updated);
 
-    // Keep wallet_balance_history in sync when editing a Balance Correction tx
     if (old.category === "Balance Correction") {
       const oldDelta = old.type === "income" ? old.amount : -old.amount;
       const newDelta = updated.type === "income" ? updated.amount : -updated.amount;
@@ -89,8 +88,6 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
     const tx = await transactionsRepo.getById(id);
     if (!tx) throw new Error(`Transaction not found: ${id}`);
 
-    // When deleting a Balance Correction, also soft-delete the matching history record
-    // so the Report module no longer counts it in calcBalanceCorrection.
     if (tx.category === "Balance Correction") {
       const expectedDelta = tx.type === "income" ? tx.amount : -tx.amount;
       const history = await walletBalanceHistoryRepo.getByWalletId(tx.wallet_id);

@@ -1,22 +1,3 @@
-/**
- * Performance Seed — pure data generator for dev/perf testing.
- *
- * Produces ~20,000–30,000 transactions over 5 years (from today backwards)
- * with realistic Indonesian daily patterns and a **no-negative-balance**
- * guarantee. Every wallet stays ≥ 0 at all points in time — sub-wallets
- * (GoPay, Jago, Tunai) auto-receive a top-up transfer from BCA when about
- * to overdraw. If BCA itself can't cover an outflow, the transaction is
- * silently skipped (no negative-balance records ever produced).
- *
- * **Pure function** — no IDB, no DOM, no localStorage access. Returns a
- * `BackupData` object that can be:
- *   - written to a `.json` file via the CLI (`scripts/generate-perf-seed.ts`)
- *     and imported into the app via Settings → Restore Backup, OR
- *   - inlined into a test fixture / unit benchmark.
- *
- * Deterministic: PRNG seeded with `0xc0ffee` → identical output each run.
- */
-
 import type { BackupData } from "@/lib/storage/backup";
 import type { Wallet, WalletBalanceHistory, WalletType } from "@/lib/types/wallet";
 import type { Transaction, TransactionType } from "@/lib/types/transaction";
@@ -38,13 +19,9 @@ function makeRng(seed: number): () => number {
 }
 
 export interface PerfSeedOptions {
-  /** Anon ID to stamp on every record. */
   anonId: string;
-  /** Reference "today" — defaults to actual today. Override for reproducible tests. */
   today?: Date;
-  /** PRNG seed. Default 0xc0ffee. */
   seed?: number;
-  /** Number of years of history to generate. Default 5. */
   years?: number;
 }
 
@@ -101,10 +78,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     });
   }
 
-  // ── Wallets ──────────────────────────────────────────────────────────────
-  // Opening balances are sized so BCA can comfortably cover 5 years of bills,
-  // big purchases, vacations, and sub-wallet top-ups while always staying
-  // positive (salary inflows cover the rest).
   const walletsDef: ReadonlyArray<Readonly<{ name: string; type: WalletType; opening: number }>> = [
     { name: "BCA",            type: "bank",          opening: 50_000_000 },
     { name: "Jago",           type: "bank_digital",  opening:  5_000_000 },
@@ -186,7 +159,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     });
   }
 
-  // Opening balances via Balance Correction (so /report shows realistic openings)
   for (const w of walletsDef) {
     if (w.opening <= 0) continue;
     const wallet = byName[w.name];
@@ -214,11 +186,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   const inflate = (base: number, d: Date) => base * Math.pow(1.06, yearIdx(d));
   const salaryFor = (d: Date) => r1k(15_000_000 * Math.pow(1.08, yearIdx(d)));
 
-  /**
-   * Spend `amount` from `walletId`. If insufficient, auto top-up from BCA
-   * (covering deficit + small buffer). Returns true on success.
-   * If BCA can't cover either, skips silently and increments `skippedForBalance`.
-   */
   function spendFrom(t: Readonly<{
     walletId: string;
     amount: number;
@@ -232,18 +199,17 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
       rawAddTx({ type: "expense", ...t });
       return true;
     }
-    // Source is BCA itself or sub-wallet that needs top-up
     if (t.walletId === bca.id) {
       skippedForBalance++;
       return false;
     }
     const deficit = t.amount - balances[t.walletId];
-    const topUp = r1k(deficit + 300_000); // buffer ~300k
+    const topUp = r1k(deficit + 300_000);
     if (balances[bca.id] < topUp) {
       skippedForBalance++;
       return false;
     }
-    // Top-up transfer 1 minute before the expense, same date
+
     const [hh, mm] = t.time.split(":").map((x) => Number.parseInt(x, 10));
     const topUpTime = timeAt(hh, Math.max(0, mm - 1));
     rawAddTx({
@@ -260,7 +226,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     return true;
   }
 
-  /** Transfer from BCA → destWallet. Skip if BCA insufficient. */
   function transferFromBCA(t: Readonly<{
     destWalletId: string;
     amount: number;
@@ -297,7 +262,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     rawAddTx({ type: "income", ...t });
   }
 
-  // ── Catalog ──────────────────────────────────────────────────────────────
   const BREAKFAST = [
     "Nasi Uduk", "Bubur Ayam", "Lontong Sayur", "Roti Bakar", "Sarapan Indomaret",
     "Mie Instan", "Soto Pagi", "Nasi Kuning", "Lupis & Klepon", "Ketoprak",
@@ -356,7 +320,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     { name: "Kursi Kerja Ergonomis", amount:  3_200_000 },
   ];
 
-  /** Random sub-wallet weighted: GoPay 55%, Jago 25%, Tunai 20%. */
   function dailyWallet(): string {
     const r = rng();
     if (r < 0.55) return gopay.id;
@@ -364,7 +327,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     return tunai.id;
   }
 
-  // ── Daily simulation ─────────────────────────────────────────────────────
   const endDate = new Date(today);
   for (let d = new Date(startDate); d <= endDate; d = new Date(d.getTime() + MS_PER_DAY)) {
     const day = new Date(d);
@@ -373,7 +335,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     const dow = day.getDay();
     const isWeekend = dow === 0 || dow === 6;
 
-    // ── Monthly inflows & treasury moves (tanggal 25) ──
     if (dom === 25) {
       addIncome({ walletId: bca.id, amount: salaryFor(day),
         title: `Gaji ${day.toLocaleDateString("id-ID", { month: "long", year: "numeric" })}`,
@@ -396,7 +357,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(8, 35) });
     }
 
-    // ── Monthly bills (BCA) ──
     if (dom === 1) {
       spendFrom({ walletId: bca.id, amount: r1k(inflate(450_000, day)),
         title: "Tagihan Listrik PLN", category: "Tagihan", date: day, time: timeAt(9, 0) });
@@ -420,7 +380,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
       }
     }
 
-    // ── THR Lebaran ──
     if (month === 6 && dom === 15) {
       addIncome({ walletId: bca.id, amount: salaryFor(day),
         title: "THR Lebaran", category: "Pendapatan", date: day, time: timeAt(10, 0),
@@ -432,14 +391,12 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         title: "Belanja Lebaran", category: "Belanja", date: day, time: timeAt(15, 0) });
     }
 
-    // ── Bonus akhir tahun ──
     if (month === 12 && dom === 20) {
       addIncome({ walletId: bca.id, amount: r1k(salaryFor(day) * 0.75),
         title: "Bonus Akhir Tahun", category: "Pendapatan", date: day, time: timeAt(10, 0),
         description: "Bonus tahunan" });
     }
 
-    // ── Freelance income (irregular) ──
     if (chance(0.03)) {
       addIncome({ walletId: bca.id,
         amount: r1k(inflate(2_500_000 + rng() * 3_500_000, day)),
@@ -448,46 +405,41 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         description: "Pembayaran project sampingan" });
     }
 
-    // ──────────────────────────────────────────────────────────────────────
-    //  Daily routine — target ~10-20 transactions per day
-    // ──────────────────────────────────────────────────────────────────────
-
-    // 1. Breakfast (98% weekday, 85% weekend)
     if (chance(isWeekend ? 0.85 : 0.98)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(12_000, 35_000), day)),
         title: pick(BREAKFAST), category: "Makanan & Minuman",
         date: day, time: timeAt(7, randInt(0, 30)) });
     }
-    // 2. Kopi pagi (90% weekday, 65% weekend)
+
     if (chance(isWeekend ? 0.65 : 0.9)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(18_000, 45_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
         date: day, time: timeAt(7, randInt(30, 59)) });
     }
-    // 3. Ojek pergi (weekday 85%)
+
     if (!isWeekend && chance(0.85)) {
       spendFrom({ walletId: gopay.id,
         amount: r500(inflate(randInt(15_000, 45_000), day)),
         title: pick(TRANSPORT_DAILY), category: "Transportasi",
         date: day, time: timeAt(8, randInt(0, 30)) });
     }
-    // 4. Mid-morning snack (75% weekday, 50% weekend)
+
     if (chance(isWeekend ? 0.5 : 0.75)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(8_000, 22_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
         date: day, time: timeAt(9, randInt(30, 59)) });
     }
-    // 5. Air mineral / minuman 10am (65%)
+
     if (chance(0.65)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(5_000, 12_000), day)),
         title: "Air Mineral / Minuman", category: "Makanan & Minuman",
         date: day, time: timeAt(10, randInt(0, 59)) });
     }
-    // 6. Lunch (98%)
+
     if (chance(0.98)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(25_000, 95_000), day)),
@@ -495,28 +447,28 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(12, randInt(0, 59)),
         description: chance(0.15) ? "Lunch bareng teman kantor" : null });
     }
-    // 7. Es teh / kopi siang (78%)
+
     if (chance(0.78)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(10_000, 28_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
         date: day, time: timeAt(13, randInt(0, 59)) });
     }
-    // 8. Snack sore (70%)
+
     if (chance(0.7)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(8_000, 30_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
         date: day, time: timeAt(15, randInt(0, 59)) });
     }
-    // 9. Ojek pulang (weekday 80%)
+
     if (!isWeekend && chance(0.8)) {
       spendFrom({ walletId: gopay.id,
         amount: r500(inflate(randInt(15_000, 50_000), day)),
         title: pick(TRANSPORT_DAILY), category: "Transportasi",
         date: day, time: timeAt(17, randInt(0, 59)) });
     }
-    // 10. Convenience store stop (72%)
+
     if (chance(0.72)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(12_000, 55_000), day)),
@@ -524,28 +476,28 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         category: "Belanja", date: day, time: timeAt(18, randInt(0, 30)),
         description: "Beli kebutuhan kecil & camilan" });
     }
-    // 11. Dinner (92%)
+
     if (chance(0.92)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(35_000, 110_000), day)),
         title: pick(DINNER), category: "Makanan & Minuman",
         date: day, time: timeAt(19, randInt(0, 59)) });
     }
-    // 12. Snack malam / buah (55%)
+
     if (chance(0.55)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(8_000, 25_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
         date: day, time: timeAt(20, randInt(0, 59)) });
     }
-    // 13. Parkir random (55%)
+
     if (chance(0.55)) {
       spendFrom({ walletId: tunai.id,
         amount: r500(randInt(2_000, 12_000)),
         title: "Parkir", category: "Transportasi",
         date: day, time: timeAt(randInt(10, 21), randInt(0, 59)) });
     }
-    // 14. Pulsa / Kuota (10%, ~3x per month)
+
     if (chance(0.1)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r1k(inflate(randInt(25_000, 150_000), day)),
@@ -553,9 +505,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(randInt(10, 21), randInt(0, 59)) });
     }
 
-    // ── Less-frequent categories ──
-
-    // Weekly groceries (Saturday 85%)
     if (dow === 6 && chance(0.85)) {
       spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(450_000, 950_000), day)),
@@ -563,28 +512,28 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(10, randInt(0, 59)),
         description: "Belanja bahan dapur & kebutuhan rumah" });
     }
-    // Bensin every ~10 days
+
     if (chance(0.1)) {
       spendFrom({ walletId: tunai.id,
         amount: r1k(inflate(randInt(150_000, 220_000), day)),
         title: pick(TRANSPORT_FUEL), category: "Transportasi",
         date: day, time: timeAt(7, randInt(0, 59)) });
     }
-    // Health
+
     if (chance(0.04)) {
       spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(85_000, 350_000), day)),
         title: pick(HEALTH), category: "Kesehatan",
         date: day, time: timeAt(randInt(10, 18), randInt(0, 59)) });
     }
-    // Shopping (clothes/electronics small)
+
     if (chance(0.06)) {
       spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(120_000, 750_000), day)),
         title: pick(SHOPPING), category: "Belanja",
         date: day, time: timeAt(randInt(14, 21), randInt(0, 59)) });
     }
-    // Weekend entertainment
+
     if (isWeekend && chance(0.4)) {
       spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(75_000, 280_000), day)),
@@ -592,7 +541,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         category: "Hiburan", date: day,
         time: timeAt(randInt(15, 22), randInt(0, 59)) });
     }
-    // Education
+
     if (chance(0.015)) {
       spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(150_000, 450_000), day)),
@@ -602,7 +551,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // ── Annual vacations (3/year) ──
   for (let y = 0; y < years; y++) {
     for (const m of [3, 7, 11]) {
       const date = new Date(startDate.getFullYear() + y, m - 1, randInt(5, 25));
@@ -616,7 +564,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // ── Big purchases (1-2/year) ──
   for (let y = 0; y < years; y++) {
     const n = randInt(1, 2);
     for (let i = 0; i < n; i++) {
@@ -631,17 +578,15 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // ── Balance corrections (2-3/year, always small) ──
   for (let y = 0; y < years; y++) {
     const n = randInt(2, 3);
     for (let i = 0; i < n; i++) {
       const date = new Date(startDate.getFullYear() + y, randInt(0, 11), randInt(1, 28));
       if (date > endDate) continue;
       const wallet = pick([bca, jago]);
-      // Constrain delta so it can't make balance go negative
       const minBal = balances[wallet.id];
-      const maxNegative = Math.min(minBal - 50_000, 75_000); // keep ≥50k after
-      if (maxNegative <= 5_000) continue; // skip if too tight
+      const maxNegative = Math.min(minBal - 50_000, 75_000);
+      if (maxNegative <= 5_000) continue;
       const sign = chance(0.5) ? 1 : -1;
       const magnitude = randInt(5_000, Math.min(75_000, Math.max(5_000, maxNegative)));
       const delta = sign * magnitude;
@@ -662,9 +607,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // ── Loans ───────────────────────────────────────────────────────────────
-  // Loan helpers: only apply to wallet if balance would stay ≥ 0.
-  // "give" = uang keluar dari wallet kita; "get" = uang masuk.
   const counterparties: LoanCounterparty[] = [];
   const loanEntries: LoanEntry[] = [];
 
@@ -682,9 +624,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     walletId: string | null, note: string, daysBack: number,
   ): void {
     const date = new Date(today.getTime() - daysBack * MS_PER_DAY);
-    // For "give", ensure wallet (default BCA) has the amount
     if (type === "give" && walletId !== null && balances[walletId] < amount) {
-      // try top-up from BCA if not BCA
       if (walletId !== bca.id && balances[bca.id] >= amount + 200_000) {
         const time = timeAt(randInt(9, 11), randInt(0, 59));
         rawAddTx({
@@ -743,7 +683,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   addLoanEntry(pakRT, "give", 1_500_000, bca.id, "Cicilan 1", 1400);
   addLoanEntry(pakRT, "give", 1_500_000, bca.id, "Lunas (manual mark)", 1100);
 
-  // ── Custom reports ───────────────────────────────────────────────────────
   const customReports: CustomReport[] = [];
   function addReport(name: string, startD: Date, endD: Date): void {
     const iso = startD.toISOString();
@@ -760,19 +699,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   addReport("Q1 2026 — Review Kuartalan",
     new Date(2026, 0, 1), new Date(2026, 2, 31));
 
-  // ── Chronological fix-up: guarantee no wallet ever goes negative ─────────
-  //
-  // The daily-loop generator emits in chronological order, but later phases
-  // (vacations, big purchases, balance corrections, loans) append events with
-  // past dates. Their effect on `balances[]` is recorded at generation time
-  // (= end-of-timeline state), which can mask intermediate negative-balance
-  // states. To guarantee correctness, we replay all events in true
-  // chronological order and either insert a JIT top-up from BCA or drop the
-  // offending event.
-  //
-  // Output: `finalTxs` (possibly with inserted "Top Up" transfers) and
-  // `finalLoans` (possibly with fewer entries). Wallet balances reflect the
-  // post-replay state.
   type ChronoEvent =
     | Readonly<{ kind: "tx"; tx: Transaction; key: string }>
     | Readonly<{ kind: "loan"; loan: LoanEntry; key: string }>;
@@ -850,7 +776,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         finalTxs.push(t);
       } else if (t.type === "transfer" && t.destination_wallet_id) {
         if (bal[t.wallet_id] < t.amount) {
-          // For transfers, top-up source from BCA if source is not BCA
           if (!tryTopUpForSpend(t.wallet_id, t.amount, t.transaction_date, t.transaction_time)) {
             dropped++;
             continue;
@@ -861,14 +786,11 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         finalTxs.push(t);
       }
     } else {
-      // loan
       const l = ev.loan;
       if (l.type === "get") {
-        // Money flowing in to our wallet — always safe
         if (l.wallet_id) bal[l.wallet_id] += l.amount;
         finalLoans.push(l);
       } else {
-        // give: money flowing out
         if (l.wallet_id) {
           if (bal[l.wallet_id] < l.amount) {
             if (!tryTopUpForSpend(l.wallet_id, l.amount, l.transaction_date, l.transaction_time)) {
@@ -883,7 +805,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // Adopt the fix-up results
   for (const w of wallets) {
     w.balance = bal[w.id];
     w.updated_at = today.toISOString();
@@ -901,7 +822,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     custom_reports: customReports,
   };
 
-  // Mark unused to satisfy lint (informational only)
   void inserted;
 
   return {

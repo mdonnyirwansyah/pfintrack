@@ -65,7 +65,6 @@ export function TransferForm({
   const amountInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-open source wallet picker on mount if it's add mode
   useEffect(() => {
     if (!initialValues?.source_wallet_id) {
       setActiveWalletPicker("source");
@@ -81,7 +80,6 @@ export function TransferForm({
     parsedAmount > 0 &&
     parsedAmount > sourceWallet.balance + originalAmount;
 
-  // Filter wallets to exclude the other selection
   const sourceWallets = wallets.filter(
     (w) => w.is_active && w.id !== form.destination_wallet_id
   );
@@ -145,9 +143,7 @@ export function TransferForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-4">
-      {/* Date & Time Row */}
       <div className="flex gap-2 w-full">
-        {/* Date */}
         <div className="flex-[3] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             {t("form.date")}
@@ -167,7 +163,6 @@ export function TransferForm({
           )}
         </div>
 
-        {/* Time */}
         <div className="flex-[2] min-w-0 overflow-hidden">
           <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
             {t("form.time")}
@@ -188,7 +183,6 @@ export function TransferForm({
         </div>
       </div>
 
-      {/* Source Wallet */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           {t("form.sourceWallet")}
@@ -218,7 +212,6 @@ export function TransferForm({
         )}
       </div>
 
-      {/* Destination Wallet */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           {t("form.destWallet")}
@@ -248,7 +241,6 @@ export function TransferForm({
         )}
       </div>
 
-      {/* Amount */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           {t("form.amount")}
@@ -334,7 +326,6 @@ export function TransferForm({
         )}
       </div>
 
-      {/* Description */}
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
           {t("form.description")}
@@ -360,10 +351,8 @@ export function TransferForm({
         )}
       </div>
 
-      {/* Footer actions */}
       {footerActions}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={isSubmitting}
@@ -377,7 +366,6 @@ export function TransferForm({
           {isSubmitting ? tc("saving") : resolvedSubmitLabel}
       </button>
 
-      {/* Source wallet picker */}
       <WalletPicker
         open={activeWalletPicker === "source"}
         onClose={() => setActiveWalletPicker(null)}
@@ -393,7 +381,6 @@ export function TransferForm({
         }}
       />
 
-      {/* Destination wallet picker */}
       <WalletPicker
         open={activeWalletPicker === "destination"}
         onClose={() => setActiveWalletPicker(null)}
@@ -402,7 +389,6 @@ export function TransferForm({
         onSelect={(wallet) => {
           set("destination_wallet_id", wallet.id);
           setActiveWalletPicker(null);
-          // Focus amount input after a short delay to allow the drawer to start closing
           setTimeout(() => {
             amountInputRef.current?.focus();
           }, 300);

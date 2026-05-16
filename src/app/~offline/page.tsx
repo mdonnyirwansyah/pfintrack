@@ -19,8 +19,6 @@ export default function OfflinePage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
       <div className="glass rounded-[24px] p-6 w-full max-w-xs space-y-5">
-
-        {/* Icon + heading */}
         <div className="flex flex-col items-center text-center gap-2">
           <WifiOff
             className="w-12 h-12"
@@ -36,8 +34,6 @@ export default function OfflinePage() {
             {t("description")}
           </p>
         </div>
-
-        {/* Module links */}
         <div className="space-y-1.5">
           {MODULES.map(({ href, label }) => (
             <Link
@@ -62,8 +58,6 @@ export default function OfflinePage() {
             </Link>
           ))}
         </div>
-
-        {/* Retry button */}
         <button
           type="button"
           onClick={() => globalThis.location.reload()}
@@ -77,7 +71,6 @@ export default function OfflinePage() {
           <RefreshCw className="w-4 h-4" />
           {t("retry")}
         </button>
-
       </div>
     </div>
   );

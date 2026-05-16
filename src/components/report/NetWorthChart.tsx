@@ -100,7 +100,6 @@ export function NetWorthChart({
     return points;
   }, [transactions, loanEntries, balanceHistory, dateFnsLocale]);
 
-  // Need at least 2 data points to be meaningful
   const hasData = chartData.some((p) => p.endBalance !== 0);
   const nonZeroCount = chartData.filter((p) => p.endBalance !== 0).length;
   if (!hasData || nonZeroCount < 2) return null;
@@ -170,7 +169,6 @@ export function NetWorthChart({
       </ResponsiveContainer> : null}
       </div>
 
-      {/* Summary row */}
       <div className="flex items-center justify-between pt-1">
         <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
           {t("netWorth.now", { value: formatIDR(currentBalance) })}

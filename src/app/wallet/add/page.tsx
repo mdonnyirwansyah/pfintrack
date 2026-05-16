@@ -8,14 +8,12 @@ import { useWalletActions } from "@/features/wallet/hooks/useWalletActions";
 import type { WalletFormValues } from "@/features/wallet/components/WalletForm";
 import { useTranslations } from "next-intl";
 
-// [8] Add Wallet
 export default function AddWalletPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { handleCreate, isNameTaken, loadWallets } = useWalletActions();
   const t = useTranslations("wallet");
 
-  // Ensure wallet store is hydrated so duplicate-name check works
   useEffect(() => {
     void loadWallets();
   }, [loadWallets]);

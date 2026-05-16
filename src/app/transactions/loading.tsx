@@ -3,19 +3,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function TransactionsLoading() {
   return (
     <div className="pb-4">
-      {/* SummaryBar */}
       <div className="mx-4 mt-4 mb-3">
         <Skeleton className="h-[59px] w-full rounded-[16px]" />
       </div>
 
-      {/* DateNavigator header */}
       <div className="mx-4 mb-2 py-2 flex items-center justify-between">
         <Skeleton className="h-11 w-11 rounded-full" />
         <Skeleton className="h-5 w-32 rounded-lg" />
         <Skeleton className="h-11 w-11 rounded-full" />
       </div>
 
-      {/* Transaction items */}
       <div className="space-y-px mt-3">
         {["tx-a", "tx-b", "tx-c", "tx-d", "tx-e", "tx-f"].map((id) => (
           <div key={id} className="px-4 py-2 flex items-center gap-2.5">

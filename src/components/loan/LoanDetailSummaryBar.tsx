@@ -9,14 +9,6 @@ interface LoanDetailSummaryBarProps {
   readonly outstanding: number;
 }
 
-/**
- * 3-column summary bar untuk halaman detail Loan per counterparty.
- * Konsep warna sama dengan SummaryBar di transactions:
- * - Label      : var(--text-secondary)
- * - Get        : var(--color-positive)
- * - Give       : var(--color-negative)
- * - Balance    : dinamis berdasarkan nilai
- */
 export function LoanDetailSummaryBar({
   totalGet,
   totalGive,
@@ -43,7 +35,6 @@ export function LoanDetailSummaryBar({
       className="glass flex rounded-[16px] overflow-hidden mb-4"
       style={{}}
     >
-      {/* Get column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
@@ -59,13 +50,11 @@ export function LoanDetailSummaryBar({
         </span>
       </div>
 
-      {/* Divider */}
       <div
         className="w-px self-stretch my-2"
         style={{ background: "var(--divider)" }}
       />
 
-      {/* Give column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"
@@ -81,13 +70,11 @@ export function LoanDetailSummaryBar({
         </span>
       </div>
 
-      {/* Divider */}
       <div
         className="w-px self-stretch my-2"
         style={{ background: "var(--divider)" }}
       />
 
-      {/* Balance column */}
       <div className="flex-1 flex flex-col items-center py-3 px-1">
         <span
           className="text-[10px] font-medium uppercase tracking-wide mb-1"

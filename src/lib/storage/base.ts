@@ -1,8 +1,3 @@
-/**
- * Shared localStorage helpers for all repositories.
- * SSR-safe: all reads/writes guard `typeof window`.
- */
-
 export function readKey<T>(key: string): T[] {
   if (globalThis.window === undefined) return [];
 

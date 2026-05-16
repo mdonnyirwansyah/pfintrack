@@ -23,11 +23,10 @@ import { id as idLocale, enUS } from "date-fns/locale";
 import { useLocale, useTranslations } from "next-intl";
 
 interface DateNavigatorProps {
-  activeDate: string; // YYYY-MM-DD
+  activeDate: string;
   onDateChange: (date: string) => void;
 }
 
-// Sun=0 reference week: 2023-01-01 was a Sunday
 const REFERENCE_SUNDAY = new Date(2023, 0, 1);
 
 export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigatorProps>) {
@@ -41,7 +40,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
   const selectedDate = parseISO(activeDate);
   const displayDate = formatDisplayDate(activeDate, locale);
 
-  // Locale-aware single-letter weekday headers (Sun–Sat)
   const weekdays = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(REFERENCE_SUNDAY);
     d.setDate(REFERENCE_SUNDAY.getDate() + i);
@@ -66,7 +64,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
     setIsOpen(false);
   };
 
-  // Build calendar grid
   const monthStart = startOfMonth(viewDate);
   const monthEnd = endOfMonth(viewDate);
   const calStart = startOfWeek(monthStart);
@@ -75,7 +72,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
 
   return (
     <div className="flex items-center justify-between px-4 py-2">
-      {/* Prev */}
       <button
         onClick={handlePrev}
         className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
@@ -89,7 +85,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
         <ChevronLeft className="w-5 h-5" />
       </button>
 
-      {/* Date button + popup */}
       <div className="relative flex-1 flex justify-center">
         <button
           type="button"
@@ -120,10 +115,8 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
           </svg>
         </button>
 
-        {/* Calendar popup */}
         {isOpen && (
           <>
-            {/* Backdrop */}
             <button
               type="button"
               className="fixed inset-0 z-40 cursor-default"
@@ -131,7 +124,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Popup */}
             <div
               className="absolute top-full mt-2 z-50 rounded-[16px] p-4 shadow-xl"
               style={{
@@ -145,7 +137,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
                 transform: "translateX(-50%)",
               }}
             >
-              {/* Month navigation */}
               <div className="flex items-center justify-between mb-3">
                 <button
                   type="button"
@@ -181,7 +172,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
                 </button>
               </div>
 
-              {/* Weekday headers */}
               <div className="grid grid-cols-7 mb-1">
                 {weekdays.map((d, i) => (
                   <div
@@ -194,7 +184,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
                 ))}
               </div>
 
-              {/* Days grid */}
               <div className="grid grid-cols-7 gap-y-0.5">
                 {days.map((day) => {
                   const isSelected = isSameDay(day, selectedDate);
@@ -230,7 +219,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
                 })}
               </div>
 
-              {/* Today shortcut */}
               <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--divider)" }}>
                 <button
                   type="button"
@@ -249,7 +237,6 @@ export function DateNavigator({ activeDate, onDateChange }: Readonly<DateNavigat
         )}
       </div>
 
-      {/* Next */}
       <button
         onClick={handleNext}
         className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"

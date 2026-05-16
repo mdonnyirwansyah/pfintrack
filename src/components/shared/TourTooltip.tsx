@@ -14,7 +14,6 @@ type JoyrideButtonProps = {
 
 type StrippedButtonProps = Omit<JoyrideButtonProps, 'title' | 'role'>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function omitTitleRole({ title: _t, role: _r, ...rest }: JoyrideButtonProps): StrippedButtonProps {
   return rest;
 }
@@ -32,9 +31,6 @@ export function TourTooltip({
   const { shouldIntercept } = useTourIntercept();
   const t = useTranslations('tour');
 
-  // Strip joyride-injected `title` and `role` from button props.
-  // `title` causes unwanted native browser tooltips on buttons that already
-  // have visible text labels. `role` is redundant on a <button> element.
   const skipRest = omitTitleRole(skipProps);
   const backRest = omitTitleRole(backProps);
   const { onClick: primaryOnClick, ...primaryRest } = omitTitleRole(primaryProps);
@@ -54,7 +50,6 @@ export function TourTooltip({
         boxSizing: 'border-box',
       }}
     >
-      {/* Content */}
       <p
         style={{
           margin: 0,
@@ -67,7 +62,6 @@ export function TourTooltip({
         {step.content as string}
       </p>
 
-      {/* Progress dots */}
       <div
         style={{
           display: 'flex',
@@ -85,7 +79,7 @@ export function TourTooltip({
 
           return (
             <span
-              key={`dot-${i}`} // NOSONAR — progress dots have no stable ID; index is intentional
+              key={`dot-${i}`}
               style={{
                 display: 'block',
                 width: i === index ? 16 : 6,
@@ -99,7 +93,6 @@ export function TourTooltip({
         })}
       </div>
 
-      {/* Buttons */}
       <div
         style={{
           display: 'flex',
@@ -107,7 +100,6 @@ export function TourTooltip({
           gap: 8,
         }}
       >
-        {/* Skip — left side */}
         {!isLastStep && (
           <button
             type="button"
@@ -133,7 +125,6 @@ export function TourTooltip({
 
         <div style={{ flex: 1 }} />
 
-        {/* Back button */}
         {index > 0 && (
           <button
             type="button"
@@ -155,7 +146,6 @@ export function TourTooltip({
           </button>
         )}
 
-        {/* Next / Finish button — always use primaryProps so ACTIONS.COMPLETE fires on last step */}
         <button
           type="button"
           {...primaryRest}

@@ -29,7 +29,6 @@ export function CustomTab({
   const router = useRouter();
   const t = useTranslations("report");
 
-  // Sort by created_at DESC
   const sorted = useMemo(
     () =>
       [...customReports]

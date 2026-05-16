@@ -19,7 +19,6 @@ function AddIncomeContent() {
   const t = useTranslations("transactions");
   const locale = useLocale();
 
-  // Read ?date= from URL, fallback to today
   const dateParam = searchParams.get("date");
   const initialDate = dateParam ?? todayISO();
 

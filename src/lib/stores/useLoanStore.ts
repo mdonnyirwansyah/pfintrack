@@ -13,10 +13,6 @@ import {
 } from "@/lib/storage/wallet-balance-ops";
 import { useWalletStore } from "./useWalletStore";
 
-// ---------------------------------------------------------------------------
-// Counterparty store
-// ---------------------------------------------------------------------------
-
 interface CounterpartyState {
   counterparties: LoanCounterparty[];
   isLoading: boolean;
@@ -109,10 +105,6 @@ export const useLoanCounterpartyStore = create<CounterpartyStore>()(
     },
   })
 );
-
-// ---------------------------------------------------------------------------
-// Entry store
-// ---------------------------------------------------------------------------
 
 interface EntryState {
   entries: LoanEntry[];

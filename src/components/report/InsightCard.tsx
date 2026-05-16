@@ -12,11 +12,8 @@ export type InsightType =
 
 export interface InsightData {
   type: InsightType;
-  /** Category name (for categoryUp / categoryDominant) */
   category?: string;
-  /** Numeric percent, already rounded (for categoryUp / categoryDominant / expenseDown) */
   percent?: number;
-  /** Month label e.g. "Apr" (for categoryUp) */
   month?: string;
 }
 

@@ -5,13 +5,9 @@ import { useRef, useCallback } from "react";
 interface UseSwipeOptions {
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
-  threshold?: number; // min px to trigger, default 50
+  threshold?: number;
 }
 
-/**
- * Returns touch event handlers to attach to a container element.
- * Swipe left → onSwipeLeft, swipe right → onSwipeRight.
- */
 export function useSwipe({ onSwipeLeft, onSwipeRight, threshold = 50 }: UseSwipeOptions) {
   const startX = useRef<number | null>(null);
   const startY = useRef<number | null>(null);
@@ -27,7 +23,6 @@ export function useSwipe({ onSwipeLeft, onSwipeRight, threshold = 50 }: UseSwipe
       const dx = e.changedTouches[0].clientX - startX.current;
       const dy = e.changedTouches[0].clientY - startY.current;
 
-      // Ignore if vertical movement dominates (user is scrolling)
       if (Math.abs(dy) > Math.abs(dx)) return;
 
       if (dx < -threshold) onSwipeLeft?.();

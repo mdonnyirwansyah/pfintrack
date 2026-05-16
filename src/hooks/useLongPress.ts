@@ -4,13 +4,9 @@ import { useRef, useCallback } from "react";
 
 interface UseLongPressOptions {
   onLongPress: () => void;
-  delay?: number; // ms, default 500
+  delay?: number;
 }
 
-/**
- * Returns touch/mouse event handlers that fire `onLongPress` after `delay` ms of continuous press.
- * Cancels if the pointer moves significantly or is released early.
- */
 export function useLongPress({ onLongPress, delay = 500 }: UseLongPressOptions) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startXRef = useRef(0);
@@ -49,7 +45,6 @@ export function useLongPress({ onLongPress, delay = 500 }: UseLongPressOptions) 
   const onTouchEnd = useCallback(
     (e: React.TouchEvent) => {
       cancel();
-      // If long press fired, prevent the synthetic click from propagating
       if (firedRef.current) {
         e.preventDefault();
       }

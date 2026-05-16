@@ -125,10 +125,6 @@ const transactionsLsRepo = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
-// ---------------------------------------------------------------------------
-
 export const transactionsRepo = {
   async getAll(): Promise<Transaction[]> {
     if (STORAGE_BACKEND === "idb") return transactionsIdbRepo.getAll();
@@ -150,13 +146,6 @@ export const transactionsRepo = {
     return transactionsLsRepo.getByDate(date);
   },
 
-  /**
-   * Active transactions whose `transaction_date` falls within [startDate, endDate]
-   * (inclusive). On IDB backend this uses `IDBKeyRange.bound` against the
-   * `by_date` index, so the engine skips out-of-range rows without
-   * deserializing them — far cheaper than loading every transaction and
-   * filtering in JS.
-   */
   async getByDateRange(
     startDate: string,
     endDate: string,

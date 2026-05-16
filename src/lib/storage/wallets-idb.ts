@@ -13,7 +13,6 @@ import type { CreateWalletInput, UpdateWalletInput } from "./wallets";
 const STORE = "wallets" as const;
 
 export const walletsIdbRepo = {
-  /** Returns only is_active=true records */
   async getAll(): Promise<Wallet[]> {
     const all = await idbGetAll<Wallet>(STORE);
     return all.filter((w) => w.is_active);

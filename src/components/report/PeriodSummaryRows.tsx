@@ -95,7 +95,6 @@ export function PeriodSummaryRows({ summary }: PeriodSummaryRowsProps) {
           color={correctionColor}
         />
       )}
-      {/* Saving Rate row */}
       {reportVisibility.showSavingRateCard && (() => {
         if (summary.income === 0) {
           return (

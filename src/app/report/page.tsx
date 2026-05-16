@@ -22,7 +22,6 @@ export default function ReportPage() {
   const t = useTranslations("report");
   const [activeTab, setActiveTab] = useState<Tab>("realtime");
 
-  // Restore last-visited tab after hydration — must not run on server
   useEffect(() => {
     const saved = sessionStorage.getItem("report_active_tab") as Tab | null;
     if (saved === "monthly" || saved === "custom") setActiveTab(saved);
@@ -42,7 +41,6 @@ export default function ReportPage() {
 
   const { customReports, loadCustomReports } = useReportStore();
 
-  // Load all data on mount — computed-on-the-fly, no caching
   useEffect(() => {
     void transactionsRepo.getAll().then(setTransactions);
     void loanEntriesRepo.getAll().then(setLoanEntries);
@@ -54,8 +52,6 @@ export default function ReportPage() {
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
     sessionStorage.setItem("report_active_tab", tab);
-    // Data already loaded on mount — only reload custom reports list
-    // (transactions/loans are computed client-side; no need to re-hit IDB on tab click)
     if (tab === "custom") loadCustomReports();
   };
 
@@ -64,7 +60,6 @@ export default function ReportPage() {
       <AppHeader title={t("title")} />
 
       <div className="px-4 py-4 space-y-4">
-        {/* Tab switcher */}
         <div
           className="flex items-center rounded-full p-1 gap-1"
           style={{
@@ -100,7 +95,6 @@ export default function ReportPage() {
           ))}
         </div>
 
-        {/* Tab content */}
         {activeTab === "realtime" && (
           <RealtimeTab
             transactions={transactions}

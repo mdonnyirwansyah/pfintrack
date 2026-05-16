@@ -76,10 +76,6 @@ const loanCounterpartiesLsRepo = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// Unified repo — delegates to IDB or localStorage based on STORAGE_BACKEND
-// ---------------------------------------------------------------------------
-
 export const loanCounterpartiesRepo = {
   async getAll(): Promise<LoanCounterparty[]> {
     if (STORAGE_BACKEND === "idb") return loanCounterpartiesIdbRepo.getAll();

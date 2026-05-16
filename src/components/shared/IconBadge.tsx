@@ -2,13 +2,9 @@ type IconBadgeSize = "sm" | "md";
 
 interface IconBadgeProps {
   icon: React.ElementType;
-  /** CSS color value or var() for the icon foreground */
   iconColor: string;
-  /** CSS color value or var() for the background */
   background: string;
-  /** "sm" = 32×32, "md" = 36×36. Defaults to "md". */
   size?: IconBadgeSize;
-  /** Optional CSS border shorthand (e.g. "1px solid var(--border-default)"). */
   border?: string;
   strokeWidth?: number;
   className?: string;
