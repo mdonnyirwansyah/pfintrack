@@ -2,7 +2,7 @@
 ## Global Architecture
 
 **Aplikasi:** PFinTrack — Personal Finance Tracker
-**Versi Dokumen:** 1.2.1
+**Versi Dokumen:** 1.3.0
 **Tanggal:** 2026-05-16
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Mode:** Anonymous (No Auth) · Migration-Ready ke Auth
@@ -13,6 +13,7 @@
 
 | Versi | Tanggal | Perubahan Utama |
 |-------|---------|----------------|
+| **1.3.0** | **2026-05-16** | **Security hardening pass. (1) Upgrade `next` 16.2.4 → **16.2.6** + `eslint-config-next` (patch 13 CVE May 2026 security release: DoS RSC CVE-2026-23870, segment-prefetch auth bypass CVE-2026-44578, WebSocket SSRF, cache poisoning, dll). (2) Upgrade `vitest` + `@vitest/coverage-v8` 2.1.9 → **4.1.6** untuk patch vite path traversal GHSA-4w7w-66w2-5vf9; semua 153 unit test masih passing. Tambah `@rolldown/binding-darwin-arm64` sebagai optional dep agar binding rolldown ke-resolve. (3) `package.json#overrides`: `postcss ^8.5.10` (XSS), `axios ^1.15.2` (SSRF), `esbuild ^0.25.12`. (4) Tambah HTTP security headers di `next.config.ts`: Content-Security-Policy (default-src 'self', frame-ancestors 'none', upgrade-insecure-requests, dll), X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy (camera/mic/geo/payment/usb/FLoC off), Strict-Transport-Security 2 tahun + preload. (5) Tambah **§14 Security Posture & Hardening** di global spec dengan tabel dependency aman, CSP rationale, sanitization audit (3 okurensi `dangerouslySetInnerHTML` semua hardcoded string), data privacy posture, dan continuous monitoring. Final `npm audit`: 1 high tersisa (`xlsx`) — **dokumentasikan sebagai not exploitable** karena dipakai write-only di `transactions/page.tsx`, tidak parse file user. Build production sukses, lint clean.** |
 | **1.2.3** | **2026-05-16** | **Archive cleanup di `tech-spec-docs/proposals/`. (1) 6 file proposal yang sudah diformalisasi/ship dihapus (PROP-0001 IndexedDB migration, PROP-0002 Report enhancements, PROP-0003 Color theme picker, PROP-0004 Report visibility settings, PROP-0005 In-app FAQ + content). Source of truth final ada di tech-spec docs masing-masing (`tech-spec-migration-indexeddb.md`, `tech-spec-module-report.md`, `tech-spec-global-architecture.md`, `tech-spec-feature-faq.md`). (2) File one-off `copy-audit-2026-05-13.md` juga dihapus karena tidak direferensikan dari mana pun dan action items sudah di-execute lewat commit-commit copy/lokalisasi sebelumnya. Riwayat tetap accessible via `git log`. `proposals/README.md` (workflow doc untuk feature-architect & system-analyst) tetap dipertahankan + diupdate dengan archive policy, tabel proposal aktif (kosong), dan tabel proposal yang sudah diformalisasi (mapping ID → file spec). Referensi `tech-spec-docs/proposals/PROP-0001-...md` di `tech-spec-migration-indexeddb.md` diubah jadi catatan historis.** |
 | **1.2.2** | **2026-05-16** | **Spec sync: extract dokumen dedicated untuk fitur In-App FAQ (`tech-spec-feature-faq.md` v1.0.0). Sebelumnya konten FAQ hanya tercatat di global-architecture (route map + section Settings/Help + screen spec). Sekarang ada dokumen feature-level (mengikuti pola `tech-spec-feature-product-tour.md`) yang mendokumentasikan: tujuan & persona, lokasi konten (`messages/{id,en}.json` namespace `faq`), komponen & state lokal, search behavior, accordion contract, katalog 14 Q di 3 kategori, 7 user stories + acceptance, kontrak i18n keys, dan roadmap evolusi v2/v3. README tech-spec-docs juga diupdate: tabel struktur dokumen sebelumnya hanya list 5 dokumen modul; sekarang lengkap mencakup migration spec (PROP-0001), product tour, dan FAQ. Entry FAQ di route map global-architecture diberi link ke spec dedicated.** |
 | **1.2.1** | **2026-05-16** | **Tutup gap unit-test coverage untuk mencapai 100% di semua metric (stmts/branch/funcs/lines). (1) Tambah `src/lib/version.test.ts` — assert `APP_VERSION` match pola semver `/^\d+\.\d+\.\d+$/` dan sinkron dengan `package.json#version`. Sebelumnya file `src/lib/version.ts` 0% coverage. (2) Tambah test suite `formatThousands` di `src/lib/format/number.test.ts` untuk meng-cover early-return branch `!Number.isFinite(value)` (baris 61-63): kasus `NaN`, `+Infinity`, `-Infinity` (semua return `""`), plus happy path integer dot-grouped. Sebelumnya number.ts 91.66% stmts (baris 61-63 uncovered). Total: 9 test files, 153 tests passing, `All files` 100% di stmts/branch/funcs/lines, `npx eslint .` zero warning.** |
@@ -1024,7 +1025,90 @@ Total: **148 test** di **14 file** (per 2026-05-14).
 
 ---
 
-## 14. Daftar Dokumen Spesifikasi
+## 14. Security Posture & Hardening
+
+> **Last audited:** 2026-05-16. Lihat `next.config.ts` untuk konfigurasi header aktif.
+
+### 14.1 Versi Dependensi yang Sudah Dipatch
+
+| Package | Min Aman | Alasan |
+|---------|----------|--------|
+| `next` | **≥ 16.2.6** | Patch May 2026 security release (13 CVE: DoS RSC CVE-2026-23870, segment-prefetch auth bypass CVE-2026-44578, WebSocket SSRF, cache poisoning, dll) + middleware bypass CVE-2025-29927 |
+| `eslint-config-next` | ≥ 16.2.6 | Sinkron dengan Next |
+| `postcss` (override) | **≥ 8.5.10** | XSS via Unescaped `</style>` GHSA-qx2v-qp2m-jg93 (transitively pulled by Next 16.2.6's bundled postcss 8.4.31) |
+| `axios` (override) | **≥ 1.15.2** | SSRF/prototype pollution chain (CVE-2025-62718 dkk) — datang via `sonarqube-scanner` (dev only) |
+| `esbuild` (override) | ≥ 0.25.12 | Dev server CORS bypass GHSA-67mh-4wv8-2f99 |
+| `vitest` + `@vitest/coverage-v8` | **≥ 4.1.6** | Vite path traversal GHSA-4w7w-66w2-5vf9 (dev only). Vitest v4 menggunakan rolldown — pastikan `@rolldown/binding-<platform>` ter-install. |
+
+`xlsx@^0.18.5` masih flagged (prototype pollution + ReDoS) tapi **tidak exploitable** karena aplikasi hanya memakai `XLSX.utils.json_to_sheet` + `XLSX.writeFile` di `src/app/transactions/page.tsx` (export-only). Tidak ada path yang membaca file `.xlsx` dari user. Bila di masa depan diperlukan import, **wajib** migrasi ke `exceljs` atau pin SheetJS CDN ≥ 0.20.2.
+
+### 14.2 HTTP Security Headers
+
+Di-set via `next.config.ts → headers()` untuk semua route (`source: "/(.*)"`):
+
+| Header | Nilai | Tujuan |
+|--------|-------|--------|
+| `Content-Security-Policy` | lihat di bawah | Mitigasi XSS, click-jacking, data exfiltration |
+| `X-Frame-Options` | `DENY` | Backstop click-jacking untuk klien yang belum support `frame-ancestors` |
+| `X-Content-Type-Options` | `nosniff` | Cegah MIME-sniffing |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Batasi info Referer ke cross-origin |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()` | Disable sensor & FLoC |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | Enforce HTTPS 2 tahun |
+| `X-DNS-Prefetch-Control` | `on` | Optimasi resolusi DNS |
+
+**CSP directives:**
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline' [+'unsafe-eval' di dev] https://va.vercel-scripts.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob:;
+font-src 'self' data:;
+connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com;
+worker-src 'self' blob:;
+manifest-src 'self';
+frame-ancestors 'none';
+base-uri 'self';
+form-action 'self';
+object-src 'none';
+upgrade-insecure-requests
+```
+
+**Catatan `'unsafe-inline'`:**
+- `script-src` butuh inline karena ada bootstrap color-theme di `src/app/layout.tsx:74` yang membaca `pfintrack_color_theme` dari `localStorage` **sebelum** React hydrate (mencegah FOUC). Nilai yang ditulis sebagai atribut HTML divalidasi ke literal `'pink' | 'blue'` (tidak menerima user input). Future hardening: ganti dengan nonce dari `headers()` callback di Next 16.
+- `style-src 'unsafe-inline'` dibutuhkan oleh styled-tokens, `next-themes`, dan inline `<style>` di `TourBeacon`.
+
+**`'unsafe-eval'` hanya di NODE_ENV !== 'production'** (Turbopack dev membutuhkannya). Production CSP tidak mengizinkan eval.
+
+### 14.3 Sanitization Audit
+
+Tiga okurensi `dangerouslySetInnerHTML` (semua hardcoded string literal, bukan user input):
+
+| Lokasi | Konten | Resiko |
+|--------|--------|--------|
+| `src/app/layout.tsx:74` | Inline bootstrap script color-theme | None — value divalidasi |
+| `src/components/shared/TourBeacon.tsx:28` | CSS keyframes static | None |
+| `src/components/ui/chart.tsx:95` | Shadcn chart token CSS dari config | None — keys di-control oleh developer |
+
+Tidak ada `eval`, `new Function`, atau `innerHTML` direct di codebase.
+
+### 14.4 Data & Privacy
+
+- **Tidak ada backend di Fase 1**; tidak ada endpoint untuk SSRF/IDOR.
+- Semua data di IndexedDB lokal browser; di-scope per `anon_id` (UUID v4 dari `crypto.randomUUID()` dengan fallback). Tidak ada cookie session.
+- `.env.local` ter-`.gitignore`. Tidak ada secret di-bundle ke client.
+- Service worker (`/serwist/sw.js`) hanya melakukan fetch same-origin via Next router prefetch (`RSC: "1"` header). `credentials: "include"` aman dalam scope same-origin.
+
+### 14.5 Continuous Monitoring
+
+| Kontrol | Cara |
+|---------|------|
+| Audit dependency | `npm audit` di CI; review setiap PR |
+| Lock advisories baru | GitHub Dependabot enabled untuk repo |
+| Sebelum deploy Fase 2 | Tambah CSP nonce, hapus `'unsafe-inline'` script, evaluasi `xlsx` replacement |
+
+---
+
+## 15. Daftar Dokumen Spesifikasi
 
 Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 
@@ -1038,7 +1122,7 @@ Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 | 6 | **Migrasi Storage: localStorage → IndexedDB** | `tech-spec-migration-indexeddb.md` |
 | 7 | **Feature: Product Tour (Onboarding)** | `tech-spec-feature-product-tour.md` |
 
-> Konvensi Semantic HTML tersedia di **§12** dokumen ini.
+> Konvensi Semantic HTML tersedia di **§12** dokumen ini. Security posture & hardening di **§14**.
 
 **Urutan baca yang disarankan untuk developer baru:**
 1. Global Architecture (dokumen ini) — pahami konteks, stack, dan komponen shared
@@ -1051,4 +1135,4 @@ Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 
 ---
 
-*— End of Technical Specification: Global Architecture (v1.0.0) —*
+*— End of Technical Specification: Global Architecture (v1.3.0) —*
