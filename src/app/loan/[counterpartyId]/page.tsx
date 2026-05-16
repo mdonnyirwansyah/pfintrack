@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 export default function LoanDetailPage({
   params,
 }: {
-  params: Promise<{ counterpartyId: string }>;
+  readonly params: Promise<{ counterpartyId: string }>;
 }) {
   const { counterpartyId } = use(params);
   const router = useRouter();

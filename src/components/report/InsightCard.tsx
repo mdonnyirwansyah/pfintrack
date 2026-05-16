@@ -21,11 +21,11 @@ export interface InsightData {
 }
 
 interface InsightCardProps {
-  insight: InsightData;
-  onDismiss: () => void;
+  readonly insight: InsightData;
+  readonly onDismiss: () => void;
 }
 
-function InsightIcon({ type }: { type: InsightType }) {
+function InsightIcon({ type }: { readonly type: InsightType }) {
   switch (type) {
     case "categoryUp":
       return <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: "var(--color-negative)" }} />;

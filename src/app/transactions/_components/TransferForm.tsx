@@ -18,12 +18,12 @@ export interface TransferFormValues {
 }
 
 interface TransferFormProps {
-  wallets: Wallet[];
-  initialValues?: Partial<TransferFormValues>;
-  isSubmitting: boolean;
-  isEditMode?: boolean;
-  onSubmit: (values: TransferFormValues) => void;
-  footerActions?: React.ReactNode;
+  readonly wallets: Wallet[];
+  readonly initialValues?: Partial<TransferFormValues>;
+  readonly isSubmitting: boolean;
+  readonly isEditMode?: boolean;
+  readonly onSubmit: (values: TransferFormValues) => void;
+  readonly footerActions?: React.ReactNode;
 }
 
 type FormErrors = Partial<Record<keyof TransferFormValues, string>>;

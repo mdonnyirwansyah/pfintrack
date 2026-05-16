@@ -13,15 +13,15 @@ import {
 import { useTranslations } from "next-intl";
 
 interface ConfirmDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description?: React.ReactNode;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: "destructive" | "default";
-  onConfirm: () => void;
-  contentClassName?: string;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly title: string;
+  readonly description?: React.ReactNode;
+  readonly confirmLabel?: string;
+  readonly cancelLabel?: string;
+  readonly variant?: "destructive" | "default";
+  readonly onConfirm: () => void;
+  readonly contentClassName?: string;
 }
 
 export function ConfirmDialog({

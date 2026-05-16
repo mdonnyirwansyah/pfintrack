@@ -11,17 +11,17 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface TypeToConfirmDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly title: string;
+  readonly description: string;
   /** Exact phrase the user must type to enable the confirm button */
-  confirmPhrase: string;
-  inputLabel: string;
-  inputPlaceholder: string;
-  confirmLabel: string;
-  cancelLabel: string;
-  onConfirm: () => void;
+  readonly confirmPhrase: string;
+  readonly inputLabel: string;
+  readonly inputPlaceholder: string;
+  readonly confirmLabel: string;
+  readonly cancelLabel: string;
+  readonly onConfirm: () => void;
 }
 
 export function TypeToConfirmDialog({

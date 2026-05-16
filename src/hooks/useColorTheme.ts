@@ -10,7 +10,7 @@ export function useColorTheme(): {
   colorTheme: ColorTheme;
   setColorTheme: (theme: ColorTheme) => void;
 } {
-  const [colorTheme, setColorThemeState] = useState<ColorTheme>("blue");
+  const [colorThemeState, setColorThemeState] = useState<ColorTheme>("blue");
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as ColorTheme | null;
@@ -25,5 +25,5 @@ export function useColorTheme(): {
     document.documentElement.dataset.colorTheme = theme;
   }, []);
 
-  return { colorTheme, setColorTheme };
+  return { colorTheme: colorThemeState, setColorTheme };
 }

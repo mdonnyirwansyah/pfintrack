@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, ChevronDown, Check } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
-import { FAB } from "@/components/shared/FAB";
+import { Fab } from "@/components/shared/Fab";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { SortPill } from "@/components/shared/SortPill";
 import { WalletCard } from "@/features/wallet/components/WalletCard";
@@ -200,7 +200,7 @@ export default function WalletPage() {
         )}
       </div>
 
-      <FAB
+      <Fab
         onClick={() => router.push("/wallet/add")}
         aria-label={t("addAriaLabel")}
         data-tour="fab-wallet"

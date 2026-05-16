@@ -3,14 +3,14 @@
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface FABProps {
+interface FabProps {
   onClick: () => void;
   className?: string;
   "aria-label": string;
   "data-tour"?: string;
 }
 
-export function FAB({ onClick, className, "aria-label": ariaLabel, "data-tour": dataTour }: Readonly<FABProps>) {
+export function Fab({ onClick, className, "aria-label": ariaLabel, "data-tour": dataTour }: Readonly<FabProps>) {
   return (
     <button
       onClick={onClick}

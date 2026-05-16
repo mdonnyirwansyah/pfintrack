@@ -10,14 +10,14 @@ import type { WalletBalanceHistory } from "@/lib/types/wallet";
 import { calculateMonthlySummary } from "@/lib/report/calculations";
 import { CustomReportSection } from "./CustomReportSection";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { FAB } from "@/components/shared/FAB";
+import { Fab } from "@/components/shared/Fab";
 import { useTranslations } from "next-intl";
 
 interface CustomTabProps {
-  customReports: CustomReport[];
-  transactions: Transaction[];
-  loanEntries: LoanEntry[];
-  balanceHistory: WalletBalanceHistory[];
+  readonly customReports: CustomReport[];
+  readonly transactions: Transaction[];
+  readonly loanEntries: LoanEntry[];
+  readonly balanceHistory: WalletBalanceHistory[];
 }
 
 export function CustomTab({
@@ -65,7 +65,7 @@ export function CustomTab({
         })
       )}
 
-      <FAB
+      <Fab
         onClick={() => router.push("/report/custom/add")}
         aria-label={t("addReport")}
         data-tour="report-custom-fab"

@@ -20,12 +20,12 @@ interface WalletFormErrors {
 }
 
 interface WalletFormProps {
-  initialValues?: Partial<WalletFormValues>;
-  isAddMode?: boolean;
-  isSubmitting: boolean;
-  onSubmit: (values: WalletFormValues) => void;
-  isNameTaken: (name: string) => boolean;
-  deleteSlot?: React.ReactNode;
+  readonly initialValues?: Partial<WalletFormValues>;
+  readonly isAddMode?: boolean;
+  readonly isSubmitting: boolean;
+  readonly onSubmit: (values: WalletFormValues) => void;
+  readonly isNameTaken: (name: string) => boolean;
+  readonly deleteSlot?: React.ReactNode;
 }
 
 const MAX_BALANCE = 999_999_999_999.99;

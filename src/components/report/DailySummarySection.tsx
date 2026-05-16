@@ -113,9 +113,9 @@ function abbr(n: number): string {
 }
 
 interface DailyBarTooltipProps {
-  active?: boolean;
-  payload?: Array<{ value: number; name: string }>;
-  label?: string;
+  readonly active?: boolean;
+  readonly payload?: readonly { value: number; name: string }[];
+  readonly label?: string;
 }
 
 function DailyBarTooltip({ active, payload, label }: DailyBarTooltipProps) {
@@ -154,7 +154,7 @@ export function DailySummarySection({
   start,
   end,
   selectedCategory,
-}: DailySummarySectionProps) {
+}: Readonly<DailySummarySectionProps>) {
   const t = useTranslations("report");
   const ts = useTranslations("transactions");
   const locale = useLocale();

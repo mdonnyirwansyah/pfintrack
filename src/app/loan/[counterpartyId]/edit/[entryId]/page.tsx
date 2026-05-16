@@ -19,7 +19,7 @@ import { parseIDR } from "@/lib/format/number";
 export default function EditLoanEntryPage({
   params,
 }: {
-  params: Promise<{ counterpartyId: string; entryId: string }>;
+  readonly params: Promise<{ counterpartyId: string; entryId: string }>;
 }) {
   const { counterpartyId, entryId } = use(params);
   const router = useRouter();

@@ -7,9 +7,9 @@ import { formatDisplayDate } from "@/lib/format/date";
 import { useTranslations, useLocale } from "next-intl";
 
 interface LoanEntryListItemProps {
-  entry: LoanEntry;
-  walletName?: string | null;
-  onClick: () => void;
+  readonly entry: LoanEntry;
+  readonly walletName?: string | null;
+  readonly onClick: () => void;
 }
 
 export function LoanEntryListItem({ entry, walletName, onClick }: LoanEntryListItemProps) {

@@ -29,16 +29,16 @@ export interface LoanEntryFormErrors {
 }
 
 interface LoanEntryFormProps {
-  type: LoanEntryType;
-  initialValues?: Partial<LoanEntryFormValues>;
+  readonly type: LoanEntryType;
+  readonly initialValues?: Partial<LoanEntryFormValues>;
   /** If true, name field is pre-filled and locked (cannot be edited) */
-  isNameLocked?: boolean;
-  wallets: Wallet[];
-  isSubmitting: boolean;
-  isEditMode?: boolean;
+  readonly isNameLocked?: boolean;
+  readonly wallets: Wallet[];
+  readonly isSubmitting: boolean;
+  readonly isEditMode?: boolean;
   /** If provided, shows a Delete button (edit mode) */
-  onDelete?: () => void;
-  onSubmit: (values: LoanEntryFormValues) => void;
+  readonly onDelete?: () => void;
+  readonly onSubmit: (values: LoanEntryFormValues) => void;
 }
 
 const MAX_AMOUNT = 999_999_999_999.99;

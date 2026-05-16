@@ -21,9 +21,9 @@ const INITIAL_MONTHS = 6;
 const LOAD_MORE_MONTHS = 6;
 
 interface MonthlyTabProps {
-  transactions: Transaction[];
-  loanEntries: LoanEntry[];
-  balanceHistory: WalletBalanceHistory[];
+  readonly transactions: Transaction[];
+  readonly loanEntries: LoanEntry[];
+  readonly balanceHistory: WalletBalanceHistory[];
 }
 
 export function MonthlyTab({

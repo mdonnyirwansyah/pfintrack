@@ -28,7 +28,7 @@ export function TourTooltip({
   skipProps,
   step,
   tooltipProps,
-}: TooltipRenderProps) {
+}: Readonly<TooltipRenderProps>) {
   const { shouldIntercept } = useTourIntercept();
   const t = useTranslations('tour');
 

@@ -75,9 +75,9 @@ function findExpenseDownInsight(lastExpenses: number, expenses: number): Insight
 }
 
 interface RealtimeTabProps {
-  transactions: Transaction[];
-  loanEntries: LoanEntry[];
-  loanCounterparties: LoanCounterparty[];
+  readonly transactions: Transaction[];
+  readonly loanEntries: LoanEntry[];
+  readonly loanCounterparties: LoanCounterparty[];
 }
 
 export function RealtimeTab({ transactions, loanEntries, loanCounterparties }: RealtimeTabProps) {

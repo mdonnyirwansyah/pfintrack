@@ -10,8 +10,8 @@ import type { CustomReport } from "@/lib/types/report";
 import { useLocale, useTranslations } from "next-intl";
 
 interface CustomReportSectionProps {
-  report: CustomReport;
-  summary: MonthlySummary;
+  readonly report: CustomReport;
+  readonly summary: MonthlySummary;
 }
 
 export function CustomReportSection({

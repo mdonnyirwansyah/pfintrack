@@ -4,9 +4,9 @@ import { formatIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
 
 interface SummaryBarProps {
-  income: number;
-  expenses: number;
-  balance: number;
+  readonly income: number;
+  readonly expenses: number;
+  readonly balance: number;
 }
 
 export function SummaryBar({ income, expenses, balance }: SummaryBarProps) {

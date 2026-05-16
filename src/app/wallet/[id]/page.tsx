@@ -21,7 +21,7 @@ import { loanEntriesRepo } from "@/lib/storage/loan-entries";
 export default function EditWalletPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
   const router = useRouter();

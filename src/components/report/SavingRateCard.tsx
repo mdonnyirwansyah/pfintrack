@@ -4,8 +4,8 @@ import { formatIDR, formatIDRSigned } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
 
 interface SavingRateCardProps {
-  income: number;
-  expenses: number;
+  readonly income: number;
+  readonly expenses: number;
 }
 
 function getSavingRateColor(rate: number | null): string {

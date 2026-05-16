@@ -24,8 +24,8 @@ import { formatIDR } from "@/lib/format/number";
 import { useTranslations, useLocale } from "next-intl";
 
 interface CategoryTrendChartProps {
-  transactions: Transaction[];
-  categoryName: string;
+  readonly transactions: Transaction[];
+  readonly categoryName: string;
 }
 
 interface MonthBar {
@@ -35,9 +35,9 @@ interface MonthBar {
 }
 
 interface CustomTooltipProps {
-  active?: boolean;
-  payload?: Array<{ value: number }>;
-  label?: string;
+  readonly active?: boolean;
+  readonly payload?: Array<{ value: number }>;
+  readonly label?: string;
 }
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {

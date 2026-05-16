@@ -6,11 +6,11 @@ import type { CategoryBreakdown } from "@/lib/report/calculations";
 import { formatIDR } from "@/lib/format/number";
 
 interface DonutChartProps {
-  data: CategoryBreakdown[];
-  onCategorySelect?: (category: string) => void;
-  selectedCategory?: string | null;
+  readonly data: CategoryBreakdown[];
+  readonly onCategorySelect?: (category: string) => void;
+  readonly selectedCategory?: string | null;
   /** Override the default "Total" center label when no category is selected */
-  centerLabel?: string;
+  readonly centerLabel?: string;
 }
 
 // Active segment — slightly expanded with glow shadow
@@ -37,7 +37,7 @@ const renderActiveShape = (props: any) => {
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
-        opacity={0.20}
+        opacity={0.2}
       />
       {/* Active segment — expanded */}
       <Sector

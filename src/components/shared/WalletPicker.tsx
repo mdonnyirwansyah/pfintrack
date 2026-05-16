@@ -13,11 +13,11 @@ import { useTranslations } from "next-intl";
 import { useTransactionStore } from "@/lib/stores/useTransactionStore";
 
 interface WalletPickerProps {
-  open: boolean;
-  onClose: () => void;
-  wallets: Wallet[];
-  selectedWalletId?: string;
-  onSelect: (wallet: Wallet) => void;
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly wallets: Wallet[];
+  readonly selectedWalletId?: string;
+  readonly onSelect: (wallet: Wallet) => void;
 }
 
 export function WalletPicker({

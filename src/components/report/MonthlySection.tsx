@@ -9,9 +9,9 @@ import { formatIDR, formatIDRSigned } from "@/lib/format/number";
 import type { MonthlySummary } from "@/lib/report/calculations";
 
 interface MonthlySectionProps {
-  start: string;
-  end: string;
-  summary: MonthlySummary;
+  readonly start: string;
+  readonly end: string;
+  readonly summary: MonthlySummary;
 }
 
 export function MonthlySection({ start, end, summary }: MonthlySectionProps) {

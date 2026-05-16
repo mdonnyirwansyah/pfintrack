@@ -4,8 +4,8 @@ import { formatIDR } from "@/lib/format/number";
 import { useTranslations } from "next-intl";
 
 interface LoanSummaryBarProps {
-  totalGet: number;
-  totalGive: number;
+  readonly totalGet: number;
+  readonly totalGive: number;
 }
 
 /**

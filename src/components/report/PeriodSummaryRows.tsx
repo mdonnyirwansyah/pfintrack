@@ -6,13 +6,13 @@ import { useTranslations } from "next-intl";
 import { useAppStore } from "@/lib/stores/useAppStore";
 
 interface PeriodSummaryRowsProps {
-  summary: PeriodSummary;
+  readonly summary: PeriodSummary;
 }
 
 interface SummaryRowProps {
-  label: string;
-  value: string;
-  color?: string;
+  readonly label: string;
+  readonly value: string;
+  readonly color?: string;
 }
 
 function SummaryRow({ label, value, color }: SummaryRowProps) {

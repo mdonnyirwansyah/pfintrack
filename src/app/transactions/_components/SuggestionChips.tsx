@@ -1,8 +1,8 @@
 "use client";
 
 interface TitleChipsProps {
-  suggestions: Array<{ title: string; category: string }>;
-  onSelect: (title: string, category: string) => void;
+  readonly suggestions: Array<{ title: string; category: string }>;
+  readonly onSelect: (title: string, category: string) => void;
 }
 
 export function TitleSuggestionChips({ suggestions, onSelect }: TitleChipsProps) {
@@ -30,8 +30,8 @@ export function TitleSuggestionChips({ suggestions, onSelect }: TitleChipsProps)
 }
 
 interface CategoryChipsProps {
-  suggestions: string[];
-  onSelect: (category: string) => void;
+  readonly suggestions: string[];
+  readonly onSelect: (category: string) => void;
 }
 
 export function CategorySuggestionChips({ suggestions, onSelect }: CategoryChipsProps) {

@@ -16,7 +16,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { parseIDR } from "@/lib/format/number";
 
 interface EditTransactionPageProps {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }
 
 export default function EditTransactionPage({ params }: EditTransactionPageProps) {

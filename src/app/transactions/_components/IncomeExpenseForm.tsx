@@ -20,18 +20,18 @@ export interface IncomeExpenseFormValues {
 }
 
 interface IncomeExpenseFormProps {
-  type: "income" | "expense";
-  wallets: Wallet[];
-  initialValues?: Partial<IncomeExpenseFormValues>;
-  titleSuggestions: Array<{ title: string; category: string }>;
-  categorySuggestions: string[];
-  isSubmitting: boolean;
-  isEditMode?: boolean;
+  readonly type: "income" | "expense";
+  readonly wallets: Wallet[];
+  readonly initialValues?: Partial<IncomeExpenseFormValues>;
+  readonly titleSuggestions: Array<{ title: string; category: string }>;
+  readonly categorySuggestions: string[];
+  readonly isSubmitting: boolean;
+  readonly isEditMode?: boolean;
   /** If true, hides title, category and description fields (e.g. Balance Correction) */
-  hideMetaFields?: boolean;
-  onSubmit: (values: IncomeExpenseFormValues) => void;
+  readonly hideMetaFields?: boolean;
+  readonly onSubmit: (values: IncomeExpenseFormValues) => void;
   /** Extra actions rendered after the form (e.g. delete button on edit page) */
-  footerActions?: React.ReactNode;
+  readonly footerActions?: React.ReactNode;
 }
 
 type FormErrors = Partial<Record<keyof IncomeExpenseFormValues, string>>;

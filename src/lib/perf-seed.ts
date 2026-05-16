@@ -95,7 +95,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   }
   function uuid(): string {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replaceAll(/[xy]/g, (c) => {
-      const r = (rng() * 16) | 0;
+      const r = Math.trunc(rng() * 16);
       const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
@@ -360,7 +360,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   function dailyWallet(): string {
     const r = rng();
     if (r < 0.55) return gopay.id;
-    if (r < 0.80) return jago.id;
+    if (r < 0.8) return jago.id;
     return tunai.id;
   }
 
@@ -460,7 +460,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(7, randInt(0, 30)) });
     }
     // 2. Kopi pagi (90% weekday, 65% weekend)
-    if (chance(isWeekend ? 0.65 : 0.90)) {
+    if (chance(isWeekend ? 0.65 : 0.9)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(18_000, 45_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
@@ -474,7 +474,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(8, randInt(0, 30)) });
     }
     // 4. Mid-morning snack (75% weekday, 50% weekend)
-    if (chance(isWeekend ? 0.50 : 0.75)) {
+    if (chance(isWeekend ? 0.5 : 0.75)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(8_000, 22_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
@@ -503,14 +503,14 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(13, randInt(0, 59)) });
     }
     // 8. Snack sore (70%)
-    if (chance(0.70)) {
+    if (chance(0.7)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r500(inflate(randInt(8_000, 30_000), day)),
         title: pick(SNACK_DRINK), category: "Makanan & Minuman",
         date: day, time: timeAt(15, randInt(0, 59)) });
     }
     // 9. Ojek pulang (weekday 80%)
-    if (!isWeekend && chance(0.80)) {
+    if (!isWeekend && chance(0.8)) {
       spendFrom({ walletId: gopay.id,
         amount: r500(inflate(randInt(15_000, 50_000), day)),
         title: pick(TRANSPORT_DAILY), category: "Transportasi",
@@ -546,7 +546,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(randInt(10, 21), randInt(0, 59)) });
     }
     // 14. Pulsa / Kuota (10%, ~3x per month)
-    if (chance(0.10)) {
+    if (chance(0.1)) {
       spendFrom({ walletId: dailyWallet(),
         amount: r1k(inflate(randInt(25_000, 150_000), day)),
         title: pick(PULSA_DATA), category: "Tagihan",
@@ -564,7 +564,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         description: "Belanja bahan dapur & kebutuhan rumah" });
     }
     // Bensin every ~10 days
-    if (chance(0.10)) {
+    if (chance(0.1)) {
       spendFrom({ walletId: tunai.id,
         amount: r1k(inflate(randInt(150_000, 220_000), day)),
         title: pick(TRANSPORT_FUEL), category: "Transportasi",
@@ -585,7 +585,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
         date: day, time: timeAt(randInt(14, 21), randInt(0, 59)) });
     }
     // Weekend entertainment
-    if (isWeekend && chance(0.40)) {
+    if (isWeekend && chance(0.4)) {
       spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(75_000, 280_000), day)),
         title: pick(["Nonton Bioskop", "Karaoke", "Game Top-Up", "Konser", "Mall Hangout"]),

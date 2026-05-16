@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useColorTheme } from "@/hooks/useColorTheme";
 
 interface ColorThemeProviderProps {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }
 
 export function ColorThemeProvider({ children }: ColorThemeProviderProps): React.JSX.Element {

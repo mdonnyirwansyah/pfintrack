@@ -27,9 +27,9 @@ import { formatIDR } from "@/lib/format/number";
 import { useTranslations, useLocale } from "next-intl";
 
 interface NetWorthChartProps {
-  transactions: Transaction[];
-  loanEntries: LoanEntry[];
-  balanceHistory: WalletBalanceHistory[];
+  readonly transactions: Transaction[];
+  readonly loanEntries: LoanEntry[];
+  readonly balanceHistory: WalletBalanceHistory[];
 }
 
 interface MonthPoint {
@@ -39,9 +39,9 @@ interface MonthPoint {
 }
 
 interface CustomTooltipProps {
-  active?: boolean;
-  payload?: Array<{ value: number }>;
-  label?: string;
+  readonly active?: boolean;
+  readonly payload?: Array<{ value: number }>;
+  readonly label?: string;
 }
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {

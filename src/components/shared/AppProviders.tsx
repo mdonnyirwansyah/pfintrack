@@ -9,7 +9,7 @@ import { setFormatDecimals } from "@/lib/format/number";
 import { runStorageMigration, isMigrationDone } from "@/lib/storage/migrate-from-localstorage";
 
 interface AppProvidersProps {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }
 
 export function AppProviders({ children }: AppProvidersProps) {

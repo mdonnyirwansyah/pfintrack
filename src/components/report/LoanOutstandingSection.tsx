@@ -6,8 +6,8 @@ import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
 import { formatIDR } from "@/lib/format/number";
 
 interface LoanOutstandingSectionProps {
-  loanCounterparties: LoanCounterparty[];
-  loanEntries: LoanEntry[];
+  readonly loanCounterparties: readonly LoanCounterparty[];
+  readonly loanEntries: readonly LoanEntry[];
 }
 
 export function LoanOutstandingSection({
