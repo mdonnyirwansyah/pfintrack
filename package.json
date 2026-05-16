@@ -14,7 +14,8 @@
     "test:unit:coverage": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run --coverage'",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "seed:perf": "tsx scripts/generate-perf-seed.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -57,6 +58,7 @@
     "jsdom": "^29.1.1",
     "sonarqube-scanner": "^4.3.6",
     "tailwindcss": "^4",
+    "tsx": "^4.22.0",
     "typescript": "^5",
     "vitest": "^4.1.6"
   },

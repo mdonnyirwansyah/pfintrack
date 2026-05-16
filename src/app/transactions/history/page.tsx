@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search, X, CalendarDays, FileSearch, ChevronRight } from "lucide-react";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -298,19 +298,53 @@ function DateRangePickerSheet({
   );
 }
 
+/**
+ * Initial render budget for /transactions/history.
+ * With ~8.000 transactions, rendering all rows at once freezes the main
+ * thread (5–20s). We render only the first PAGE_SIZE rows and reveal more
+ * via an IntersectionObserver sentinel as the user scrolls.
+ */
+const PAGE_SIZE = 50;
+
 function HistoryContent({
   isLoading,
   filtered,
   wallets,
+  visibleCount,
+  onLoadMore,
   noResultsTitle,
   noResultsDesc,
 }: Readonly<{
   isLoading: boolean;
   filtered: Transaction[];
   wallets: import("@/lib/types/wallet").Wallet[];
+  visibleCount: number;
+  onLoadMore: () => void;
   noResultsTitle: string;
   noResultsDesc: string;
 }>) {
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const hasMore = visibleCount < filtered.length;
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            onLoadMore();
+            break;
+          }
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, onLoadMore, filtered.length]);
+
   if (isLoading) {
     return (
       <div className="px-4 space-y-3">
@@ -323,16 +357,31 @@ function HistoryContent({
   if (filtered.length === 0) {
     return <EmptyState icon={FileSearch} title={noResultsTitle} description={noResultsDesc} />;
   }
+
+  const visible = filtered.length > visibleCount ? filtered.slice(0, visibleCount) : filtered;
+
   return (
     <div className="px-4">
       <ul className="glass rounded-[16px] overflow-hidden list-none">
-        {filtered.map((tx, idx) => (
+        {visible.map((tx, idx) => (
           <li key={tx.id}>
             {idx > 0 && <div className="mx-4" style={{ height: 1, background: "var(--divider)" }} />}
             <TransactionItem transaction={tx} wallets={wallets} showDate />
           </li>
         ))}
       </ul>
+      {hasMore && (
+        <div
+          ref={sentinelRef}
+          className="h-16 flex items-center justify-center"
+          aria-hidden="true"
+        >
+          <div
+            className="h-4 w-4 rounded-full animate-pulse"
+            style={{ background: "var(--bg-secondary)" }}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -382,6 +431,17 @@ export default function TransactionHistoryPage() {
     () => applyFilters(transactions, activeFilter, dateRange, activeWalletId, searchQuery, walletMap, sortKey),
     [transactions, activeFilter, dateRange, activeWalletId, searchQuery, walletMap, sortKey]
   );
+
+  // Windowing: render only the first `visibleCount` rows; reset when the
+  // filtered result-set changes (filter/search/sort/date/wallet) so that
+  // a new query starts from the top instead of inheriting a deep scroll.
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [activeFilter, activeWalletId, searchQuery, sortKey, dateRange]);
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount((c) => c + PAGE_SIZE);
+  }, []);
 
   const dateRangeLabel = buildDateRangeLabel(dateRange, locale);
   const errorMsg = t("history.errorStartAfterEnd");
@@ -521,6 +581,8 @@ export default function TransactionHistoryPage() {
         isLoading={isLoading}
         filtered={filtered}
         wallets={wallets}
+        visibleCount={visibleCount}
+        onLoadMore={handleLoadMore}
         noResultsTitle={hasFilters ? t("noResults") : t("noHistory")}
         noResultsDesc={hasFilters ? t("noResultsDesc") : t("noHistoryDesc")}
       />

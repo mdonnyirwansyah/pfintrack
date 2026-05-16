@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# perf-seed generated backup files
+pfintrack-perf-seed*.json
+*.backup.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
