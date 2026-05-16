@@ -65,17 +65,27 @@ Setelah disetujui, ubah status di file ke **Accepted**, lalu hand off ke impleme
 implementasi MVP-nya sesuai roadmap di section 8."
 ```
 
-## Index Proposal
+## Archive Policy
 
-| ID | Judul | Status | Modul | Effort | Tanggal |
-|---|---|---|---|---|---|
-| [PROP-0001](./PROP-0001-migration-localstorage-to-indexeddb.md) | Migrate Storage Layer: localStorage → IndexedDB | Draft | Cross-cutting | L | 2026-05-06 |
-| [PROP-0002](./PROP-0002-report-module-enhancements.md) | Report Module Enhancements — Analisa Keuangan Lebih Dalam | Draft | Report | L | 2026-05-07 |
-| [PROP-0003](./PROP-0003-color-theme-picker.md) | Color Theme Picker | Draft | Cross-cutting (Settings, CSS, layout) | S | 2026-05-11 |
-| [PROP-0004](./PROP-0004-report-visibility-settings.md) | Report Visibility Settings | Draft | Report, Settings | S | 2026-05-11 |
-| [PROP-0005](./PROP-0005-in-app-faq.md) | In-App FAQ (Frequently Asked Questions) | Draft | Settings, Cross-cutting (i18n) | S | 2026-05-15 |
+Setelah proposal **diformalisasi ke tech-spec** (status `Formalized`) atau **ship-ed** ke production, file proposal-nya dihapus dari folder ini agar folder hanya berisi proposal aktif (Draft / Under Review / Accepted yang belum di-implement).
 
-> Saat agent membuat proposal baru, **wajib update tabel ini** sebagai bagian dari output.
+Riwayat lengkap proposal lama tetap accessible via `git log -- tech-spec-docs/proposals/PROP-NNNN-*.md`. Source of truth final = tech-spec dedicated (mis. `tech-spec-feature-faq.md`, `tech-spec-migration-indexeddb.md`).
+
+## Index Proposal Aktif
+
+_(Saat ini kosong — semua proposal sudah formalized ke tech-spec.)_
+
+## Index Proposal yang Sudah Diformalisasi
+
+| ID | Judul | Formalized to | Tanggal |
+|---|---|---|---|
+| PROP-0001 | Migrate Storage Layer: localStorage → IndexedDB | `tech-spec-migration-indexeddb.md` | 2026-05-14 |
+| PROP-0002 | Report Module Enhancements | `tech-spec-module-report.md` §11 | 2026-05-07 |
+| PROP-0003 | Color Theme Picker | `tech-spec-global-architecture.md` §3.11 / §4.3 / §6.1 / §11 | 2026-05-16 |
+| PROP-0004 | Report Visibility Settings | `tech-spec-global-architecture.md` §11 + `tech-spec-module-report.md` | 2026-05-16 |
+| PROP-0005 | In-App FAQ | `tech-spec-feature-faq.md` | 2026-05-16 |
+
+> Saat agent membuat proposal baru, **wajib update tabel "Aktif" di atas**. Saat proposal di-formalisasi, pindahkan ke tabel "Sudah Diformalisasi" dan hapus file proposal-nya.
 
 ---
 

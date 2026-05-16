@@ -6,7 +6,7 @@
 **Tanggal:** 2026-05-14
 **Platform:** Web App · Mobile-First · Next.js (App Router)
 **Scope:** Cross-cutting — Wallet, Transactions, Loan, Report
-**Proposal Asal:** `tech-spec-docs/proposals/PROP-0001-migration-localstorage-to-indexeddb.md`
+**Proposal Asal:** PROP-0001 (formalized & shipped; proposal file removed dari `tech-spec-docs/proposals/` per 2026-05-16 — riwayat tersedia di git history)
 
 ---
 

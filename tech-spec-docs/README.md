@@ -22,6 +22,9 @@ Dokumentasi ini adalah **technical specification** lengkap untuk aplikasi Person
 | 3 | **Module Transactions** | Pencatatan income, expense, transfer antar wallet. Suggestion chips dari history, search, export Excel, navigasi tanggal. | `tech-spec-module-transactions.md` |
 | 4 | **Module Loan** | Utang-piutang antar pribadi (give & get). Counterparty management, status paid off (auto & manual), integrasi opsional dengan wallet. | `tech-spec-module-loan.md` |
 | 5 | **Module Report** | Laporan keuangan: Realtime (bulan berjalan), Monthly (per bulan), Custom (range buatan user). Donut chart kategori expense, summary multi-baris (Expenses, Income, Balance, Loan, Balance Correction). | `tech-spec-module-report.md` |
+| 6 | **Migration: localStorage → IndexedDB** | Spec migrasi storage layer dari `localStorage` ke `IndexedDB` (PROP-0001). Mencakup mapping schema 1:1, runner migrasi sekali jalan, rollback strategy, dan kontrak compatibility selama transisi. | `tech-spec-migration-indexeddb.md` |
+| 7 | **Feature: Product Tour** | Onboarding tour overlay lintas-modul (22 step, 4 grup: Transactions/Wallet/Loan/Report). Komponen `ProductTour`, kontrak `data-tour`, key `tour_completed`. | `tech-spec-feature-product-tour.md` |
+| 8 | **Feature: In-App FAQ** | 14 Q&A bilingual di 3 kategori, accordion native `<details>`/`<summary>`, search realtime, route `/settings/faq`. Konten di `messages/{id,en}.json` namespace `faq`. | `tech-spec-feature-faq.md` |
 
 ---
 
