@@ -31,6 +31,10 @@ export default defineConfig({
         "src/lib/storage/custom-reports.ts",
         "src/lib/storage/backup.ts",
         "src/lib/storage/migrate-from-localstorage.ts",
+        // Pure re-export shim — logic lives in lib/bootstrap/anon-id.ts (100% covered).
+        // V8 coverage provider reports re-export-only modules as 0/0 because the
+        // `export { ... } from "..."` form has no executable statements.
+        "src/lib/storage/anon-id.ts",
         // Demo data — not business logic
         "src/lib/demo-data.ts",
       ],

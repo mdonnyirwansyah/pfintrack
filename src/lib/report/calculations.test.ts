@@ -428,6 +428,21 @@ describe("calculateMonthlySummary", () => {
     expect(result.balanceCorrection).toBe(200_000);
     expect(result.endBalance).toBe(1_200_000);
   });
+
+  it("startBalance accumulates balance corrections before period", () => {
+    // Covers prevCorrections reducer: history entries before period.start
+    // must be summed into the carried-over startBalance.
+    const history = [
+      hist({ delta: 150_000, corrected_at: "2026-04-05T10:00:00.000Z" }), // before
+      hist({ delta: -50_000, corrected_at: "2026-04-20T10:00:00.000Z" }), // before
+      hist({ delta: 999_999, corrected_at: "2026-05-10T10:00:00.000Z" }), // in period (ignored for prevCorrections)
+      hist({ delta: 77_000, corrected_at: "2026-03-01T10:00:00.000Z", is_active: false }), // inactive
+    ];
+    const result = calculateMonthlySummary([], [], history, PERIOD.start, PERIOD.end);
+    expect(result.startBalance).toBe(100_000); // 150K + (-50K)
+    expect(result.balanceCorrection).toBe(999_999);
+    expect(result.endBalance).toBe(1_099_999); // 100K + 0 (no in-period tx) + 999_999
+  });
 });
 
 // ── currentMonthStart / currentMonthEnd ──────────────────────────────────────
