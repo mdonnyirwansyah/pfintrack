@@ -1,11 +1,12 @@
 /**
  * Performance Seed — pure data generator for dev/perf testing.
  *
- * Produces ~7,000–9,000 transactions over 5 years (from today backwards) with
- * realistic Indonesian patterns: monthly salary with raises, THR Lebaran,
- * year-end bonus, daily food, weekly groceries, monthly bills, transport,
- * health, shopping, weekend entertainment, 3 vacations/year, 1-2 big
- * purchases/year, 2-4 balance corrections/year, and 5 loan counterparties.
+ * Produces ~20,000–30,000 transactions over 5 years (from today backwards)
+ * with realistic Indonesian daily patterns and a **no-negative-balance**
+ * guarantee. Every wallet stays ≥ 0 at all points in time — sub-wallets
+ * (GoPay, Jago, Tunai) auto-receive a top-up transfer from BCA when about
+ * to overdraw. If BCA itself can't cover an outflow, the transaction is
+ * silently skipped (no negative-balance records ever produced).
  *
  * **Pure function** — no IDB, no DOM, no localStorage access. Returns a
  * `BackupData` object that can be:
@@ -37,7 +38,7 @@ function makeRng(seed: number): () => number {
 }
 
 export interface PerfSeedOptions {
-  /** Anon ID to stamp on every record. Required because backup-import expects matching IDs. */
+  /** Anon ID to stamp on every record. */
   anonId: string;
   /** Reference "today" — defaults to actual today. Override for reproducible tests. */
   today?: Date;
@@ -56,6 +57,7 @@ export interface PerfSeedResult {
     loanCounterparties: number;
     loanEntries: number;
     customReports: number;
+    skippedForBalance: number;
   }>;
 }
 
@@ -91,7 +93,6 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   function timeAt(h: number, m: number): string {
     return `${pad2(h)}:${pad2(m)}`;
   }
-  // Deterministic UUID v4 generator from rng (avoids global crypto for Node CLI portability).
   function uuid(): string {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replaceAll(/[xy]/g, (c) => {
       const r = (rng() * 16) | 0;
@@ -101,13 +102,16 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   }
 
   // ── Wallets ──────────────────────────────────────────────────────────────
+  // Opening balances are sized so BCA can comfortably cover 5 years of bills,
+  // big purchases, vacations, and sub-wallet top-ups while always staying
+  // positive (salary inflows cover the rest).
   const walletsDef: ReadonlyArray<Readonly<{ name: string; type: WalletType; opening: number }>> = [
-    { name: "BCA",            type: "bank",          opening: 12_500_000 },
-    { name: "Jago",           type: "bank_digital",  opening:  2_800_000 },
-    { name: "GoPay",          type: "e_wallet",      opening:    750_000 },
-    { name: "Tunai",          type: "other",         opening:    500_000 },
-    { name: "Reksadana",      type: "investment",    opening:  8_000_000 },
-    { name: "Tabungan Emas",  type: "digital_asset", opening:  3_200_000 },
+    { name: "BCA",            type: "bank",          opening: 50_000_000 },
+    { name: "Jago",           type: "bank_digital",  opening:  5_000_000 },
+    { name: "GoPay",          type: "e_wallet",      opening:  1_500_000 },
+    { name: "Tunai",          type: "other",         opening:    800_000 },
+    { name: "Reksadana",      type: "investment",    opening: 25_000_000 },
+    { name: "Tabungan Emas",  type: "digital_asset", opening:  8_000_000 },
   ];
   const wallets: Wallet[] = walletsDef.map((w, i) => {
     const createdAt = new Date(startDate.getTime() - (i + 1) * MS_PER_DAY).toISOString();
@@ -123,12 +127,14 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     };
   });
   const byName: Record<string, Wallet> = Object.fromEntries(wallets.map((w) => [w.name, w]));
+  const walletName: Record<string, string> = Object.fromEntries(wallets.map((w) => [w.id, w.name]));
   const balances: Record<string, number> = Object.fromEntries(wallets.map((w) => [w.id, 0]));
 
   const transactions: Transaction[] = [];
   const balanceHistory: WalletBalanceHistory[] = [];
+  let skippedForBalance = 0;
 
-  function addTx(t: Readonly<{
+  function rawAddTx(t: Readonly<{
     type: TransactionType;
     walletId: string;
     destWalletId?: string | null;
@@ -180,12 +186,12 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     });
   }
 
-  // Opening balances via Balance Correction
+  // Opening balances via Balance Correction (so /report shows realistic openings)
   for (const w of walletsDef) {
     if (w.opening <= 0) continue;
     const wallet = byName[w.name];
     addBalanceHistory(wallet.id, 0, w.opening, startDate);
-    addTx({
+    rawAddTx({
       type: "income",
       walletId: wallet.id,
       amount: w.opening,
@@ -206,22 +212,114 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   const startYear = startDate.getFullYear();
   const yearIdx = (d: Date) => d.getFullYear() - startYear;
   const inflate = (base: number, d: Date) => base * Math.pow(1.06, yearIdx(d));
-  const salaryFor = (d: Date) => r1k(12_500_000 * Math.pow(1.08, yearIdx(d)));
+  const salaryFor = (d: Date) => r1k(15_000_000 * Math.pow(1.08, yearIdx(d)));
 
-  const FOOD_LUNCH = [
-    "Nasi Padang", "Warteg", "Ayam Geprek", "Indomie Goreng", "Sushi Tei",
-    "GrabFood Lunch", "ShopeeFood", "Bento Box", "Nasi Uduk", "Mie Ayam",
-    "Bakso Malang", "Soto Betawi", "Gado-Gado", "Sate Ayam", "Pecel Lele",
+  /**
+   * Spend `amount` from `walletId`. If insufficient, auto top-up from BCA
+   * (covering deficit + small buffer). Returns true on success.
+   * If BCA can't cover either, skips silently and increments `skippedForBalance`.
+   */
+  function spendFrom(t: Readonly<{
+    walletId: string;
+    amount: number;
+    title: string;
+    category: string;
+    date: Date;
+    time: string;
+    description?: string | null;
+  }>): boolean {
+    if (balances[t.walletId] >= t.amount) {
+      rawAddTx({ type: "expense", ...t });
+      return true;
+    }
+    // Source is BCA itself or sub-wallet that needs top-up
+    if (t.walletId === bca.id) {
+      skippedForBalance++;
+      return false;
+    }
+    const deficit = t.amount - balances[t.walletId];
+    const topUp = r1k(deficit + 300_000); // buffer ~300k
+    if (balances[bca.id] < topUp) {
+      skippedForBalance++;
+      return false;
+    }
+    // Top-up transfer 1 minute before the expense, same date
+    const [hh, mm] = t.time.split(":").map((x) => Number.parseInt(x, 10));
+    const topUpTime = timeAt(hh, Math.max(0, mm - 1));
+    rawAddTx({
+      type: "transfer",
+      walletId: bca.id,
+      destWalletId: t.walletId,
+      amount: topUp,
+      title: `Top Up ${walletName[t.walletId]}`,
+      category: "Transfer",
+      date: t.date,
+      time: topUpTime,
+    });
+    rawAddTx({ type: "expense", ...t });
+    return true;
+  }
+
+  /** Transfer from BCA → destWallet. Skip if BCA insufficient. */
+  function transferFromBCA(t: Readonly<{
+    destWalletId: string;
+    amount: number;
+    title: string;
+    date: Date;
+    time: string;
+  }>): boolean {
+    if (balances[bca.id] < t.amount) {
+      skippedForBalance++;
+      return false;
+    }
+    rawAddTx({
+      type: "transfer",
+      walletId: bca.id,
+      destWalletId: t.destWalletId,
+      amount: t.amount,
+      title: t.title,
+      category: "Transfer",
+      date: t.date,
+      time: t.time,
+    });
+    return true;
+  }
+
+  function addIncome(t: Readonly<{
+    walletId: string;
+    amount: number;
+    title: string;
+    category: string;
+    date: Date;
+    time: string;
+    description?: string | null;
+  }>): void {
+    rawAddTx({ type: "income", ...t });
+  }
+
+  // ── Catalog ──────────────────────────────────────────────────────────────
+  const BREAKFAST = [
+    "Nasi Uduk", "Bubur Ayam", "Lontong Sayur", "Roti Bakar", "Sarapan Indomaret",
+    "Mie Instan", "Soto Pagi", "Nasi Kuning", "Lupis & Klepon", "Ketoprak",
   ];
-  const FOOD_DINNER = [
+  const LUNCH = [
+    "Nasi Padang", "Warteg", "Ayam Geprek", "Nasi Goreng", "Sushi Tei",
+    "GrabFood Lunch", "ShopeeFood", "Bento Box", "Mie Ayam", "Bakso Malang",
+    "Soto Betawi", "Gado-Gado", "Sate Ayam", "Pecel Lele", "Hokben Lunch",
+  ];
+  const DINNER = [
     "Makan Malam Keluarga", "Dinner Restoran", "GrabFood Dinner", "Hokben",
     "KFC", "McD", "Pizza Hut", "Yoshinoya", "Marugame", "Solaria",
+    "Ayam Bakar", "Seafood Pinggir Jalan", "Steak Lokal",
   ];
-  const FOOD_SNACK = [
-    "Kopi Kenangan", "Starbucks", "Janji Jiwa", "Tomoro Coffee", "Roti Bakery",
-    "Es Teh Indonesia", "Mixue", "Snack Indomaret", "Buah Potong", "Donat",
+  const SNACK_DRINK = [
+    "Kopi Kenangan", "Starbucks", "Janji Jiwa", "Tomoro Coffee", "Es Teh Indonesia",
+    "Mixue", "Chatime", "Es Krim", "Donat", "Roti Bakery", "Air Mineral", "Buah Potong",
   ];
-  const TRANSPORT_DAILY = ["Ojek Online", "Grab Bike", "Gojek", "Parkir", "Tol"];
+  const CONVENIENCE = [
+    "Indomaret", "Alfamart", "Lawson", "FamilyMart", "Circle K",
+  ];
+  const TRANSPORT_DAILY = ["Ojek Online", "Grab Bike", "Gojek", "Parkir", "Tol", "Angkot", "TransJakarta"];
   const TRANSPORT_FUEL = ["Bensin Pertamax", "Bensin Pertalite", "Service Motor"];
   const ENT_SUB = [
     { name: "Spotify Premium",   amount:  54_990 },
@@ -230,6 +328,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     { name: "Disney+ Hotstar",   amount:  39_000 },
     { name: "Apple iCloud",      amount:  15_000 },
   ];
+  const PULSA_DATA = ["Pulsa Telkomsel", "Kuota Internet", "Paket Data XL", "Pulsa Indosat"];
   const HEALTH = ["Apotek Kimia Farma", "Apotek Century", "Vitamin & Suplemen", "Konsultasi Dokter"];
   const SHOPPING = [
     "Baju Uniqlo", "Sepatu Adidas", "Tas Eiger", "Skincare", "Parfum",
@@ -257,6 +356,15 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     { name: "Kursi Kerja Ergonomis", amount:  3_200_000 },
   ];
 
+  /** Random sub-wallet weighted: GoPay 55%, Jago 25%, Tunai 20%. */
+  function dailyWallet(): string {
+    const r = rng();
+    if (r < 0.55) return gopay.id;
+    if (r < 0.80) return jago.id;
+    return tunai.id;
+  }
+
+  // ── Daily simulation ─────────────────────────────────────────────────────
   const endDate = new Date(today);
   for (let d = new Date(startDate); d <= endDate; d = new Date(d.getTime() + MS_PER_DAY)) {
     const day = new Date(d);
@@ -265,129 +373,228 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     const dow = day.getDay();
     const isWeekend = dow === 0 || dow === 6;
 
+    // ── Monthly inflows & treasury moves (tanggal 25) ──
     if (dom === 25) {
-      addTx({ type: "income", walletId: bca.id, amount: salaryFor(day),
+      addIncome({ walletId: bca.id, amount: salaryFor(day),
         title: `Gaji ${day.toLocaleDateString("id-ID", { month: "long", year: "numeric" })}`,
         category: "Pendapatan", date: day, time: timeAt(8, 0),
         description: "Transfer gaji bulanan" });
-      addTx({ type: "transfer", walletId: bca.id, destWalletId: reksa.id,
-        amount: r1k(inflate(1_500_000, day)), title: "DCA Reksadana",
-        category: "Transfer", date: day, time: timeAt(8, 15) });
-      addTx({ type: "transfer", walletId: bca.id, destWalletId: emas.id,
-        amount: r500(inflate(500_000, day)), title: "Beli Tabungan Emas",
-        category: "Transfer", date: day, time: timeAt(8, 20) });
-      addTx({ type: "transfer", walletId: bca.id, destWalletId: jago.id,
-        amount: r1k(inflate(3_000_000, day)), title: "Top Up Jago",
-        category: "Transfer", date: day, time: timeAt(8, 25) });
-      addTx({ type: "transfer", walletId: bca.id, destWalletId: tunai.id,
-        amount: r500(inflate(700_000, day)), title: "Ambil Tunai",
-        category: "Transfer", date: day, time: timeAt(8, 30) });
+      transferFromBCA({ destWalletId: reksa.id,
+        amount: r1k(inflate(2_000_000, day)), title: "DCA Reksadana",
+        date: day, time: timeAt(8, 15) });
+      transferFromBCA({ destWalletId: emas.id,
+        amount: r500(inflate(700_000, day)), title: "Beli Tabungan Emas",
+        date: day, time: timeAt(8, 20) });
+      transferFromBCA({ destWalletId: jago.id,
+        amount: r1k(inflate(3_500_000, day)), title: "Top Up Jago",
+        date: day, time: timeAt(8, 25) });
+      transferFromBCA({ destWalletId: tunai.id,
+        amount: r500(inflate(800_000, day)), title: "Ambil Tunai",
+        date: day, time: timeAt(8, 30) });
+      transferFromBCA({ destWalletId: gopay.id,
+        amount: r500(inflate(1_500_000, day)), title: "Top Up GoPay Bulanan",
+        date: day, time: timeAt(8, 35) });
     }
 
+    // ── Monthly bills (BCA) ──
     if (dom === 1) {
-      addTx({ type: "expense", walletId: bca.id, amount: r1k(inflate(450_000, day)),
+      spendFrom({ walletId: bca.id, amount: r1k(inflate(450_000, day)),
         title: "Tagihan Listrik PLN", category: "Tagihan", date: day, time: timeAt(9, 0) });
-      addTx({ type: "expense", walletId: bca.id, amount: r1k(inflate(265_000, day)),
+      spendFrom({ walletId: bca.id, amount: r1k(inflate(265_000, day)),
         title: "Internet IndiHome", category: "Tagihan", date: day, time: timeAt(9, 5) });
-      addTx({ type: "expense", walletId: bca.id, amount: 160_000,
+      spendFrom({ walletId: bca.id, amount: 160_000,
         title: "BPJS Kesehatan", category: "Tagihan", date: day, time: timeAt(9, 10) });
     }
     if (dom === 2) {
-      addTx({ type: "expense", walletId: bca.id, amount: r1k(inflate(3_500_000, day)),
+      spendFrom({ walletId: bca.id, amount: r1k(inflate(3_500_000, day)),
         title: "Cicilan KPR", category: "Tagihan", date: day, time: timeAt(9, 0) });
     }
     if (dom === 5) {
-      addTx({ type: "expense", walletId: bca.id, amount: r1k(inflate(135_000, day)),
+      spendFrom({ walletId: bca.id, amount: r1k(inflate(135_000, day)),
         title: "Tagihan Air PAM", category: "Tagihan", date: day, time: timeAt(9, 30) });
       for (const sub of ENT_SUB) {
         if (chance(0.95)) {
-          addTx({ type: "expense", walletId: bca.id, amount: sub.amount,
+          spendFrom({ walletId: bca.id, amount: sub.amount,
             title: sub.name, category: "Hiburan", date: day, time: timeAt(10, 0) });
         }
       }
     }
 
+    // ── THR Lebaran ──
     if (month === 6 && dom === 15) {
-      addTx({ type: "income", walletId: bca.id, amount: salaryFor(day),
+      addIncome({ walletId: bca.id, amount: salaryFor(day),
         title: "THR Lebaran", category: "Pendapatan", date: day, time: timeAt(10, 0),
         description: "Tunjangan Hari Raya" });
-      addTx({ type: "expense", walletId: bca.id, amount: r1k(inflate(2_500_000, day)),
+      spendFrom({ walletId: bca.id, amount: r1k(inflate(2_500_000, day)),
         title: "THR Keluarga", category: "Lain-lain", date: day, time: timeAt(14, 0),
         description: "Angpao Lebaran untuk keluarga" });
-      addTx({ type: "expense", walletId: bca.id, amount: r1k(inflate(1_800_000, day)),
+      spendFrom({ walletId: bca.id, amount: r1k(inflate(1_800_000, day)),
         title: "Belanja Lebaran", category: "Belanja", date: day, time: timeAt(15, 0) });
     }
 
+    // ── Bonus akhir tahun ──
     if (month === 12 && dom === 20) {
-      addTx({ type: "income", walletId: bca.id, amount: r1k(salaryFor(day) * 0.75),
+      addIncome({ walletId: bca.id, amount: r1k(salaryFor(day) * 0.75),
         title: "Bonus Akhir Tahun", category: "Pendapatan", date: day, time: timeAt(10, 0),
         description: "Bonus tahunan" });
     }
 
-    if (chance(0.025)) {
-      addTx({ type: "income", walletId: bca.id,
+    // ── Freelance income (irregular) ──
+    if (chance(0.03)) {
+      addIncome({ walletId: bca.id,
         amount: r1k(inflate(2_500_000 + rng() * 3_500_000, day)),
         title: pick(FREELANCE), category: "Pendapatan", date: day,
         time: timeAt(randInt(10, 17), randInt(0, 59)),
         description: "Pembayaran project sampingan" });
     }
 
-    const foodEntries = randInt(2, 4);
-    for (let i = 0; i < foodEntries; i++) {
-      const meal = i === 0 ? FOOD_LUNCH : i === 1 ? FOOD_SNACK : FOOD_DINNER;
-      const wallet = chance(0.6) ? gopay : chance(0.5) ? jago : tunai;
-      const base = i === 0 ? randInt(25_000, 90_000) : i === 1 ? randInt(15_000, 55_000) : randInt(40_000, 120_000);
-      addTx({ type: "expense", walletId: wallet.id,
-        amount: r500(inflate(base, day)), title: pick(meal),
-        category: "Makanan & Minuman", date: day,
-        time: timeAt(i === 0 ? 12 : i === 1 ? 9 : 19, randInt(0, 59)) });
+    // ──────────────────────────────────────────────────────────────────────
+    //  Daily routine — target ~10-20 transactions per day
+    // ──────────────────────────────────────────────────────────────────────
+
+    // 1. Breakfast (98% weekday, 85% weekend)
+    if (chance(isWeekend ? 0.85 : 0.98)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(12_000, 35_000), day)),
+        title: pick(BREAKFAST), category: "Makanan & Minuman",
+        date: day, time: timeAt(7, randInt(0, 30)) });
+    }
+    // 2. Kopi pagi (90% weekday, 65% weekend)
+    if (chance(isWeekend ? 0.65 : 0.90)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(18_000, 45_000), day)),
+        title: pick(SNACK_DRINK), category: "Makanan & Minuman",
+        date: day, time: timeAt(7, randInt(30, 59)) });
+    }
+    // 3. Ojek pergi (weekday 85%)
+    if (!isWeekend && chance(0.85)) {
+      spendFrom({ walletId: gopay.id,
+        amount: r500(inflate(randInt(15_000, 45_000), day)),
+        title: pick(TRANSPORT_DAILY), category: "Transportasi",
+        date: day, time: timeAt(8, randInt(0, 30)) });
+    }
+    // 4. Mid-morning snack (75% weekday, 50% weekend)
+    if (chance(isWeekend ? 0.50 : 0.75)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(8_000, 22_000), day)),
+        title: pick(SNACK_DRINK), category: "Makanan & Minuman",
+        date: day, time: timeAt(9, randInt(30, 59)) });
+    }
+    // 5. Air mineral / minuman 10am (65%)
+    if (chance(0.65)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(5_000, 12_000), day)),
+        title: "Air Mineral / Minuman", category: "Makanan & Minuman",
+        date: day, time: timeAt(10, randInt(0, 59)) });
+    }
+    // 6. Lunch (98%)
+    if (chance(0.98)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(25_000, 95_000), day)),
+        title: pick(LUNCH), category: "Makanan & Minuman",
+        date: day, time: timeAt(12, randInt(0, 59)),
+        description: chance(0.15) ? "Lunch bareng teman kantor" : null });
+    }
+    // 7. Es teh / kopi siang (78%)
+    if (chance(0.78)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(10_000, 28_000), day)),
+        title: pick(SNACK_DRINK), category: "Makanan & Minuman",
+        date: day, time: timeAt(13, randInt(0, 59)) });
+    }
+    // 8. Snack sore (70%)
+    if (chance(0.70)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(8_000, 30_000), day)),
+        title: pick(SNACK_DRINK), category: "Makanan & Minuman",
+        date: day, time: timeAt(15, randInt(0, 59)) });
+    }
+    // 9. Ojek pulang (weekday 80%)
+    if (!isWeekend && chance(0.80)) {
+      spendFrom({ walletId: gopay.id,
+        amount: r500(inflate(randInt(15_000, 50_000), day)),
+        title: pick(TRANSPORT_DAILY), category: "Transportasi",
+        date: day, time: timeAt(17, randInt(0, 59)) });
+    }
+    // 10. Convenience store stop (72%)
+    if (chance(0.72)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(12_000, 55_000), day)),
+        title: `${pick(CONVENIENCE)} - Belanja Kebutuhan`,
+        category: "Belanja", date: day, time: timeAt(18, randInt(0, 30)),
+        description: "Beli kebutuhan kecil & camilan" });
+    }
+    // 11. Dinner (92%)
+    if (chance(0.92)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(35_000, 110_000), day)),
+        title: pick(DINNER), category: "Makanan & Minuman",
+        date: day, time: timeAt(19, randInt(0, 59)) });
+    }
+    // 12. Snack malam / buah (55%)
+    if (chance(0.55)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r500(inflate(randInt(8_000, 25_000), day)),
+        title: pick(SNACK_DRINK), category: "Makanan & Minuman",
+        date: day, time: timeAt(20, randInt(0, 59)) });
+    }
+    // 13. Parkir random (55%)
+    if (chance(0.55)) {
+      spendFrom({ walletId: tunai.id,
+        amount: r500(randInt(2_000, 12_000)),
+        title: "Parkir", category: "Transportasi",
+        date: day, time: timeAt(randInt(10, 21), randInt(0, 59)) });
+    }
+    // 14. Pulsa / Kuota (10%, ~3x per month)
+    if (chance(0.10)) {
+      spendFrom({ walletId: dailyWallet(),
+        amount: r1k(inflate(randInt(25_000, 150_000), day)),
+        title: pick(PULSA_DATA), category: "Tagihan",
+        date: day, time: timeAt(randInt(10, 21), randInt(0, 59)) });
     }
 
+    // ── Less-frequent categories ──
+
+    // Weekly groceries (Saturday 85%)
     if (dow === 6 && chance(0.85)) {
-      addTx({ type: "expense", walletId: bca.id,
-        amount: r1k(inflate(randInt(350_000, 850_000), day)),
-        title: "Belanja Mingguan", category: "Makanan & Minuman",
+      spendFrom({ walletId: bca.id,
+        amount: r1k(inflate(randInt(450_000, 950_000), day)),
+        title: "Belanja Mingguan Supermarket", category: "Makanan & Minuman",
         date: day, time: timeAt(10, randInt(0, 59)),
         description: "Belanja bahan dapur & kebutuhan rumah" });
     }
-
-    if (!isWeekend && chance(0.7)) {
-      addTx({ type: "expense", walletId: gopay.id,
-        amount: r500(inflate(randInt(20_000, 65_000), day)),
-        title: pick(TRANSPORT_DAILY), category: "Transportasi",
-        date: day, time: timeAt(randInt(7, 9), randInt(0, 59)) });
-    }
+    // Bensin every ~10 days
     if (chance(0.10)) {
-      addTx({ type: "expense", walletId: tunai.id,
+      spendFrom({ walletId: tunai.id,
         amount: r1k(inflate(randInt(150_000, 220_000), day)),
         title: pick(TRANSPORT_FUEL), category: "Transportasi",
         date: day, time: timeAt(7, randInt(0, 59)) });
     }
-
+    // Health
     if (chance(0.04)) {
-      addTx({ type: "expense", walletId: bca.id,
+      spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(85_000, 350_000), day)),
         title: pick(HEALTH), category: "Kesehatan",
         date: day, time: timeAt(randInt(10, 18), randInt(0, 59)) });
     }
-
-    if (chance(0.08)) {
-      addTx({ type: "expense", walletId: bca.id,
+    // Shopping (clothes/electronics small)
+    if (chance(0.06)) {
+      spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(120_000, 750_000), day)),
         title: pick(SHOPPING), category: "Belanja",
         date: day, time: timeAt(randInt(14, 21), randInt(0, 59)) });
     }
-
-    if (isWeekend && chance(0.35)) {
-      addTx({ type: "expense", walletId: bca.id,
+    // Weekend entertainment
+    if (isWeekend && chance(0.40)) {
+      spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(75_000, 280_000), day)),
         title: pick(["Nonton Bioskop", "Karaoke", "Game Top-Up", "Konser", "Mall Hangout"]),
         category: "Hiburan", date: day,
         time: timeAt(randInt(15, 22), randInt(0, 59)) });
     }
-
+    // Education
     if (chance(0.015)) {
-      addTx({ type: "expense", walletId: bca.id,
+      spendFrom({ walletId: bca.id,
         amount: r1k(inflate(randInt(150_000, 450_000), day)),
         title: pick(["Kursus Online Udemy", "Buku Programming", "Webinar Berbayar", "Coursera Plus"]),
         category: "Pendidikan", date: day,
@@ -395,13 +602,13 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // Annual vacations (3/year)
+  // ── Annual vacations (3/year) ──
   for (let y = 0; y < years; y++) {
     for (const m of [3, 7, 11]) {
       const date = new Date(startDate.getFullYear() + y, m - 1, randInt(5, 25));
       if (date > endDate) continue;
       const trip = pick(TRAVEL);
-      addTx({ type: "expense", walletId: bca.id,
+      spendFrom({ walletId: bca.id,
         amount: r1k(inflate(trip.amount, date)),
         title: `Liburan ${trip.dest}`, category: "Hiburan",
         date, time: timeAt(randInt(8, 12), randInt(0, 59)),
@@ -409,14 +616,14 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // Big purchases (1-2/year)
+  // ── Big purchases (1-2/year) ──
   for (let y = 0; y < years; y++) {
     const n = randInt(1, 2);
     for (let i = 0; i < n; i++) {
       const date = new Date(startDate.getFullYear() + y, randInt(0, 11), randInt(1, 28));
       if (date > endDate) continue;
       const item = pick(BIG_PURCHASES);
-      addTx({ type: "expense", walletId: bca.id,
+      spendFrom({ walletId: bca.id,
         amount: r1k(inflate(item.amount, date)),
         title: item.name, category: "Belanja",
         date, time: timeAt(randInt(11, 18), randInt(0, 59)),
@@ -424,26 +631,40 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     }
   }
 
-  // Balance corrections (2-4/year)
+  // ── Balance corrections (2-3/year, always small) ──
   for (let y = 0; y < years; y++) {
-    const n = randInt(2, 4);
+    const n = randInt(2, 3);
     for (let i = 0; i < n; i++) {
       const date = new Date(startDate.getFullYear() + y, randInt(0, 11), randInt(1, 28));
       if (date > endDate) continue;
       const wallet = pick([bca, jago]);
-      const delta = (chance(0.5) ? 1 : -1) * randInt(5_000, 75_000);
+      // Constrain delta so it can't make balance go negative
+      const minBal = balances[wallet.id];
+      const maxNegative = Math.min(minBal - 50_000, 75_000); // keep ≥50k after
+      if (maxNegative <= 5_000) continue; // skip if too tight
+      const sign = chance(0.5) ? 1 : -1;
+      const magnitude = randInt(5_000, Math.min(75_000, Math.max(5_000, maxNegative)));
+      const delta = sign * magnitude;
       const prev = balances[wallet.id];
       const next = prev + delta;
+      if (next < 0) continue;
       addBalanceHistory(wallet.id, prev, next, date);
-      addTx({ type: delta > 0 ? "income" : "expense", walletId: wallet.id,
-        amount: Math.abs(delta), title: "Balance Correction",
-        category: "Balance Correction", date,
-        time: timeAt(randInt(9, 17), randInt(0, 59)),
-        description: "Penyesuaian saldo (admin fee / reconcile)" });
+      const time = timeAt(randInt(9, 17), randInt(0, 59));
+      if (delta > 0) {
+        addIncome({ walletId: wallet.id, amount: magnitude,
+          title: "Balance Correction", category: "Balance Correction",
+          date, time, description: "Penyesuaian saldo (admin fee / reconcile)" });
+      } else {
+        spendFrom({ walletId: wallet.id, amount: magnitude,
+          title: "Balance Correction", category: "Balance Correction",
+          date, time, description: "Penyesuaian saldo (admin fee / reconcile)" });
+      }
     }
   }
 
   // ── Loans ───────────────────────────────────────────────────────────────
+  // Loan helpers: only apply to wallet if balance would stay ≥ 0.
+  // "give" = uang keluar dari wallet kita; "get" = uang masuk.
   const counterparties: LoanCounterparty[] = [];
   const loanEntries: LoanEntry[] = [];
 
@@ -461,6 +682,22 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     walletId: string | null, note: string, daysBack: number,
   ): void {
     const date = new Date(today.getTime() - daysBack * MS_PER_DAY);
+    // For "give", ensure wallet (default BCA) has the amount
+    if (type === "give" && walletId !== null && balances[walletId] < amount) {
+      // try top-up from BCA if not BCA
+      if (walletId !== bca.id && balances[bca.id] >= amount + 200_000) {
+        const time = timeAt(randInt(9, 11), randInt(0, 59));
+        rawAddTx({
+          type: "transfer", walletId: bca.id, destWalletId: walletId,
+          amount: r1k(amount + 200_000),
+          title: `Top Up ${walletName[walletId]}`, category: "Transfer",
+          date, time,
+        });
+      } else {
+        skippedForBalance++;
+        return;
+      }
+    }
     const iso = date.toISOString();
     loanEntries.push({
       id: uuid(), anon_id: anonId, counterparty_id: cp.id, type, amount,
@@ -523,32 +760,160 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
   addReport("Q1 2026 — Review Kuartalan",
     new Date(2026, 0, 1), new Date(2026, 2, 31));
 
-  // Finalize wallet balances from accumulated changes
+  // ── Chronological fix-up: guarantee no wallet ever goes negative ─────────
+  //
+  // The daily-loop generator emits in chronological order, but later phases
+  // (vacations, big purchases, balance corrections, loans) append events with
+  // past dates. Their effect on `balances[]` is recorded at generation time
+  // (= end-of-timeline state), which can mask intermediate negative-balance
+  // states. To guarantee correctness, we replay all events in true
+  // chronological order and either insert a JIT top-up from BCA or drop the
+  // offending event.
+  //
+  // Output: `finalTxs` (possibly with inserted "Top Up" transfers) and
+  // `finalLoans` (possibly with fewer entries). Wallet balances reflect the
+  // post-replay state.
+  type ChronoEvent =
+    | Readonly<{ kind: "tx"; tx: Transaction; key: string }>
+    | Readonly<{ kind: "loan"; loan: LoanEntry; key: string }>;
+
+  const txEvents: ChronoEvent[] = transactions.map((t, i) => ({
+    kind: "tx",
+    tx: t,
+    key: `${t.transaction_date} ${t.transaction_time} T${String(i).padStart(6, "0")}`,
+  }));
+  const loanEvents: ChronoEvent[] = loanEntries.map((l, i) => ({
+    kind: "loan",
+    loan: l,
+    key: `${l.transaction_date} ${l.transaction_time} L${String(i).padStart(6, "0")}`,
+  }));
+  const allEvents: ChronoEvent[] = [...txEvents, ...loanEvents].sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : 0,
+  );
+
+  const finalTxs: Transaction[] = [];
+  const finalLoans: LoanEntry[] = [];
+  const bal: Record<string, number> = Object.fromEntries(wallets.map((w) => [w.id, 0]));
+
+  function makeTopUpTx(destId: string, amount: number, date: string, time: string): Transaction {
+    const iso = `${date}T${time}:00.000Z`;
+    return {
+      id: uuid(),
+      anon_id: anonId,
+      type: "transfer",
+      wallet_id: bca.id,
+      destination_wallet_id: destId,
+      amount,
+      title: `Top Up ${walletName[destId]}`,
+      category: "Transfer",
+      description: null,
+      transaction_date: date,
+      transaction_time: time,
+      is_active: true,
+      created_at: iso,
+      updated_at: iso,
+    };
+  }
+
+  let inserted = 0;
+  let dropped = 0;
+
+  function tryTopUpForSpend(walletId: string, amount: number, date: string, time: string): boolean {
+    if (walletId === bca.id) return false;
+    const deficit = amount - bal[walletId];
+    const topUp = r1k(deficit + 300_000);
+    if (bal[bca.id] < topUp) return false;
+    const [hh, mm] = time.split(":").map((x) => Number.parseInt(x, 10));
+    const topUpTime = timeAt(hh, Math.max(0, mm - 1));
+    const topUpTx = makeTopUpTx(walletId, topUp, date, topUpTime);
+    finalTxs.push(topUpTx);
+    bal[bca.id] -= topUp;
+    bal[walletId] += topUp;
+    inserted++;
+    return true;
+  }
+
+  for (const ev of allEvents) {
+    if (ev.kind === "tx") {
+      const t = ev.tx;
+      if (t.type === "income") {
+        bal[t.wallet_id] += t.amount;
+        finalTxs.push(t);
+      } else if (t.type === "expense") {
+        if (bal[t.wallet_id] < t.amount) {
+          if (!tryTopUpForSpend(t.wallet_id, t.amount, t.transaction_date, t.transaction_time)) {
+            dropped++;
+            continue;
+          }
+        }
+        bal[t.wallet_id] -= t.amount;
+        finalTxs.push(t);
+      } else if (t.type === "transfer" && t.destination_wallet_id) {
+        if (bal[t.wallet_id] < t.amount) {
+          // For transfers, top-up source from BCA if source is not BCA
+          if (!tryTopUpForSpend(t.wallet_id, t.amount, t.transaction_date, t.transaction_time)) {
+            dropped++;
+            continue;
+          }
+        }
+        bal[t.wallet_id] -= t.amount;
+        bal[t.destination_wallet_id] += t.amount;
+        finalTxs.push(t);
+      }
+    } else {
+      // loan
+      const l = ev.loan;
+      if (l.type === "get") {
+        // Money flowing in to our wallet — always safe
+        if (l.wallet_id) bal[l.wallet_id] += l.amount;
+        finalLoans.push(l);
+      } else {
+        // give: money flowing out
+        if (l.wallet_id) {
+          if (bal[l.wallet_id] < l.amount) {
+            if (!tryTopUpForSpend(l.wallet_id, l.amount, l.transaction_date, l.transaction_time)) {
+              dropped++;
+              continue;
+            }
+          }
+          bal[l.wallet_id] -= l.amount;
+        }
+        finalLoans.push(l);
+      }
+    }
+  }
+
+  // Adopt the fix-up results
   for (const w of wallets) {
-    w.balance = balances[w.id];
+    w.balance = bal[w.id];
     w.updated_at = today.toISOString();
   }
+  skippedForBalance += dropped;
 
   const data: BackupData = {
     version: 1,
     exported_at: today.toISOString(),
     wallets,
     wallet_balance_history: balanceHistory,
-    transactions,
+    transactions: finalTxs,
     loan_counterparties: counterparties,
-    loan_entries: loanEntries,
+    loan_entries: finalLoans,
     custom_reports: customReports,
   };
+
+  // Mark unused to satisfy lint (informational only)
+  void inserted;
 
   return {
     data,
     counts: {
       wallets: wallets.length,
-      transactions: transactions.length,
+      transactions: finalTxs.length,
       walletBalanceHistory: balanceHistory.length,
       loanCounterparties: counterparties.length,
-      loanEntries: loanEntries.length,
+      loanEntries: finalLoans.length,
       customReports: customReports.length,
+      skippedForBalance,
     },
   };
 }
