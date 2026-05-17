@@ -558,7 +558,7 @@
   "changelog": {
     "title": "What's New",
     "subtitle": "The story behind every PFinTrack update",
-    "currentBadge": "Your current version",
+    "currentBadge": "Current version",
     "latestBadge": "Latest",
     "entries": [
       {

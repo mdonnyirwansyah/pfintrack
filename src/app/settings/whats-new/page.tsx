@@ -62,39 +62,39 @@ export default function WhatsNewPage() {
                   style={{ borderColor: "var(--divider)" }}
                 >
                   <header className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span
+                        className="text-[14px] font-semibold tabular-nums"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        v{entry.version}
+                      </span>
+                      {isCurrent && (
+                        <span
+                          className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full whitespace-nowrap"
+                          style={{
+                            color: "var(--color-primary)",
+                            background: "var(--color-primary-light, rgba(33,150,243,0.12))",
+                          }}
+                        >
+                          {t("currentBadge")}
+                        </span>
+                      )}
+                    </div>
                     <span
-                      className="text-[14px] font-semibold tabular-nums"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      v{entry.version}
-                    </span>
-                    <span
-                      className="text-[11px]"
+                      className="text-[11px] whitespace-nowrap"
                       style={{ color: "var(--text-tertiary)" }}
                     >
                       {entry.date}
                     </span>
                   </header>
 
-                  <div className="flex flex-wrap items-center gap-1.5 mb-2">
-                    <h2
-                      className="text-[15px] font-semibold m-0"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      {entry.tagline}
-                    </h2>
-                    {isCurrent && (
-                      <span
-                        className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
-                        style={{
-                          color: "var(--color-primary)",
-                          background: "var(--color-primary-light, rgba(33,150,243,0.12))",
-                        }}
-                      >
-                        {t("currentBadge")}
-                      </span>
-                    )}
-                  </div>
+                  <h2
+                    className="text-[15px] font-semibold m-0 mb-2"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {entry.tagline}
+                  </h2>
 
                   <p
                     className="text-[12.5px] mb-3 leading-relaxed"
