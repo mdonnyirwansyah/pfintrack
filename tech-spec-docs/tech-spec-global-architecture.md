@@ -1127,7 +1127,47 @@ Tidak ada `eval`, `new Function`, atau `innerHTML` direct di codebase.
 
 ---
 
-## 15. Daftar Dokumen Spesifikasi
+## 15. SEO & Discoverability
+
+PFinTrack adalah aplikasi **frontend-only dengan data anonim di IndexedDB** — tidak ada konten publik yang bisa di-index oleh crawler dari sisi data user. Strategi SEO fokus pada **discoverability landing page** dan **rich preview saat link di-share** (WhatsApp/Slack/Twitter), bukan ranking konten dalam aplikasi.
+
+### 15.1 Metadata Strategy
+
+Implementasi mengikuti Next.js 16 App Router Metadata API:
+
+| Lokasi | Tanggung Jawab |
+|--------|----------------|
+| `src/app/layout.tsx` | `metadataBase`, default title/description, `openGraph`, `twitter`, `robots` global, `alternates.languages` (id-ID / en-US / x-default) |
+| `src/app/opengraph-image.tsx` | OG image 1200×630 PNG di-generate via `ImageResponse` di Edge runtime. Brand gradient `#2196F3 → #1565C0`. |
+| `src/app/robots.ts` | Allow: `/`, `/settings/faq`, `/settings/whats-new`. Disallow: `/transactions/*`, `/wallet/*`, `/loan/*`, `/report/*`, `/settings/*` (kecuali yang allowed). |
+| `src/app/sitemap.ts` | Hanya 3 URL publik (root, FAQ, What's New) |
+| `src/app/settings/faq/layout.tsx` | Override title + description khusus FAQ |
+| `src/app/settings/whats-new/layout.tsx` | Override title + description khusus What's New |
+
+### 15.2 Halaman Public vs Private
+
+| Status | Routes | Alasan |
+|--------|--------|--------|
+| **Public (indexed)** | `/`, `/settings/faq`, `/settings/whats-new` | Berisi konten marketing/informasi yang relevan untuk discovery |
+| **Private (noindex)** | `/transactions/*`, `/wallet/*`, `/loan/*`, `/report/*`, `/settings/*` (selain FAQ & What's New) | Empty shell tanpa data publik — tidak ada nilai SEO, mencegah duplicate-content |
+
+### 15.3 Open Graph & Social Preview
+
+- Default OG title: `PFinTrack — Personal Finance Tracker`
+- Default OG description (id-ID): `Catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi. Gratis, tanpa daftar, data sepenuhnya di perangkatmu.`
+- OG image: auto-generated via `ImageResponse`, tidak perlu asset statis
+- Twitter card: `summary_large_image`
+- Locale primary: `id_ID`, alternate: `en_US`
+
+### 15.4 Catatan Fase 2
+
+- Saat backend live, tambahkan `application/ld+json` structured data jenis `SoftwareApplication` di root
+- Aktifkan `og:image` per-version di What's New (snapshot tagline per release)
+- Pertimbangkan blog/changelog terpisah untuk konten organic (bukan dalam app)
+
+---
+
+## 16. Daftar Dokumen Spesifikasi
 
 Aplikasi ini didokumentasikan dalam **7 dokumen** yang saling melengkapi:
 

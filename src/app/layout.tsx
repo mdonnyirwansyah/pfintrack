@@ -19,12 +19,30 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const siteUrl = "https://pfintrack.vercel.app";
+const siteDescription =
+  "Catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi. Gratis, tanpa daftar, data sepenuhnya di perangkatmu.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "PFinTrack",
-    template: "%s | PFinTrack",
+    default: "PFinTrack — Personal Finance Tracker",
+    template: "%s · PFinTrack",
   },
-  description: "Personal Finance Tracker. Catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
+  description: siteDescription,
+  applicationName: "PFinTrack",
+  authors: [{ name: "PFinTrack" }],
+  keywords: [
+    "personal finance",
+    "finance tracker",
+    "money manager",
+    "budget app",
+    "catat keuangan",
+    "pencatat keuangan",
+    "aplikasi keuangan",
+    "dompet digital",
+    "PWA finance",
+  ],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -34,6 +52,39 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "id-ID": "/",
+      "en-US": "/",
+      "x-default": "/",
+    },
+  },
+  openGraph: {
+    type: "website",
+    siteName: "PFinTrack",
+    title: "PFinTrack — Personal Finance Tracker",
+    description: siteDescription,
+    url: siteUrl,
+    locale: "id_ID",
+    alternateLocale: ["en_US"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PFinTrack — Personal Finance Tracker",
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  category: "finance",
 };
 
 export const viewport: Viewport = {
