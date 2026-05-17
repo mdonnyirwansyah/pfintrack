@@ -68,7 +68,7 @@ export async function LandingPage() {
         >
           {t("features.title")}
         </h2>
-        <ul role="list" className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 m-0 p-0 list-none">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 m-0 p-0 list-none">
           {features.map(({ key, Icon }) => (
             <li key={key}>
               <article
@@ -112,7 +112,7 @@ export async function LandingPage() {
         >
           {t("trust.heading")}
         </h2>
-        <ul role="list" className="flex flex-col sm:grid sm:grid-cols-3 gap-2 sm:gap-3 m-0 p-0 list-none">
+        <ul className="flex flex-col sm:grid sm:grid-cols-3 gap-2 sm:gap-3 m-0 p-0 list-none">
           {trust.map(({ key, Icon }) => (
             <li key={key}>
               <article
@@ -173,7 +173,7 @@ export async function LandingPage() {
 
       <footer className="mt-12 sm:mt-16 text-center" role="contentinfo">
         <nav aria-label={t("footerNav.label")} className="mb-3">
-          <ul role="list" className="flex items-center justify-center gap-2 m-0 p-0 list-none">
+          <ul className="flex items-center justify-center gap-2 m-0 p-0 list-none">
             <li>
               <ConsentLink
                 href="/settings/faq"

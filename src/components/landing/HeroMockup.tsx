@@ -29,11 +29,11 @@ export async function HeroMockup() {
   ];
 
   const navTabs = [
-    { Icon: BookOpen, active: true },
-    { Icon: CreditCard, active: false },
-    { Icon: LayoutDashboard, active: false },
-    { Icon: BarChart2, active: false },
-    { Icon: Settings, active: false },
+    { id: "transactions", Icon: BookOpen, active: true },
+    { id: "wallet", Icon: CreditCard, active: false },
+    { id: "loan", Icon: LayoutDashboard, active: false },
+    { id: "report", Icon: BarChart2, active: false },
+    { id: "settings", Icon: Settings, active: false },
   ];
 
   return (
@@ -168,9 +168,9 @@ export async function HeroMockup() {
             background: "var(--bg-elevated)",
           }}
         >
-          {navTabs.map(({ Icon, active }, i) => (
+          {navTabs.map(({ id, Icon, active }) => (
             <Icon
-              key={i}
+              key={id}
               width={16}
               height={16}
               style={{
