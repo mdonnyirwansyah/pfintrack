@@ -9,9 +9,9 @@
     "lint": "eslint",
     "sonar": "sonar-scanner",
     "test": "playwright test",
-    "test:unit": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run'",
-    "test:unit:watch": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest'",
-    "test:unit:coverage": "bash -c 'source ~/.nvm/nvm.sh && nvm exec 20 npx vitest run --coverage'",
+    "test:unit": "pnpm exec vitest run",
+    "test:unit:watch": "pnpm exec vitest",
+    "test:unit:coverage": "pnpm exec vitest run --coverage",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report",
@@ -60,6 +60,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.22.0",
     "typescript": "^5",
+    "vite": "^8.0.13",
     "vitest": "^4.1.6"
   },
   "overrides": {

@@ -11,11 +11,8 @@ export default defineConfig({
       reporter: ["text", "lcov"],
       include: ["src/lib/**/*.ts"],
       exclude: [
-        // Type definitions — no logic to test
         "src/lib/types/**",
-        // Zustand stores — covered by E2E
         "src/lib/stores/**",
-        // IDB storage repos — covered by E2E, not unit testable without complex mocking
         "src/lib/storage/idb-client.ts",
         "src/lib/storage/wallets-idb.ts",
         "src/lib/storage/wallets.ts",
@@ -31,12 +28,9 @@ export default defineConfig({
         "src/lib/storage/custom-reports.ts",
         "src/lib/storage/backup.ts",
         "src/lib/storage/migrate-from-localstorage.ts",
-        // Pure re-export shim — logic lives in lib/bootstrap/anon-id.ts (100% covered).
-        // V8 coverage provider reports re-export-only modules as 0/0 because the
-        // `export { ... } from "..."` form has no executable statements.
         "src/lib/storage/anon-id.ts",
-        // Demo data — not business logic
         "src/lib/demo-data.ts",
+        "src/lib/perf-seed.ts",
       ],
     },
   },

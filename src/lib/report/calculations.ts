@@ -217,7 +217,7 @@ export function generateMonthList(
 
   const dates = active.map((t) => t.transaction_date).sort((a, b) => a.localeCompare(b));
   const minDate = dates[0];
-  const maxDate = dates.at(-1) ?? minDate;
+  const maxDate = dates[dates.length - 1];
 
   const months: Array<{ start: string; end: string }> = [];
   const cursor = new Date(maxDate.slice(0, 7) + "-01");
