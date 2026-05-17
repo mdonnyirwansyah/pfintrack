@@ -562,6 +562,21 @@
     "latestBadge": "Latest",
     "entries": [
       {
+        "version": "1.0.3",
+        "date": "May 17, 2026",
+        "tagline": "Cleaner and Calmer",
+        "intro": "Lots of small touches that make PFinTrack feel nicer to use every day.",
+        "items": [
+          "Friendlier wording throughout the app, easier to read",
+          "Clearer labels in the Loan section",
+          "Page titles now sit nicely in the middle",
+          "Charts on the Report page look smoother and sharper",
+          "New FAQ page with quick search, in both languages",
+          "Long transaction lists stay smooth no matter how many entries",
+          "A few quiet improvements to keep your data safe"
+        ]
+      },
+      {
         "version": "1.0.2",
         "date": "May 15, 2026",
         "tagline": "Smoother & Steadier",

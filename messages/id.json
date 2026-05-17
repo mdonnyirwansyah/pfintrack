@@ -562,6 +562,21 @@
     "latestBadge": "Terbaru",
     "entries": [
       {
+        "version": "1.0.3",
+        "date": "17 Mei 2026",
+        "tagline": "Lebih Rapi dan Nyaman",
+        "intro": "Banyak sentuhan kecil supaya PFinTrack makin enak dipakai setiap hari.",
+        "items": [
+          "Bahasa di seluruh aplikasi terasa lebih natural dan enak dibaca",
+          "Label di bagian Pinjaman jadi lebih jelas",
+          "Judul halaman kini selalu pas di tengah",
+          "Grafik di halaman Laporan tampil lebih halus dan rapi",
+          "Halaman FAQ baru dengan pencarian cepat, tersedia di dua bahasa",
+          "Daftar transaksi panjang tetap mulus berapapun jumlahnya",
+          "Beberapa perbaikan kecil supaya data kamu makin aman"
+        ]
+      },
+      {
         "version": "1.0.2",
         "date": "15 Mei 2026",
         "tagline": "Lebih Halus, Lebih Tenang",
