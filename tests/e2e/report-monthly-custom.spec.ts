@@ -69,19 +69,21 @@ test.describe("Report — Monthly Tab", () => {
   });
 
   test("Monthly tab navigation buttons are present", async ({ page }) => {
-    await goto(page, "/report");
+    await gotoWithSeed(page, "/report", async () => {
+      await seedWallets(page, [W1]);
+      await seedTransactions(page, [
+        {
+          id: "rm-nav-001", type: "income", wallet_id: W1.id,
+          amount: 1_000_000, title: "Seed", transaction_date: TODAY,
+        },
+      ]);
+    });
     await page.getByRole("button", { name: "Monthly" }).click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500);
 
-    // Previous/Next month navigation buttons
-    const navBtns = page.locator('button[aria-label*="month"], button[aria-label*="Month"], button[aria-label*="prev"], button[aria-label*="next"]');
-    if (await navBtns.count() > 0) {
-      await expect(navBtns.first()).toBeVisible();
-    } else {
-      // Fallback: chevron buttons
-      const chevrons = page.locator('button:has(svg)').filter({ hasText: "" });
-      expect(await chevrons.count()).toBeGreaterThan(0);
-    }
+    const drillButtons = page.locator('button[aria-label^="Drill down to"]');
+    expect(await drillButtons.count()).toBeGreaterThan(0);
+    await expect(drillButtons.first()).toBeVisible();
   });
 });
 

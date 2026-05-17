@@ -64,7 +64,7 @@ test.describe("Transactions — Edit", () => {
     await page.getByText("Ojek Online").click();
     await expect(page).toHaveURL(/\/transactions\/tx-edit-002/);
 
-    const titleInput = page.getByPlaceholder("Enter title (optional)");
+    const titleInput = page.getByPlaceholder("e.g. Lunch, Grab, Groceries");
     await titleInput.clear();
     await titleInput.fill("Grab Motor");
 

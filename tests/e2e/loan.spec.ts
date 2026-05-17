@@ -64,7 +64,7 @@ test.describe("Loan", () => {
     await page.waitForTimeout(300);
     // Select wallet from auto-opened picker
     await page.getByText("BCA").click();
-    await page.getByPlaceholder("Enter the name").fill("Doni Prasetya");
+    await page.getByPlaceholder("Enter name").fill("Doni Prasetya");
     await page.getByPlaceholder("Amount").fill("300.000");
     await page.locator("button[type='submit']").click();
     await expect(page).toHaveURL(/\/loan/);

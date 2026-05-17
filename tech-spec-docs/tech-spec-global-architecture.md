@@ -95,7 +95,7 @@
 
 | Route | Module | Deskripsi |
 |-------|--------|-----------|
-| `/` | — | Redirect ke `/transactions` (default landing) |
+| `/` | — | Landing page (first-time visitor) atau redirect ke `/transactions` (return user dengan `pfintrack_consent_accepted_at` di localStorage). Lihat §10 Landing Page. |
 | `/transactions` | Transactions | Daftar transaksi (root tab) |
 | `/transactions/add/income` | Transactions | Form tambah income |
 | `/transactions/add/expense` | Transactions | Form tambah expense |
@@ -1154,6 +1154,8 @@ Root route `/` punya **dua state** yang ditentukan oleh flag consent di localSto
 **Consent disclosure**: Di bawah CTA hero ada teks `landing.hero.consent` — *"Dengan klik Mulai, kamu setuju datamu disimpan di browser ini."* Klik tombol = consent implicit (tanpa checkbox, untuk reduce friction). Flag `pfintrack_consent_accepted_at` menyimpan timestamp acceptance untuk audit trail.
 
 **SEO implication**: Googlebot tidak punya localStorage, jadi selalu lihat landing page penuh dengan keyword target. Sebelum perubahan ini, `/` cuma render `SplashScreen` yang JS-redirect ke `/transactions` (noindex) → Google nge-index URL kosong "Indexed though blocked". Setelah perubahan, Google dapat HTML penuh.
+
+**E2E test implication**: Playwright helper `tests/e2e/helpers/storage.ts::setupPage()` men-seed `pfintrack_consent_accepted_at` di localStorage via `addInitScript` supaya semua test berjalan sebagai "return user" (skip landing, langsung redirect ke `/transactions`). Test yang sengaja ingin verifikasi landing page harus override flag ini sebelum navigasi.
 
 ### 15.1 Metadata Strategy
 

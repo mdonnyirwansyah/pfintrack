@@ -64,7 +64,7 @@ test.describe("Transactions", () => {
       () => seedWallets(page, [W1]));
     await pickWallet(page, "BCA");
     await page.getByPlaceholder("Enter amount").fill("500.000");
-    await page.getByPlaceholder("Enter title (optional)").fill("Freelance");
+    await page.getByPlaceholder("e.g. Lunch, Grab, Groceries").fill("Freelance");
     await page.locator("button[type='submit']").click();
     await expect(page).toHaveURL(/\/transactions/);
   });
@@ -84,7 +84,7 @@ test.describe("Transactions", () => {
       () => seedWallets(page, [W1]));
     await pickWallet(page, "BCA");
     await page.getByPlaceholder("Enter amount").fill("75.000");
-    await page.getByPlaceholder("Enter title (optional)").fill("Ojek Online");
+    await page.getByPlaceholder("e.g. Lunch, Grab, Groceries").fill("Ojek Online");
     await page.locator("button[type='submit']").click();
     await expect(page).toHaveURL(/\/transactions/);
   });

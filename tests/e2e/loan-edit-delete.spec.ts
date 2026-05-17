@@ -266,7 +266,7 @@ test.describe("Loan — Add Get (Receive)", () => {
     await page.waitForTimeout(300);
 
     await page.getByText("BCA").click();
-    await page.getByPlaceholder("Enter the name").fill("Maria Indah");
+    await page.getByPlaceholder("Enter name").fill("Maria Indah");
     await page.getByPlaceholder("Amount").fill("500.000");
     await page.locator("button[type='submit']").click();
 

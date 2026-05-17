@@ -68,6 +68,7 @@ export async function setupPage(page: Page) {
       localStorage.setItem("pfintrack_anon_id", anonId!);
       localStorage.setItem("pfintrack_welcomed", "1");
       localStorage.setItem("tour_completed", new Date().toISOString());
+      localStorage.setItem("pfintrack_consent_accepted_at", new Date().toISOString());
       localStorage.removeItem("pfintrack_demo_mode");
       // Mark migration as done so the app skips the localStorage→IDB migration
       // spinner. Tests seed data directly into IDB, so no migration is needed.
