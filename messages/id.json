@@ -67,13 +67,13 @@
       "importTitle": "Pulihkan Backup",
       "importDesc": "Ganti semua data dari file backup",
       "importConfirmTitle": "Ganti Semua Data?",
-      "importConfirmDesc": "Data kamu sekarang akan diganti total dengan isi file backup. Tidak bisa dibatalkan.",
+      "importConfirmDesc": "Data kamu sekarang akan diganti total dengan isi file backup. Proses ini tidak bisa dibatalkan.",
       "importConfirmAction": "Ya, Pulihkan",
       "importConfirmCancel": "Batal",
       "importSuccess": "Data berhasil dipulihkan.",
       "importError": "Gagal. File tidak valid atau tidak didukung.",
       "deleteAllTitle": "Hapus Semua Data",
-      "deleteAllDesc": "Semua dompet, transaksi, pinjaman, dan laporan akan dihapus permanen. Tidak bisa dibatalkan.",
+      "deleteAllDesc": "Semua dompet, transaksi, pinjaman, dan laporan akan dihapus permanen. Pastikan sudah backup dulu kalau masih butuh datanya.",
       "deleteAllPhrase": "HAPUS SEMUA DATA",
       "deleteAllInputLabel": "Ketik frasa berikut untuk konfirmasi:",
       "deleteAllInputPlaceholder": "Ketik di sini secara manual",
@@ -86,7 +86,7 @@
       "clearButton": "Hapus Data Sampel",
       "clearDesc": "Hapus data contoh dan mulai dari awal.",
       "confirmTitle": "Hapus Data Sampel?",
-      "confirmDesc": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
+      "confirmDesc": "Semua data sampel (dompet, transaksi, dan pinjaman) akan dihapus permanen.",
       "confirmAction": "Ya, Hapus Semua",
       "confirmCancel": "Batal"
     },
@@ -320,7 +320,7 @@
     },
     "deleteEntryConfirm": {
       "title": "Hapus entri ini?",
-      "description": "Ini akan membatalkan perubahan saldo dompet yang disebabkan oleh entri ini.",
+      "description": "Saldo dompet yang terpengaruh entri ini akan dikembalikan.",
       "confirm": "Hapus",
       "cancel": "Batal"
     },
@@ -355,9 +355,9 @@
     },
     "realtime": {
       "noExpenses": "Belum ada pengeluaran bulan ini",
-      "noExpensesDesc": "Transaksi pengeluaran kamu akan tampil di sini.",
+      "noExpensesDesc": "Pengeluaran yang kamu catat akan muncul di sini.",
       "noIncome": "Belum ada pemasukan periode ini",
-      "noIncomeDesc": "Transaksi yang ditandai sebagai pemasukan akan muncul di sini."
+      "noIncomeDesc": "Pemasukan yang kamu catat akan muncul di sini."
     },
     "daily": {
       "title": "Ringkasan Harian",
@@ -399,14 +399,14 @@
       "filterIncome": "Pemasukan",
       "filterTransfer": "Transfer",
       "noIncome": "Tidak ada pemasukan",
-      "noIncomeDesc": "Transaksi yang ditandai sebagai pemasukan akan muncul di sini.",
+      "noIncomeDesc": "Pemasukan yang kamu catat akan muncul di sini.",
       "noExpenseFilter": "Tidak ada pengeluaran",
-      "noExpenseFilterDesc": "Transaksi yang ditandai sebagai pengeluaran akan muncul di sini.",
+      "noExpenseFilterDesc": "Pengeluaran yang kamu catat akan muncul di sini.",
       "noTransferFilter": "Tidak ada transfer",
-      "noTransferFilterDesc": "Transaksi transfer akan muncul di sini."
+      "noTransferFilterDesc": "Transfer yang kamu catat akan muncul di sini."
     },
     "allTransactions": "Semua Transaksi",
-    "categoryTransactions": "{category} — Transaksi",
+    "categoryTransactions": "Transaksi {category}",
     "addReport": "Tambah Laporan",
     "editReport": "Edit Laporan",
     "reportName": "Nama Laporan",
@@ -503,12 +503,12 @@
     },
     "clearConfirm": {
       "title": "Hapus Data Sampel?",
-      "description": "Semua data sampel (wallet, transaksi, dan pinjaman) akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
+      "description": "Semua data sampel (dompet, transaksi, dan pinjaman) akan dihapus permanen.",
       "confirm": "Ya, Hapus Semua",
       "cancel": "Batal"
     },
     "welcome": {
-      "title": "Selamat datang di PFinTrack!",
+      "title": "Halo, PFinTrack!",
       "description": "Mau langsung mulai atau lihat-lihat dulu dengan data contoh?",
       "exploreButton": "Coba dengan Data Contoh",
       "startFreshButton": "Mulai Sendiri"
@@ -531,28 +531,28 @@
     },
     "cancelAriaLabel": "Batal",
     "steps": {
-      "tx1": "Di sini semua catatan keuanganmu — pemasukan, pengeluaran, dan transfer antar dompet. Ketuk tab ini untuk memulai.",
-      "tx2": "Geser kiri/kanan atau ketuk panah untuk pindah tanggal. Ketuk tanggal untuk membuka kalender.",
+      "tx1": "Semua catatan keuanganmu ada di sini: pemasukan, pengeluaran, dan transfer antar dompet. Ketuk tab ini untuk mulai.",
+      "tx2": "Geser kiri/kanan atau ketuk panah untuk pindah tanggal. Ketuk tanggal untuk buka kalender.",
       "tx3": "Total pemasukan, pengeluaran, dan saldo hari ini ditampilkan di sini.",
-      "tx4": "Ketuk untuk mencatat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer.",
-      "tx5": "Ketuk tombol ini untuk mengubah urutan tampilan — berdasarkan tanggal atau nominal transaksi.",
-      "tx6": "Ketuk untuk mengekspor semua transaksi ke file Excel.",
-      "tx7": "Ketuk untuk melihat riwayat semua transaksi di semua tanggal.",
-      "wl1": "Dompet adalah rekening atau dompetmu. Semua transaksi terhubung ke dompet. Ketuk tab ini untuk melanjutkan.",
+      "tx4": "Ketuk untuk catat transaksi baru. Pilih tipe: Pemasukan, Pengeluaran, atau Transfer.",
+      "tx5": "Ketuk tombol ini untuk ubah urutan tampilan, berdasarkan tanggal atau nominal.",
+      "tx6": "Ketuk untuk ekspor semua transaksi ke file Excel.",
+      "tx7": "Ketuk untuk lihat riwayat semua transaksi di semua tanggal.",
+      "wl1": "Dompet adalah rekening atau dompetmu. Semua transaksi terhubung ke dompet. Ketuk tab ini untuk lanjut.",
       "wl2": "Kartu ini menampilkan total saldo dari semua dompetmu.",
-      "wl3": "Filter dompet berdasarkan tipe — bank, e-wallet, tabungan, dan lainnya.",
-      "ln1": "Catat utang dan piutangmu di sini — siapa yang berhutang ke kamu, atau kamu yang berhutang. Ketuk tab ini untuk melanjutkan.",
-      "ln2": "'Catat Utang': kamu berhutang ke orang atau orang melunasi piutangnya ke kamu. 'Pinjamkan': kamu meminjamkan uang ke orang atau kamu melunasi utangmu.",
-      "ln3": "Setiap orang atau entitas dikelompokkan di sini. Ketuk untuk melihat histori pinjaman mereka.",
-      "rp1": "Laporan keuanganmu ada di sini — ringkasan pemasukan, pengeluaran, dan saldo. Ketuk tab ini untuk melanjutkan.",
+      "wl3": "Filter dompet berdasarkan tipe: bank, e-wallet, tabungan, dan lainnya.",
+      "wl4": "Urutkan dompet berdasarkan nama atau saldo biar mudah dicari.",
+      "wl5": "Ketuk untuk tambah dompet baru: rekening bank, tunai, GoPay, dan lainnya.",
+      "wl6": "Ketuk kartu dompet untuk lihat detail, edit saldo, atau riwayat transaksinya.",
+      "ln1": "Catat utang dan piutangmu di sini: siapa yang pinjam ke kamu, atau kamu yang pinjam. Ketuk tab ini untuk lanjut.",
+      "ln2": "'Memberi': kamu pinjamkan uang ke orang lain atau kamu lunasi utangmu. 'Menerima': kamu terima uang dari orang itu atau mereka lunasi utang ke kamu.",
+      "ln3": "Setiap orang dikelompokkan di sini. Ketuk untuk lihat histori pinjamannya.",
+      "rp1": "Laporan keuanganmu ada di sini: ringkasan pemasukan, pengeluaran, dan saldo. Ketuk tab ini untuk lanjut.",
       "rp2": "Lihat laporan per periode: realtime hari ini, bulanan, atau rentang tanggal kustom.",
-      "rp3": "Beralih antara tampilan Pengeluaran dan Pemasukan untuk melihat grafik breakdown masing-masing.",
-      "end": "Selesai! Sekarang kamu udah kenal PFinTrack. Yuk mulai catat!",
-      "wl5": "Ketuk untuk menambah dompet baru — rekening bank, tunai, GoPay, dan lainnya.",
-      "wl6": "Ketuk kartu dompet untuk melihat detail, edit saldo, atau riwayat transaksinya.",
-      "wl4": "Urutkan dompet berdasarkan nama atau saldo agar mudah ditemukan.",
-      "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Ketuk potongan untuk memfilter daftar di bawah.",
-      "rp5": "Ketuk untuk membuat laporan kustom dengan rentang tanggal tertentu."
+      "rp3": "Beralih antara tampilan Pengeluaran dan Pemasukan untuk lihat grafik breakdown masing-masing.",
+      "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Ketuk potongan untuk filter daftar di bawah.",
+      "rp5": "Ketuk untuk buat laporan kustom dengan rentang tanggal tertentu.",
+      "end": "Selesai! Sekarang kamu udah kenal PFinTrack. Yuk mulai catat!"
     }
   },
   "changelog": {
@@ -567,10 +567,10 @@
         "tagline": "Lebih Halus, Lebih Tenang",
         "intro": "Sentuhan kecil yang bikin tiap interaksi terasa lebih natural.",
         "items": [
-          "Perpindahan saldo antar dompet kini selalu sinkron — angkamu nyambung tanpa selisih sedetik pun",
-          "Pembaca layar bahasa Indonesia jadi terasa lebih akrab, tiap label aksesibilitas ikut bahasa pilihanmu",
+          "Perpindahan saldo antar dompet kini selalu sinkron, angkamu nyambung tanpa selisih",
+          "Label aksesibilitas ikut bahasa pilihan kamu, termasuk untuk pembaca layar",
           "Badge ikon dan menu pintas tampil lebih seragam di seluruh aplikasi",
-          "Aplikasi siap dipakai lebih cepat dan mantap sejak detik pertama dibuka"
+          "Aplikasi terbuka lebih cepat dan stabil sejak detik pertama"
         ]
       },
       {
@@ -589,13 +589,13 @@
         "version": "1.0.0",
         "date": "1 April 2026",
         "tagline": "Babak Awal",
-        "intro": "Awal perjalanan PFinTrack — kelola keuangan pribadi dari satu tempat.",
+        "intro": "Awal perjalanan PFinTrack. Kelola keuangan pribadi dari satu tempat.",
         "items": [
           "Catat dompet, edit saldo manual, dan lacak riwayat perubahannya",
           "Pencatatan pemasukan, pengeluaran, sampai transfer antar dompet",
           "Manajemen utang-piutang lengkap dengan deteksi lunas otomatis",
           "Laporan keuangan realtime, bulanan, dan kustom sesuai kebutuhan",
-          "Backup data, tema, bahasa, sampai data demo — semua dalam satu tempat",
+          "Backup data, tema, bahasa, sampai data demo, semua dalam satu tempat",
           "Bisa dipakai offline dan diinstall layaknya aplikasi asli"
         ]
       }
@@ -613,23 +613,23 @@
         "items": [
           {
             "q": "Data saya tersimpan di mana?",
-            "a": "Semua data keuanganmu — dompet, transaksi, pinjaman — tersimpan langsung di perangkatmu, di penyimpanan lokal browser. PFinTrack tidak punya server dan tidak pernah mengirim datamu ke mana pun. Data kamu, di perangkat kamu, titik."
+            "a": "Semua data keuanganmu (dompet, transaksi, pinjaman) tersimpan langsung di perangkatmu, di penyimpanan lokal browser. PFinTrack tidak punya server dan tidak pernah mengirim datamu ke mana pun. Data kamu, di perangkat kamu."
           },
           {
             "q": "Apa yang terjadi kalau saya ganti atau kehilangan HP?",
-            "a": "Karena data tersimpan di perangkat, ganti HP tanpa backup = data hilang. Solusinya sederhana: buka Settings → Data & Penyimpanan → Export sebelum pindah. File backup-nya bisa kamu simpan ke Google Drive, galeri, atau mana pun. Nanti tinggal import di HP baru."
+            "a": "Karena data tersimpan di perangkat, ganti HP tanpa backup berarti data hilang. Solusinya: buka Settings → Data & Penyimpanan → Ekspor sebelum pindah. Simpan file backup-nya di Google Drive atau mana pun. Nanti tinggal import di HP baru."
           },
           {
             "q": "Apakah PFinTrack bisa melihat data keuangan saya?",
-            "a": "Tidak. PFinTrack tidak punya akun, tidak ada login, dan tidak ada koneksi ke server apa pun. Data kamu 100% ada di perangkatmu dan tidak bisa diakses siapa pun selain kamu — termasuk tim PFinTrack. Kami bahkan tidak tahu kamu ada."
+            "a": "Tidak. PFinTrack tidak punya akun, tidak ada login, dan tidak ada koneksi ke server. Data kamu 100% ada di perangkatmu, tidak bisa diakses siapa pun, termasuk tim PFinTrack. Kami bahkan tidak tahu kamu ada."
           },
           {
             "q": "Bagaimana cara backup dan restore data?",
-            "a": "Buka Settings → Data & Penyimpanan. Di sana kamu bisa Export data ke file .json atau .gz, dan Import untuk mengembalikannya. Lakukan backup rutin terutama sebelum ganti HP atau update browser besar."
+            "a": "Buka Settings → Data & Penyimpanan. Di sana kamu bisa ekspor data ke file .json atau .gz, dan import untuk mengembalikannya. Lakukan backup rutin, terutama sebelum ganti HP atau update browser besar."
           },
           {
             "q": "Bagaimana cara hapus semua data saya?",
-            "a": "Buka Settings → Data & Penyimpanan → pilih opsi hapus semua data. Ini akan menghapus seluruh dompet, transaksi, dan catatan pinjaman secara permanen. Tidak bisa di-undo, jadi pastikan kamu sudah backup kalau masih butuh datanya."
+            "a": "Buka Settings → Data & Penyimpanan → pilih opsi hapus semua data. Ini menghapus seluruh dompet, transaksi, dan catatan pinjaman secara permanen. Pastikan kamu sudah backup kalau masih butuh datanya."
           }
         ]
       },
@@ -638,15 +638,15 @@
         "items": [
           {
             "q": "Apa perbedaan Memberi dan Menerima di modul Pinjaman?",
-            "a": "Memberi = kamu yang kasih pinjaman ke orang lain, jadi mereka yang punya utang ke kamu. Menerima = kamu yang terima uang dari orang itu, bisa berupa pelunasan utang mereka atau kamu yang balik utang ke mereka. Semua dicatat per nama orang biar gampang dipantau."
+            "a": "Memberi = kamu yang kasih pinjaman ke orang lain, jadi mereka yang punya utang ke kamu. Menerima = kamu yang terima uang dari orang itu, bisa berupa pelunasan utang mereka, atau kamu yang balik utang ke mereka. Semua dicatat per nama orang biar gampang dipantau."
           },
           {
             "q": "Kenapa Transfer tidak masuk sebagai pengeluaran?",
-            "a": "Transfer hanya memindahkan uang antar dompetmu sendiri — total kekayaanmu tidak berkurang. Beda dengan pengeluaran yang betul-betul keluar dari kantong. Kalau ditampilkan sebagai pengeluaran, laporan keuanganmu akan kelihatan jelek padahal sebenarnya tidak ada yang berubah."
+            "a": "Transfer hanya memindahkan uang antar dompetmu sendiri. Total kekayaanmu tidak berkurang. Beda dengan pengeluaran yang betul-betul keluar dari kantong. Kalau dihitung sebagai pengeluaran, laporan keuanganmu akan kelihatan buruk padahal tidak ada yang berubah."
           },
           {
             "q": "Apa itu \"Koreksi Saldo\" di daftar transaksi?",
-            "a": "Ini catatan otomatis yang muncul saat kamu mengedit saldo dompet secara manual. Misalnya, saldo BCA kamu ubah dari Rp 500.000 jadi Rp 750.000 — PFinTrack akan otomatis mencatat selisih Rp 250.000 sebagai Koreksi Saldo supaya jejak perubahannya tetap terlacak."
+            "a": "Ini catatan otomatis yang muncul saat kamu mengedit saldo dompet secara manual. Misalnya, saldo BCA kamu ubah dari Rp 500.000 jadi Rp 750.000, PFinTrack akan otomatis mencatat selisih Rp 250.000 sebagai Koreksi Saldo supaya jejak perubahannya tetap terlacak."
           },
           {
             "q": "Apa itu Saving Rate dan bagaimana cara menghitungnya?",
@@ -654,7 +654,7 @@
           },
           {
             "q": "Mengapa saldo dompet bisa bernilai negatif?",
-            "a": "Ini bisa terjadi kalau kamu mencatat pengeluaran atau pinjaman yang lebih besar dari saldo yang tersedia di dompet itu. PFinTrack tidak memblokir ini karena realitanya memang begitu — bisa saja kartu kredit atau tabunganmu memang minus. Saldo negatif bukan error, itu data yang valid."
+            "a": "Ini bisa terjadi kalau kamu mencatat pengeluaran atau pinjaman yang lebih besar dari saldo yang tersedia. PFinTrack tidak memblokir ini karena realitanya memang begitu. Kartu kredit dan tabunganmu bisa saja minus. Saldo negatif bukan error, itu data yang valid."
           }
         ]
       },
@@ -663,19 +663,19 @@
         "items": [
           {
             "q": "Apakah PFinTrack bisa digunakan tanpa koneksi internet?",
-            "a": "Ya, sepenuhnya. PFinTrack adalah PWA (Progressive Web App) yang bisa diinstall dan dipakai 100% offline. Semua fitur — catat transaksi, lihat laporan, kelola dompet — tetap jalan tanpa internet. Koneksi hanya diperlukan saat pertama kali membuka app."
+            "a": "Ya, sepenuhnya. PFinTrack adalah PWA (Progressive Web App) yang bisa diinstall dan dipakai 100% offline. Semua fitur (catat transaksi, lihat laporan, kelola dompet) tetap jalan tanpa internet. Koneksi hanya diperlukan saat pertama kali membuka app."
           },
           {
             "q": "Apa itu \"Data Sampel / Demo Mode\"?",
-            "a": "Demo Mode mengisi app dengan data contoh — dompet, transaksi, dan pinjaman palsu — supaya kamu bisa eksplorasi semua fitur tanpa harus input data asli dulu. Aktifkan dari Settings, dan hapus kapan saja lewat tombol merah di Settings saat kamu siap mulai dengan data sendiri."
+            "a": "Demo Mode mengisi app dengan data contoh (dompet, transaksi, dan pinjaman palsu) supaya kamu bisa eksplorasi semua fitur tanpa harus input data asli dulu. Aktifkan dari Settings, dan hapus kapan saja lewat tombol merah di Settings saat kamu siap mulai dengan data sendiri."
           },
           {
             "q": "Bagaimana cara memulai ulang tur panduan?",
-            "a": "Buka Settings → scroll ke section Bantuan → ketuk \"Lihat Tutorial\". Tur akan mulai dari awal dan memandu kamu lewat semua fitur utama lagi. Berguna banget kalau kamu baru saja reset data atau ingin refresh ingatan."
+            "a": "Buka Settings → scroll ke bagian Bantuan → ketuk \"Lihat Tutorial\". Tur akan mulai dari awal dan memandu kamu lewat semua fitur utama lagi."
           },
           {
             "q": "Apakah aplikasi ini gratis selamanya?",
-            "a": "Ya. PFinTrack gratis sepenuhnya — tidak ada versi premium, tidak ada langganan, tidak ada iklan, tidak ada in-app purchase. Semua fitur yang ada sekarang dan yang akan datang di Fase 1 ini gratis untuk semua orang."
+            "a": "Ya. PFinTrack gratis sepenuhnya. Tidak ada versi premium, tidak ada langganan, tidak ada iklan, tidak ada in-app purchase. Semua fitur yang ada sekarang dan yang akan datang di Fase 1 ini gratis untuk semua orang."
           }
         ]
       }

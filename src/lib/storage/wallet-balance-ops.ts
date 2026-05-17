@@ -16,7 +16,7 @@ async function applyDelta(walletId: string, delta: number): Promise<void> {
     }));
     if (!updated) {
       console.warn(
-        `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
+        `[wallet-balance-ops] wallet not found: ${walletId}, skipping balance update`
       );
     }
   } else {
@@ -24,7 +24,7 @@ async function applyDelta(walletId: string, delta: number): Promise<void> {
     const idx = all.findIndex((w) => w.id === walletId);
     if (idx === -1) {
       console.warn(
-        `[wallet-balance-ops] wallet not found: ${walletId} — skipping balance update`
+        `[wallet-balance-ops] wallet not found: ${walletId}, skipping balance update`
       );
       return;
     }
@@ -60,7 +60,7 @@ async function applyTransferDeltas(
       (existing, id) => {
         if (!existing) {
           console.warn(
-            `[wallet-balance-ops] wallet not found: ${id} — skipping balance update`
+            `[wallet-balance-ops] wallet not found: ${id}, skipping balance update`
           );
           return null;
         }
@@ -78,7 +78,7 @@ async function applyTransferDeltas(
       const idx = all.findIndex((w) => w.id === id);
       if (idx === -1) {
         console.warn(
-          `[wallet-balance-ops] wallet not found: ${id} — skipping balance update`
+          `[wallet-balance-ops] wallet not found: ${id}, skipping balance update`
         );
         return;
       }

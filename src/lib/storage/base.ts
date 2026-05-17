@@ -7,7 +7,7 @@ export function readKey<T>(key: string): T[] {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) {
-      console.warn(`[storage] key "${key}" is not an array — resetting to []`);
+      console.warn(`[storage] key "${key}" is not an array, resetting to []`);
       return [];
     }
     return parsed as T[];

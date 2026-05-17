@@ -60,20 +60,20 @@
       "sectionTitle": "Data & Storage",
       "persistTitle": "Protected Storage",
       "persistDesc": "Data protected from automatic browser cleanup",
-      "persistNotGranted": "Not protected — tap to request",
+      "persistNotGranted": "Not protected. Tap to request.",
       "persistUnsupported": "Not supported on this browser",
       "exportTitle": "Export Backup",
       "exportDesc": "Download all data as a JSON file",
       "importTitle": "Restore Backup",
       "importDesc": "Replace all data from a backup file",
       "importConfirmTitle": "Replace All Data?",
-      "importConfirmDesc": "All current data will be permanently replaced with the contents of the backup file. This cannot be undone.",
+      "importConfirmDesc": "Your current data will be replaced with the backup file. This can't be undone.",
       "importConfirmAction": "Yes, Restore",
       "importConfirmCancel": "Cancel",
       "importSuccess": "Data restored successfully",
       "importError": "Failed to restore: invalid or unsupported file",
       "deleteAllTitle": "Delete All Data",
-      "deleteAllDesc": "This will permanently delete all wallets, transactions, loans, and reports. This action cannot be undone.",
+      "deleteAllDesc": "All wallets, transactions, loans, and reports will be permanently deleted. Export a backup first if you still need the data.",
       "deleteAllPhrase": "DELETE ALL DATA",
       "deleteAllInputLabel": "Type the following phrase to confirm:",
       "deleteAllInputPlaceholder": "Type here manually",
@@ -86,7 +86,7 @@
       "clearButton": "Clear Sample Data",
       "clearDesc": "Delete all sample data and start fresh",
       "confirmTitle": "Delete Sample Data?",
-      "confirmDesc": "All sample data (wallets, transactions, and loans) will be permanently deleted. This action cannot be undone.",
+      "confirmDesc": "All sample data (wallets, transactions, and loans) will be permanently deleted.",
       "confirmAction": "Yes, Delete All",
       "confirmCancel": "Cancel"
     },
@@ -121,11 +121,11 @@
     "backToList": "Back to wallet list",
     "form": {
       "name": "Wallet Name",
-      "namePlaceholder": "Enter the name",
+      "namePlaceholder": "e.g. BCA, Cash, GoPay",
       "type": "Wallet Type",
       "balance": "Balance",
       "initialBalance": "Initial Balance",
-      "balancePlaceholder": "Enter the balance"
+      "balancePlaceholder": "0"
     },
     "types": {
       "bank": "Bank",
@@ -150,18 +150,18 @@
       "nameRequired": "Wallet name is required",
       "nameTooShort": "Name must be at least 2 characters",
       "nameTooLong": "Name must be 50 characters or less",
-      "nameTaken": "Wallet name is already taken",
+      "nameTaken": "That name's already taken, try another.",
       "balanceRequired": "Balance is required",
       "balanceInvalid": "Balance must be a positive number",
-      "balanceExceeds": "Balance exceeds maximum limit"
+      "balanceExceeds": "Amount is too large"
     },
     "deleteConfirm": {
       "title": "Delete Wallet?",
-      "description": "Wallet {name} will be deleted. This action cannot be undone.",
+      "description": "Delete \"{name}\"? Transaction history stays, but the wallet can't be recovered.",
       "confirm": "Delete",
       "cancel": "Cancel"
     },
-    "cannotDeleteInUse": "Wallet is being used in transactions or loans and cannot be deleted."
+    "cannotDeleteInUse": "This wallet is used in transactions or loans and can't be deleted."
   },
   "transactions": {
     "title": "Transactions",
@@ -187,7 +187,7 @@
     "noDataDesc": "No transactions on this day. Tap + to add one.",
     "searchPlaceholder": "Search transactions...",
     "noResults": "No results found",
-    "noResultsDesc": "No transactions match your search.",
+    "noResultsDesc": "Try a different keyword or adjust the filter.",
     "noHistory": "No transactions yet",
     "noHistoryDesc": "Transactions you record will appear here.",
     "exportAriaLabel": "Export to Excel",
@@ -223,10 +223,10 @@
       "amount": "Amount",
       "amountPlaceholder": "Enter amount",
       "title": "Title",
-      "titlePlaceholder": "Enter title (optional)",
+      "titlePlaceholder": "e.g. Lunch, Grab, Groceries",
       "category": "Category",
       "description": "Description",
-      "descriptionPlaceholder": "Enter description (optional)",
+      "descriptionPlaceholder": "Optional note",
       "date": "Date",
       "time": "Time",
       "wallet": "Wallet",
@@ -235,17 +235,17 @@
       "selectWallet": "Select Wallet",
       "selectSourceWallet": "Select source wallet",
       "selectDestWallet": "Select destination wallet",
-      "categoryPlaceholder": "Enter new category",
+      "categoryPlaceholder": "e.g. Food, Transport, Entertainment",
       "balance": "Balance",
-      "insufficientBalance": "Insufficient wallet balance"
+      "insufficientBalance": "Not enough balance for this transfer"
     },
     "validation": {
       "dateRequired": "Date is required",
       "timeRequired": "Time is required",
-      "walletRequired": "Please select a wallet",
+      "walletRequired": "Pick a wallet first",
       "sourceWalletRequired": "Select source wallet",
       "destWalletRequired": "Select destination wallet",
-      "sameWallet": "Source and destination wallet must be different",
+      "sameWallet": "Source and destination must be different",
       "amountRequired": "Amount is required",
       "amountInvalid": "Amount must be greater than 0",
       "amountExceeds": "Amount exceeds maximum limit",
@@ -257,7 +257,7 @@
     },
     "deleteConfirm": {
       "title": "Delete Transaction?",
-      "description": "This transaction will be deleted and the wallet balance will be adjusted.",
+      "description": "Wallet balance will be adjusted accordingly.",
       "confirm": "Delete",
       "cancel": "Cancel"
     },
@@ -284,7 +284,7 @@
     "editGet": "Edit Receive",
     "entryNotFound": "Entry not found",
     "entryNotFoundDesc": "This entry may have been deleted.",
-    "markPaidOffDesc": "All outstanding loan records with this person will be closed. You can still add new records later.",
+    "markPaidOffDesc": "All outstanding records with this person will be closed. You can still add new records later.",
     "unmarkPaidOff": "Unmark Paid Off",
     "withoutExplanation": "No notes",
     "counterpartyNotFound": "Person not found",
@@ -304,7 +304,7 @@
       "time": "Time",
       "amount": "Amount",
       "name": "Name",
-      "namePlaceholder": "Enter the name",
+      "namePlaceholder": "Enter name",
       "wallet": "Wallet",
       "selectWallet": "Select Wallet",
       "noteOptional": "Note (optional)",
@@ -320,7 +320,7 @@
     },
     "deleteEntryConfirm": {
       "title": "Delete this entry?",
-      "description": "This will roll back any wallet balance changes caused by this entry.",
+      "description": "Wallet balance affected by this entry will be reversed.",
       "confirm": "Delete",
       "cancel": "Cancel"
     },
@@ -339,10 +339,10 @@
       "nameRequired": "Name is required",
       "nameTooShort": "Name must be at least 2 characters",
       "nameTooLong": "Name must be 50 characters or less",
-      "walletRequired": "Please select a wallet.",
+      "walletRequired": "Pick a wallet first",
       "noteTooLong": "Note must be 255 characters or less",
       "renameRequired": "Name is required",
-      "renameTaken": "This name already exists."
+      "renameTaken": "That name already exists."
     }
   },
   "report": {
@@ -355,9 +355,9 @@
     },
     "realtime": {
       "noExpenses": "No expenses this month",
-      "noExpensesDesc": "Transactions you mark as expense will appear here.",
+      "noExpensesDesc": "Expenses you record will appear here.",
       "noIncome": "No income this period",
-      "noIncomeDesc": "Transactions you mark as income will appear here."
+      "noIncomeDesc": "Income you record will appear here."
     },
     "daily": {
       "title": "Daily Summary",
@@ -378,7 +378,7 @@
     },
     "monthly": {
       "noTransactions": "No transactions yet",
-      "noTransactionsDesc": "Add your first transaction to see monthly reports."
+      "noTransactionsDesc": "Add a transaction and your monthly report will show up here."
     },
     "custom": {
       "noReports": "No custom reports yet",
@@ -386,9 +386,9 @@
     },
     "detail": {
       "noExpenses": "No expenses in this period",
-      "noExpensesDesc": "There are no expense transactions for the selected date range.",
+      "noExpensesDesc": "No expense transactions for the selected date range.",
       "noTransactions": "No transactions",
-      "noTransactionsDesc": "No expense transactions found for \"{category}\".",
+      "noTransactionsDesc": "No expenses in \"{category}\" yet.",
       "title": "Report Detail",
       "summaryTitle": "Period Summary",
       "loanTitle": "Loans This Period",
@@ -399,18 +399,18 @@
       "filterIncome": "Income",
       "filterTransfer": "Transfer",
       "noIncome": "No income this period",
-      "noIncomeDesc": "Transactions you mark as income will appear here.",
+      "noIncomeDesc": "Income you record will appear here.",
       "noExpenseFilter": "No expenses this period",
-      "noExpenseFilterDesc": "Transactions you mark as expense will appear here.",
+      "noExpenseFilterDesc": "Expenses you record will appear here.",
       "noTransferFilter": "No transfers this period",
       "noTransferFilterDesc": "Transfer transactions will appear here."
     },
     "allTransactions": "All Transactions",
-    "categoryTransactions": "{category} — Transactions",
+    "categoryTransactions": "{category} Transactions",
     "addReport": "Add Report",
     "editReport": "Edit Report",
     "reportName": "Report Name",
-    "reportNamePlaceholder": "Enter the report name",
+    "reportNamePlaceholder": "Enter report name",
     "startDate": "Start Date",
     "endDate": "End Date",
     "deleteReportConfirm": {
@@ -455,8 +455,8 @@
     "insight": {
       "categoryUp": "{category} spending up {percent}% from {month}",
       "lowSavingRate": "Expenses exceed 90% of income this month",
-      "categoryDominant": "{category} dominates {percent}% of your spending",
-      "expenseDown": "Spending down {percent}% — more frugal than last month",
+      "categoryDominant": "{category} is {percent}% of your spending",
+      "expenseDown": "Spending down {percent}% from last month. Nice.",
       "noIncome": "No income recorded this month"
     },
     "loanSummary": {
@@ -478,7 +478,7 @@
       "nameRequired": "Report name is required",
       "nameTooShort": "Name must be at least 2 characters",
       "nameTooLong": "Name must be at most 50 characters",
-      "nameTaken": "Report name is already used",
+      "nameTaken": "That report name is already used",
       "startRequired": "Start date is required",
       "endRequired": "End date is required",
       "endBeforeStart": "End date must be after start date",
@@ -503,15 +503,15 @@
     },
     "clearConfirm": {
       "title": "Delete Sample Data?",
-      "description": "All sample data (wallets, transactions, and loans) will be permanently deleted. This action cannot be undone.",
+      "description": "All sample data (wallets, transactions, and loans) will be permanently deleted.",
       "confirm": "Yes, Delete All",
       "cancel": "Cancel"
     },
     "welcome": {
-      "title": "Welcome to PFinTrack!",
-      "description": "Start tracking your finances from scratch, or explore the app features with realistic sample data first.",
+      "title": "Hey, welcome!",
+      "description": "Start fresh with your own data, or explore the app with sample data first.",
       "exploreButton": "Explore with Sample Data",
-      "startFreshButton": "Start from Scratch"
+      "startFreshButton": "Start Fresh"
     }
   },
   "tour": {
@@ -520,7 +520,7 @@
     "next": "Next",
     "finish": "Finish",
     "skipTitle": "Skip {module} section?",
-    "skipDescription": "You haven't opened the {module} tab yet. Skip this section and continue to the next module?",
+    "skipDescription": "You haven't opened the {module} tab yet. Skip to the next module?",
     "confirmSkip": "Yes, Skip",
     "backToTour": "Back to Tour",
     "modules": {
@@ -531,28 +531,28 @@
     },
     "cancelAriaLabel": "Cancel",
     "steps": {
-      "tx1": "All your financial records are here — income, expenses, and transfers between wallets. Tap this tab to get started.",
+      "tx1": "All your financial records are here: income, expenses, and transfers between wallets. Tap this tab to start.",
       "tx2": "Swipe left/right or tap the arrows to navigate between dates. Tap the date to open the calendar.",
       "tx3": "Today's total income, expenses, and balance are shown here.",
-      "tx4": "Tap to add a new transaction — choose Income, Expense, or Transfer.",
-      "tx5": "Tap to change the sort order — by date or transaction amount.",
+      "tx4": "Tap to add a new transaction. Pick Income, Expense, or Transfer.",
+      "tx5": "Tap to change the sort order, by date or amount.",
       "tx6": "Tap to export all transactions to an Excel file.",
       "tx7": "Tap to view the full transaction history across all dates.",
-      "wl1": "Wallet is your account or cash wallet. All transactions are linked to a wallet. Tap this tab to continue.",
+      "wl1": "Wallets are your accounts and cash. All transactions are linked to a wallet. Tap this tab to continue.",
       "wl2": "This card shows the total balance across all your wallets.",
-      "wl3": "Filter wallets by type — bank, e-wallet, savings, and more.",
-      "ln1": "Record your debts and receivables here — who owes you, or who you owe. Tap this tab to continue.",
-      "ln2": "'Get': you borrow from someone or someone repays their debt to you. 'Give': you lend money to someone or you pay off your debt.",
-      "ln3": "Every person or entity is grouped here. Tap to view their loan history.",
-      "rp1": "Your financial report is here — income, expenses, and balance summary. Tap this tab to continue.",
-      "rp2": "View reports by period: today realtime, monthly, or custom date range.",
-      "rp3": "Switch between Expense and Income view to see the breakdown chart for each.",
-      "end": "Done! You now know the main features of PFinTrack. Start recording your finances now.",
-      "wl5": "Tap to add a new wallet — bank account, cash, GoPay, and more.",
-      "wl6": "Tap a wallet card to view details, edit balance, or see its transaction history.",
+      "wl3": "Filter wallets by type: bank, e-wallet, savings, and more.",
       "wl4": "Sort wallets by name or balance to find them quickly.",
-      "rp4": "This chart shows the distribution of your expenses or income by category. Tap a slice to filter the list below.",
-      "rp5": "Tap to create a custom report for a specific date range."
+      "wl5": "Tap to add a new wallet: bank account, cash, GoPay, and more.",
+      "wl6": "Tap a wallet card to view details, edit balance, or see transaction history.",
+      "ln1": "Track who owes you and who you owe, all in one place. Tap this tab to continue.",
+      "ln2": "'Give': you lend money to someone, or you pay off your own debt. 'Receive': you get money from someone, or they pay you back.",
+      "ln3": "Everyone is grouped here. Tap a name to see their loan history.",
+      "rp1": "Your financial summary is here: income, expenses, and balance. Tap this tab to continue.",
+      "rp2": "View reports by period: live today, monthly, or a custom date range.",
+      "rp3": "Switch between Expense and Income to see the breakdown chart for each.",
+      "rp4": "This chart shows expenses or income by category. Tap a slice to filter the list below.",
+      "rp5": "Tap to create a custom report for a specific date range.",
+      "end": "That's it! You know your way around PFinTrack now. Start recording."
     }
   },
   "changelog": {
@@ -567,20 +567,20 @@
         "tagline": "Smoother & Steadier",
         "intro": "Small touches that make every interaction feel more natural.",
         "items": [
-          "Money moves between wallets in perfect sync — your balances always line up",
-          "Indonesian screen readers now feel right at home with fully localized accessibility labels",
-          "Icon badges and quick menus look unified across the app",
-          "The app launches faster and stays rock-steady from the very first second"
+          "Wallet balances always stay in sync when money moves between them",
+          "Accessibility labels now follow your language choice",
+          "Icon badges and quick menus look consistent across the app",
+          "App loads faster and stays stable from the first second"
         ]
       },
       {
         "version": "1.0.1",
         "date": "May 14, 2026",
         "tagline": "First Polish",
-        "intro": "Final touches that make the experience even smoother.",
+        "intro": "A round of small fixes before things get interesting.",
         "items": [
-          "The onboarding tour now looks clean and focused",
-          "Confirmation dialogs feel more natural and accessibility-friendly",
+          "The onboarding tour looks cleaner and more focused",
+          "Confirmation dialogs feel more natural and work better with screen readers",
           "Switching tabs in Reports is instant",
           "Long lists in Wallet & Loan scroll more smoothly"
         ]
@@ -589,13 +589,13 @@
         "version": "1.0.0",
         "date": "April 1, 2026",
         "tagline": "Day One",
-        "intro": "The very start of PFinTrack — manage your personal finance from one place.",
+        "intro": "PFinTrack is live. Manage your personal finances from one place.",
         "items": [
           "Track wallets, edit balances manually, and follow every change",
           "Log income, expenses, and transfers between wallets",
           "Manage loans with automatic settlement detection",
-          "Real-time, monthly, and custom reports tailored to you",
-          "Backup, theme, language, and even demo data — all in one place",
+          "Real-time, monthly, and custom financial reports",
+          "Backup, theme, language, and demo data, all in one place",
           "Works offline and installs like a native app"
         ]
       }
@@ -613,23 +613,23 @@
         "items": [
           {
             "q": "Where is my data stored?",
-            "a": "All your financial data — wallets, transactions, loans — is stored locally on your device, inside your browser's storage. PFinTrack has no server and never sends your data anywhere. It's yours, on your device, full stop."
+            "a": "All your financial data (wallets, transactions, loans) lives on your device, inside your browser's local storage. PFinTrack has no server and never sends your data anywhere. It's yours, on your device."
           },
           {
             "q": "What happens if I switch phones or lose my device?",
-            "a": "Since your data lives on your device, switching phones without a backup means losing it. The fix is simple: go to Settings → Data & Storage → Export before you switch. Save the backup file somewhere safe — Google Drive, your gallery, anywhere. Then import it on your new device."
+            "a": "Since your data lives on your device, switching phones without a backup means losing it. Before you switch: Settings → Data & Storage → Export. Save the file somewhere safe, like Google Drive or your gallery. Then import it on your new device."
           },
           {
             "q": "Can PFinTrack see my financial data?",
-            "a": "No. PFinTrack has no accounts, no login, and no server connection. Your data is 100% on your device and can't be accessed by anyone else — including the PFinTrack team. We don't even know you exist."
+            "a": "No. PFinTrack has no accounts, no login, and no server. Your data is 100% on your device. Nobody can access it, including the PFinTrack team. We don't even know you exist."
           },
           {
             "q": "How do I back up and restore my data?",
-            "a": "Go to Settings → Data & Storage. From there you can Export your data as a .json or .gz file, and Import to restore it. It's a good habit to back up regularly, especially before switching phones or doing a major browser update."
+            "a": "Settings → Data & Storage. Export saves your data as a .json or .gz file. Import brings it back. Back up regularly, especially before switching phones or doing a major browser update."
           },
           {
             "q": "How do I delete all my data?",
-            "a": "Go to Settings → Data & Storage and choose the option to delete all data. This permanently removes all your wallets, transactions, and loan records. It can't be undone, so make sure you've exported a backup first if you might need it later."
+            "a": "Settings → Data & Storage → delete all data. This permanently removes all wallets, transactions, and loan records. Export a backup first if you might need the data later."
           }
         ]
       },
@@ -638,23 +638,23 @@
         "items": [
           {
             "q": "What's the difference between Give and Receive in the Loan module?",
-            "a": "Give means you lent money to someone — they owe you. Receive means you received money from them — either they're paying you back, or you're the one paying off a debt. Everything is grouped by person so you can track it in one place."
+            "a": "Give means you lent money to someone, so they owe you. Receive means you got money from them, either they're paying you back, or you're paying off a debt. Everything is grouped by person so you can track it all in one view."
           },
           {
             "q": "Why doesn't a Transfer count as an expense?",
-            "a": "A transfer just moves money between your own wallets — your total net worth stays the same. It's different from an expense, where money actually leaves your pocket. Counting it as an expense would make your reports look worse than they actually are."
+            "a": "A transfer just moves money between your own wallets. Your net worth stays the same. It's different from an expense, where money actually leaves. Counting it as an expense would make your reports look worse than reality."
           },
           {
             "q": "What is \"Balance Correction\" in my transaction list?",
-            "a": "This is an automatic entry that appears when you manually edit a wallet's balance. For example, if you change your BCA balance from Rp 500,000 to Rp 750,000, PFinTrack records the Rp 250,000 difference as a Balance Correction so the change is always traceable."
+            "a": "It's an automatic entry created when you manually edit a wallet's balance. For example, if you change your BCA balance from Rp 500,000 to Rp 750,000, PFinTrack records the Rp 250,000 difference as a Balance Correction so the change is always traceable."
           },
           {
             "q": "What is Saving Rate and how is it calculated?",
-            "a": "Saving Rate shows what percentage of your income you actually kept during a period. The formula is: (Income − Expenses) ÷ Income × 100%. If your income is Rp 10 million and expenses Rp 7 million, your Saving Rate is 30%. Higher is better."
+            "a": "Saving Rate shows what percentage of your income you actually kept. The formula: (Income − Expenses) ÷ Income × 100%. If income is Rp 10 million and expenses Rp 7 million, your Saving Rate is 30%. Higher is better."
           },
           {
             "q": "Why can my wallet balance go negative?",
-            "a": "This can happen when you record an expense or loan that exceeds a wallet's available balance. PFinTrack doesn't block it because that's how real life works — credit cards and overdraft accounts can genuinely go negative. A negative balance isn't a glitch, it's valid data."
+            "a": "It happens when you record an expense or loan that exceeds a wallet's balance. PFinTrack doesn't block it because that's real life. Credit cards and overdraft accounts can genuinely go negative. A negative balance isn't an error, it's valid data."
           }
         ]
       },
@@ -663,19 +663,19 @@
         "items": [
           {
             "q": "Can I use PFinTrack without an internet connection?",
-            "a": "Yes, completely. PFinTrack is a PWA (Progressive Web App) that can be installed and used 100% offline. All features — logging transactions, viewing reports, managing wallets — work without internet. You only need a connection the very first time you open the app."
+            "a": "Yes, fully. PFinTrack is a PWA (Progressive Web App). Install it and use it 100% offline. All features work without internet: logging transactions, viewing reports, managing wallets. You only need a connection the very first time you open the app."
           },
           {
             "q": "What is \"Demo Mode\" (Sample Data)?",
-            "a": "Demo Mode fills the app with sample data — fake wallets, transactions, and loans — so you can explore all features without entering real data first. Turn it on from Settings, and clear it anytime using the red button in Settings when you're ready to start fresh with your own data."
+            "a": "Demo Mode fills the app with fake data (wallets, transactions, and loans) so you can explore all features without entering real data. Turn it on from Settings, and clear it anytime using the red button in Settings when you're ready to start fresh."
           },
           {
             "q": "How do I restart the guided tour?",
-            "a": "Go to Settings → scroll to the Help section → tap \"View Tutorial\". The tour will restart from the beginning and walk you through all the main features again. Handy if you just reset your data or want a quick refresher."
+            "a": "Settings → scroll to the Help section → tap \"View Tutorial\". The tour restarts from the beginning and walks you through all the main features again."
           },
           {
             "q": "Is this app free forever?",
-            "a": "Yes. PFinTrack is completely free — no premium tier, no subscription, no ads, no in-app purchases. Every feature available now and in future Fase 1 updates is free for everyone."
+            "a": "Yes. PFinTrack is completely free. No premium tier, no subscription, no ads, no in-app purchases. Every feature, now and in future updates, is free for everyone."
           }
         ]
       }

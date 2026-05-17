@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     default: "PFinTrack",
     template: "%s | PFinTrack",
   },
-  description: "Personal Finance Tracker — catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
+  description: "Personal Finance Tracker. Catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

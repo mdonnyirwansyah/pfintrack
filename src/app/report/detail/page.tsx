@@ -394,7 +394,7 @@ function ReportDetailContent() {
                           className="text-[13px] font-medium truncate"
                           style={{ color: "var(--text-primary)" }}
                         >
-                          {cp?.name ?? "—"}
+                          {cp?.name ?? "-"}
                         </span>
                         <span
                           className="text-[11px]"

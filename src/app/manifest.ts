@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "PFinTrack - Personal Finance Tracker",
     short_name: "PFinTrack",
-    description: "Personal Finance Tracker — catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
+    description: "Personal Finance Tracker. Catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi.",
     start_url: "/",
     display: "standalone",
     background_color: "#F8F9FB",

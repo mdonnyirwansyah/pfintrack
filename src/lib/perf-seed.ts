@@ -730,7 +730,7 @@ export function generatePerfSeedData(options: Readonly<PerfSeedOptions>): PerfSe
     new Date(startYear + 3, 5, 1), new Date(startYear + 3, 5, 30));
   addReport("Tahun Pertama Investasi",
     new Date(startYear, 0, 1), new Date(startYear, 11, 31));
-  addReport("Q1 2026 — Review Kuartalan",
+  addReport("Q1 2026 Review Kuartalan",
     new Date(2026, 0, 1), new Date(2026, 2, 31));
 
   type ChronoEvent =
