@@ -188,7 +188,7 @@ export default function EditTransactionPage({ params }: EditTransactionPageProps
     <>
       <AppHeader title={typeLabel} showBack actions={headerActions} />
       <IncomeExpenseForm
-        type={transaction.type as "income" | "expense"}
+        type={transaction.type}
         wallets={wallets}
         initialValues={{
           transaction_date: transaction.transaction_date,

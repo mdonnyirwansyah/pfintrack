@@ -249,10 +249,10 @@ export function IncomeExpenseForm({
               const decimalPart = parts.length > 1 ? "," + parts[1] : "";
               if (integerPart) {
                 const parsed = Number.parseInt(integerPart, 10);
-                if (!Number.isNaN(parsed)) {
-                  integerPart = formatThousands(parsed);
-                } else {
+                if (Number.isNaN(parsed)) {
                   integerPart = "";
+                } else {
+                  integerPart = formatThousands(parsed);
                 }
               }
               set("amount", integerPart + decimalPart);

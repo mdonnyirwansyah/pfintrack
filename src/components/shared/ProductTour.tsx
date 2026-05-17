@@ -186,7 +186,7 @@ export function ProductTour() {
     target,
     placement,
     disableBeacon: true,
-    content: t(`steps.${key}` as Parameters<typeof t>[0]),
+    content: t(`steps.${key}`),
   }));
 
   useEffect(() => { setIsMounted(true); }, []);

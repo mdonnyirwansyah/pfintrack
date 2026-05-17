@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, Sector, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
 import type { PieSectorShapeProps } from "recharts/types/polar/Pie";
 import { useMounted } from "@/hooks/useMounted";
 import type { CategoryBreakdown } from "@/lib/report/calculations";
@@ -16,9 +16,14 @@ interface DonutChartProps {
 function renderSectorShape(
   props: PieSectorShapeProps,
   activeIndex: number,
+  dimmed: boolean,
+  onCellClick: ((category: string) => void) | undefined,
+  category: string,
 ) {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, index } = props;
   const isActive = index === activeIndex;
+  const cursor = onCellClick ? "pointer" : "default";
+  const handleClick = onCellClick ? () => onCellClick(category) : undefined;
 
   if (!isActive) {
     return (
@@ -30,12 +35,15 @@ function renderSectorShape(
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
+        opacity={dimmed ? 0.35 : 1}
+        style={{ cursor }}
+        onClick={handleClick}
       />
     );
   }
 
   return (
-    <g>
+    <g style={{ cursor }} onClick={handleClick}>
       <Sector
         cx={cx}
         cy={cy}
@@ -89,7 +97,7 @@ export function DonutChart({
         {mounted ? <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
           <PieChart>
             <Pie
-              data={data}
+              data={data.map((d) => ({ ...d, fill: d.color }))}
               cx="50%"
               cy="50%"
               innerRadius={62}
@@ -97,22 +105,13 @@ export function DonutChart({
               paddingAngle={2}
               dataKey="total"
               strokeWidth={0}
-              shape={(props: PieSectorShapeProps) => renderSectorShape(props, activeIndex)}
-            >
-              {data.map((entry) => (
-                <Cell
-                  key={entry.category}
-                  fill={entry.color}
-                  opacity={
-                    selectedCategory && selectedCategory !== entry.category
-                      ? 0.35
-                      : 1
-                  }
-                  style={{ cursor: onCategorySelect ? "pointer" : "default" }}
-                  onClick={() => onCategorySelect?.(entry.category)}
-                />
-              ))}
-            </Pie>
+              shape={(props: PieSectorShapeProps) => {
+                const idx = typeof props.index === "number" ? props.index : 0;
+                const entry = data[idx];
+                const dimmed = Boolean(selectedCategory && selectedCategory !== entry?.category);
+                return renderSectorShape(props, activeIndex, dimmed, onCategorySelect, entry?.category ?? "");
+              }}
+            />
           </PieChart>
         </ResponsiveContainer> : null}
 

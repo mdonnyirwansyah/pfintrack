@@ -39,15 +39,15 @@ export default function EditWalletPage({
     async function init() {
       await loadWallets();
       const found = await walletsRepo.getById(id);
-      if (!found?.is_active) {
-        setNotFound(true);
-      } else {
+      if (found?.is_active) {
         setWallet(found);
         const [txs, loans] = await Promise.all([
           transactionsRepo.getByWalletId(found.id),
           loanEntriesRepo.getByWalletId(found.id),
         ]);
         setIsInUse(txs.length > 0 || loans.length > 0);
+      } else {
+        setNotFound(true);
       }
     }
     void init();

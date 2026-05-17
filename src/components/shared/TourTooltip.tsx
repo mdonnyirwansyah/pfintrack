@@ -15,10 +15,10 @@ type JoyrideButtonProps = {
 type StrippedButtonProps = Omit<JoyrideButtonProps, 'title' | 'role'>;
 
 function omitTitleRole(props: JoyrideButtonProps): StrippedButtonProps {
-  const { title, role, ...rest } = props;
-  void title;
-  void role;
-  return rest;
+  const rest: Partial<JoyrideButtonProps> = { ...props };
+  delete rest.title;
+  delete rest.role;
+  return rest as StrippedButtonProps;
 }
 
 export function TourTooltip({
@@ -74,15 +74,23 @@ export function TourTooltip({
           marginBottom: 14,
         }}
       >
-        {Array.from({ length: size }).map((_, i) => {
+        {Array.from({ length: size }, (_, i) => i).map((i) => {
           let dotBg: string;
-          if (i === index) dotBg = 'var(--color-brand)';
-          else if (i < index) dotBg = 'var(--color-brand-soft, rgba(91,141,239,0.3))';
-          else dotBg = 'var(--bg-secondary)';
+          let dotState: string;
+          if (i === index) {
+            dotBg = 'var(--color-brand)';
+            dotState = 'active';
+          } else if (i < index) {
+            dotBg = 'var(--color-brand-soft, rgba(91,141,239,0.3))';
+            dotState = 'done';
+          } else {
+            dotBg = 'var(--bg-secondary)';
+            dotState = 'todo';
+          }
 
           return (
             <span
-              key={`dot-${i}`}
+              key={`dot-${size}-${i}-${dotState}`}
               style={{
                 display: 'block',
                 width: i === index ? 16 : 6,

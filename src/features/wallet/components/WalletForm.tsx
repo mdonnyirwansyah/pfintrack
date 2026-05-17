@@ -42,7 +42,7 @@ export function WalletForm({
     const init = initialValues?.balance;
     if (!init) return "";
     const parsed = parseIDR(init);
-    return !Number.isNaN(parsed) ? formatIDR(parsed) : init;
+    return Number.isNaN(parsed) ? init : formatIDR(parsed);
   });
   const [walletType, setWalletType] = useState<WalletType>(
     initialValues?.wallet_type ?? "bank"
@@ -80,15 +80,15 @@ export function WalletForm({
     }
 
     const balanceStr = values.balance.trim();
-    if (!balanceStr) {
-      errs.balance = t("validation.balanceRequired");
-    } else {
+    if (balanceStr) {
       const parsed = parseIDR(balanceStr);
       if (Number.isNaN(parsed) || parsed < 0) {
         errs.balance = t("validation.balanceInvalid");
       } else if (parsed > MAX_BALANCE) {
         errs.balance = t("validation.balanceExceeds");
       }
+    } else {
+      errs.balance = t("validation.balanceRequired");
     }
 
     return errs;
@@ -218,10 +218,10 @@ export function WalletForm({
               const decimalPart = parts.length > 1 ? "," + parts[1] : "";
               if (integerPart) {
                 const parsed = Number.parseInt(integerPart, 10);
-                if (!Number.isNaN(parsed)) {
-                  integerPart = formatThousands(parsed);
-                } else {
+                if (Number.isNaN(parsed)) {
                   integerPart = "";
+                } else {
+                  integerPart = formatThousands(parsed);
                 }
               }
               setBalance(integerPart + decimalPart);

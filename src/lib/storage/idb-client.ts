@@ -82,8 +82,7 @@ export function getDB(): Promise<IDBPDatabase<PFinTrackDB>> {
     throw new Error("IDB not available in SSR");
   }
 
-  if (!dbPromise) {
-    dbPromise = openDB<PFinTrackDB>(DB_NAME, DB_VERSION, {
+  dbPromise ??= openDB<PFinTrackDB>(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion, _newVersion, tx) {
         if (oldVersion < 1) {
           const wallets = db.createObjectStore("wallets", { keyPath: "id" });
@@ -132,7 +131,6 @@ export function getDB(): Promise<IDBPDatabase<PFinTrackDB>> {
         }
       },
     });
-  }
 
   return dbPromise;
 }

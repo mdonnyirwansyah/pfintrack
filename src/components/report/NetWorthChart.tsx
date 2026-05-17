@@ -104,7 +104,7 @@ export function NetWorthChart({
   const nonZeroCount = chartData.filter((p) => p.endBalance !== 0).length;
   if (!hasData || nonZeroCount < 2) return null;
 
-  const currentBalance = chartData[chartData.length - 1]?.endBalance ?? 0;
+  const currentBalance = chartData.at(-1)?.endBalance ?? 0;
   const earliestBalance = chartData[0]?.endBalance ?? 0;
   const delta = currentBalance - earliestBalance;
   const earliestLabel = chartData[0]?.fullLabel ?? "";

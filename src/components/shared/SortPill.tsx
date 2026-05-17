@@ -61,15 +61,19 @@ export function applySortKey<T extends { transaction_date: string; transaction_t
   return [...items].sort((a, b) => {
     if (sortKey === "datetime_desc") {
       const d = b.transaction_date.localeCompare(a.transaction_date);
-      if (d !== 0) return d;
-      const t = b.transaction_time.localeCompare(a.transaction_time);
-      return t !== 0 ? t : b.created_at.localeCompare(a.created_at);
+      if (d === 0) {
+        const t = b.transaction_time.localeCompare(a.transaction_time);
+        return t === 0 ? b.created_at.localeCompare(a.created_at) : t;
+      }
+      return d;
     }
     if (sortKey === "datetime_asc") {
       const d = a.transaction_date.localeCompare(b.transaction_date);
-      if (d !== 0) return d;
-      const t = a.transaction_time.localeCompare(b.transaction_time);
-      return t !== 0 ? t : a.created_at.localeCompare(b.created_at);
+      if (d === 0) {
+        const t = a.transaction_time.localeCompare(b.transaction_time);
+        return t === 0 ? a.created_at.localeCompare(b.created_at) : t;
+      }
+      return d;
     }
     if (sortKey === "amount_desc") return b.amount - a.amount;
     return a.amount - b.amount;

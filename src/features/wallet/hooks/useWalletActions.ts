@@ -6,7 +6,6 @@ import { walletBalanceHistoryRepo } from "@/lib/storage/wallet-balance-history";
 import { parseIDR } from "@/lib/format/number";
 import { todayISO, currentTimeHHMM } from "@/lib/format/date";
 import type { WalletFormValues } from "@/features/wallet/components/WalletForm";
-import type { WalletType } from "@/lib/types/wallet";
 
 export function useWalletActions() {
   const { createWallet, updateWallet, softDeleteWallet, isNameTaken, loadWallets } =
@@ -18,7 +17,7 @@ export function useWalletActions() {
 
     const wallet = await createWallet({
       name: values.name.trim(),
-      wallet_type: values.wallet_type as WalletType,
+      wallet_type: values.wallet_type,
       balance: 0,
     });
 
@@ -50,7 +49,7 @@ export function useWalletActions() {
 
     const updated = await updateWallet(id, {
       name: values.name.trim(),
-      wallet_type: values.wallet_type as WalletType,
+      wallet_type: values.wallet_type,
     });
 
     if (delta !== 0) {
