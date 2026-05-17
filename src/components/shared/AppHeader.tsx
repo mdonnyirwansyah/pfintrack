@@ -40,7 +40,8 @@ export function AppHeader({
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-40 flex items-center px-4",
+        "fixed top-0 left-0 right-0 z-40 grid items-center px-4",
+        "grid-cols-[44px_1fr_44px]",
         "glass-nav",
         "border-b",
         variant === "transparent" && "bg-transparent backdrop-filter-none border-transparent",
@@ -53,9 +54,10 @@ export function AppHeader({
         ...style,
       }}
     >
-      <div className="w-10 flex items-center">
+      <div className="flex items-center justify-start">
         {showBack && (
           <button
+            type="button"
             onClick={handleBack}
             className="flex items-center justify-center rounded-full transition-opacity active:opacity-60"
             style={{
@@ -70,16 +72,16 @@ export function AppHeader({
         )}
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center text-center">
+      <div className="flex flex-col items-center justify-center text-center min-w-0">
         <h1
-          className="text-[16px] font-semibold leading-tight truncate max-w-[200px]"
+          className="text-[16px] font-semibold leading-tight truncate max-w-full"
           style={{ color: "var(--text-primary)" }}
         >
           {title}
         </h1>
         {subtitle && (
           <span
-            className="text-[11px] leading-tight mt-0.5"
+            className="text-[11px] leading-tight mt-0.5 truncate max-w-full"
             style={{ color: "var(--text-secondary)" }}
           >
             {subtitle}
@@ -87,7 +89,7 @@ export function AppHeader({
         )}
       </div>
 
-      <div className="min-w-[44px] flex items-center justify-end">
+      <div className="flex items-center justify-end">
         {actions}
       </div>
     </header>
