@@ -84,6 +84,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "3PcPMREPqdetFJv8PnPYDXTAQxfUM1uP9IvnvxEYZPQ",
+  },
   category: "finance",
 };
 
