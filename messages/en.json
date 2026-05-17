@@ -637,8 +637,8 @@
         "title": "Features & How It Works",
         "items": [
           {
-            "q": "What's the difference between Give and Get in the Loan module?",
-            "a": "Give means you lent money to someone — they owe you. Get means you received money from them — either they're paying you back, or you're the one paying off a debt. Everything is grouped by person so you can track it in one place."
+            "q": "What's the difference between Give and Receive in the Loan module?",
+            "a": "Give means you lent money to someone — they owe you. Receive means you received money from them — either they're paying you back, or you're the one paying off a debt. Everything is grouped by person so you can track it in one place."
           },
           {
             "q": "Why doesn't a Transfer count as an expense?",

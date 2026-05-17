@@ -637,16 +637,16 @@
         "title": "Fitur & Cara Kerja",
         "items": [
           {
-            "q": "Apa perbedaan Give dan Get di modul Loan?",
-            "a": "Give = kamu yang kasih pinjaman ke orang lain, jadi mereka yang punya utang ke kamu. Get = kamu yang terima uang dari orang itu, bisa berupa pelunasan utang mereka atau kamu yang balik utang ke mereka. Semua dicatat per nama orang biar gampang dipantau."
+            "q": "Apa perbedaan Memberi dan Menerima di modul Pinjaman?",
+            "a": "Memberi = kamu yang kasih pinjaman ke orang lain, jadi mereka yang punya utang ke kamu. Menerima = kamu yang terima uang dari orang itu, bisa berupa pelunasan utang mereka atau kamu yang balik utang ke mereka. Semua dicatat per nama orang biar gampang dipantau."
           },
           {
             "q": "Kenapa Transfer tidak masuk sebagai pengeluaran?",
             "a": "Transfer hanya memindahkan uang antar dompetmu sendiri — total kekayaanmu tidak berkurang. Beda dengan pengeluaran yang betul-betul keluar dari kantong. Kalau ditampilkan sebagai pengeluaran, laporan keuanganmu akan kelihatan jelek padahal sebenarnya tidak ada yang berubah."
           },
           {
-            "q": "Apa itu \"Balance Correction\" di daftar transaksi?",
-            "a": "Ini catatan otomatis yang muncul saat kamu mengedit saldo dompet secara manual. Misalnya, saldo BCA kamu ubah dari Rp 500.000 jadi Rp 750.000 — PFinTrack akan otomatis mencatat selisih Rp 250.000 sebagai Balance Correction supaya jejak perubahannya tetap terlacak."
+            "q": "Apa itu \"Koreksi Saldo\" di daftar transaksi?",
+            "a": "Ini catatan otomatis yang muncul saat kamu mengedit saldo dompet secara manual. Misalnya, saldo BCA kamu ubah dari Rp 500.000 jadi Rp 750.000 — PFinTrack akan otomatis mencatat selisih Rp 250.000 sebagai Koreksi Saldo supaya jejak perubahannya tetap terlacak."
           },
           {
             "q": "Apa itu Saving Rate dan bagaimana cara menghitungnya?",
