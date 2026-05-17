@@ -191,12 +191,17 @@ export function ProductTour() {
 
   useEffect(() => { setIsMounted(true); }, []);
 
+  const pathnameRef = useRef(pathname);
+  const routerRef = useRef(router);
+  useEffect(() => { pathnameRef.current = pathname; }, [pathname]);
+  useEffect(() => { routerRef.current = router; }, [router]);
+
   useEffect(() => {
     if (run) {
       setStepIndex(0);
       setJoyrideRun(false);
-      if (!pathname.startsWith('/transactions')) {
-        router.push('/transactions');
+      if (!pathnameRef.current.startsWith('/transactions')) {
+        routerRef.current.push('/transactions');
       }
     } else {
       setJoyrideRun(false);

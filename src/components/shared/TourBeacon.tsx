@@ -1,7 +1,5 @@
 'use client';
 
-import type { BeaconRenderProps } from 'react-joyride';
-
 const BEACON_SIZE = 36;
 
 const STYLES = `
@@ -11,7 +9,7 @@ const STYLES = `
   .tb-dot  { animation: tbd 1.4s ease-in-out infinite; }
 `;
 
-export function TourBeacon(_props: Readonly<BeaconRenderProps>) {
+export function TourBeacon() {
   return (
     <span
       style={{

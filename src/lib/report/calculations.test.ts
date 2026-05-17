@@ -253,7 +253,7 @@ describe("calcCategoryBreakdown", () => {
       tx({ type: "expense", amount: (10 - i) * 10_000, category: `Cat${i}` })
     );
     const result = calcCategoryBreakdown(txs, PERIOD.start, PERIOD.end);
-    expect(result).toHaveLength(9); // 8 + Lainnya
+    expect(result).toHaveLength(9);
     expect(result[8].category).toBe("Lainnya");
   });
 

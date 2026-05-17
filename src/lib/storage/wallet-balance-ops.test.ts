@@ -69,11 +69,14 @@ function makeLoanEntry(overrides: Partial<LoanEntry> & { type: LoanEntry["type"]
   };
 }
 
+type WalletUpdater = (existing: Wallet) => Wallet;
+type WalletUpdaterMany = (existing: Wallet | null, id: string) => Wallet | null;
+
 function setupIdbUpdate(initial: Wallet[]) {
   const writes: Wallet[] = [];
   mockUpdate.mockImplementation(async (_store, id, updater) => {
     const existing = initial.find((w) => w.id === id) as Wallet;
-    const next = (updater as any)(existing) as Wallet;
+    const next = (updater as unknown as WalletUpdater)(existing);
     writes.push(next);
     return next;
   });
@@ -85,7 +88,7 @@ function setupIdbUpdateMany(initial: Wallet[]) {
   mockUpdateMany.mockImplementation(async (_store, ids, updater) => {
     for (const id of ids) {
       const existing = initial.find((w) => w.id === id) ?? null;
-      const next = (updater as any)(existing, id) as Wallet | null;
+      const next = (updater as unknown as WalletUpdaterMany)(existing, id);
       if (next) writes.push(next);
     }
   });

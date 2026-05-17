@@ -76,7 +76,6 @@ export function IncomeExpenseForm({
   const categoryInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-open wallet picker on mount if it's add mode
   useEffect(() => {
     if (!initialValues?.wallet_id) {
       setIsWalletOpen(true);

@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Sector, ResponsiveContainer } from "recharts";
+import type { PieSectorShapeProps } from "recharts/types/polar/Pie";
 import { useMounted } from "@/hooks/useMounted";
 import type { CategoryBreakdown } from "@/lib/report/calculations";
 import { formatIDR } from "@/lib/format/number";
@@ -12,24 +13,34 @@ interface DonutChartProps {
   readonly centerLabel?: string;
 }
 
-const renderActiveShape = (props: any) => {
-  const {
-    cx, cy, innerRadius, outerRadius,
-    startAngle, endAngle, fill,
-  } = props as {
-    cx: number; cy: number;
-    innerRadius: number; outerRadius: number;
-    startAngle: number; endAngle: number;
-    fill: string;
-  };
+function renderSectorShape(
+  props: PieSectorShapeProps,
+  activeIndex: number,
+) {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, index } = props;
+  const isActive = index === activeIndex;
+
+  if (!isActive) {
+    return (
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+    );
+  }
 
   return (
     <g>
       <Sector
         cx={cx}
         cy={cy}
-        innerRadius={(innerRadius as number) - 4}
-        outerRadius={(outerRadius as number) + 10}
+        innerRadius={innerRadius - 4}
+        outerRadius={outerRadius + 10}
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
@@ -38,8 +49,8 @@ const renderActiveShape = (props: any) => {
       <Sector
         cx={cx}
         cy={cy}
-        innerRadius={(innerRadius as number) - 2}
-        outerRadius={(outerRadius as number) + 6}
+        innerRadius={innerRadius - 2}
+        outerRadius={outerRadius + 6}
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
@@ -47,7 +58,7 @@ const renderActiveShape = (props: any) => {
       />
     </g>
   );
-};
+}
 
 export function DonutChart({
   data,
@@ -86,8 +97,7 @@ export function DonutChart({
               paddingAngle={2}
               dataKey="total"
               strokeWidth={0}
-              activeIndex={activeIndex >= 0 ? activeIndex : undefined}
-              activeShape={renderActiveShape}
+              shape={(props: PieSectorShapeProps) => renderSectorShape(props, activeIndex)}
             >
               {data.map((entry) => (
                 <Cell

@@ -118,7 +118,6 @@ export function WalletForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-      {/* Wallet Name */}
       <div className="flex flex-col gap-1">
         <label
           htmlFor="wallet-name"

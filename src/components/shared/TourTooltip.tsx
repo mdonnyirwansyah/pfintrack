@@ -14,7 +14,10 @@ type JoyrideButtonProps = {
 
 type StrippedButtonProps = Omit<JoyrideButtonProps, 'title' | 'role'>;
 
-function omitTitleRole({ title: _t, role: _r, ...rest }: JoyrideButtonProps): StrippedButtonProps {
+function omitTitleRole(props: JoyrideButtonProps): StrippedButtonProps {
+  const { title, role, ...rest } = props;
+  void title;
+  void role;
   return rest;
 }
 

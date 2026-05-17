@@ -1,5 +1,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 
+type AnyDB = IDBPDatabase;
+
 import type { Wallet, WalletBalanceHistory } from "@/lib/types/wallet";
 import type { Transaction } from "@/lib/types/transaction";
 import type { LoanCounterparty, LoanEntry } from "@/lib/types/loan";
@@ -62,7 +64,13 @@ export interface PFinTrackDB extends DBSchema {
   };
 }
 
-export type StoreName = keyof PFinTrackDB;
+export type StoreName =
+  | "wallets"
+  | "wallet_balance_history"
+  | "transactions"
+  | "loan_counterparties"
+  | "loan_entries"
+  | "custom_reports";
 
 const DB_NAME = "pfintrack_db";
 const DB_VERSION = 2;
@@ -114,7 +122,7 @@ export function getDB(): Promise<IDBPDatabase<PFinTrackDB>> {
         }
 
         if (oldVersion >= 1 && oldVersion < 2) {
-          const txStore = (tx as any).objectStore("transactions");
+          const txStore = tx.objectStore("transactions");
           if (!txStore.indexNames.contains("by_dest_wallet_id")) {
             txStore.createIndex(
               "by_dest_wallet_id",
@@ -130,7 +138,7 @@ export function getDB(): Promise<IDBPDatabase<PFinTrackDB>> {
 }
 
 export async function idbGetAll<T>(storeName: StoreName): Promise<T[]> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   return db.getAll(storeName) as Promise<T[]>;
 }
 
@@ -139,7 +147,7 @@ export async function idbGetAllByIndex<T>(
   indexName: string,
   value: IDBValidKey,
 ): Promise<T[]> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   return db.getAllFromIndex(storeName, indexName, value) as Promise<T[]>;
 }
 
@@ -148,7 +156,7 @@ export async function idbGetAllByRange<T>(
   indexName: string,
   range: IDBKeyRange,
 ): Promise<T[]> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   return db.getAllFromIndex(storeName, indexName, range) as Promise<T[]>;
 }
 
@@ -156,7 +164,7 @@ export async function idbGet<T>(
   storeName: StoreName,
   id: string,
 ): Promise<T | undefined> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   return db.get(storeName, id) as Promise<T | undefined>;
 }
 
@@ -164,7 +172,7 @@ export async function idbPut<T>(
   storeName: StoreName,
   record: T,
 ): Promise<void> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   await db.put(storeName, record);
 }
 
@@ -172,7 +180,7 @@ export async function idbDelete(
   storeName: StoreName,
   id: string,
 ): Promise<void> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   await db.delete(storeName, id);
 }
 
@@ -181,7 +189,7 @@ export async function idbUpdate<T>(
   id: string,
   updater: (existing: T) => T,
 ): Promise<T | null> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   const tx = db.transaction(storeName, "readwrite");
   const existing = (await tx.store.get(id)) as T | undefined;
   if (!existing) {
@@ -200,7 +208,7 @@ export async function idbUpdateMany<T>(
   updater: (existing: T | null, id: string) => T | null,
 ): Promise<void> {
   if (ids.length === 0) return;
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   const tx = db.transaction(storeName, "readwrite");
   for (const id of ids) {
     const existing = (await tx.store.get(id)) as T | undefined;
@@ -216,12 +224,12 @@ export async function idbPutAll<T>(
   storeName: StoreName,
   records: T[],
 ): Promise<void> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   const tx = db.transaction(storeName, "readwrite");
   await Promise.all([...records.map((r: T) => tx.store.put(r)), tx.done]);
 }
 
 export async function idbClearStore(storeName: StoreName): Promise<void> {
-  const db: any = await getDB();
+  const db = (await getDB()) as unknown as AnyDB;
   await db.clear(storeName);
 }

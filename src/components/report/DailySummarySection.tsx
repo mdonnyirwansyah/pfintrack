@@ -15,6 +15,16 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import type { BarRectangleItem } from "recharts/types/cartesian/Bar";
+
+function handleBarClick(data: BarRectangleItem): void {
+  const payload = data.payload as { date?: string } | undefined;
+  const fallback = (data as unknown as { date?: string }).date;
+  const dateStr = payload?.date ?? fallback;
+  if (!dateStr) return;
+  const el = document.getElementById(`day-${dateStr}`);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 function fmtY(v: number): string {
   if (v >= 1_000_000_000) return `${+(v / 1_000_000_000).toFixed(1)}G`;
@@ -281,11 +291,7 @@ export function DailySummarySection({
               radius={[2, 2, 0, 0]}
               maxBarSize={14}
               fill="var(--color-positive)"
-              onClick={(data: any) => {
-                const dateStr = (data as { date: string }).date;
-                const el = document.getElementById(`day-${dateStr}`);
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
+              onClick={handleBarClick}
               style={{ cursor: "pointer" }}
             />
             <Bar
@@ -294,11 +300,7 @@ export function DailySummarySection({
               radius={[2, 2, 0, 0]}
               maxBarSize={14}
               fill="var(--color-negative)"
-              onClick={(data: any) => {
-                const dateStr = (data as { date: string }).date;
-                const el = document.getElementById(`day-${dateStr}`);
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
+              onClick={handleBarClick}
               style={{ cursor: "pointer" }}
             />
           </BarChart>

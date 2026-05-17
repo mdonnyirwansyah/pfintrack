@@ -1065,6 +1065,14 @@ Sudah menggunakan `const t = useTranslations("report.summary")` dan `{t("startBa
 
 ---
 
+### ~~Bug 3~~ ✅ FIXED — DonutChart `activeIndex` prop tidak kompatibel Recharts v3
+
+**File:** `src/components/report/DonutChart.tsx` — diperbaiki 2026-05-17.
+
+Prop `activeIndex` pada `<Pie>` dihapus di Recharts v3. Refactor menggunakan prop `shape` yang menerima setiap sector dan menerapkan glow + expansion saat `index === activeIndex` lokal. Behavior visual (segment aktif: `outerRadius +6/+10`, `innerRadius -2/-4`, glow `opacity 0.2`) tetap sama persis dengan spec §1.2 DonutChart Enhancements. `activeShape` (deprecated) juga dihapus untuk kesehatan tipe.
+
+---
+
 ## 11. Fitur Analitik Tambahan (PROP-0002)
 
 > Bagian ini menjadi referensi cepat untuk `module-report-dev`. Detail teknis masing-masing fitur ada di §1 (UI), §2 (Flow), dan §4 (Kalkulasi).

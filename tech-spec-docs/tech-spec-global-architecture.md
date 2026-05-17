@@ -487,6 +487,17 @@ Berlaku untuk semua form di seluruh modul:
 | Auto-trim | Field teks otomatis trim whitespace di awal/akhir saat submit |
 | Case-insensitive matching | Untuk pencocokan nama (wallet, counterparty, custom report) |
 
+### 4.7 Code Style — No Comments (efektif 2026-05-17)
+
+Berlaku untuk semua file `.ts`, `.tsx`, `.js`, `.jsx` di `src/`:
+
+| Aturan | Detail |
+|--------|--------|
+| Dilarang | `//` single-line, `/* … */` block, JSDoc `/** … */`, JSX `{/* … */}`, tag `TODO/FIXME/NOTE`, section divider, changelog inline |
+| Pengecualian | Pragma compiler (`"use client"`, `"use server"`), TS directive (`// @ts-expect-error`, `// @ts-ignore`), ESLint inline disable (`// eslint-disable-*`), shebang (`#!/usr/bin/env node`) |
+| Gantinya | Kalau comment menjelaskan logic non-obvious, refactor: rename variable/fungsi jadi self-explanatory, atau extract helper |
+| Enforcement | Audit manual + `grep` pada review; future: pertimbangkan ESLint rule `no-warning-comments` & custom rule |
+
 ---
 
 ## 5. Identitas Anonim & Migration-Ready

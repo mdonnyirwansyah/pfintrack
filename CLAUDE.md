@@ -67,3 +67,17 @@ This project uses specialized agents in `.claude/agents/`. Use slash commands:
 - Tap targets: ≥44×44px
 - Test viewports: 375 / 390 / 430 px
 - Auto-trim text inputs, case-insensitive name matching
+
+## Code Style: No Comments
+
+**Dilarang menulis comment di codingan.** Code harus self-documenting lewat nama fungsi/variable yang ekspresif. Berlaku untuk semua agent dan semua perubahan kode.
+
+Aturan:
+1. **Jangan tulis** `//`, `/* */`, atau JSDoc block apapun di file `.ts`/`.tsx`/`.js`/`.jsx`. Pengecualian sempit: pragma wajib compiler (`"use client"`, `"use server"`, `@ts-expect-error` dengan alasan teknis singkat) dan file config yang butuh comment dari tooling (eslint disable inline kalau benar-benar tidak ada cara lain).
+2. **Ganti comment dengan nama**: kalau merasa perlu jelasin "apa yang dilakukan code ini", refactor jadi fungsi/variable dengan nama yang jelas. Contoh: alih-alih `// hitung total expense bulan ini` → `const currentMonthExpenseTotal = sumExpensesInMonth(transactions, now)`.
+3. **Jangan tulis** comment tipe "what" (`// loop transactions`), "tag" (`// TODO`, `// FIXME`, `// NOTE`), "section divider" (`// ===== Helpers =====`), atau "changelog inline" (`// fixed bug X`). Semua dilarang.
+4. **Hapus comment lama** saat menyentuh file: kalau lagi edit sebuah file dan ketemu comment existing, hapus sekalian (kecuali pragma compiler di poin 1).
+5. **Dokumentasi panjang** tempatnya di `tech-spec-docs/`, bukan di kode. Kalau ada nuansa bisnis yang non-obvious, tulis di spec dan rujuk lewat penamaan, bukan comment.
+6. **JSX**: tidak ada `{/* comment */}` di markup. Pecah jadi komponen kecil dengan nama deskriptif kalau struktur perlu "label".
+
+Reviewer (manual & agent) berhak reject PR yang masih ada comment di luar pengecualian di poin 1.
