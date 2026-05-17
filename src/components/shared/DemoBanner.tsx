@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Sparkles, X } from "lucide-react";
 import { clearDemoData } from "@/lib/demo-data";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -8,6 +9,7 @@ import { useTranslations } from "next-intl";
 
 export function DemoBanner() {
   const t = useTranslations("demo");
+  const pathname = usePathname();
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -16,7 +18,7 @@ export function DemoBanner() {
     setIsDemoMode(globalThis.localStorage.getItem("pfintrack_demo_mode") === "true");
   }, []);
 
-  if (!isDemoMode || dismissed) return null;
+  if (pathname === "/" || !isDemoMode || dismissed) return null;
 
   return (
     <>

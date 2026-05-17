@@ -46,6 +46,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   ...(allowedDevOrigins.length > 0 && { allowedDevOrigins }),
+  productionBrowserSourceMaps: true,
   experimental: {
     optimizePackageImports: [
       "lucide-react",

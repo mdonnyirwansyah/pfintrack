@@ -315,3 +315,8 @@
   --color-brand-hover: #E07A96;
   --shadow-fab: 0 4px 16px rgba(240, 143, 170, 0.35);
 }
+
+
+html[data-consent-accepted="true"] [data-landing-content] {
+  display: none;
+}

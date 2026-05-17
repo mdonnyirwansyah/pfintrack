@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -20,76 +20,65 @@ const inter = Inter({
 });
 
 const siteUrl = "https://pfintrack.vercel.app";
-const siteDescription =
-  "Catat dompet, transaksi, pinjaman, dan laporan keuangan pribadi. Gratis, tanpa daftar, data sepenuhnya di perangkatmu.";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "PFinTrack — Personal Finance Tracker",
-    template: "%s · PFinTrack",
-  },
-  description: siteDescription,
-  applicationName: "PFinTrack",
-  authors: [{ name: "PFinTrack" }],
-  keywords: [
-    "personal finance",
-    "finance tracker",
-    "money manager",
-    "budget app",
-    "catat keuangan",
-    "pencatat keuangan",
-    "aplikasi keuangan",
-    "dompet digital",
-    "PWA finance",
-  ],
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "PFinTrack",
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  alternates: {
-    canonical: "/",
-    languages: {
-      "id-ID": "/",
-      "en-US": "/",
-      "x-default": "/",
+const FALLBACK_DESCRIPTION =
+  "Catat dompet, transaksi, pinjaman, dan laporan dalam satu aplikasi sederhana. Gratis, tanpa daftar, datamu tetap di perangkatmu.";
+const FALLBACK_TITLE = "PFinTrack — Pelacak Keuangan Pribadi";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("seo");
+  const locale = await getLocale();
+  const title = t("title") || FALLBACK_TITLE;
+  const description = t("description") || FALLBACK_DESCRIPTION;
+  const ogLocale = locale === "id" ? "id_ID" : "en_US";
+  const alternateLocale = locale === "id" ? ["en_US"] : ["id_ID"];
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: title, template: "%s · PFinTrack" },
+    description,
+    applicationName: "PFinTrack",
+    authors: [{ name: "PFinTrack" }],
+    keywords: [
+      "personal finance",
+      "finance tracker",
+      "money manager",
+      "budget app",
+      "catat keuangan",
+      "pencatat keuangan",
+      "aplikasi keuangan",
+      "dompet digital",
+      "PWA finance",
+    ],
+    manifest: "/manifest.webmanifest",
+    appleWebApp: { capable: true, statusBarStyle: "default", title: "PFinTrack" },
+    formatDetection: { telephone: false },
+    alternates: {
+      canonical: "/",
+      languages: { "id-ID": "/", "en-US": "/", "x-default": "/" },
     },
-  },
-  openGraph: {
-    type: "website",
-    siteName: "PFinTrack",
-    title: "PFinTrack — Personal Finance Tracker",
-    description: siteDescription,
-    url: siteUrl,
-    locale: "id_ID",
-    alternateLocale: ["en_US"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "PFinTrack — Personal Finance Tracker",
-    description: siteDescription,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+    openGraph: {
+      type: "website",
+      siteName: "PFinTrack",
+      title,
+      description,
+      url: siteUrl,
+      locale: ogLocale,
+      alternateLocale,
+    },
+    twitter: { card: "summary_large_image", title, description },
+    robots: {
       index: true,
       follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
     },
-  },
-  verification: {
-    google: "3PcPMREPqdetFJv8PnPYDXTAQxfUM1uP9IvnvxEYZPQ",
-    yandex: "2f8f5011b9d77f5e",
-  },
-  category: "finance",
-};
+    verification: {
+      google: "3PcPMREPqdetFJv8PnPYDXTAQxfUM1uP9IvnvxEYZPQ",
+      yandex: "2f8f5011b9d77f5e",
+    },
+    category: "finance",
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [
@@ -110,6 +99,8 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const seoT = await getTranslations("seo");
+  const ldDescription = seoT("description") || FALLBACK_DESCRIPTION;
 
   return (
     <html
@@ -128,7 +119,41 @@ export default async function RootLayout({
       >
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('pfintrack_color_theme');document.documentElement.setAttribute('data-color-theme',t==='pink'?'pink':'blue');})();`,
+            __html: `(function(){try{var t=localStorage.getItem('pfintrack_color_theme');document.documentElement.setAttribute('data-color-theme',t==='pink'?'pink':'blue');if(localStorage.getItem('pfintrack_consent_accepted_at')){document.documentElement.setAttribute('data-consent-accepted','true');}}catch(_){}})();`,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "PFinTrack",
+              "alternateName": "Personal Finance Tracker",
+              "description": ldDescription,
+              "url": siteUrl,
+              "applicationCategory": "FinanceApplication",
+              "operatingSystem": "Any (Web, PWA)",
+              "browserRequirements": "Requires JavaScript and IndexedDB",
+              "inLanguage": ["id-ID", "en-US"],
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD",
+              },
+              "author": { "@type": "Organization", "name": "PFinTrack" },
+              "softwareVersion": "1.0.3",
+              "isAccessibleForFree": true,
+              "featureList": [
+                "Wallet management",
+                "Income, expense, and transfer tracking",
+                "Loan tracking with auto-settlement",
+                "Real-time, monthly, and custom reports",
+                "Bilingual (Indonesia/English)",
+                "Works offline (PWA)",
+                "100% on-device storage",
+              ],
+            }),
           }}
         />
         <ThemeProvider

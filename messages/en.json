@@ -32,6 +32,79 @@
   "splash": {
     "tagline": "Personal Finance Tracker"
   },
+  "seo": {
+    "title": "PFinTrack — Personal Finance Tracker",
+    "description": "Log wallets, transactions, loans, and reports in one quiet little app. Free, no sign-up, your data stays on your device."
+  },
+  "landing": {
+    "hero": {
+      "title": "Track your money, without the hassle.",
+      "subtitle": "Log wallets, transactions, loans, and reports in one quiet little app that lives on your device.",
+      "cta": "Start free",
+      "note": "No sign-up. No tracking. Your data stays on your device.",
+      "consent": "By continuing, you agree that your data will be stored locally in this browser."
+    },
+    "features": {
+      "title": "Everything you need, in one app",
+      "items": {
+        "wallet": {
+          "title": "Wallet",
+          "desc": "Manage cash, banks, and e-wallets in one place. Edit balances anytime with a clean change history."
+        },
+        "transactions": {
+          "title": "Transactions",
+          "desc": "Log income, expenses, and transfers between wallets. Balances stay in sync, every time."
+        },
+        "loan": {
+          "title": "Loan",
+          "desc": "Keep track of money you've lent or borrowed. Marked as settled automatically once paid back."
+        },
+        "report": {
+          "title": "Report",
+          "desc": "Spending breakdowns, monthly recaps, and custom date ranges. See where your money goes."
+        }
+      }
+    },
+    "trust": {
+      "heading": "Why PFinTrack?",
+      "private": {
+        "title": "Private by design",
+        "desc": "All data lives in your browser. PFinTrack has no servers."
+      },
+      "offline": {
+        "title": "Works offline",
+        "desc": "Install once and use it anywhere, even without internet."
+      },
+      "bilingual": {
+        "title": "Two languages",
+        "desc": "Indonesia and English, switch anytime in Settings."
+      }
+    },
+    "finalCta": {
+      "title": "Ready when you are.",
+      "subtitle": "Open the app and start logging in seconds.",
+      "cta": "Open PFinTrack"
+    },
+    "footer": "PFinTrack. Personal Finance Tracker that's free, open, and quietly yours.",
+    "footerNav": {
+      "label": "Footer navigation",
+      "faq": "FAQ",
+      "whatsNew": "What's New"
+    },
+    "mockup": {
+      "headerTitle": "Transactions",
+      "summary": {
+        "income": "Income",
+        "expenses": "Expenses",
+        "balance": "Balance"
+      },
+      "items": [
+        { "label": "Monthly salary", "category": "Income" },
+        { "label": "Lunch", "category": "Food" },
+        { "label": "Transit", "category": "Transport" }
+      ]
+    }
+  },
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
@@ -508,7 +581,7 @@
       "cancel": "Cancel"
     },
     "welcome": {
-      "title": "Hey, welcome!",
+      "title": "Hey, Tracker!",
       "description": "Start fresh with your own data, or explore the app with sample data first.",
       "exploreButton": "Explore with Sample Data",
       "startFreshButton": "Start Fresh"
@@ -552,7 +625,7 @@
       "rp3": "Switch between Expense and Income to see the breakdown chart for each.",
       "rp4": "This chart shows expenses or income by category. Tap a slice to filter the list below.",
       "rp5": "Tap to create a custom report for a specific date range.",
-      "end": "That's it! You know your way around PFinTrack now. Start recording."
+      "end": "That's it! Welcome aboard, Tracker. Start recording."
     }
   },
   "changelog": {

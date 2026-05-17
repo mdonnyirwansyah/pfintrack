@@ -24,6 +24,10 @@ export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
 
+  if (pathname === "/") {
+    return null;
+  }
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 glass-nav border-t"

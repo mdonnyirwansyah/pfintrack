@@ -5,23 +5,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/settings/faq", "/settings/whats-new"],
-        disallow: [
-          "/transactions",
-          "/transactions/",
-          "/wallet",
-          "/wallet/",
-          "/loan",
-          "/loan/",
-          "/report",
-          "/report/",
-          "/settings",
-          "/settings/",
-          "/~offline",
-        ],
+        allow: "/",
       },
     ],
     sitemap: "https://pfintrack.vercel.app/sitemap.xml",
-    host: "https://pfintrack.vercel.app",
   };
 }

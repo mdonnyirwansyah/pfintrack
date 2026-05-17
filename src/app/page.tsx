@@ -1,5 +1,13 @@
-import { SplashScreen } from "@/components/shared/SplashScreen";
+import { LandingPage } from "@/components/landing/LandingPage";
+import { ConsentRedirect } from "@/components/landing/ConsentRedirect";
 
 export default function RootPage() {
-  return <SplashScreen />;
+  return (
+    <>
+      <div data-landing-content>
+        <LandingPage />
+      </div>
+      <ConsentRedirect />
+    </>
+  );
 }

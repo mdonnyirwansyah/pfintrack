@@ -1131,18 +1131,43 @@ Tidak ada `eval`, `new Function`, atau `innerHTML` direct di codebase.
 
 PFinTrack adalah aplikasi **frontend-only dengan data anonim di IndexedDB** — tidak ada konten publik yang bisa di-index oleh crawler dari sisi data user. Strategi SEO fokus pada **discoverability landing page** dan **rich preview saat link di-share** (WhatsApp/Slack/Twitter), bukan ranking konten dalam aplikasi.
 
+### 15.0 Root Route — Landing Once, Then Auto-Redirect
+
+Root route `/` punya **dua state** yang ditentukan oleh flag consent di localStorage:
+
+| State | Trigger | Yang Dilihat |
+|-------|---------|--------------|
+| **Belum consent** (default — first-time visitor & Googlebot) | `pfintrack_consent_accepted_at` belum ada | `LandingPage` lengkap dengan hero, features, trust, CTA "Mulai" |
+| **Sudah consent** (return user) | `pfintrack_consent_accepted_at` ada di localStorage | Auto-redirect ke `/transactions` (tidak ada flash landing) |
+
+**Komponen**:
+
+| File | Tipe | Tanggung Jawab |
+|------|------|----------------|
+| `src/app/page.tsx` | Server | Render inline bootstrap script + `<LandingPage />` + `<ConsentRedirect />` |
+| `src/components/landing/LandingPage.tsx` | Server | Hero, 4 feature cards, 3 trust signals, final CTA, footer |
+| `src/components/landing/StartButton.tsx` | Client | Tombol "Mulai" — set `pfintrack_consent_accepted_at = ISO timestamp`, lalu `router.push("/transactions")` |
+| `src/components/landing/ConsentRedirect.tsx` | Client | `useEffect` cek consent flag — kalau ada, `router.replace("/transactions")` |
+
+**Anti-flash mechanism**: Inline script sync di `page.tsx` (run sebelum hydration) cek `localStorage.pfintrack_consent_accepted_at`. Kalau ada, set atribut `<html data-consent-accepted="true">`. CSS rule `html[data-consent-accepted="true"] [data-landing-content] { display: none }` langsung sembunyikan landing — user yang sudah consent tidak pernah lihat flash landing sebelum redirect.
+
+**Consent disclosure**: Di bawah CTA hero ada teks `landing.hero.consent` — *"Dengan klik Mulai, kamu setuju datamu disimpan di browser ini."* Klik tombol = consent implicit (tanpa checkbox, untuk reduce friction). Flag `pfintrack_consent_accepted_at` menyimpan timestamp acceptance untuk audit trail.
+
+**SEO implication**: Googlebot tidak punya localStorage, jadi selalu lihat landing page penuh dengan keyword target. Sebelum perubahan ini, `/` cuma render `SplashScreen` yang JS-redirect ke `/transactions` (noindex) → Google nge-index URL kosong "Indexed though blocked". Setelah perubahan, Google dapat HTML penuh.
+
 ### 15.1 Metadata Strategy
 
 Implementasi mengikuti Next.js 16 App Router Metadata API:
 
 | Lokasi | Tanggung Jawab |
 |--------|----------------|
-| `src/app/layout.tsx` | `metadataBase`, default title/description, `openGraph`, `twitter`, `robots` global, `alternates.languages` (id-ID / en-US / x-default) |
+| `src/app/layout.tsx` | `metadataBase`, default title/description, `openGraph`, `twitter`, `robots` global (index:true), `alternates.languages` (id-ID / en-US / x-default), `verification.google`, `verification.yandex` |
 | `src/app/opengraph-image.tsx` | OG image 1200×630 PNG di-generate via `ImageResponse` di Edge runtime. Brand gradient `#2196F3 → #1565C0`. |
-| `src/app/robots.ts` | Allow: `/`, `/settings/faq`, `/settings/whats-new`. Disallow: `/transactions/*`, `/wallet/*`, `/loan/*`, `/report/*`, `/settings/*` (kecuali yang allowed). |
+| `src/app/robots.ts` | **Allow semua** (`Allow: /`). Blocking dipindah ke `noindex` metadata per route group untuk menghindari status "Indexed though blocked". |
 | `src/app/sitemap.ts` | Hanya 3 URL publik (root, FAQ, What's New) |
-| `src/app/settings/faq/layout.tsx` | Override title + description khusus FAQ |
-| `src/app/settings/whats-new/layout.tsx` | Override title + description khusus What's New |
+| `src/app/transactions/layout.tsx`, `wallet/layout.tsx`, `loan/layout.tsx`, `report/layout.tsx`, `settings/layout.tsx` | Per-group `robots: { index: false, follow: false }` |
+| `src/app/settings/faq/layout.tsx` | Override `index: true` + title + description khusus FAQ |
+| `src/app/settings/whats-new/layout.tsx` | Override `index: true` + title + description khusus What's New |
 
 ### 15.2 Halaman Public vs Private
 

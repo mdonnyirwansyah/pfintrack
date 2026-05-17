@@ -32,6 +32,79 @@
   "splash": {
     "tagline": "Pelacak Keuangan Pribadi"
   },
+  "seo": {
+    "title": "PFinTrack — Pelacak Keuangan Pribadi",
+    "description": "Catat dompet, transaksi, pinjaman, dan laporan dalam satu aplikasi sederhana. Gratis, tanpa daftar, datamu tetap di perangkatmu."
+  },
+  "landing": {
+    "hero": {
+      "title": "Kelola uangmu, tanpa ribet.",
+      "subtitle": "Catat dompet, transaksi, pinjaman, dan laporan dalam satu aplikasi sederhana yang nyimpan datanya di perangkatmu.",
+      "cta": "Mulai gratis",
+      "note": "Tanpa daftar. Tanpa tracking. Data tetap di perangkatmu.",
+      "consent": "Dengan melanjutkan, kamu setuju datamu disimpan di browser ini."
+    },
+    "features": {
+      "title": "Semua yang kamu butuh, dalam satu app",
+      "items": {
+        "wallet": {
+          "title": "Dompet",
+          "desc": "Kelola uang tunai, rekening, dan e-wallet di satu tempat. Saldo bisa diedit kapan saja dengan histori perubahan yang rapi."
+        },
+        "transactions": {
+          "title": "Transaksi",
+          "desc": "Catat pemasukan, pengeluaran, dan transfer antar dompet. Saldo selalu sinkron, setiap saat."
+        },
+        "loan": {
+          "title": "Pinjaman",
+          "desc": "Lacak uang yang kamu pinjamkan atau pinjam. Otomatis ditandai lunas begitu sudah dibayar."
+        },
+        "report": {
+          "title": "Laporan",
+          "desc": "Rincian pengeluaran, rekap bulanan, dan rentang tanggal kustom. Lihat ke mana uangmu pergi."
+        }
+      }
+    },
+    "trust": {
+      "heading": "Kenapa PFinTrack?",
+      "private": {
+        "title": "Privat sejak awal",
+        "desc": "Semua data ada di browser kamu. PFinTrack tidak punya server."
+      },
+      "offline": {
+        "title": "Bisa offline",
+        "desc": "Pasang sekali dan pakai di mana saja, bahkan tanpa internet."
+      },
+      "bilingual": {
+        "title": "Dua bahasa",
+        "desc": "Indonesia dan Inggris, bisa diganti kapan saja di Pengaturan."
+      }
+    },
+    "finalCta": {
+      "title": "Siap kapanpun kamu siap.",
+      "subtitle": "Buka aplikasi dan mulai catat dalam hitungan detik.",
+      "cta": "Buka PFinTrack"
+    },
+    "footer": "PFinTrack. Pelacak Keuangan Pribadi yang gratis, terbuka, dan diam-diam jadi milikmu.",
+    "footerNav": {
+      "label": "Navigasi footer",
+      "faq": "FAQ",
+      "whatsNew": "Apa yang baru"
+    },
+    "mockup": {
+      "headerTitle": "Transaksi",
+      "summary": {
+        "income": "Pemasukan",
+        "expenses": "Pengeluaran",
+        "balance": "Saldo"
+      },
+      "items": [
+        { "label": "Gaji bulanan", "category": "Pemasukan" },
+        { "label": "Makan siang", "category": "Makanan" },
+        { "label": "Transportasi", "category": "Transport" }
+      ]
+    }
+  },
   "settings": {
     "title": "Pengaturan",
     "appearance": "Tampilan",
@@ -508,7 +581,7 @@
       "cancel": "Batal"
     },
     "welcome": {
-      "title": "Halo, PFinTrack!",
+      "title": "Halo, Tracker!",
       "description": "Mau langsung mulai atau lihat-lihat dulu dengan data contoh?",
       "exploreButton": "Coba dengan Data Contoh",
       "startFreshButton": "Mulai Sendiri"
@@ -552,7 +625,7 @@
       "rp3": "Beralih antara tampilan Pengeluaran dan Pemasukan untuk lihat grafik breakdown masing-masing.",
       "rp4": "Grafik ini menampilkan distribusi pengeluaran atau pemasukan per kategori. Ketuk potongan untuk filter daftar di bawah.",
       "rp5": "Ketuk untuk buat laporan kustom dengan rentang tanggal tertentu.",
-      "end": "Selesai! Sekarang kamu udah kenal PFinTrack. Yuk mulai catat!"
+      "end": "Selesai! Selamat datang, Tracker. Yuk mulai catat!"
     }
   },
   "changelog": {
